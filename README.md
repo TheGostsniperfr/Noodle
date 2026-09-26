@@ -1,4 +1,4 @@
-# noodle
+# Noodle 🍜
 
 Take the spaghetti out of a large architecture and keep it clear.
 
@@ -11,21 +11,51 @@ See [the vision](docs/VISION.md).
 
 ## Status
 
-**v0.** One generator (`cmd/noodle`) turns a single YAML spec into draw.io in a dark or
-light theme. It refuses to emit a diagram whose lines cross boxes, whose labels collide,
-or whose arrows break the connection semantics. The next phase splits the spec into
-model, views and layout ([roadmap](docs/ROADMAP.md)).
+**v0.** One generator turns a single YAML spec into draw.io in a dark or light theme. It
+refuses to emit a diagram whose lines cross boxes, whose labels collide, or whose arrows
+break the connection semantics. The next phase splits the spec into model, views and
+layout ([roadmap](docs/ROADMAP.md)).
 
-## Quick start
+## Install
 
-```bash
-nix develop
-go run ./cmd/noodle -icons .claude/skills/noodle-diagram/icons \
-  -theme dark -o /tmp/runtime.drawio examples/cnp-runtime/runtime-request-path.yaml
-drawio -x -f png -s 2 --border 20 -o /tmp/runtime.png /tmp/runtime.drawio
+### As a Claude Code plugin (skill + `noodle` command)
+
+```
+/plugin marketplace add TheGostsniperfr/Noodle
+/plugin install noodle@noodle
 ```
 
-Without `-o`, noodle only lints.
+Then enable auto-update once, under **Marketplaces** in `/plugin`, to follow `main`.
+The plugin puts `noodle` on the PATH. On first use it builds itself from the plugin's
+sources with Go, or with Nix; a `noodle` already on the PATH wins. PNG and SVG exports
+also need [draw.io desktop](https://www.drawio.com/) (`drawio`).
+
+To offer it to everyone working in a repository, run once there and commit the result:
+
+```bash
+claude plugin marketplace add TheGostsniperfr/Noodle --scope project
+```
+
+### With Nix
+
+```nix
+inputs.noodle.url = "github:TheGostsniperfr/Noodle";
+# then: home.packages = [ inputs.noodle.packages.${pkgs.system}.default ];
+```
+
+or just `nix run github:TheGostsniperfr/Noodle -- -list-icons`.
+
+## Usage
+
+```bash
+noodle spec.yaml                                   # lint only
+noodle -theme dark -o out.drawio spec.yaml         # lint, then render
+noodle -icons .noodle/icons -o out.drawio spec.yaml  # with project icons
+noodle -list-icons
+drawio -x -f png -s 2 --border 20 -o out.png out.drawio
+```
+
+The spec format is in [the skill reference](skills/noodle-diagram/reference.md).
 
 ## Docs
 
@@ -34,4 +64,15 @@ Without `-o`, noodle only lints.
 - [Roadmap](docs/ROADMAP.md): phases and their exit criteria
 - [Decisions](docs/adr/README.md): ADRs
 - [Inspirations](docs/INSPIRATIONS.md): IcePanel, Ilograph, LikeC4 and others, and what we borrow
-- [Diagram skill](.claude/skills/noodle-diagram/SKILL.md): the conventions an AI agent follows to write diagrams
+- [Diagram skill](skills/noodle-diagram/SKILL.md): the conventions an AI agent follows to write diagrams
+
+## Development
+
+```bash
+nix develop
+go vet ./... && go build ./cmd/noodle
+claude plugin validate .
+```
+
+Dependencies are vendored (`go mod vendor`) so the plugin can build offline. Run
+`go mod vendor` after changing `go.mod`.

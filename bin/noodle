@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Plugin entry point. Claude Code puts bin/ on PATH while the plugin is enabled.
+# Resolution order: a noodle installed elsewhere on PATH (e.g. by Nix), a binary
+# already built for this exact source, a build with Go, a build with Nix.
+set -euo pipefail
+
+self="$(readlink -f "${BASH_SOURCE[0]}")"
+root="$(dirname "$(dirname "$self")")"
+
+while IFS= read -r candidate; do
+  if [[ "$(readlink -f "$candidate")" != "$self" ]]; then
+    exec "$candidate" "$@"
+  fi
+done < <(type -ap noodle)
+
+cache="${CLAUDE_PLUGIN_DATA:-${XDG_CACHE_HOME:-$HOME/.cache}/noodle}"
+source_hash="$(cd "$root" && find cmd assets vendor go.mod go.sum -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -c1-16)"
+binary="$cache/noodle-$source_hash"
+
+if [[ ! -x "$binary" ]]; then
+  mkdir -p "$cache"
+  if command -v go >/dev/null; then
+    echo "noodle: building from plugin sources with Go (first run only)" >&2
+    (cd "$root" && CGO_ENABLED=0 go build -mod=vendor -trimpath -o "$binary.tmp" ./cmd/noodle)
+    mv "$binary.tmp" "$binary"
+  elif command -v nix >/dev/null; then
+    echo "noodle: building from plugin sources with Nix (first run only)" >&2
+    out="$(nix --extra-experimental-features 'nix-command flakes' build --no-link --print-out-paths "path:$root#default")"
+    ln -sf "$out/bin/noodle" "$binary"
+  else
+    echo "noodle: no binary found. Install Go or Nix, or put a noodle binary on PATH." >&2
+    exit 127
+  fi
+fi
+
+exec "$binary" "$@"

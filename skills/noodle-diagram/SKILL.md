@@ -5,9 +5,10 @@ description: Create or update an architecture diagram with noodle, in the house 
 
 # Architecture diagrams with noodle
 
-Diagrams are generated, not drawn. The source of truth is a YAML spec (v0 format, see
-`examples/`); `noodle` turns it into a `.drawio` file and refuses to emit it while the
-lint finds a collision. Hand edits in draw.io are for throwaway variants only; a canonical change
+Diagrams are generated, not drawn. The source of truth is a YAML spec, whose format is in
+[reference.md](reference.md): read it before writing one. The `noodle` command, on PATH
+while this plugin is enabled, turns the spec into a `.drawio` file and refuses to emit it
+while the lint finds a collision. Hand edits in draw.io are for throwaway variants only; a canonical change
 goes through the spec so the palette, the IDs and the PR diff stay consistent.
 
 ## Workflow
@@ -17,16 +18,23 @@ goes through the spec so the palette, the IDs and the PR diff stay consistent.
    draw the code, add `badge: Gx` on the node and an entry in the "Gaps" card.
 2. **One question per diagram.** Write it as the subtitle. Anything that does not help
    answer it goes to "Out of scope" in `meta`.
-3. **Write the spec in English** (proper nouns aside), then lint and build both themes:
+3. **Write the spec in English** (proper nouns aside), next to the project's docs, for
+   example `architecture/specs/<id>.yaml`. Check the icons first with `noodle -list-icons`.
+   A missing logo goes in the project, e.g. `.noodle/icons/<name>.svg`, passed with
+   `-icons .noodle/icons`.
+4. **Lint, then build both themes:**
    ```bash
-   B=<out-dir>/<id> I=<noodle-repo>/.claude/skills/noodle-diagram/icons
+   noodle architecture/specs/<id>.yaml            # lint only; fix every finding
+   B=architecture/diagrams/<id>
    for t in dark light; do
-     noodle -theme $t -icons $I -o $B.$t.drawio <spec-dir>/<id>.yaml
+     noodle -theme $t -o $B.$t.drawio architecture/specs/<id>.yaml
      drawio -x -f png -s 2 --border 20 -o $B.$t.png $B.$t.drawio
    done
    ```
-4. **Look at the PNG.** The lint catches geometry, not taste.
-5. For the docs, export the editable SVG:
+   `drawio` must be installed for PNG and SVG exports. If it is missing, deliver the
+   `.drawio` files and say so.
+5. **Look at the PNG.** The lint catches geometry, not taste. Expect two or three rounds.
+6. For docs, export the editable SVG:
    `drawio -x -f svg --embed-diagram -o $B.$t.drawio.svg $B.$t.drawio`.
    The PNG is the one to paste in chats.
 
@@ -73,10 +81,11 @@ goes through the spec so the palette, the IDs and the PR diff stay consistent.
 
 Palettes are Tailwind v3: 400 strokes on slate-950 for dark, 600 strokes on 50 fills for
 light, both checked for WCAG AA text contrast. Colour is never the only carrier: kind is
-also shown by icon, dash pattern and legend. Icons live in `icons/`. Add `<name>.svg`
-from the CNCF artwork repo, the Kubernetes community icon set or simple-icons, recoloured
-with the brand colour. Add `<name>.dark.svg` / `<name>.light.svg` when one variant
-disappears on a background.
+also shown by icon, dash pattern and legend. Built-in icons: `noodle -list-icons`.
+Add a project icon as `<name>.svg` from the CNCF artwork repo, the Kubernetes community
+icon set or simple-icons, recoloured with the brand colour. Add `<name>.dark.svg` /
+`<name>.light.svg` when one variant disappears on a background. An icon useful beyond one
+project belongs upstream in noodle's `assets/icons/`.
 
 ## Layout and cable management
 

@@ -5,7 +5,7 @@ before the contracts it depends on are frozen.
 
 | Phase | Level | Deliverable | Done when |
 |---|---|---|---|
-| **0** ✅ | · | Repository, vision, architecture, ADRs, v0 generator and skill migrated from the CNP experiment | this file exists |
+| **0** ✅ | · | Repository, vision, architecture, ADRs, v0 generator and skill migrated from the CNP experiment; Claude Code plugin + marketplace, Nix package | `/plugin install noodle@noodle` works on a fresh machine |
 | **1** | L0 | Contracts `v1alpha1`: model, view, layout as separate files, with JSON Schemas; lint rules moved into `internal/lint`; CNP runtime example migrated | one model, two views (nominal path, OIDC), lint green |
 | **2** | L0 | Own SVG renderer from the same geometry; animated flow dashes via CSS, which also work when the SVG is shown as an image | the example renders to SVG without draw.io and animates in a README |
 | **2b** | L6 | Read-only MCP server over the model: list elements, find a path, explain a connection, validate | an agent answers "how does a request reach app X?" from the model alone |

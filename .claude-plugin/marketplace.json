@@ -1,0 +1,12 @@
+{
+  "name": "noodle",
+  "description": "Noodle 🍜: architecture maps as code",
+  "owner": { "name": "Brian Perret" },
+  "plugins": [
+    {
+      "name": "noodle",
+      "source": "./",
+      "description": "Architecture diagrams as code with a readability lint, a house style and official logos"
+    }
+  ]
+}

@@ -145,7 +145,10 @@ These are not alternatives: the same model serves all of them.
 ## Target repository layout
 
 ```
+.claude-plugin/        Claude Code plugin manifest and marketplace
+bin/noodle             plugin wrapper: finds or builds the binary
 cmd/noodle/            CLI
+assets/icons/          icons compiled into the binary
 internal/model/        schema, merge, validation
 internal/lint/         rules
 internal/render/...    drawio, svg, png
@@ -154,5 +157,5 @@ viewer/                TypeScript web viewer
 schemas/               JSON Schemas of every contract, versioned
 docs/                  vision, architecture, roadmap, ADRs
 examples/              reference models
-.claude/skills/        agent skills
+skills/                agent skills shipped by the plugin
 ```

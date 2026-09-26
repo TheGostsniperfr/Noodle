@@ -4,35 +4,29 @@ import (
 	"encoding/base64"
 	"fmt"
 	"html"
-	"os"
-	"path/filepath"
 	"strings"
 )
 
 type renderer struct {
-	spec     *Spec
-	th       *Theme
-	iconsDir string
-	icons    map[string]string
-	ports    map[string]portBadge
-	b        strings.Builder
+	spec  *Spec
+	th    *Theme
+	icons *iconSet
+	cache map[string]string
+	ports map[string]portBadge
+	b     strings.Builder
 }
 
-// iconURI prefers <name>.<theme>.svg so a logo can swap to a variant that stays visible on the background.
 func (r *renderer) iconURI(name string) (string, error) {
-	if uri, ok := r.icons[name]; ok {
+	if uri, ok := r.cache[name]; ok {
 		return uri, nil
 	}
-	raw, err := os.ReadFile(filepath.Join(r.iconsDir, name+"."+r.th.Name+".svg"))
-	if os.IsNotExist(err) {
-		raw, err = os.ReadFile(filepath.Join(r.iconsDir, name+".svg"))
-	}
+	raw, err := r.icons.read(name, r.th.Name)
 	if err != nil {
-		return "", fmt.Errorf("icon %q: %w", name, err)
+		return "", err
 	}
 	// draw.io splits styles on ';', so its data URIs omit the ";base64" marker.
 	uri := "data:image/svg+xml," + base64.StdEncoding.EncodeToString(raw)
-	r.icons[name] = uri
+	r.cache[name] = uri
 	return uri, nil
 }
 
