@@ -21,6 +21,17 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-09-26 · Session harness automated
+
+- Hooks in `.claude/settings.json`: `SessionStart` injects the handoff context, `Stop` blocks
+  ending a turn while changes are missing from this file, `PostToolUse` runs gofmt.
+- `scripts/check-features.sh` (in `init.sh` and CI) rejects rewriting a feature's history.
+- CI (`.github/workflows/ci.yml`): vet, test, lint the example, features history, vendor sync.
+- Plugin agents: `diagram-reviewer` (Opus, read-only), `icon-curator` (Haiku).
+- `wrap-up` skill for end of session. Model guidance in AGENTS.md.
+- Decided against project permission rules (deny/ask/allow): not useful for a solo repo in
+  auto mode. Revisit when someone else contributes.
+
 ### 2026-09-26 · Bootstrap
 
 - Built the v0 generator and house style on the CNP platform: Tailwind palettes (dark and

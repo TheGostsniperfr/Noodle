@@ -10,6 +10,9 @@ go test ./...
 echo "== lint reference example"
 go run ./cmd/noodle examples/cnp-runtime/runtime-request-path.yaml
 
+echo "== features.json history"
+./scripts/check-features.sh
+
 echo "== plugin manifest"
 if command -v claude >/dev/null; then
   claude plugin validate . | tail -1

@@ -2,25 +2,37 @@
 
 ## Session protocol
 
-Every session starts without memory of the previous one. The repository carries the state.
+Every session starts without memory of the previous one. The repository carries the state,
+and hooks in `.claude/settings.json` keep it current.
 
-**Start**
-1. Run `./scripts/init.sh` and fix anything red before new work.
-2. Read `docs/PROGRESS.md` ("Start here" and the latest log entry).
-3. Pick the first feature with `"passes": false` in `docs/features.json`, within the
-   current spec in `specs/`.
+**Start.** The `SessionStart` hook injects "Start here", the next features and the git state.
+Run `./scripts/init.sh` and fix anything red before new work.
 
-**Work**
-- One feature at a time. New work on a phase starts from a spec: `specs/NNN-name/spec.md`
-  (what and why), then `plan.md`, then `tasks.md`.
-- Ask before choices the spec leaves open; record the answer in an ADR.
+**Work, one feature at a time.** New work on a phase starts from a spec:
+`specs/NNN-name/spec.md` (what and why), then `plan.md`, then `tasks.md`. Ask before choices
+the spec leaves open, and record the answer in an ADR.
 
-**End**
-1. Flip `passes` to `true` only for features whose `verify` step you actually ran.
-   Never edit or delete a feature to make it pass.
-2. Add a dated entry at the top of the log in `docs/PROGRESS.md`, and update "Start here"
-   and "Open threads".
-3. Commit with a conventional message. Leave the tree clean.
+**After each verified feature, not only at the end:**
+1. flip its `passes` to `true` in `docs/features.json`, only if you ran its `verify` step;
+   never edit or delete an entry, `scripts/check-features.sh` and CI reject it;
+2. add a line under today's entry in `docs/PROGRESS.md`;
+3. commit with a conventional message.
+
+The `Stop` hook blocks ending a turn when files changed but `docs/PROGRESS.md` did not.
+A one-line "in progress" note satisfies it.
+
+**End.** When Brian stops ("je reprends demain", "on s'arrête là"), run the `wrap-up` skill.
+
+## Model guidance
+
+The main session model is Brian's choice (`/model`). Subagents pin theirs.
+
+| Work | Model |
+|---|---|
+| Specs, ADRs, architecture, open questions, anything that sets direction | Opus, high effort |
+| Implementing tasks from a `tasks.md` that is already clear | Sonnet |
+| Reviewing a rendered diagram as a tech lead | `noodle:diagram-reviewer` agent (Opus) |
+| Mechanical work: fetching and recolouring logos, variants | `noodle:icon-curator` agent (Haiku) |
 
 ## Read first
 
@@ -45,7 +57,8 @@ unchecked one in the roadmap.
 The repository root is both the Claude Code plugin (`.claude-plugin/plugin.json`,
 `skills/`, `bin/`) and its marketplace (`.claude-plugin/marketplace.json`). `bin/noodle`
 is the wrapper users run; `assets/icons/` is compiled into the binary.
-`.claude/skills/noodle-diagram` is a symlink so sessions in this repo see the skill.
+`.claude/skills/noodle-diagram` is a symlink so sessions in this repo see the skill. `agents/` ships the
+plugin's subagents. `.claude/skills/wrap-up` and the hooks are for working on this repo only.
 Dependencies are vendored: run `go mod vendor` after touching `go.mod`.
 
 ## Check before handing back
