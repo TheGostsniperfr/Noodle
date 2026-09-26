@@ -1,5 +1,27 @@
 # Working on noodle
 
+## Session protocol
+
+Every session starts without memory of the previous one. The repository carries the state.
+
+**Start**
+1. Run `./scripts/init.sh` and fix anything red before new work.
+2. Read `docs/PROGRESS.md` ("Start here" and the latest log entry).
+3. Pick the first feature with `"passes": false` in `docs/features.json`, within the
+   current spec in `specs/`.
+
+**Work**
+- One feature at a time. New work on a phase starts from a spec: `specs/NNN-name/spec.md`
+  (what and why), then `plan.md`, then `tasks.md`.
+- Ask before choices the spec leaves open; record the answer in an ADR.
+
+**End**
+1. Flip `passes` to `true` only for features whose `verify` step you actually ran.
+   Never edit or delete a feature to make it pass.
+2. Add a dated entry at the top of the log in `docs/PROGRESS.md`, and update "Start here"
+   and "Open threads".
+3. Commit with a conventional message. Leave the tree clean.
+
 ## Read first
 
 `docs/VISION.md`, `docs/ARCHITECTURE.md`, `docs/ROADMAP.md` and the ADRs in `docs/adr/`.

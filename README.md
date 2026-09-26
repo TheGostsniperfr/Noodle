@@ -61,7 +61,9 @@ The spec format is in [the skill reference](skills/noodle-diagram/reference.md).
 
 - [Vision](docs/VISION.md): the problem, principles and capability levels L0 to L6
 - [Architecture](docs/ARCHITECTURE.md): modules, contracts, interfaces, storage and security
-- [Roadmap](docs/ROADMAP.md): phases and their exit criteria
+- [Progress](docs/PROGRESS.md): where the work stands and where the next session starts
+- [Roadmap](docs/ROADMAP.md): phases and their exit criteria, checked in [features.json](docs/features.json)
+- [Specs](specs/): one spec per piece of work, written before the code
 - [Decisions](docs/adr/README.md): ADRs
 - [Inspirations](docs/INSPIRATIONS.md): IcePanel, Ilograph, LikeC4 and others, and what we borrow
 - [Diagram skill](skills/noodle-diagram/SKILL.md): the conventions an AI agent follows to write diagrams
@@ -70,8 +72,7 @@ The spec format is in [the skill reference](skills/noodle-diagram/reference.md).
 
 ```bash
 nix develop
-go vet ./... && go build ./cmd/noodle
-claude plugin validate .
+./scripts/init.sh        # vet, test, lint the example, validate the plugin, show next features
 ```
 
 Dependencies are vendored (`go mod vendor`) so the plugin can build offline. Run

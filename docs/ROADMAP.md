@@ -31,8 +31,5 @@ before the contracts it depends on are frozen.
 
 ## Next up: phase 1
 
-1. Write ADR-0007: file layout of model, views and layouts, and how they reference each other.
-2. JSON Schemas in `schemas/v1alpha1/`.
-3. Split `examples/cnp-runtime` into `model.yaml`, `views/runtime.yaml`, `layouts/runtime.yaml`.
-4. Move lint rules into a package with one rule per file and table-driven tests.
-5. Add the OIDC flow as a second view, drawn as a sequence (ADR-0004).
+Spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
+Acceptance: features `P1-*` in [`features.json`](features.json).

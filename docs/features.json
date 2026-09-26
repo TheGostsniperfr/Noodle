@@ -1,0 +1,34 @@
+{
+  "about": "Acceptance checklist, one entry per verifiable feature. Flip passes to true only after running its verify step. Never delete or reword an entry to make it pass; add a new one instead.",
+  "phases": [
+    {
+      "id": "0",
+      "title": "Bootstrap",
+      "features": [
+        {"id": "P0-01", "description": "Vision, architecture, roadmap and ADRs 0001-0006 written", "verify": "docs/ exists and is linked from README", "passes": true},
+        {"id": "P0-02", "description": "v0 generator lints and renders the CNP runtime example", "verify": "scripts/init.sh", "passes": true},
+        {"id": "P0-03", "description": "Icons compiled into the binary; project icons via -icons", "verify": "noodle -list-icons prints 19 names", "passes": true},
+        {"id": "P0-04", "description": "Installable as a Claude Code plugin from GitHub", "verify": "fresh CLAUDE_CONFIG_DIR: marketplace add TheGostsniperfr/Noodle, install noodle@noodle, run bin/noodle", "passes": true},
+        {"id": "P0-05", "description": "Nix package and dev shell", "verify": "nix run github:TheGostsniperfr/Noodle -- -list-icons", "passes": true}
+      ]
+    },
+    {
+      "id": "1",
+      "title": "Contracts v1alpha1: split model, views and layout",
+      "spec": "specs/001-model-view-layout-split/spec.md",
+      "features": [
+        {"id": "P1-01", "description": "ADR-0007 accepted: file layout of model, views and layouts, and how they reference each other", "verify": "docs/adr/0007-*.md with status Accepted", "passes": false},
+        {"id": "P1-02", "description": "JSON Schemas for Model, View and Layout in schemas/v1alpha1", "verify": "every example file validates against its schema in go test", "passes": false},
+        {"id": "P1-03", "description": "CLI renders from the split format", "verify": "noodle render examples/cnp-runtime --view runtime produces the same diagram as v0", "passes": false},
+        {"id": "P1-04", "description": "CNP runtime example migrated to model.yaml + views/ + layouts/", "verify": "scripts/init.sh lints the migrated example", "passes": false},
+        {"id": "P1-05", "description": "Lint rules moved to internal/lint, one rule per file, table-driven tests", "verify": "go test ./internal/lint/... covers every rule with a failing and a passing case", "passes": false},
+        {"id": "P1-06", "description": "Second view on the same model: the OIDC login as a sequence", "verify": "two views render from one model.yaml; lint green", "passes": false}
+      ]
+    }
+  ],
+  "backlog": [
+    {"id": "B-01", "description": "Exported .drawio.svg weighs 2.5 MB because draw.io embeds PNG fallbacks for every HTML label", "passes": false},
+    {"id": "B-02", "description": "Release workflow publishing prebuilt binaries, as a download fallback in bin/noodle", "passes": false},
+    {"id": "B-03", "description": "CNP global view (all components, on-prem + AWS + GCP) as the first large test of cable management", "passes": false}
+  ]
+}
