@@ -1,0 +1,5 @@
+/noodle
+/dist/
+*.drawio.bkp
+.direnv/
+result
