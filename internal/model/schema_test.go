@@ -101,6 +101,7 @@ func TestSchemas_Reject(t *testing.T) {
 		{"participants on a topology view", "View", viewHead + "type: topology\nparticipants: [a]\n"},
 		{"an endpoint without side", "Layout", layoutHead + "edges: {c: {from: a, to: b.left}}\n"},
 		{"a ratio above 100 %", "Layout", layoutHead + "edges: {c: {from: a.right@120%, to: b.left}}\n"},
+		{"an offset without unit", "Layout", layoutHead + "edges: {c: {from: a.right@40, to: b.left}}\n"},
 		{"a lane with both x and y", "Layout", layoutHead + "lanes: {bus: {x: 1, y: 2}}\n"},
 		{"absolute v0 path field", "Layout", layoutHead + "edges: {c: {from: a.right, to: b.left, path: [[0, 0]]}}\n"},
 	}

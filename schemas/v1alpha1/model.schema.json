@@ -82,7 +82,7 @@
         "severity": {"enum": ["low", "medium", "high"]},
         "title": {"type": "string"},
         "text": {"type": "string"},
-        "targets": {"type": "array", "items": {"$ref": "#/$defs/id"}}
+        "targets": {"type": "array", "items": {"$ref": "#/$defs/id"}, "description": "Elements get a badge; connections and references get a warning after their label."}
       }
     }
   }

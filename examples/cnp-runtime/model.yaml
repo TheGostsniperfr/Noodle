@@ -1,0 +1,91 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+
+# CNP runtime on the on-prem K3s cluster, as of 2026-09-26, derived from code
+# (infra-templates, K3s, CMP templates).
+
+elements:
+  - {id: z-internet, kind: region, color: slate, icon: globe, title: "INTERNET"}
+  - {id: z-cloudflare, kind: region, color: orange, icon: cloudflare, title: "CLOUDFLARE", sub: "SaaS"}
+  - {id: z-cluster, kind: region, color: cyan, icon: rack, title: "K3S CLUSTER · ON-PREM", sub: "OpenStack pae · Cilium 1.20"}
+  - {id: g-connectivity, kind: group, parent: z-cluster, color: amber, icon: cloudflare, title: "CONNECTIVITY", sub: "ns cloudflared"}
+  - {id: g-gateway, kind: group, parent: z-cluster, color: emerald, icon: envoy-gateway, title: "GATEWAY API", sub: "Envoy Gateway"}
+  - {id: g-identity, kind: group, parent: z-cluster, color: rose, icon: keycloak, title: "IDENTITY", sub: "ns keycloak"}
+  - {id: g-secrets, kind: group, parent: z-cluster, color: violet, icon: vault, title: "SECRETS", sub: "ns vault · vso"}
+  - {id: g-tenant-a, kind: group, parent: z-cluster, color: indigo, icon: k8s-ns, title: "TENANT <project>-<app>", sub: "1 namespace / app"}
+  - {id: g-tenant-b, kind: group, parent: z-cluster, color: slate, icon: k8s-ns, title: "OTHER TENANT"}
+
+  - {id: user, kind: frontend, parent: z-internet, shape: actor, icon: user, title: "User", desc: "web browser"}
+
+  - id: cf-edge
+    kind: cloud
+    parent: z-cloudflare
+    icon: cloudflare
+    title: "Cloudflare Edge"
+    tech: "[SaaS reverse proxy]"
+    desc: "TLS ends here, routes to tunnels"
+    ports: [{name: https, protocol: TCP, port: 443}, {name: quic, protocol: UDP, port: 7844}]
+
+  - {id: cloudflared-platform, kind: cloud, parent: g-connectivity, icon: cloudflare, title: "cloudflared", tech: "[Deployment · ns cloudflared]", desc: "Platform tunnel connector"}
+
+  - {id: client-traffic-policy, kind: security, parent: g-gateway, icon: k8s-crd, title: "ClientTrafficPolicy", tech: "[Envoy Gateway CRD]", desc: "Trusts 1 proxy hop (XFF)"}
+  - id: envoy-shared-gateway
+    kind: backend
+    parent: g-gateway
+    icon: envoy
+    title: "Envoy proxy"
+    tech: "[Gateway API · shared-gateway]"
+    desc: "Routes *.3istor.com, runs OIDC"
+    ports: [{name: http, protocol: TCP, port: 80}]
+
+  - {id: keycloak, kind: security, parent: g-identity, icon: keycloak, title: "Keycloak", tech: "[OIDC IdP · realm 3istor]", desc: "Login + token endpoint", ports: [{name: http, protocol: TCP, port: 80}]}
+
+  - {id: vso, kind: database, parent: g-secrets, icon: vault, title: "Vault Secrets Operator", tech: "[K8s operator]", desc: "Syncs Vault → Secrets"}
+  - {id: vault, kind: database, parent: g-secrets, icon: vault, title: "Vault", tech: "[KV v2 · tls_disable]", desc: "kvv2/projects/<p>/<a>", ports: [{name: http, protocol: TCP, port: 8200}]}
+
+  - {id: cloudflared-app, kind: cloud, parent: g-tenant-a, icon: cloudflare, title: "cloudflared", tech: "[Deployment · per release]", desc: "App tunnel connector"}
+  - {id: httproute, kind: backend, parent: g-tenant-a, icon: k8s-crd, title: "HTTPRoute", tech: "[Gateway API route]", desc: "<app>-<project>.3istor.com"}
+  - {id: app-service, kind: backend, parent: g-tenant-a, icon: k8s-svc, title: "Service", tech: "[ClusterIP]", desc: "Stable VIP for the app", ports: [{name: http, protocol: TCP, port: 8000}]}
+  - {id: app-pods, kind: backend, parent: g-tenant-a, icon: k8s-deploy, title: "App pods", tech: "[Deployment · generic chart]", desc: "Tenant workload", ports: [{name: http, protocol: TCP, port: 8080}]}
+  - {id: security-policy, kind: security, parent: g-tenant-a, icon: k8s-crd, title: "SecurityPolicy", tech: "[Envoy Gateway CRD]", desc: "OIDC login, no authz rule"}
+  - {id: app-secret, kind: database, parent: g-tenant-a, icon: k8s-secret, title: "Secret", tech: "[Secret <app>-secrets]", desc: "Written by VSO"}
+  - {id: cnpg, kind: database, parent: g-tenant-a, shape: cylinder, icon: cnpg, title: "CloudNativePG", tech: "[PostgreSQL cluster]", desc: "1 instance · no backup", ports: [{name: postgres, protocol: TCP, port: 5432}]}
+
+  - {id: tenant-b-pods, kind: external, parent: g-tenant-b, icon: k8s-pod, title: "Other tenant pods", tech: "[any other project]", desc: "Must stay unreachable"}
+
+connections:
+  # Request path.
+  - {id: e-1-browser-edge, from: user, to: cf-edge, port: https, protocol: HTTPS, verb: GET app, kind: flow}
+  - {id: e-2-tunnel-app, from: cloudflared-app, to: cf-edge, port: quic, protocol: QUIC, verb: open tunnel, kind: tunnel}
+  - {id: e-3-connector-envoy, from: cloudflared-app, to: envoy-shared-gateway, port: http, protocol: HTTP, verb: forward, kind: flow}
+  - {id: e-4-envoy-service, from: envoy-shared-gateway, to: app-service, port: http, protocol: HTTP, verb: proxy, kind: flow}
+  - {id: e-5-service-pods, from: app-service, to: app-pods, port: http, verb: DNAT, kind: flow}
+  - {id: e-6-pods-db, from: app-pods, to: cnpg, port: postgres, protocol: SQL, verb: query, kind: flow}
+
+  # Authentication. Their order lives in the OIDC sequence view.
+  - {id: e-oidc-platform-tunnel, from: cloudflared-platform, to: cf-edge, port: quic, protocol: QUIC, verb: open tunnel, kind: tunnel}
+  - {id: e-oidc-platform-envoy, from: cloudflared-platform, to: envoy-shared-gateway, port: http, protocol: HTTP, verb: forward auth.3istor.com, kind: auth}
+  - {id: e-oidc-envoy-keycloak, from: envoy-shared-gateway, to: keycloak, port: http, protocol: HTTP, verb: OIDC, kind: auth}
+  - {id: e-oidc-token-hairpin, from: envoy-shared-gateway, to: cf-edge, port: https, protocol: HTTPS, verb: OIDC token call, kind: auth}
+
+  # Background work.
+  - {id: e-a-vso-vault, from: vso, to: vault, port: http, protocol: HTTP, verb: read, kind: async}
+  - {id: e-b-vso-secret, from: vso, to: app-secret, protocol: K8s API, verb: write Secret, kind: async}
+
+  # Must not happen. G1: nothing in code enforces it yet.
+  - {id: x-cross-tenant, from: g-tenant-a, to: g-tenant-b, verb: cross-tenant traffic, kind: flow, denied: true}
+
+references:
+  - {id: r-ctp-gateway, from: client-traffic-policy, to: envoy-shared-gateway, kind: targetRef}
+  - {id: r-route-gateway, from: httproute, to: envoy-shared-gateway, kind: parentRef}
+  - {id: r-policy-route, from: security-policy, to: httproute, kind: targetRef}
+  - {id: r-policy-secret, from: security-policy, to: app-secret, kind: clientSecret}
+  - {id: r-pods-secret, from: app-pods, to: app-secret, kind: envFrom}
+
+annotations:
+  - {id: G1, severity: high, title: "Network isolation", targets: [x-cross-tenant]}
+  - {id: G2, severity: high, title: "Authorization", targets: [security-policy]}
+  - {id: G3, severity: medium, title: "Transport", targets: [cf-edge]}
+  - {id: G4, severity: medium, title: "Coupling", targets: [envoy-shared-gateway]}
+  - {id: G5, severity: low, title: "Tunnels", targets: [cloudflared-app]}
+  - {id: G6, severity: medium, title: "Token call", targets: [envoy-shared-gateway, e-oidc-token-hairpin]}

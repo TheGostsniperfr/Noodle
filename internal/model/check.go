@@ -117,7 +117,9 @@ func (c *checker) checkModel() {
 	for _, a := range c.s.Model.Annotations {
 		unique(a.ID)
 		for _, t := range a.Targets {
-			c.mustElement(file, a.ID, "target", t)
+			if _, ok := c.elements[t]; !ok && !c.edgeIDs[t] {
+				c.errf(file, a.ID, "target %q does not exist in the model", t)
+			}
 		}
 	}
 }

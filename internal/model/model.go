@@ -139,8 +139,8 @@ type Box struct {
 
 type Point [2]float64
 
-// EdgeRoute draws one connection or reference. From and To are "id.side" or
-// "id.side@NN%".
+// EdgeRoute draws one connection or reference. From and To are "id.side",
+// "id.side@NN%" or "id.side@NNpx". Waypoints and LabelAt are canvas coordinates.
 type EdgeRoute struct {
 	From        string     `yaml:"from"`
 	To          string     `yaml:"to"`
