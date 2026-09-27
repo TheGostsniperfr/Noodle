@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TheGostsniperfr/Noodle/schemas/v1alpha1/layout.schema.json",
+  "title": "noodle Layout",
+  "description": "Where a topology view is drawn. The file stem is the view id. Positions are relative to the parent zone (ADR-0007).",
+  "type": "object",
+  "required": ["apiVersion", "kind"],
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": {"const": "noodle/v1alpha1"},
+    "kind": {"const": "Layout"},
+    "canvas": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {"width": {"type": "number", "exclusiveMinimum": 0}, "height": {"type": "number", "exclusiveMinimum": 0}}
+    },
+    "lanes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {"x": {"type": "number"}, "y": {"type": "number"}},
+        "minProperties": 1,
+        "maxProperties": 1
+      }
+    },
+    "elements": {"type": "object", "additionalProperties": {"$ref": "#/$defs/box"}},
+    "edges": {"type": "object", "additionalProperties": {"$ref": "#/$defs/edge"}},
+    "cards": {"type": "object", "additionalProperties": {"$ref": "#/$defs/box"}},
+    "notes": {"type": "object", "additionalProperties": {"$ref": "#/$defs/box"}}
+  },
+  "$defs": {
+    "point": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
+    "box": {
+      "type": "object",
+      "required": ["x", "y", "w", "h"],
+      "additionalProperties": false,
+      "properties": {
+        "x": {"type": "number"},
+        "y": {"type": "number"},
+        "w": {"type": "number", "exclusiveMinimum": 0},
+        "h": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "endpoint": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*\\.(left|right|top|bottom)(@(100|[1-9]?[0-9])%)?$",
+      "description": "id.side or id.side@NN%, ratio from the top or left, default 50%."
+    },
+    "edge": {
+      "type": "object",
+      "required": ["from", "to"],
+      "additionalProperties": false,
+      "properties": {
+        "from": {"$ref": "#/$defs/endpoint"},
+        "to": {"$ref": "#/$defs/endpoint"},
+        "waypoints": {
+          "type": "array",
+          "items": {"oneOf": [{"$ref": "#/$defs/point"}, {"type": "string", "pattern": "^lane:[A-Za-z0-9_-]+$"}]}
+        },
+        "label_at": {"$ref": "#/$defs/point"},
+        "label_offset": {"$ref": "#/$defs/point"},
+        "against_flow": {"type": "boolean", "description": "Outbound connection drawn against the reading direction (ADR-0003)."}
+      }
+    }
+  }
+}

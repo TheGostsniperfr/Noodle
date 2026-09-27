@@ -13,7 +13,7 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 - [x] **T03** Reference checks: every id used in a view or layout exists in the model;
   a topology layout covers every included element; ports named by connections exist on
   the target. Table-driven tests, one failing case per rule.
-- [ ] **T04** `schemas/v1alpha1/{model,view,layout}.schema.json` and a test that
+- [x] **T04** `schemas/v1alpha1/{model,view,layout}.schema.json` and a test that
   validates every `examples/**/model.yaml`, `views/*.yaml`, `layouts/*.yaml`.
   Flip **P1-02**.
 
