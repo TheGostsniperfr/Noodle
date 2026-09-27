@@ -1,0 +1,13 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: z-cluster, kind: region, color: cyan, icon: kubernetes, title: "CLUSTER"}
+  - {id: user, kind: frontend, shape: actor, icon: user, title: "User", desc: "browser"}
+  - {id: api, kind: backend, parent: z-cluster, icon: k8s-deploy, title: "API", tech: "[Deployment]", desc: "Serves requests", ports: [{name: https, protocol: TCP, port: 443}]}
+  - {id: db, kind: database, parent: z-cluster, shape: cylinder, icon: cnpg, title: "Postgres", status: planned, ports: [{name: pg, protocol: TCP, port: 5432}]}
+connections:
+  - {id: c-user-api, from: user, to: api, port: https, protocol: HTTPS, verb: GET, kind: flow}
+  - {id: c-api-db, from: api, to: db, port: pg, protocol: SQL, verb: query, kind: flow}
+  - {id: c-user-db, from: user, to: db, port: pg, protocol: SQL, verb: query, kind: flow, denied: true}
+annotations:
+  - {id: G1, severity: high, title: "No backup", targets: [db], text: "The database has no backup."}

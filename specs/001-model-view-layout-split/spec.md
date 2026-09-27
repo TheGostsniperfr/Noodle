@@ -27,7 +27,7 @@ facts.
 - **FR-001** A `Model` file describes elements (including zones), connections, references,
   ports and annotations, with no coordinates and no step numbers. Elements carry the
   optional `status` and `multiplicity` fields of ADR-0008.
-- **FR-002** A `View` file selects part of a model and adds presentation: kind
+- **FR-002** A `View` file selects part of a model and adds presentation: type
   (`topology` or `sequence`), numbered scenarios, notes, cards, redaction.
 - **FR-003** A `Layout` file gives, for one view, positions, sizes, edge paths, label
   anchors. It references ids only.

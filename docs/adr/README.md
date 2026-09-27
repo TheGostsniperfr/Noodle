@@ -13,5 +13,6 @@ that supersedes the old one.
 | [0006](0006-house-style.md) | House style enforced by lint | Accepted |
 | [0007](0007-contract-files-and-references.md) | Contract files and how they reference each other | Accepted |
 | [0008](0008-node-status-and-multiplicity.md) | Node status and multiplicity are part of the model | Accepted |
+| [0009](0009-view-type-field.md) | A view's perspective is `type`, not `kind` | Accepted |
 
 Template: Context · Decision · Consequences. Keep it under a page.
