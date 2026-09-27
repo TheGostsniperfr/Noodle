@@ -37,6 +37,7 @@ type checker struct {
 	elements map[string]Element
 	conns    map[string]Connection
 	edgeIDs  map[string]bool
+	ends     map[string][2]string
 }
 
 func (c *checker) errf(file, id, format string, args ...any) {
@@ -46,7 +47,7 @@ func (c *checker) errf(file, id, format string, args ...any) {
 // Check reports every broken reference and invalid value across the model, its views
 // and their layouts. An empty result means the system can be resolved.
 func Check(s *System) []Finding {
-	c := &checker{s: s, elements: map[string]Element{}, conns: map[string]Connection{}, edgeIDs: map[string]bool{}}
+	c := &checker{s: s, elements: map[string]Element{}, conns: map[string]Connection{}, edgeIDs: map[string]bool{}, ends: map[string][2]string{}}
 	c.checkModel()
 	for _, id := range s.ViewIDs() {
 		c.checkView(s.Views[id])
@@ -100,6 +101,7 @@ func (c *checker) checkModel() {
 		unique(cn.ID)
 		c.conns[cn.ID] = cn
 		c.edgeIDs[cn.ID] = true
+		c.ends[cn.ID] = [2]string{cn.From, cn.To}
 		if !connectionKinds[cn.Kind] {
 			c.errf(file, cn.ID, "unknown connection kind %q", cn.Kind)
 		}
@@ -117,6 +119,7 @@ func (c *checker) checkModel() {
 	for _, r := range c.s.Model.References {
 		unique(r.ID)
 		c.edgeIDs[r.ID] = true
+		c.ends[r.ID] = [2]string{r.From, r.To}
 		c.mustElement(file, r.ID, "from", r.From)
 		c.mustElement(file, r.ID, "to", r.To)
 	}
@@ -195,9 +198,18 @@ func (c *checker) checkLayout(l *Layout) {
 			c.errf(file, id, "position is relative to zone %q, which has no position", e.Parent)
 		}
 	}
-	for _, id := range c.included(v) {
+	shown := map[string]bool{}
+	for _, id := range c.s.Included(v) {
+		shown[id] = true
 		if _, ok := l.Elements[id]; !ok {
 			c.errf(file, id, "included element has no position")
+		}
+	}
+	for _, id := range sortedKeys(c.ends) {
+		if e := c.ends[id]; shown[e[0]] && shown[e[1]] {
+			if _, ok := l.Edges[id]; !ok {
+				c.errf(file, id, "edge between shown elements has no route")
+			}
 		}
 	}
 	for _, id := range sortedKeys(l.Edges) {
@@ -205,8 +217,13 @@ func (c *checker) checkLayout(l *Layout) {
 		if !c.edgeIDs[id] {
 			c.errf(file, id, "edge is not a connection or reference of the model")
 		}
-		for _, end := range []string{r.From, r.To} {
+		for i, end := range []string{r.From, r.To} {
 			c.checkEndpoint(file, id, end)
+			if want, ok := c.ends[id]; ok {
+				if got, _ := Endpoint(end); got != want[i] {
+					c.errf(file, id, "endpoint %q must be on %s, the %s of the edge", end, want[i], [2]string{"from", "to"}[i])
+				}
+			}
 		}
 		for _, w := range r.Waypoints {
 			if w.Lane != "" {
@@ -238,6 +255,16 @@ func (c *checker) checkLayout(l *Layout) {
 			c.errf(file, id, "note is not defined in the view")
 		}
 	}
+	for _, cd := range v.Cards {
+		if _, ok := l.Cards[cd.ID]; !ok {
+			c.errf(file, cd.ID, "card has no position")
+		}
+	}
+	for _, n := range v.Notes {
+		if _, ok := l.Notes[n.ID]; !ok {
+			c.errf(file, n.ID, "note has no position")
+		}
+	}
 }
 
 // checkEndpoint validates the element and side of "id.side[@NN%]"; the ratio's range
@@ -251,16 +278,18 @@ func (c *checker) checkEndpoint(file, edgeID, end string) {
 	}
 }
 
-// included returns the element ids a view shows, sorted. No include means all.
-func (c *checker) included(v *View) []string {
-	if len(v.Include) == 0 {
-		return sortedKeys(c.elements)
-	}
+// Included returns the element ids a view shows, sorted. No include means all.
+func (s *System) Included(v *View) []string {
+	elements := map[string]bool{}
 	children := map[string][]string{}
-	for _, e := range c.s.Model.Elements {
+	for _, e := range s.Model.Elements {
+		elements[e.ID] = true
 		if e.Parent != "" {
 			children[e.Parent] = append(children[e.Parent], e.ID)
 		}
+	}
+	if len(v.Include) == 0 {
+		return sortedKeys(elements)
 	}
 	out := map[string]bool{}
 	var walk func(string)
@@ -276,7 +305,7 @@ func (c *checker) included(v *View) []string {
 	for _, inc := range v.Include {
 		if root, ok := strings.CutSuffix(inc, "/**"); ok {
 			walk(root)
-		} else if _, ok := c.elements[inc]; ok {
+		} else if elements[inc] {
 			out[inc] = true
 		}
 	}
