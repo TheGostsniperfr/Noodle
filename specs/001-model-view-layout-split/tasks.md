@@ -25,16 +25,16 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 
 ## B · Resolver (P1-03)
 
-- [ ] **T05** `internal/resolve`, topology with absolute values only: elements, zones,
+- [x] **T05** `internal/resolve`, topology with absolute values only: elements, zones,
   connections, references, cards, notes → `diagram.Spec`. Test: a small system resolves
   to the expected `Spec`.
-- [ ] **T06** Positions relative to the parent zone.
-- [ ] **T07** Symbolic endpoints `id.side[@NN%|@NNpx]`. Without `@`, the endpoint lines
+- [x] **T06** Positions relative to the parent zone.
+- [x] **T07** Symbolic endpoints `id.side[@NN%|@NNpx]`. Without `@`, the endpoint lines
   up with the next waypoint, or with the other end when there is none; a `from` with
   neither sits at 50 %. Error on unknown side, ratio out of 0–100 %, offset past the side.
-- [ ] **T08** Named lanes: `lane:<name>` waypoints; test that two edges on one lane stay
+- [x] **T08** Named lanes: `lane:<name>` waypoints; test that two edges on one lane stay
   parallel when the lane moves.
-- [ ] **T09** Steps, labels and badges: `[n]`/`[A]` prefixes from view steps, default
+- [x] **T09** Steps, labels and badges: `[n]`/`[A]` prefixes from view steps, default
   `verb · protocol` (references: their `kind`), overrides, annotation badges on
   elements and ` · !!⚠ Gx!!` after the label of annotated edges, `denied` → blocked style.
 - [ ] **T10** CLI: `noodle render <dir> --view <id> [-theme] [-o]`, lint only without
