@@ -1,8 +1,8 @@
 # Spec 001 · Split model, views and layout (contracts v1alpha1)
 
-- Status: **Draft**, ready for planning
+- Status: **Planned** (`plan.md`, `tasks.md`)
 - Phase: 1 (see `docs/ROADMAP.md`, acceptance in `docs/features.json` P1-*)
-- Decisions it builds on: ADR-0002, ADR-0003, ADR-0004, ADR-0008
+- Decisions it builds on: ADR-0002, ADR-0003, ADR-0004, ADR-0007, ADR-0008
 
 ## Why
 
@@ -53,24 +53,19 @@ facts.
 Auto-layout (phase 6), the SVG renderer (phase 2), the web viewer (phase 3), tours and
 IcePanel step types beyond plain numbered messages (phase 4).
 
-## Open questions
+## Resolved questions (ADR-0007)
 
-- [NEEDS CLARIFICATION] File layout: one directory per system (`model.yaml`, `views/`,
-  `layouts/`), or a single multi-document YAML? To settle in ADR-0007.
-- [NEEDS CLARIFICATION] Do layouts live next to views, or in a separate tree so they can
-  be regenerated without touching reviewed files?
-- [NEEDS CLARIFICATION] Sequence layout: computed from step order (no coordinates at all)
-  or pinned like topologies? Computed looks simpler and removes a whole class of lint work.
-- [NEEDS CLARIFICATION] Where the edge `kind` lives: `auth` or `tunnel` is a property of
-  the connection (model), but `blocked` is a claim a view makes. Proposal: model keeps
-  connection nature, views may add `blocked` overlays.
-- [NEEDS CLARIFICATION] How layouts address geometry. Field use showed absolute edge
-  points are the main cost of every layout change. Settle in ADR-0007 whether `v1alpha1`
-  layouts support symbolic endpoints (`node.side@ratio`, B-10), named lanes (B-11) and
-  zone-relative positions with row/column layout (B-12), or reserve room for them.
+- **Files:** one directory per system: `model.yaml`, `views/<id>.yaml`,
+  `layouts/<view-id>.yaml`.
+- **Layouts:** a separate `layouts/` tree, so regenerated geometry stays apart from
+  reviewed files.
+- **Sequence layout:** computed from step order, no layout file; `participants` in the
+  view fixes column order.
+- **Edge kind:** connection nature and `denied` live in the model; `blocked` is no longer
+  an edge kind.
+- **Geometry:** layouts use symbolic endpoints (B-10), named lanes (B-11) and positions
+  relative to the parent zone. Row/column auto layout stays in the backlog.
 
 ## Next steps
 
-1. Resolve the open questions with Brian, then write ADR-0007.
-2. `plan.md`: technical plan (packages, schema generation, migration steps).
-3. `tasks.md`: small, verifiable tasks mapped to P1-* features.
+Implementation follows [`tasks.md`](tasks.md), in order.

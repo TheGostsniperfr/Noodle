@@ -8,8 +8,8 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `./scripts/init.sh`: fix anything red before new work.
 2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: settle the spec's four open questions with Brian, then write ADR-0007.
-   Use plan mode for this phase.
+3. Next action: task T01 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
+   then the tasks in order. Sonnet is enough: the decisions are in ADR-0007.
 
 ## Open threads outside this repo
 
@@ -20,6 +20,13 @@ decisions go in ADRs, acceptance in `features.json`.
 | `~/.dotfiles` | noodle plugin installed declaratively (commit `9bf7e57`) | pushed. `nixos-rebuild switch` still to run. |
 
 ## Log
+
+### 2026-09-27 · ADR-0007 accepted, phase 1 planned
+
+- Spec 001 open questions settled with Brian: one directory per system (`model.yaml`,
+  `views/`, `layouts/`), sequence views computed without a layout, `denied` connections
+  in the model, layouts with relative positions, symbolic endpoints and named lanes.
+- `plan.md` (resolver in front of the v0 renderer) and `tasks.md` (T01 to T17). P1-01 passes.
 
 ### 2026-09-27 · Field feedback from a second platform
 
