@@ -5,23 +5,11 @@ import (
 	"math"
 	"regexp"
 	"strings"
+
+	"github.com/TheGostsniperfr/Noodle/internal/diagram"
 )
 
-func (s *Spec) anchorRect(id string) (Rect, bool) {
-	for _, n := range s.Nodes {
-		if n.ID == id {
-			return n.rect(), true
-		}
-	}
-	for _, z := range s.Zones {
-		if z.ID == id {
-			return z.rect(), true
-		}
-	}
-	return Rect{}, false
-}
-
-func borderSide(p Point, r Rect) string {
+func borderSide(p diagram.Point, r diagram.Rect) string {
 	const eps = 1.0
 	inX := p.X() >= r.X-eps && p.X() <= r.X+r.W+eps
 	inY := p.Y() >= r.Y-eps && p.Y() <= r.Y+r.H+eps
@@ -40,21 +28,21 @@ func borderSide(p Point, r Rect) string {
 
 type portBadge struct {
 	ID, Node, Text, Side string
-	Rect                 Rect
-	Outer                Point
+	Rect                 diagram.Rect
+	Outer                diagram.Point
 }
 
 func portWidth(text string) float64 { return textWidth(text, portFontSize) + 2*portPadX }
 
 // ports returns the badge each edge lands on. Edges reaching the same point of the same
 // node with the same port share one badge.
-func (s *Spec) ports() map[string]portBadge {
+func portBadges(s *diagram.Spec) map[string]portBadge {
 	byEdge := map[string]portBadge{}
 	for _, e := range s.Edges {
 		if e.Port == "" || len(e.Path) < 2 {
 			continue
 		}
-		r, ok := s.anchorRect(e.To)
+		r, ok := s.AnchorRect(e.To)
 		if !ok {
 			continue
 		}
@@ -64,17 +52,17 @@ func (s *Spec) ports() map[string]portBadge {
 		b := portBadge{
 			ID:   fmt.Sprintf("%s__port_%s_%.0f_%.0f", e.To, side, p.X(), p.Y()),
 			Node: e.To, Text: e.Port, Side: side,
-			Rect: Rect{p.X() - w/2, p.Y() - h/2, w, h},
+			Rect: diagram.Rect{X: p.X() - w/2, Y: p.Y() - h/2, W: w, H: h},
 		}
 		switch side {
 		case "left":
-			b.Outer = Point{p.X() - w/2, p.Y()}
+			b.Outer = diagram.Point{p.X() - w/2, p.Y()}
 		case "right":
-			b.Outer = Point{p.X() + w/2, p.Y()}
+			b.Outer = diagram.Point{p.X() + w/2, p.Y()}
 		case "top":
-			b.Outer = Point{p.X(), p.Y() - h/2}
+			b.Outer = diagram.Point{p.X(), p.Y() - h/2}
 		default:
-			b.Outer = Point{p.X(), p.Y() + h/2}
+			b.Outer = diagram.Point{p.X(), p.Y() + h/2}
 		}
 		byEdge[e.ID] = b
 	}
@@ -82,24 +70,24 @@ func (s *Spec) ports() map[string]portBadge {
 }
 
 // drawnPath is the path as rendered: it stops on the outer side of the port badge.
-func drawnPath(e Edge, ports map[string]portBadge) []Point {
-	p := append([]Point(nil), e.Path...)
+func drawnPath(e diagram.Edge, ports map[string]portBadge) []diagram.Point {
+	p := append([]diagram.Point(nil), e.Path...)
 	if b, ok := ports[e.ID]; ok {
 		p[len(p)-1] = b.Outer
 	}
 	return p
 }
 
-func segLen(a, b Point) float64 { return math.Abs(b.X()-a.X()) + math.Abs(b.Y()-a.Y()) }
+func segLen(a, b diagram.Point) float64 { return math.Abs(b.X()-a.X()) + math.Abs(b.Y()-a.Y()) }
 
-func onSegment(p, a, b Point) bool {
+func onSegment(p, a, b diagram.Point) bool {
 	const eps = 0.5
 	return p.X() >= math.Min(a.X(), b.X())-eps && p.X() <= math.Max(a.X(), b.X())+eps &&
 		p.Y() >= math.Min(a.Y(), b.Y())-eps && p.Y() <= math.Max(a.Y(), b.Y())+eps &&
 		(math.Abs(a.X()-b.X()) < eps || math.Abs(a.Y()-b.Y()) < eps)
 }
 
-func labelAnchor(e Edge, path []Point) Point {
+func labelAnchor(e diagram.Edge, path []diagram.Point) diagram.Point {
 	if e.LabelAt != nil {
 		return *e.LabelAt
 	}
@@ -110,11 +98,11 @@ func labelAnchor(e Edge, path []Point) Point {
 		}
 	}
 	a, b := path[best], path[best+1]
-	return Point{(a.X() + b.X()) / 2, (a.Y() + b.Y()) / 2}
+	return diagram.Point{(a.X() + b.X()) / 2, (a.Y() + b.Y()) / 2}
 }
 
 // labelFraction is where the anchor sits along the path, which is how draw.io positions edge labels.
-func labelFraction(anchor Point, path []Point) float64 {
+func labelFraction(anchor diagram.Point, path []diagram.Point) float64 {
 	total, before := 0.0, -1.0
 	for i := 0; i+1 < len(path); i++ {
 		a, b := path[i], path[i+1]
@@ -142,34 +130,36 @@ func plainText(s string) string {
 	return warnRe.ReplaceAllString(s, "$1")
 }
 
-func textBox(cx, cy float64, lines []string, fontSize float64) Rect {
+func textBox(cx, cy float64, lines []string, fontSize float64) diagram.Rect {
 	w := 0.0
 	for _, l := range lines {
 		w = math.Max(w, textWidth(plainText(l), fontSize))
 	}
 	h := float64(len(lines))*fontSize*lineHeightEm + 2*labelPadY
 	w += 2 * labelPadX
-	return Rect{cx - w/2, cy - h/2, w, h}
+	return diagram.Rect{X: cx - w/2, Y: cy - h/2, W: w, H: h}
 }
 
-func labelBox(e Edge, path []Point) (Rect, bool) {
+func labelBox(e diagram.Edge, path []diagram.Point) (diagram.Rect, bool) {
 	if e.Label == "" {
-		return Rect{}, false
+		return diagram.Rect{}, false
 	}
 	a := labelAnchor(e, path)
 	return textBox(a.X()+e.LabelOffset.X(), a.Y()+e.LabelOffset.Y(), strings.Split(e.Label, "<br>"), edgeFontSize), true
 }
 
-func actorLabelBox(n Node) Rect {
-	lines := append([]string{n.Title}, n.lines()...)
+func actorLabelBox(n diagram.Node) diagram.Rect {
+	lines := append([]string{n.Title}, n.Lines()...)
 	b := textBox(n.X+n.W/2, 0, lines, titleFontSize)
 	b.Y = n.Y + n.H + actorLabelGap - labelPadY
 	return b
 }
 
-func nodeIconRect(n Node) Rect { return Rect{n.X + iconInset, n.Y + iconInset, iconSize, iconSize} }
+func nodeIconRect(n diagram.Node) diagram.Rect {
+	return diagram.Rect{X: n.X + iconInset, Y: n.Y + iconInset, W: iconSize, H: iconSize}
+}
 
-func zoneTitleBox(z Zone) Rect {
+func zoneTitleBox(z diagram.Zone) diagram.Rect {
 	x := z.X + 12
 	w := textWidth(z.Label, zoneFontSize) + 12
 	if z.Icon != "" {
@@ -178,5 +168,5 @@ func zoneTitleBox(z Zone) Rect {
 	if z.Sub != "" {
 		w += 2*zoneFontSize*charWidthEm + textWidth(z.Sub, subFontSize)
 	}
-	return Rect{x, z.Y + 4, w, math.Max(zoneFontSize*lineHeightEm, zoneIconSize) + 6}
+	return diagram.Rect{X: x, Y: z.Y + 4, W: w, H: math.Max(zoneFontSize*lineHeightEm, zoneIconSize) + 6}
 }

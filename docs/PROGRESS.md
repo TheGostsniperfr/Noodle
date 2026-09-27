@@ -8,7 +8,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `./scripts/init.sh`: fix anything red before new work.
 2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: task T01 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
+3. Next action: task T02 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
    then the tasks in order. Sonnet is enough: the decisions are in ADR-0007.
 
 ## Open threads outside this repo
@@ -29,6 +29,8 @@ decisions go in ADRs, acceptance in `features.json`.
 - `plan.md` (resolver in front of the v0 renderer) and `tasks.md` (T01 to T17). P1-01 passes.
 - PRs that change the rendering now show a before/after image (AGENTS.md, PR template).
   First docs diagram, drawn with noodle: `docs/diagrams/contract-pipeline`, linted in CI.
+- T01: geometry types moved to `internal/diagram`; draw.io output byte-identical on all
+  five specs, both themes.
 
 ### 2026-09-27 · Field feedback from a second platform
 

@@ -5,7 +5,7 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 
 ## A · Contracts (P1-02)
 
-- [ ] **T01** Move `Spec`, `Zone`, `Node`, `Edge`, `Note`, `Card`, `Rect`, `Point` from
+- [x] **T01** Move `Spec`, `Zone`, `Node`, `Edge`, `Note`, `Card`, `Rect`, `Point` from
   `cmd/noodle/spec.go` to `internal/diagram`. No behaviour change.
 - [ ] **T02** `internal/model`: `Model`, `View`, `Layout` types per ADR-0007 and
   ADR-0008, strict decoding (`KnownFields`), `LoadSystem(dir)` returning all three.

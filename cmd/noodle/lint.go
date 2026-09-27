@@ -5,11 +5,13 @@ import (
 	"math"
 	"sort"
 	"strings"
+
+	"github.com/TheGostsniperfr/Noodle/internal/diagram"
 )
 
 type obstacle struct {
 	name  string
-	rect  Rect
+	rect  diagram.Rect
 	owner string // edge id owning this label or port, node id for a node
 	node  bool
 }
@@ -17,7 +19,7 @@ type obstacle struct {
 type finding struct{ where, msg string }
 
 type linter struct {
-	s        *Spec
+	s        *diagram.Spec
 	ports    map[string]portBadge
 	findings []finding
 }
@@ -26,18 +28,18 @@ func (l *linter) errf(where, format string, args ...any) {
 	l.findings = append(l.findings, finding{where, fmt.Sprintf(format, args...)})
 }
 
-func segRect(a, b Point) Rect {
-	return Rect{math.Min(a.X(), b.X()), math.Min(a.Y(), b.Y()), math.Abs(b.X() - a.X()), math.Abs(b.Y() - a.Y())}
+func segRect(a, b diagram.Point) diagram.Rect {
+	return diagram.Rect{X: math.Min(a.X(), b.X()), Y: math.Min(a.Y(), b.Y()), W: math.Abs(b.X() - a.X()), H: math.Abs(b.Y() - a.Y())}
 }
 
 // segHits treats the segment as a zero-width rectangle so a line grazing a box counts as a hit.
-func segHits(a, b Point, r Rect) bool {
+func segHits(a, b diagram.Point, r diagram.Rect) bool {
 	s := segRect(a, b)
 	return s.X <= r.X+r.W && r.X <= s.X+s.W && s.Y <= r.Y+r.H && r.Y <= s.Y+s.H
 }
 
-func lint(s *Spec) []finding {
-	l := &linter{s: s, ports: s.ports()}
+func lint(s *diagram.Spec) []finding {
+	l := &linter{s: s, ports: portBadges(s)}
 	l.checkReferences()
 	l.checkNodes()
 	l.checkZones()
@@ -73,7 +75,7 @@ func (l *linter) checkReferences() {
 			l.errf(e.ID, "unknown edge kind %q", e.Kind)
 		}
 		for _, end := range []string{e.From, e.To} {
-			if _, ok := l.s.anchorRect(end); !ok {
+			if _, ok := l.s.AnchorRect(end); !ok {
 				l.errf(e.ID, "unknown endpoint %q", end)
 			}
 		}
@@ -97,12 +99,12 @@ func (l *linter) checkNodes() {
 			if w := textWidth(title, titleFontSize); w > avail {
 				l.errf(n.ID, "title overflows: %.0fpx text in %.0fpx", w, avail)
 			}
-			for _, line := range n.lines() {
+			for _, line := range n.Lines() {
 				if w := textWidth(plainText(line), subFontSize); w > avail {
 					l.errf(n.ID, "%q overflows: %.0fpx text in %.0fpx", line, w, avail)
 				}
 			}
-			need := 10 + titleFontSize*lineHeightEm + float64(len(n.lines()))*subFontSize*lineHeightEm + 10
+			need := 10 + titleFontSize*lineHeightEm + float64(len(n.Lines()))*subFontSize*lineHeightEm + 10
 			if n.Shape == "cylinder" {
 				need += 16
 			}
@@ -111,15 +113,15 @@ func (l *linter) checkNodes() {
 			}
 		}
 		for _, o := range l.s.Nodes[i+1:] {
-			if n.rect().inflate(minNodeGap / 2).intersects(o.rect().inflate(minNodeGap / 2)) {
+			if n.Rect().Inflate(minNodeGap / 2).Intersects(o.Rect().Inflate(minNodeGap / 2)) {
 				l.errf(n.ID, "closer than %.0fpx to %s", minNodeGap, o.ID)
 			}
 		}
 		for _, z := range l.s.Zones {
-			if n.rect().intersects(zoneTitleBox(z)) {
+			if n.Rect().Intersects(zoneTitleBox(z)) {
 				l.errf(n.ID, "covers title of zone %s", z.ID)
 			}
-			if n.rect().intersects(z.rect()) && !z.rect().contains(n.rect()) {
+			if n.Rect().Intersects(z.Rect()) && !z.Rect().Contains(n.Rect()) {
 				l.errf(n.ID, "straddles border of zone %s", z.ID)
 			}
 		}
@@ -129,15 +131,15 @@ func (l *linter) checkNodes() {
 func (l *linter) checkZones() {
 	for i, a := range l.s.Zones {
 		for _, b := range l.s.Zones[i+1:] {
-			ra, rb := a.rect(), b.rect()
-			if ra.contains(rb) || rb.contains(ra) {
+			ra, rb := a.Rect(), b.Rect()
+			if ra.Contains(rb) || rb.Contains(ra) {
 				continue
 			}
-			if ra.intersects(rb) {
+			if ra.Intersects(rb) {
 				l.errf(a.ID, "overlaps zone %s", b.ID)
 				continue
 			}
-			if ra.inflate(minZoneGap / 2).intersects(rb.inflate(minZoneGap / 2)) {
+			if ra.Inflate(minZoneGap / 2).Intersects(rb.Inflate(minZoneGap / 2)) {
 				l.errf(a.ID, "closer than %.0fpx to zone %s", minZoneGap, b.ID)
 			}
 		}
@@ -157,7 +159,7 @@ func (l *linter) checkPorts() {
 			continue
 		}
 		for _, n := range l.s.Nodes {
-			if n.ID == b.Node && n.Icon != "" && b.Rect.intersects(nodeIconRect(n).inflate(2)) {
+			if n.ID == b.Node && n.Icon != "" && b.Rect.Intersects(nodeIconRect(n).Inflate(2)) {
 				l.errf(e.ID, "port badge %q covers the icon of %s", b.Text, n.ID)
 			}
 		}
@@ -167,7 +169,7 @@ func (l *linter) checkPorts() {
 func (l *linter) obstacles() []obstacle {
 	var obs []obstacle
 	for _, n := range l.s.Nodes {
-		obs = append(obs, obstacle{name: "node " + n.ID, rect: n.rect(), owner: n.ID, node: true})
+		obs = append(obs, obstacle{name: "node " + n.ID, rect: n.Rect(), owner: n.ID, node: true})
 		if n.Shape == "actor" {
 			obs = append(obs, obstacle{name: "label of " + n.ID, rect: actorLabelBox(n), owner: n.ID})
 		}
@@ -176,10 +178,10 @@ func (l *linter) obstacles() []obstacle {
 		obs = append(obs, obstacle{name: "title of zone " + z.ID, rect: zoneTitleBox(z)})
 	}
 	for _, nt := range l.s.Notes {
-		obs = append(obs, obstacle{name: "note " + nt.ID, rect: nt.rect()})
+		obs = append(obs, obstacle{name: "note " + nt.ID, rect: nt.Rect()})
 	}
 	for _, c := range l.s.Cards {
-		obs = append(obs, obstacle{name: "card " + c.ID, rect: c.rect()})
+		obs = append(obs, obstacle{name: "card " + c.ID, rect: c.Rect()})
 	}
 	seen := map[string]bool{}
 	for _, e := range l.s.Edges {
@@ -202,8 +204,8 @@ func (l *linter) checkEdges() {
 		if len(e.Path) < 2 {
 			continue
 		}
-		src, _ := l.s.anchorRect(e.From)
-		dst, _ := l.s.anchorRect(e.To)
+		src, _ := l.s.AnchorRect(e.From)
+		dst, _ := l.s.AnchorRect(e.To)
 		out, in := borderSide(e.Path[0], src), borderSide(e.Path[len(e.Path)-1], dst)
 		if out == "" {
 			l.errf(e.ID, "first point %v is not on the border of %s", e.Path[0], e.From)
@@ -248,7 +250,7 @@ func (l *linter) checkEdges() {
 					if (i == 0 && o.owner == e.From) || (i == last && o.owner == e.To) {
 						continue
 					}
-					r = r.inflate(obstacleMargin)
+					r = r.Inflate(obstacleMargin)
 				}
 				if segHits(a, b, r) {
 					l.errf(e.ID, "segment %d crosses %s", i, o.name)
@@ -260,7 +262,7 @@ func (l *linter) checkEdges() {
 				if o.owner == e.ID || strings.HasPrefix(o.name, "card ") {
 					continue
 				}
-				if lb.intersects(o.rect) {
+				if lb.Intersects(o.rect) {
 					l.errf(e.ID, "label overlaps %s", o.name)
 				}
 			}
@@ -293,7 +295,7 @@ func (l *linter) checkSteps() {
 func (l *linter) checkCollinear() {
 	type seg struct {
 		edge string
-		a, b Point
+		a, b diagram.Point
 	}
 	var segs []seg
 	for _, e := range l.s.Edges {

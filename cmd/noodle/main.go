@@ -64,7 +64,7 @@ func run(specPath, out, themeName string, icons *iconSet) error {
 	if out == "" {
 		return nil
 	}
-	r := &renderer{spec: spec, th: th, icons: icons, cache: map[string]string{}, ports: spec.ports()}
+	r := &renderer{spec: spec, th: th, icons: icons, cache: map[string]string{}, ports: portBadges(spec)}
 	xml, err := r.render()
 	if err != nil {
 		return err
