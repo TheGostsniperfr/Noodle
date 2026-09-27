@@ -15,5 +15,6 @@ that supersedes the old one.
 | [0008](0008-node-status-and-multiplicity.md) | Node status and multiplicity are part of the model | Accepted |
 | [0009](0009-view-type-field.md) | A view's perspective is `type`, not `kind` | Accepted |
 | [0010](0010-denied-and-enforcement.md) | A denied connection names what enforces it | Accepted |
+| [0011](0011-sequence-messages.md) | A sequence step is a message over a model connection | Accepted |
 
 Template: Context · Decision · Consequences. Keep it under a page.

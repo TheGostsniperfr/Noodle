@@ -87,12 +87,51 @@ type View struct {
 	Subtitle     string            `yaml:"subtitle"`
 	Meta         []string          `yaml:"meta"`
 	Include      []string          `yaml:"include"`
-	Steps        []string          `yaml:"steps"`
+	Steps        []Step            `yaml:"steps"`
 	Background   []string          `yaml:"background"`
 	Labels       map[string]string `yaml:"labels"`
 	Participants []string          `yaml:"participants"`
 	Cards        []Card            `yaml:"cards"`
 	Notes        []Note            `yaml:"notes"`
+}
+
+// Step is a connection id in a topology view, and a message, reply or note in a
+// sequence view (ADR-0011).
+type Step struct {
+	Connection string
+	ID         string
+	From       string
+	To         string
+	Over       string
+	Text       string
+	Reply      string
+	Note       string
+}
+
+func (s Step) IsMessage() bool { return s.From != "" || s.To != "" || s.Over != "" }
+
+var stepKeys = map[string]bool{"id": true, "from": true, "to": true, "over": true, "text": true, "reply": true, "note": true}
+
+func (s *Step) UnmarshalYAML(n *yaml.Node) error {
+	if n.Kind == yaml.ScalarNode {
+		s.Connection = n.Value
+		return nil
+	}
+	if n.Kind != yaml.MappingNode {
+		return fmt.Errorf("line %d: a step is a connection id or a mapping", n.Line)
+	}
+	fields := map[string]*string{"id": &s.ID, "from": &s.From, "to": &s.To, "over": &s.Over, "text": &s.Text, "reply": &s.Reply, "note": &s.Note}
+	for i := 0; i+1 < len(n.Content); i += 2 {
+		k, v := n.Content[i], n.Content[i+1]
+		if !stepKeys[k.Value] {
+			return fmt.Errorf("line %d: field %s not found in type model.Step", k.Line, k.Value)
+		}
+		if v.Kind != yaml.ScalarNode {
+			return fmt.Errorf("line %d: step field %s must be a string", v.Line, k.Value)
+		}
+		*fields[k.Value] = v.Value
+	}
+	return nil
 }
 
 type Card struct {
