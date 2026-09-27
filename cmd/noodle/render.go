@@ -77,11 +77,20 @@ func (r *renderer) markup(s string) string {
 	return strings.Join(parts, "<br>")
 }
 
+// noLigatures keeps code-like text literal: JetBrains Mono otherwise merges pairs such as
+// ">-" or "->" into one glyph, so "<app>-frontend" renders as "<app>—frontend".
+func noLigatures(value string) string {
+	if value == "" {
+		return value
+	}
+	return `<span style="font-variant-ligatures:none">` + value + `</span>`
+}
+
 func (r *renderer) vertex(id, parent, value, st string, x, y, w, h float64) {
 	fmt.Fprintf(&r.b, `        <mxCell id="%s" value="%s" style="%s" vertex="1" parent="%s">
           <mxGeometry x="%g" y="%g" width="%g" height="%g" as="geometry" />
         </mxCell>
-`, id, xmlAttr(value), xmlAttr(st), parent, x, y, w, h)
+`, id, xmlAttr(noLigatures(value)), xmlAttr(st), parent, x, y, w, h)
 }
 
 func (r *renderer) image(id, parent, icon string, x, y, size float64) error {
@@ -304,7 +313,7 @@ func (r *renderer) edge(e Edge) {
 	frac := labelFraction(labelAnchor(e, path), path)
 	fmt.Fprintf(&r.b, `        <mxCell id="%s" value="%s" style="%s" edge="1" parent="1" source="%s" target="%s">
           <mxGeometry x="%.4f" relative="1" as="geometry">
-`, e.ID, xmlAttr(r.markup(e.Label)), xmlAttr(style(parts...)), e.From, target, frac*2-1)
+`, e.ID, xmlAttr(noLigatures(r.markup(e.Label))), xmlAttr(style(parts...)), e.From, target, frac*2-1)
 	if e.LabelOffset != (Point{}) {
 		fmt.Fprintf(&r.b, "            <mxPoint x=\"%g\" y=\"%g\" as=\"offset\" />\n", e.LabelOffset.X(), e.LabelOffset.Y())
 	}
