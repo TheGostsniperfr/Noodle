@@ -33,6 +33,15 @@ decisions go in ADRs, acceptance in `features.json`.
   five specs, both themes.
 - ADR-0009: a view's perspective is `type`, since `kind` already names the file type.
 - T02: `internal/model` types and `LoadSystem(dir)`, strict YAML, header checked first.
+- T03: `model.Check` reports file, id and reason for every broken reference or invalid
+  value (FR-005); one failing table case per rule.
+- T04: JSON Schemas in `schemas/v1alpha1`, validated in `go test` with
+  santhosh-tekuri/jsonschema v6 (vendored). P1-02 passes.
+- T04b: CNP example written in the split format next to the v0 file, checked by schemas
+  and `model.Check`. It forced two contract changes: endpoints line up with their
+  neighbour by default and accept `@NNpx` (percentages alone gave 91.667 %), and
+  annotations may target connections (G1, G6). Open for Brian: `denied` on
+  `x-cross-tenant` is the security intent, while G1 says nothing enforces it.
 
 ### 2026-09-27 · Field feedback from a second platform
 
