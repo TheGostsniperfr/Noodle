@@ -34,6 +34,10 @@ decisions go in ADRs, acceptance in `features.json`.
   text field (`one per team`), and they ship in the `v1alpha1` schemas (P1-02).
 - Spec 001: B-10, B-11, B-12 (symbolic endpoints, named lanes, zone-relative layout) are
   layout-contract questions for ADR-0007, not backlog extras.
+- Regression fixtures: the three diagrams, anonymized, in `examples/platform-regression`,
+  linted by `init.sh` and CI (B-22). Backlog B-19 to B-21: `via` edges, zone sub
+  wrapping, label placement off vertical segments. B-23: tiled PNG preview, so agent review sees
+  what the downsampled full image hides.
 
 ### 2026-09-26 · Session harness automated
 
