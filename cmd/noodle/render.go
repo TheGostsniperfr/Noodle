@@ -7,14 +7,15 @@ import (
 	"strings"
 
 	"github.com/TheGostsniperfr/Noodle/internal/diagram"
+	"github.com/TheGostsniperfr/Noodle/internal/house"
 )
 
 type renderer struct {
 	spec  *diagram.Spec
-	th    *Theme
+	th    *house.Theme
 	icons *iconSet
 	cache map[string]string
-	ports map[string]portBadge
+	ports map[string]house.PortBadge
 	b     strings.Builder
 }
 
@@ -56,7 +57,7 @@ func xmlAttr(s string) string {
 func style(parts ...string) string { return strings.Join(parts, ";") + ";" }
 
 func font(size float64, color string) string {
-	return fmt.Sprintf("fontFamily=%s;fontSize=%g;fontColor=%s", fontFamily, size, color)
+	return fmt.Sprintf("fontFamily=%s;fontSize=%g;fontColor=%s", house.FontFamily, size, color)
 }
 
 func (r *renderer) stepBadge(step string) string {
@@ -71,9 +72,9 @@ func (r *renderer) markup(s string) string {
 	parts := strings.Split(s, "<br>")
 	for i, p := range parts {
 		p = html.EscapeString(p)
-		p = stepRe.ReplaceAllStringFunc(p, func(m string) string { return r.stepBadge(m[1 : len(m)-1]) })
-		p = boldRe.ReplaceAllString(p, `<b><font color="`+r.th.Title+`">$1</font></b>`)
-		p = warnRe.ReplaceAllString(p, `<b><font color="`+r.th.Warn+`">$1</font></b>`)
+		p = house.StepRe.ReplaceAllStringFunc(p, func(m string) string { return r.stepBadge(m[1 : len(m)-1]) })
+		p = house.BoldRe.ReplaceAllString(p, `<b><font color="`+r.th.Title+`">$1</font></b>`)
+		p = house.WarnRe.ReplaceAllString(p, `<b><font color="`+r.th.Warn+`">$1</font></b>`)
 		parts[i] = p
 	}
 	return strings.Join(parts, "<br>")
@@ -132,7 +133,7 @@ func (r *renderer) render() (string, error) {
 	}
 	r.portBadges()
 	for _, n := range s.Notes {
-		r.vertex(n.ID, "1", r.markup(n.Text), style("text", "html=1", "whiteSpace=wrap", "align=left", "verticalAlign=top", font(subFontSize, r.th.Muted)), n.X, n.Y, n.W, n.H)
+		r.vertex(n.ID, "1", r.markup(n.Text), style("text", "html=1", "whiteSpace=wrap", "align=left", "verticalAlign=top", font(house.SubFontSize, r.th.Muted)), n.X, n.Y, n.W, n.H)
 	}
 	for _, c := range s.Cards {
 		r.card(c)
@@ -172,11 +173,11 @@ func (r *renderer) zone(z diagram.Zone) error {
 	}
 	pad := 12.0
 	if z.Icon != "" {
-		pad += zoneIconSize + 8
+		pad += house.ZoneIconSize + 8
 	}
 	v := fmt.Sprintf(`<b>%s</b>`, html.EscapeString(z.Label))
 	if z.Sub != "" {
-		v += fmt.Sprintf(`&nbsp;&nbsp;<font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, subFontSize, html.EscapeString(z.Sub))
+		v += fmt.Sprintf(`&nbsp;&nbsp;<font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, house.SubFontSize, html.EscapeString(z.Sub))
 	}
 	st := style("rounded=1", "absoluteArcSize=1", fmt.Sprintf("arcSize=%d", arc), "html=1",
 		"fillColor="+color, fmt.Sprintf("fillOpacity=%d", opacity), "strokeColor="+color, fmt.Sprintf("strokeWidth=%g", width),
@@ -184,27 +185,27 @@ func (r *renderer) zone(z diagram.Zone) error {
 	r.vertex(z.ID, "1", "", st, z.X, z.Y, z.W, z.H)
 	// Title and icon share one row and are both centred on it; draw.io's own label
 	// padding would otherwise leave the icon a few pixels above the text.
-	title := zoneTitleBox(z)
+	title := house.ZoneTitleBox(z)
 	rowY := title.Y - z.Y
 	r.vertex(z.ID+"__title", z.ID, v, style("text", "html=1", "align=left", "verticalAlign=middle", "spacing=0",
-		fmt.Sprintf("spacingLeft=%g", pad-12), font(zoneFontSize, color), "movable=0", "resizable=0", "connectable=0"),
+		fmt.Sprintf("spacingLeft=%g", pad-12), font(house.ZoneFontSize, color), "movable=0", "resizable=0", "connectable=0"),
 		12, rowY, title.W, title.H)
 	if z.Icon != "" {
-		return r.image(z.ID+"__icon", z.ID, z.Icon, 12, rowY+(title.H-zoneIconSize)/2, zoneIconSize)
+		return r.image(z.ID+"__icon", z.ID, z.Icon, 12, rowY+(title.H-house.ZoneIconSize)/2, house.ZoneIconSize)
 	}
 	return nil
 }
 
 func (r *renderer) nodeLabel(n diagram.Node) string {
-	v := fmt.Sprintf(`<b><font color="%s" style="font-size:%gpx">%s</font></b>`, r.th.Title, titleFontSize, html.EscapeString(n.Title))
+	v := fmt.Sprintf(`<b><font color="%s" style="font-size:%gpx">%s</font></b>`, r.th.Title, house.TitleFontSize, html.EscapeString(n.Title))
 	if n.Badge != "" {
-		v += fmt.Sprintf(` <b><font color="%s" style="font-size:%gpx">⚠ %s</font></b>`, r.th.Warn, subFontSize, html.EscapeString(n.Badge))
+		v += fmt.Sprintf(` <b><font color="%s" style="font-size:%gpx">⚠ %s</font></b>`, r.th.Warn, house.SubFontSize, html.EscapeString(n.Badge))
 	}
 	if n.Tech != "" {
-		v += fmt.Sprintf(`<br><i><font color="%s" style="font-size:%gpx">%s</font></i>`, r.th.Text, subFontSize, html.EscapeString(n.Tech))
+		v += fmt.Sprintf(`<br><i><font color="%s" style="font-size:%gpx">%s</font></i>`, r.th.Text, house.SubFontSize, html.EscapeString(n.Tech))
 	}
 	if n.Desc != "" {
-		v += fmt.Sprintf(`<br><font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, subFontSize, r.markup(n.Desc))
+		v += fmt.Sprintf(`<br><font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, house.SubFontSize, r.markup(n.Desc))
 	}
 	return v
 }
@@ -218,10 +219,10 @@ func (r *renderer) node(n diagram.Node) error {
 		}
 		v := fmt.Sprintf(`<b>%s</b>`, html.EscapeString(n.Title))
 		for _, l := range n.Lines() {
-			v += fmt.Sprintf(`<br><font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, subFontSize, html.EscapeString(l))
+			v += fmt.Sprintf(`<br><font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, house.SubFontSize, html.EscapeString(l))
 		}
 		st := style("shape=image", "image="+uri, "imageAspect=1", "html=1", "verticalLabelPosition=bottom", "verticalAlign=top",
-			"labelPosition=center", "align=center", fmt.Sprintf("spacingTop=%g", actorLabelGap), font(titleFontSize, r.th.Title))
+			"labelPosition=center", "align=center", fmt.Sprintf("spacingTop=%g", house.ActorLabelGap), font(house.TitleFontSize, r.th.Title))
 		r.vertex(n.ID, "1", v, st, n.X, n.Y, n.W, n.H)
 		return nil
 	}
@@ -233,19 +234,19 @@ func (r *renderer) node(n diagram.Node) error {
 	}
 	pad := 10.0
 	if n.Icon != "" {
-		pad = textPadLeft
+		pad = house.TextPadLeft
 	}
 	st := style(append(shape, "html=1", "whiteSpace=wrap", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5",
 		"align=left", "verticalAlign=top", fmt.Sprintf("spacingLeft=%g", pad), fmt.Sprintf("spacingTop=%g", top-4), "spacingRight=8",
-		font(titleFontSize, r.th.Text))...)
+		font(house.TitleFontSize, r.th.Text))...)
 	r.vertex(n.ID, "1", r.nodeLabel(n), st, n.X, n.Y, n.W, n.H)
 	if n.Icon != "" {
-		iconY := iconInset
+		iconY := house.IconInset
 		if n.Shape == "cylinder" {
 			iconY += 8
 		}
 		// Child of the node so it moves with it when edited by hand in draw.io.
-		return r.image(n.ID+"__icon", n.ID, n.Icon, iconInset, iconY, iconSize)
+		return r.image(n.ID+"__icon", n.ID, n.Icon, house.IconInset, iconY, house.IconSize)
 	}
 	return nil
 }
@@ -274,7 +275,7 @@ func (r *renderer) portBadges() {
 		seen[b.ID] = true
 		host, _ := r.spec.AnchorRect(b.Node)
 		st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "html=1", "fillColor="+r.kindStrokeOf(b.Node), "strokeColor="+r.th.Background,
-			"strokeWidth=1", "align=center", "verticalAlign=middle", "fontStyle=1", font(portFontSize, r.th.PortText), "movable=0", "resizable=0")
+			"strokeWidth=1", "align=center", "verticalAlign=middle", "fontStyle=1", font(house.PortFontSize, r.th.PortText), "movable=0", "resizable=0")
 		r.vertex(b.ID, b.Node, html.EscapeString(b.Text), st, b.Rect.X-host.X, b.Rect.Y-host.Y, b.Rect.W, b.Rect.H)
 	}
 }
@@ -284,7 +285,7 @@ var sideEntry = map[string][2]float64{"left": {0, 0.5}, "right": {1, 0.5}, "top"
 func (r *renderer) edge(e diagram.Edge) {
 	k := r.th.Edges[e.Kind]
 	src, _ := r.spec.AnchorRect(e.From)
-	path := drawnPath(e, r.ports)
+	path := house.DrawnPath(e, r.ports)
 	p0 := path[0]
 	target := e.To
 	var entry [2]float64
@@ -305,14 +306,14 @@ func (r *renderer) edge(e diagram.Edge) {
 		"endArrow=" + k.EndArrow, "endFill=" + endFill, "endSize=7",
 		fmt.Sprintf("exitX=%.4f", (p0.X()-src.X)/src.W), fmt.Sprintf("exitY=%.4f", (p0.Y()-src.Y)/src.H), "exitPerimeter=0",
 		fmt.Sprintf("entryX=%.4f", entry[0]), fmt.Sprintf("entryY=%.4f", entry[1]), "entryPerimeter=0",
-		"labelBackgroundColor=" + r.th.Background, font(edgeFontSize, k.LabelColor)}
+		"labelBackgroundColor=" + r.th.Background, font(house.EdgeFontSize, k.LabelColor)}
 	if k.Dash != "" {
 		parts = append(parts, "dashed=1", "dashPattern="+k.Dash)
 	}
 	if k.EndArrow == "cross" {
 		parts = append(parts, "endSize=10")
 	}
-	frac := labelFraction(labelAnchor(e, path), path)
+	frac := house.LabelFraction(house.LabelAnchor(e, path), path)
 	fmt.Fprintf(&r.b, `        <mxCell id="%s" value="%s" style="%s" edge="1" parent="1" source="%s" target="%s">
           <mxGeometry x="%.4f" relative="1" as="geometry">
 `, e.ID, xmlAttr(noLigatures(r.markup(e.Label))), xmlAttr(style(parts...)), e.From, target, frac*2-1)
@@ -371,7 +372,7 @@ func (r *renderer) legend(c diagram.Card) {
 		usedEdges[e.Kind] = true
 	}
 	x, y := c.X+20, c.Y+52
-	for _, kind := range nodeKindOrder {
+	for _, kind := range house.NodeKindOrder {
 		if !usedNodes[kind] {
 			continue
 		}
@@ -384,12 +385,12 @@ func (r *renderer) legend(c diagram.Card) {
 	r.legendText("legend-steps", r.markup("[1] request step · [A] background step"), x, y, c.W/2-20)
 	y += 26
 	st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "html=1", "fillColor="+r.th.Nodes["backend"].Stroke, "strokeColor=none",
-		"align=center", "verticalAlign=middle", "fontStyle=1", font(portFontSize, r.th.PortText))
-	r.vertex("legend-port", "1", "TCP 80", st, x, y+3, portWidth("TCP 80"), portHeight)
+		"align=center", "verticalAlign=middle", "fontStyle=1", font(house.PortFontSize, r.th.PortText))
+	r.vertex("legend-port", "1", "TCP 80", st, x, y+3, house.PortWidth("TCP 80"), house.PortHeight)
 	r.legendText("legend-port-text", "listening port on the server", x+52, y, c.W/2-70)
 
 	x, y = c.X+c.W/2+10, c.Y+52
-	for _, kind := range edgeKindOrder {
+	for _, kind := range house.EdgeKindOrder {
 		if !usedEdges[kind] {
 			continue
 		}

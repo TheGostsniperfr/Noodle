@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/TheGostsniperfr/Noodle/internal/house"
 	"github.com/TheGostsniperfr/Noodle/internal/model"
 	"github.com/TheGostsniperfr/Noodle/internal/resolve"
 )
@@ -36,7 +37,7 @@ func renderCommand(args []string) error {
 	if err != nil {
 		return err
 	}
-	th, err := themeByName(*themeName)
+	th, err := house.ThemeByName(*themeName)
 	if err != nil {
 		return err
 	}
