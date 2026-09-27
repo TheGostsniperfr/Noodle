@@ -158,11 +158,20 @@ func (c *checker) checkView(v *View) {
 	for _, inc := range v.Include {
 		c.mustElement(file, v.ID, "include", strings.TrimSuffix(inc, "/**"))
 	}
-	for _, list := range [][]string{v.Steps, v.Background} {
-		for _, id := range list {
-			if _, ok := c.conns[id]; !ok {
-				c.errf(file, id, "step is not a connection of the model")
+	if v.Type == "sequence" {
+		c.checkSequence(file, v)
+	} else {
+		for _, st := range v.Steps {
+			if st.Connection == "" {
+				c.errf(file, v.ID, "a topology step is a connection id, not a message (ADR-0011)")
+			} else if _, ok := c.conns[st.Connection]; !ok {
+				c.errf(file, st.Connection, "step is not a connection of the model")
 			}
+		}
+	}
+	for _, id := range v.Background {
+		if _, ok := c.conns[id]; !ok {
+			c.errf(file, id, "step is not a connection of the model")
 		}
 	}
 	for _, id := range sortedKeys(v.Labels) {
@@ -182,6 +191,85 @@ func (c *checker) checkView(v *View) {
 	}
 	if v.Type == "sequence" && hasLayout {
 		c.errf(file, v.ID, "sequence views are computed and take no layout (ADR-0007)")
+	}
+}
+
+// checkSequence enforces ADR-0011: each step is exactly one of a message over a model
+// connection, a reply to an earlier message, or a note.
+func (c *checker) checkSequence(file string, v *View) {
+	if len(v.Background) > 0 {
+		c.errf(file, v.ID, "background steps are for topology views; a sequence numbers every message")
+	}
+	if len(v.Cards) > 0 || len(v.Notes) > 0 {
+		c.errf(file, v.ID, "cards and notes need a layout; a sequence has none yet")
+	}
+	participants := map[string]bool{}
+	for _, p := range v.Participants {
+		participants[p] = true
+	}
+	messages := map[string]bool{}
+	for i, st := range v.Steps {
+		where := st.ID
+		if where == "" {
+			where = fmt.Sprintf("step %d", i+1)
+		}
+		kinds := 0
+		for _, set := range []bool{st.IsMessage(), st.Reply != "", st.Note != "", st.Connection != ""} {
+			if set {
+				kinds++
+			}
+		}
+		if kinds != 1 {
+			c.errf(file, where, "a step is exactly one of a message (from, to, over), a reply or a note")
+			continue
+		}
+		if st.ID != "" {
+			if messages[st.ID] {
+				c.errf(file, st.ID, "duplicate step id")
+			}
+			if !st.IsMessage() {
+				c.errf(file, st.ID, "only messages take an id")
+			}
+		}
+		used := []string{}
+		switch {
+		case st.Connection != "":
+			c.errf(file, where, "a sequence step is a message, reply or note, not a bare connection id (ADR-0011)")
+		case st.Note != "":
+			c.mustElement(file, where, "note", st.Note)
+			used = append(used, st.Note)
+		case st.Reply != "":
+			if !messages[st.Reply] {
+				c.errf(file, where, "reply to %q, which is not an earlier message", st.Reply)
+			}
+		default:
+			if st.From == "" || st.To == "" || st.Over == "" {
+				c.errf(file, where, "a message needs from, to and over")
+				continue
+			}
+			if st.From == st.To {
+				c.errf(file, where, "a message to itself is a note")
+			}
+			cn, ok := c.conns[st.Over]
+			if !ok {
+				c.errf(file, where, "over %q is not a connection of the model", st.Over)
+			} else if !(cn.From == st.From && cn.To == st.To) && !(cn.From == st.To && cn.To == st.From) {
+				c.errf(file, where, "%s → %s does not run over %s, which joins %s and %s", st.From, st.To, st.Over, cn.From, cn.To)
+			} else if cn.From != st.From && st.Text == "" {
+				c.errf(file, where, "a message against %s needs a text: its verb %q describes the other direction", st.Over, cn.Verb)
+			}
+			c.mustElement(file, where, "from", st.From)
+			c.mustElement(file, where, "to", st.To)
+			used = append(used, st.From, st.To)
+			if st.ID != "" {
+				messages[st.ID] = true
+			}
+		}
+		for _, p := range used {
+			if len(participants) > 0 && !participants[p] {
+				c.errf(file, where, "%s is not in participants", p)
+			}
+		}
 	}
 }
 

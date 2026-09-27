@@ -4,46 +4,236 @@
   "title": "noodle View",
   "description": "What is shown: a selection of the model with steps, labels, cards and notes. The view id is the file stem (ADR-0007, ADR-0009).",
   "type": "object",
-  "required": ["apiVersion", "kind", "type"],
+  "required": [
+    "apiVersion",
+    "kind",
+    "type"
+  ],
   "additionalProperties": false,
   "properties": {
-    "apiVersion": {"const": "noodle/v1alpha1"},
-    "kind": {"const": "View"},
-    "type": {"enum": ["topology", "sequence"]},
-    "title": {"type": "string"},
-    "subtitle": {"type": "string"},
-    "meta": {"type": "array", "items": {"type": "string"}},
-    "include": {"type": "array", "items": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*(/\\*\\*)?$"}, "description": "Element ids, or zone/** for a subtree. Absent means everything."},
-    "steps": {"type": "array", "items": {"type": "string"}, "description": "Connection ids of the request path, numbered [1]..[n] (ADR-0004)."},
-    "background": {"type": "array", "items": {"type": "string"}, "description": "Connection ids of background work, lettered [A].."},
-    "labels": {"type": "object", "additionalProperties": {"type": "string"}, "description": "Label overrides by connection or reference id."},
-    "participants": {"type": "array", "items": {"type": "string"}, "description": "Sequence views only: column order."},
-    "cards": {"type": "array", "items": {"$ref": "#/$defs/card"}},
-    "notes": {"type": "array", "items": {"$ref": "#/$defs/note"}}
+    "apiVersion": {
+      "const": "noodle/v1alpha1"
+    },
+    "kind": {
+      "const": "View"
+    },
+    "type": {
+      "enum": [
+        "topology",
+        "sequence"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "meta": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "include": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*(/\\*\\*)?$"
+      },
+      "description": "Element ids, or zone/** for a subtree. Absent means everything."
+    },
+    "steps": {
+      "type": "array",
+      "description": "Topology: connection ids of the request path, numbered [1]..[n] (ADR-0004). Sequence: messages, replies and notes (ADR-0011)."
+    },
+    "background": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Connection ids of background work, lettered [A].."
+    },
+    "labels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Label overrides by connection or reference id."
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Sequence views only: column order."
+    },
+    "cards": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/card"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/note"
+      }
+    }
   },
-  "if": {"properties": {"type": {"const": "topology"}}},
-  "then": {"not": {"required": ["participants"]}},
   "$defs": {
     "card": {
       "type": "object",
-      "required": ["id", "title"],
+      "required": [
+        "id",
+        "title"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": {"type": "string"},
-        "title": {"type": "string"},
-        "color": {"type": "string"},
-        "legend": {"type": "boolean"},
-        "lines": {"type": "array", "items": {"type": "string"}}
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "legend": {
+          "type": "boolean"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "note": {
       "type": "object",
-      "required": ["id", "text"],
+      "required": [
+        "id",
+        "text"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": {"type": "string"},
-        "text": {"type": "string"}
+        "id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "sequenceStep": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "from",
+            "to",
+            "over"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "from": {
+              "type": "string"
+            },
+            "to": {
+              "type": "string"
+            },
+            "over": {
+              "type": "string",
+              "description": "A model connection joining from and to, in either direction."
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "reply"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "reply": {
+              "type": "string",
+              "description": "Id of an earlier message; travels back over its connection."
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "note"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "note": {
+              "type": "string",
+              "description": "The participant acting on its own."
+            },
+            "text": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "topology"
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": [
+            "participants"
+          ]
+        },
+        "properties": {
+          "steps": {
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "sequence"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "steps": {
+            "items": {
+              "$ref": "#/$defs/sequenceStep"
+            }
+          },
+          "background": {
+            "maxItems": 0
+          }
+        }
       }
     }
-  }
+  ]
 }

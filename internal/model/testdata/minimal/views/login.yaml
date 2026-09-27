@@ -2,5 +2,10 @@ apiVersion: noodle/v1alpha1
 kind: View
 type: sequence
 title: "Demo · Login"
-participants: [user, api]
-steps: [c-user-api]
+participants: [user, api, db]
+steps:
+  - {id: get, from: user, to: api, over: c-user-api, text: "GET /login"}
+  - {note: api, text: "no session"}
+  - {id: q, from: api, to: db, over: c-api-db}
+  - {reply: q, text: "no row"}
+  - {reply: get, text: "302 /signup"}
