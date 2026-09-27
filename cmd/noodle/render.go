@@ -105,7 +105,7 @@ func (r *renderer) image(id, parent, icon string, x, y, size float64) error {
 	return nil
 }
 
-func (r *renderer) render() (string, error) {
+func (r *renderer) open() {
 	s := r.spec
 	fmt.Fprintf(&r.b, `<mxfile host="archgen">
   <diagram id="%s-%s" name="%s (%s)">
@@ -114,7 +114,16 @@ func (r *renderer) render() (string, error) {
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 `, s.ID, r.th.Name, xmlAttr(s.Title), r.th.Name, s.Width, s.Height, r.th.Background)
+}
 
+func (r *renderer) close() string {
+	r.b.WriteString("      </root>\n    </mxGraphModel>\n  </diagram>\n</mxfile>\n")
+	return r.b.String()
+}
+
+func (r *renderer) render() (string, error) {
+	s := r.spec
+	r.open()
 	r.background()
 	r.header()
 	for _, z := range s.Zones {
@@ -138,8 +147,7 @@ func (r *renderer) render() (string, error) {
 	for _, c := range s.Cards {
 		r.card(c)
 	}
-	r.b.WriteString("      </root>\n    </mxGraphModel>\n  </diagram>\n</mxfile>\n")
-	return r.b.String(), nil
+	return r.close(), nil
 }
 
 func (r *renderer) background() {

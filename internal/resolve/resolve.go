@@ -121,8 +121,8 @@ func (r *resolver) badges() map[string][]string {
 
 func (r *resolver) edges(shown map[string]bool, badges map[string][]string) ([]diagram.Edge, error) {
 	steps := map[string]string{}
-	for i, id := range r.v.Steps {
-		steps[id] = strconv.Itoa(i + 1)
+	for i, st := range r.v.Steps {
+		steps[st.Connection] = strconv.Itoa(i + 1)
 	}
 	for i, id := range r.v.Background {
 		steps[id] = string(rune('A' + i))

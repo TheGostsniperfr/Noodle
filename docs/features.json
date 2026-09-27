@@ -22,7 +22,7 @@
         {"id": "P1-03", "description": "CLI renders from the split format", "verify": "noodle render examples/cnp-runtime --view runtime produces the same diagram as v0", "passes": true},
         {"id": "P1-04", "description": "CNP runtime example migrated to model.yaml + views/ + layouts/", "verify": "scripts/init.sh lints the migrated example", "passes": true},
         {"id": "P1-05", "description": "Lint rules moved to internal/lint, one rule per file, table-driven tests", "verify": "go test ./internal/lint/... covers every rule with a failing and a passing case", "passes": true},
-        {"id": "P1-06", "description": "Second view on the same model: the OIDC login as a sequence", "verify": "two views render from one model.yaml; lint green", "passes": false}
+        {"id": "P1-06", "description": "Second view on the same model: the OIDC login as a sequence", "verify": "two views render from one model.yaml; lint green", "passes": true}
       ]
     }
   ],

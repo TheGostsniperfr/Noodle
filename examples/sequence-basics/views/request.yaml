@@ -1,0 +1,17 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: sequence
+title: "Sequence basics · A request through a tunnel"
+subtitle: "How a request reaches an app whose connector dialled out, and how the answer comes back."
+meta:
+  - "Step 2 runs against c-tunnel, which the connector opened: still a request, so solid."
+  - "Dashed arrows are replies; they travel back over the connection of the message they answer."
+  - "v0.1 · source: examples/sequence-basics"
+steps:
+  - {id: get, from: browser, to: edge, over: c-browser-edge, text: "GET /"}
+  - {id: relay, from: edge, to: connector, over: c-tunnel, text: "relay GET / ◀ over the tunnel"}
+  - {id: fwd, from: connector, to: app, over: c-connector-app}
+  - {note: app, text: "render page"}
+  - {reply: fwd, text: "200 · HTML"}
+  - {reply: relay}
+  - {reply: get, text: "200"}

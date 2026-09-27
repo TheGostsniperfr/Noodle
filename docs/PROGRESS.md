@@ -8,7 +8,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `./scripts/init.sh`: fix anything red before new work.
 2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: task T14 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
+3. Next action: task T16 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
    then the tasks in order. Sonnet is enough: the decisions are in ADR-0007.
 
 ## Open threads outside this repo
@@ -54,6 +54,13 @@ decisions go in ADRs, acceptance in `features.json`.
   clean spec; house style (themes, metrics, badge and label boxes) in `internal/house`.
   draw.io output byte-identical on every spec; lint messages identical, in the same order,
   on two deliberately broken specs (27 findings). P1-05 passes.
+- ADR-0011: a sequence step is a message (`from`, `to`, `over` a model connection, either
+  direction), a `reply` to an earlier message (dashed), or a `note`. A message against
+  its connection needs a text. Gaps show on participants and messages as in topologies.
+- T14, T15: sequence layout computed (columns widen until each label fits its span) and
+  drawn with the topology's boxes and palette. Micro example `examples/sequence-basics`;
+  CNP OIDC login as `views/oidc-login.yaml`, 28 messages over the runtime connections.
+  P1-06 passes: phase 1's "one model, two views" holds. T16, T17 remain.
 
 ### 2026-09-27 · Field feedback from a second platform
 
