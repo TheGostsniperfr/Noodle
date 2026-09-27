@@ -43,6 +43,10 @@ that mixes model, view and layout (see ADR-0002).
 
 ## Contracts (sketches)
 
+Phase 1 pipeline and file split (ADR-0007):
+
+![Contract pipeline](diagrams/contract-pipeline.dark.png)
+
 ### Model: what exists
 
 ```yaml

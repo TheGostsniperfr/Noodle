@@ -21,6 +21,8 @@ jobs:
         run: go run ./cmd/noodle examples/cnp-runtime/runtime-request-path.yaml
       - name: lint regression fixtures
         run: for f in examples/platform-regression/*.yaml; do go run ./cmd/noodle -icons examples/platform-regression/icons "$f"; done
+      - name: lint docs diagrams
+        run: for f in docs/diagrams/specs/*.yaml; do go run ./cmd/noodle -icons docs/diagrams/icons "$f"; done
       - name: features.json keeps its history
         run: ./scripts/check-features.sh "${{ github.event.pull_request.base.sha || github.event.before }}"
       - name: vendor directory matches go.mod

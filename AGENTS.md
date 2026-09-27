@@ -70,3 +70,13 @@ claude plugin validate .
 ```
 
 For diagram work, render the PNG and look at it. The lint catches geometry, not taste.
+
+## Show it in the PR
+
+noodle is a drawing tool, so review is visual. A PR that changes what noodle draws puts
+a before/after in its description (`.github/pull_request_template.md`): the PNG from
+`main` next to the one from the branch, cropped on the change, linked by commit SHA
+(`https://github.com/TheGostsniperfr/Noodle/blob/<sha>/<path>.png?raw=true`). Render
+the example that exercises the change, or add one. A PR with no visual change says so.
+A design decision with no rendering yet (an ADR, a plan) can be illustrated by a noodle
+diagram in `docs/diagrams/`.
