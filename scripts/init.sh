@@ -9,6 +9,7 @@ go test ./...
 
 echo "== lint reference example"
 go run ./cmd/noodle examples/cnp-runtime/runtime-request-path.yaml
+for f in examples/platform-regression/*.yaml; do go run ./cmd/noodle -icons examples/platform-regression/icons "$f"; done
 
 echo "== features.json history"
 ./scripts/check-features.sh
