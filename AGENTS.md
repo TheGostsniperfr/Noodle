@@ -67,6 +67,7 @@ Dependencies are vendored: run `go mod vendor` after touching `go.mod`.
 go vet ./... && go test ./...
 go run ./cmd/noodle examples/cnp-runtime/runtime-request-path.yaml
 go run ./cmd/noodle render examples/cnp-runtime --view runtime
+go run ./cmd/noodle render examples/cnp-runtime --view oidc-login
 claude plugin validate .
 ```
 

@@ -55,9 +55,9 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 
 ## E · Sequence (P1-06)
 
-- [ ] **T14** Sequence resolver: participants in first-appearance order or from
+- [x] **T14** Sequence resolver: participants in first-appearance order or from
   `participants`, one row per step, dashed returns only in sequence views.
-- [ ] **T15** `examples/cnp-runtime/views/oidc-login.yaml` from the existing OIDC
+- [x] **T15** `examples/cnp-runtime/views/oidc-login.yaml` from the existing OIDC
   connections; both views render from one `model.yaml`, lint green. Flip **P1-06**.
 
 ## F · Cleanup

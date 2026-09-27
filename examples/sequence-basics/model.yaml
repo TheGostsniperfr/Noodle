@@ -1,0 +1,16 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+
+# The smallest system that shows every sequence step kind: a request relayed through a
+# tunnel against the direction the tunnel was opened, a note, and replies.
+
+elements:
+  - {id: browser, kind: frontend, icon: user, title: "Browser"}
+  - {id: edge, kind: cloud, icon: cloudflare, title: "Edge proxy", tech: "[SaaS]", ports: [{name: https, protocol: TCP, port: 443}, {name: quic, protocol: UDP, port: 7844}]}
+  - {id: connector, kind: cloud, icon: cloudflare, title: "Tunnel connector", tech: "[on-prem]"}
+  - {id: app, kind: backend, icon: k8s-deploy, title: "App", tech: "[Deployment]", ports: [{name: http, protocol: TCP, port: 8080}]}
+
+connections:
+  - {id: c-browser-edge, from: browser, to: edge, port: https, protocol: HTTPS, verb: GET, kind: flow}
+  - {id: c-tunnel, from: connector, to: edge, port: quic, protocol: QUIC, verb: open tunnel, kind: tunnel}
+  - {id: c-connector-app, from: connector, to: app, port: http, protocol: HTTP, verb: forward, kind: flow}
