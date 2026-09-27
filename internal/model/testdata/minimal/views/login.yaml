@@ -1,0 +1,6 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: sequence
+title: "Demo · Login"
+participants: [user, api]
+steps: [c-user-api]

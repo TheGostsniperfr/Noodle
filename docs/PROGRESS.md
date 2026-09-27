@@ -8,7 +8,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `./scripts/init.sh`: fix anything red before new work.
 2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: task T02 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
+3. Next action: task T03 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
    then the tasks in order. Sonnet is enough: the decisions are in ADR-0007.
 
 ## Open threads outside this repo
@@ -31,6 +31,8 @@ decisions go in ADRs, acceptance in `features.json`.
   First docs diagram, drawn with noodle: `docs/diagrams/contract-pipeline`, linted in CI.
 - T01: geometry types moved to `internal/diagram`; draw.io output byte-identical on all
   five specs, both themes.
+- ADR-0009: a view's perspective is `type`, since `kind` already names the file type.
+- T02: `internal/model` types and `LoadSystem(dir)`, strict YAML, header checked first.
 
 ### 2026-09-27 · Field feedback from a second platform
 

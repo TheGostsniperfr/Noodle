@@ -7,7 +7,7 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 
 - [x] **T01** Move `Spec`, `Zone`, `Node`, `Edge`, `Note`, `Card`, `Rect`, `Point` from
   `cmd/noodle/spec.go` to `internal/diagram`. No behaviour change.
-- [ ] **T02** `internal/model`: `Model`, `View`, `Layout` types per ADR-0007 and
+- [x] **T02** `internal/model`: `Model`, `View`, `Layout` types per ADR-0007 and
   ADR-0008, strict decoding (`KnownFields`), `LoadSystem(dir)` returning all three.
   Tests: a minimal system loads; an unknown field fails with file and line.
 - [ ] **T03** Reference checks: every id used in a view or layout exists in the model;

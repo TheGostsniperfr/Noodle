@@ -1,0 +1,8 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+title: "Demo · Request path"
+subtitle: "How a request reaches the database."
+steps: [c-user-api, c-api-db]
+cards:
+  - {id: card-legend, title: "Legend", color: slate, legend: true}

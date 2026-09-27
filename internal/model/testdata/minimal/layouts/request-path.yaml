@@ -1,0 +1,16 @@
+apiVersion: noodle/v1alpha1
+kind: Layout
+canvas: {width: 1100, height: 520}
+lanes:
+  bus: {y: 200}
+elements:
+  z-cluster: {x: 320, y: 40, w: 740, h: 300}
+  user: {x: 122, y: 150, w: 56, h: 56}
+  api: {x: 60, y: 100, w: 240, h: 80}
+  db: {x: 440, y: 90, w: 240, h: 100}
+edges:
+  c-user-api: {from: user.right, to: api.left}
+  c-api-db: {from: api.right@60%, to: db.left, waypoints: [lane:bus]}
+  c-user-db: {from: user.bottom, to: db.bottom, waypoints: [[150, 400], [880, 400]]}
+cards:
+  card-legend: {x: 40, y: 380, w: 1020, h: 120}
