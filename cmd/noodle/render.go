@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"html"
 	"strings"
+
+	"github.com/TheGostsniperfr/Noodle/internal/diagram"
 )
 
 type renderer struct {
-	spec  *Spec
+	spec  *diagram.Spec
 	th    *Theme
 	icons *iconSet
 	cache map[string]string
@@ -162,7 +164,7 @@ func (r *renderer) header() {
 	r.vertex("header-sub", "1", strings.Join(sub, "<br>"), style("text", "html=1", "align=left", "verticalAlign=top", font(11, r.th.Muted)), 64, 74, s.Width-400, 80)
 }
 
-func (r *renderer) zone(z Zone) error {
+func (r *renderer) zone(z diagram.Zone) error {
 	color := r.th.Zones[z.Color]
 	dash, width, opacity, arc := "4 4", 1.0, 5, 8
 	if z.Kind == "region" {
@@ -193,7 +195,7 @@ func (r *renderer) zone(z Zone) error {
 	return nil
 }
 
-func (r *renderer) nodeLabel(n Node) string {
+func (r *renderer) nodeLabel(n diagram.Node) string {
 	v := fmt.Sprintf(`<b><font color="%s" style="font-size:%gpx">%s</font></b>`, r.th.Title, titleFontSize, html.EscapeString(n.Title))
 	if n.Badge != "" {
 		v += fmt.Sprintf(` <b><font color="%s" style="font-size:%gpx">⚠ %s</font></b>`, r.th.Warn, subFontSize, html.EscapeString(n.Badge))
@@ -207,7 +209,7 @@ func (r *renderer) nodeLabel(n Node) string {
 	return v
 }
 
-func (r *renderer) node(n Node) error {
+func (r *renderer) node(n diagram.Node) error {
 	k := r.th.Nodes[n.Kind]
 	if n.Shape == "actor" {
 		uri, err := r.iconURI(n.Icon)
@@ -215,7 +217,7 @@ func (r *renderer) node(n Node) error {
 			return err
 		}
 		v := fmt.Sprintf(`<b>%s</b>`, html.EscapeString(n.Title))
-		for _, l := range n.lines() {
+		for _, l := range n.Lines() {
 			v += fmt.Sprintf(`<br><font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, subFontSize, html.EscapeString(l))
 		}
 		st := style("shape=image", "image="+uri, "imageAspect=1", "html=1", "verticalLabelPosition=bottom", "verticalAlign=top",
@@ -270,7 +272,7 @@ func (r *renderer) portBadges() {
 			continue
 		}
 		seen[b.ID] = true
-		host, _ := r.spec.anchorRect(b.Node)
+		host, _ := r.spec.AnchorRect(b.Node)
 		st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "html=1", "fillColor="+r.kindStrokeOf(b.Node), "strokeColor="+r.th.Background,
 			"strokeWidth=1", "align=center", "verticalAlign=middle", "fontStyle=1", font(portFontSize, r.th.PortText), "movable=0", "resizable=0")
 		r.vertex(b.ID, b.Node, html.EscapeString(b.Text), st, b.Rect.X-host.X, b.Rect.Y-host.Y, b.Rect.W, b.Rect.H)
@@ -279,9 +281,9 @@ func (r *renderer) portBadges() {
 
 var sideEntry = map[string][2]float64{"left": {0, 0.5}, "right": {1, 0.5}, "top": {0.5, 0}, "bottom": {0.5, 1}}
 
-func (r *renderer) edge(e Edge) {
+func (r *renderer) edge(e diagram.Edge) {
 	k := r.th.Edges[e.Kind]
-	src, _ := r.spec.anchorRect(e.From)
+	src, _ := r.spec.AnchorRect(e.From)
 	path := drawnPath(e, r.ports)
 	p0 := path[0]
 	target := e.To
@@ -290,7 +292,7 @@ func (r *renderer) edge(e Edge) {
 		target = b.ID
 		entry = sideEntry[b.Side]
 	} else {
-		dst, _ := r.spec.anchorRect(e.To)
+		dst, _ := r.spec.AnchorRect(e.To)
 		pn := path[len(path)-1]
 		entry = [2]float64{(pn.X() - dst.X) / dst.W, (pn.Y() - dst.Y) / dst.H}
 	}
@@ -314,7 +316,7 @@ func (r *renderer) edge(e Edge) {
 	fmt.Fprintf(&r.b, `        <mxCell id="%s" value="%s" style="%s" edge="1" parent="1" source="%s" target="%s">
           <mxGeometry x="%.4f" relative="1" as="geometry">
 `, e.ID, xmlAttr(noLigatures(r.markup(e.Label))), xmlAttr(style(parts...)), e.From, target, frac*2-1)
-	if e.LabelOffset != (Point{}) {
+	if e.LabelOffset != (diagram.Point{}) {
 		fmt.Fprintf(&r.b, "            <mxPoint x=\"%g\" y=\"%g\" as=\"offset\" />\n", e.LabelOffset.X(), e.LabelOffset.Y())
 	}
 	if len(path) > 2 {
@@ -327,7 +329,7 @@ func (r *renderer) edge(e Edge) {
 	r.b.WriteString("          </mxGeometry>\n        </mxCell>\n")
 }
 
-func (r *renderer) card(c Card) {
+func (r *renderer) card(c diagram.Card) {
 	color := r.th.Zones[c.Color]
 	if color == "" {
 		color = r.th.Muted
@@ -358,7 +360,7 @@ func (r *renderer) legendText(id, text string, x, y, w float64) {
 	r.vertex(id, "1", text, style("text", "html=1", "align=left", "verticalAlign=middle", font(10.5, r.th.Text)), x, y, w, 22)
 }
 
-func (r *renderer) legend(c Card) {
+func (r *renderer) legend(c diagram.Card) {
 	usedNodes, usedEdges := map[string]bool{}, map[string]bool{}
 	for _, n := range r.spec.Nodes {
 		if n.Shape != "actor" {
