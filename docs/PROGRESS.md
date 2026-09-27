@@ -21,6 +21,20 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-09-27 · Field feedback from a second platform
+
+- Three diagrams built with the plugin on a second real platform (platform overview,
+  application runtime view, GitLab repository map). Findings turned into backlog B-04 to
+  B-18 and ADR-0008: node status and multiplicity.
+- Fixed ligatures: labels disable `font-variant-ligatures`, so `<app>-frontend` no longer
+  renders as `<app>—frontend` (B-04, testify added as test dependency).
+- Skill: grouping and naming rules, check-before-drawing rules, two recipes (application
+  runtime view, repository map), all from Brian's review of those diagrams.
+- ADR-0008 accepted after review: both fields live in the model, `multiplicity` is one
+  text field (`one per team`), and they ship in the `v1alpha1` schemas (P1-02).
+- Spec 001: B-10, B-11, B-12 (symbolic endpoints, named lanes, zone-relative layout) are
+  layout-contract questions for ADR-0007, not backlog extras.
+
 ### 2026-09-26 · Session harness automated
 
 - Hooks in `.claude/settings.json`: `SessionStart` injects the handoff context, `Stop` blocks
