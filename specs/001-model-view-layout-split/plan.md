@@ -35,8 +35,12 @@ never on `internal/model`. That keeps the rule "modules depend on contracts".
 - **Schema validator** for tests: `github.com/santhosh-tekuri/jsonschema/v6` (pure Go,
   draft 2020-12). Vendored. Schemas are the published contract; Go types are checked
   against them by validating every example file in `go test`.
-- **Endpoint syntax.** `id.side` or `id.side@NN%`, side in `left|right|top|bottom`,
-  ratio default 50 %. Parsed in `internal/resolve`, errors carry file and edge id.
+- **Endpoint syntax.** `id.side`, `id.side@NN%` or `id.side@NNpx`, side in
+  `left|right|top|bottom`. Without `@`, the endpoint lines up with the next waypoint, or
+  with the other end when there is none, so the first and last segments stay orthogonal
+  and moving a box keeps its edges valid. Percentages alone could not express the CNP
+  example exactly (91.667 %, 5.263 %). Parsed in `internal/resolve`, errors carry file
+  and edge id.
 - **Label text.** Default `verb · protocol` from the model connection (ADR-0003); a
   view override replaces it; the step prefix `[n]` is added by the resolver.
 - **Ports.** v0 `port: "TCP 443"` becomes a named port on the target element; the

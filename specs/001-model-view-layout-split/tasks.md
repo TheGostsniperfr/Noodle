@@ -16,6 +16,11 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 - [x] **T04** `schemas/v1alpha1/{model,view,layout}.schema.json` and a test that
   validates every `examples/**/model.yaml`, `views/*.yaml`, `layouts/*.yaml`.
   Flip **P1-02**.
+- [x] **T04b** Write the CNP example in the split format next to the v0 file
+  (`examples/cnp-runtime/{model.yaml,views/runtime.yaml,layouts/runtime.yaml}`), checked
+  by the schemas and `model.Check` in `go test`. Findings folded into the contract:
+  endpoints line up with their neighbour by default and accept `@NNpx`; annotations may
+  target connections.
 
 ## B · Resolver (P1-03)
 
@@ -23,12 +28,14 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
   connections, references, cards, notes → `diagram.Spec`. Test: a small system resolves
   to the expected `Spec`.
 - [ ] **T06** Positions relative to the parent zone.
-- [ ] **T07** Symbolic endpoints `id.side[@ratio]`; error on unknown side or ratio out of
-  0–100 %.
+- [ ] **T07** Symbolic endpoints `id.side[@NN%|@NNpx]`. Without `@`, the endpoint lines
+  up with the next waypoint, or with the other end when there is none; a `from` with
+  neither sits at 50 %. Error on unknown side, ratio out of 0–100 %, offset past the side.
 - [ ] **T08** Named lanes: `lane:<name>` waypoints; test that two edges on one lane stay
   parallel when the lane moves.
 - [ ] **T09** Steps, labels and badges: `[n]`/`[A]` prefixes from view steps, default
-  `verb · protocol`, overrides, annotation badges, `denied` → blocked style.
+  `verb · protocol` (references: their `kind`), overrides, annotation badges on
+  elements and ` · !!⚠ Gx!!` after the label of annotated edges, `denied` → blocked style.
 - [ ] **T10** CLI: `noodle render <dir> --view <id> [-theme] [-o]`, lint only without
   `-o`. The v0 single-file mode stays.
 
@@ -39,9 +46,9 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 
 ## D · Migration (P1-04, P1-03)
 
-- [ ] **T12** `examples/cnp-runtime/{model.yaml,views/runtime.yaml,layouts/runtime.yaml}`
-  with absolute-equivalent values. Parity: PNG of the split format equals the v0 PNG
-  (`magick compare -metric AE` = 0). Add to `init.sh` and CI. Flip **P1-03**, **P1-04**.
+- [ ] **T12** Render the split CNP example written in T04b. Parity: its PNG equals the
+  v0 PNG (`magick compare -metric AE` = 0). Add to `init.sh` and CI. Flip **P1-03**,
+  **P1-04**.
 - [ ] **T13** Rewrite the CNP layout with relative positions, symbolic endpoints and
   lanes where they apply; parity check again.
 

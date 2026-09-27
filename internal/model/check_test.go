@@ -12,6 +12,24 @@ import (
 	"github.com/TheGostsniperfr/Noodle/internal/model"
 )
 
+func TestCheck_ReportsNothing_OnEveryExample(t *testing.T) {
+	t.Parallel()
+	models, err := filepath.Glob("../../examples/*/model.yaml")
+	require.NoError(t, err)
+	require.NotEmpty(t, models)
+
+	for _, m := range models {
+		t.Run(filepath.Dir(m), func(t *testing.T) {
+			s, err := model.LoadSystem(filepath.Dir(m))
+			require.NoError(t, err)
+
+			findings := model.Check(s)
+
+			assert.Empty(t, findings)
+		})
+	}
+}
+
 func TestCheck_ReportsNothing_OnAValidSystem(t *testing.T) {
 	t.Parallel()
 	s, err := model.LoadSystem("testdata/minimal")
