@@ -8,7 +8,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `./scripts/init.sh`: fix anything red before new work.
 2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: task T03 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
+3. Next action: task T04 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
    then the tasks in order. Sonnet is enough: the decisions are in ADR-0007.
 
 ## Open threads outside this repo
