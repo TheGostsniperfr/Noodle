@@ -59,8 +59,10 @@
         "protocol": {"type": "string"},
         "verb": {"type": "string"},
         "kind": {"enum": ["flow", "auth", "tunnel", "async"]},
-        "denied": {"type": "boolean", "description": "A policy refuses this connection."}
-      }
+        "denied": {"type": "boolean", "description": "Intent: this connection must not happen (ADR-0010)."},
+        "enforced_by": {"type": "array", "items": {"$ref": "#/$defs/id"}, "minItems": 1, "description": "Elements that enforce the refusal (NetworkPolicy, security group). Absent means intent only."}
+      },
+      "dependentSchemas": {"enforced_by": {"required": ["denied"], "properties": {"denied": {"const": true}}}}
     },
     "reference": {
       "type": "object",

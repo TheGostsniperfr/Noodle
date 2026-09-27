@@ -1,0 +1,4 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+steps: [c-api-db, c-user-api]
