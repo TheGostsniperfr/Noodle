@@ -37,7 +37,7 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 - [x] **T09** Steps, labels and badges: `[n]`/`[A]` prefixes from view steps, default
   `verb · protocol` (references: their `kind`), overrides, annotation badges on
   elements and ` · !!⚠ Gx!!` after the label of annotated edges, `denied` → blocked style.
-- [ ] **T10** CLI: `noodle render <dir> --view <id> [-theme] [-o]`, lint only without
+- [x] **T10** CLI: `noodle render <dir> --view <id> [-theme] [-o]`, lint only without
   `-o`. The v0 single-file mode stays.
 
 ## C · Lint (P1-05)
@@ -47,7 +47,7 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 
 ## D · Migration (P1-04, P1-03)
 
-- [ ] **T12** Render the split CNP example written in T04b. Parity: its PNG equals the
+- [x] **T12** Render the split CNP example written in T04b. Parity: its PNG equals the
   v0 PNG (`magick compare -metric AE` = 0). Add to `init.sh` and CI. Flip **P1-03**,
   **P1-04**.
 - [ ] **T13** Rewrite the CNP layout with relative positions, symbolic endpoints and

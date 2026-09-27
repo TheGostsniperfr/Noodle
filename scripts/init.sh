@@ -9,6 +9,7 @@ go test ./...
 
 echo "== lint reference example"
 go run ./cmd/noodle examples/cnp-runtime/runtime-request-path.yaml
+go run ./cmd/noodle render examples/cnp-runtime --view runtime
 for f in examples/platform-regression/*.yaml; do go run ./cmd/noodle -icons examples/platform-regression/icons "$f"; done
 for f in docs/diagrams/specs/*.yaml; do go run ./cmd/noodle -icons docs/diagrams/icons "$f"; done
 
