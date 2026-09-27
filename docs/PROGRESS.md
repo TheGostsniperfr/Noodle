@@ -27,6 +27,8 @@ decisions go in ADRs, acceptance in `features.json`.
   `views/`, `layouts/`), sequence views computed without a layout, `denied` connections
   in the model, layouts with relative positions, symbolic endpoints and named lanes.
 - `plan.md` (resolver in front of the v0 renderer) and `tasks.md` (T01 to T17). P1-01 passes.
+- PRs that change the rendering now show a before/after image (AGENTS.md, PR template).
+  First docs diagram, drawn with noodle: `docs/diagrams/contract-pipeline`, linted in CI.
 
 ### 2026-09-27 · Field feedback from a second platform
 

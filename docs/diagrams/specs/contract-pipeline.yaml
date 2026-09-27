@@ -1,0 +1,72 @@
+id: contract-pipeline
+title: "Noodle · Phase 1 · Contract pipeline"
+subtitle: "How does a system directory become a diagram, and which file holds which fact?"
+meta:
+  - "Scope: noodle CLI after phase 1, per ADR-0007 and specs/001 plan.md · arrows are data handoffs in process order, not network connections"
+  - "Out of scope: SVG renderer (phase 2), MCP server (2b), web viewer (3), auto-layout (6)"
+  - "v0.1 · source: docs/diagrams/specs/contract-pipeline.yaml"
+width: 3100
+height: 1100
+
+zones:
+  - {id: z-git, kind: region, color: orange, icon: git, label: "GIT · SYSTEM DIRECTORY", sub: "reviewed in PRs", x: 40, y: 220, w: 420, h: 480}
+  - {id: z-cli, kind: region, color: cyan, icon: go, label: "NOODLE CLI", sub: "noodle render <dir> --view <id>", x: 580, y: 220, w: 2060, h: 480}
+  - {id: z-out, kind: region, color: slate, icon: drawio, label: "GENERATED", sub: "not committed (ADR-0005)", x: 2740, y: 220, w: 320, h: 480}
+
+nodes:
+  - {id: model-file, kind: database, icon: json, title: "model.yaml", tech: "[kind Model]", desc: "What exists: elements, connections", x: 70, y: 290, w: 350, h: 90}
+  - {id: view-file, kind: frontend, icon: json, title: "views/<id>.yaml", tech: "[kind View · topology | sequence]", desc: "What is shown: steps, cards", x: 70, y: 410, w: 350, h: 90}
+  - {id: layout-file, kind: external, icon: json, title: "layouts/<view-id>.yaml", tech: "[kind Layout · topology only]", desc: "Where: relative x/y, lanes", x: 70, y: 530, w: 350, h: 90}
+
+  - {id: loader, kind: backend, icon: go, title: "Loader", tech: "[internal/model]", desc: "Strict YAML, id checks", x: 620, y: 410, w: 260, h: 90}
+  - {id: schemas, kind: security, icon: json, title: "JSON Schemas", tech: "[schemas/v1alpha1]", desc: "Published contract", x: 620, y: 570, w: 260, h: 90}
+  - {id: resolver, kind: backend, icon: go, title: "Resolver", tech: "[internal/resolve]", desc: "Symbols to absolute points", x: 1060, y: 410, w: 260, h: 90}
+  - {id: diagram, kind: database, icon: go, title: "Resolved diagram", tech: "[internal/diagram]", desc: "The v0 geometry, in memory", x: 1500, y: 410, w: 260, h: 90}
+  - {id: lint, kind: security, icon: go, title: "Lint", tech: "[internal/lint]", desc: "One rule per file", x: 1940, y: 410, w: 260, h: 90}
+  - {id: renderer, kind: backend, icon: go, title: "draw.io renderer", tech: "[cmd/noodle]", desc: "Unchanged in phase 1", x: 2340, y: 410, w: 260, h: 90}
+
+  - {id: drawio-file, kind: external, icon: drawio, title: "<view>.<theme>.drawio", tech: "[editable]", desc: "One per theme", x: 2770, y: 410, w: 260, h: 90}
+  - {id: png-file, kind: external, icon: drawio, title: "<view>.<theme>.png", tech: "[drawio CLI export]", desc: "For docs and PRs", x: 2770, y: 570, w: 260, h: 90}
+
+edges:
+  - {id: e-1-git-loader, kind: flow, from: z-git, to: loader, label: "[1] parse", label_at: [520, 455], path: [[460, 455], [620, 455]]}
+  - {id: e-2-loader-resolver, kind: flow, from: loader, to: resolver, label: "[2] model + view + layout", path: [[880, 455], [1060, 455]]}
+  - {id: e-3-resolver-diagram, kind: flow, from: resolver, to: diagram, label: "[3] emit geometry", path: [[1320, 455], [1500, 455]]}
+  - {id: e-4-diagram-lint, kind: flow, from: diagram, to: lint, label: "[4] check", path: [[1760, 455], [1940, 455]]}
+  - {id: e-5-lint-renderer, kind: flow, from: lint, to: renderer, label: "[5] clean only", path: [[2200, 455], [2340, 455]]}
+  - {id: e-6-renderer-drawio, kind: flow, from: renderer, to: drawio-file, label: "[6] write", path: [[2600, 455], [2770, 455]]}
+  - {id: e-7-drawio-png, kind: flow, from: drawio-file, to: png-file, label: "[7] export", label_at: [2900, 535], path: [[2900, 500], [2900, 570]]}
+  - {id: r-schemas-git, kind: link, from: schemas, to: z-git, label: "validates", label_at: [520, 615], path: [[620, 615], [460, 615]]}
+
+notes:
+  - {id: n-sequence, text: "Sequence views have no layout: columns in order of first appearance, one row per step.", x: 1060, y: 530, w: 300, h: 70}
+
+cards:
+  - {id: card-legend, title: "Legend", color: slate, legend: true, x: 40, y: 760, w: 640, h: 300}
+  - id: card-files
+    title: "Which file holds which fact"
+    color: orange
+    x: 720
+    y: 760
+    w: 1160
+    h: 300
+    lines:
+      - "**model.yaml** · elements and zones, connections (flow, auth, tunnel, async, denied), references, gaps, status, multiplicity"
+      - "**views/<id>.yaml** · include, steps [1] and [A], label overrides, cards, notes, participants (sequence)"
+      - "**layouts/<view-id>.yaml** · canvas, positions relative to the parent zone, endpoints id.side@ratio, named lanes"
+      - "A view's model is the model.yaml of its directory. Every id a view or layout uses must exist there."
+      - "A reviewer reads model.yaml and views/; layouts/ churns without hiding facts."
+  - id: card-steps
+    title: "Pipeline · one render"
+    color: cyan
+    x: 1920
+    y: 760
+    w: 1140
+    h: 300
+    lines:
+      - "[1] The loader parses the three files strictly and checks every id reference; JSON Schemas validate the same files in go test."
+      - "[2] The resolver gets the model, the view and its layout."
+      - "[3] It emits absolute geometry: points, labels '[n] verb · protocol', gap badges."
+      - "[4] The v0 geometry rules check it, with the same messages."
+      - "[5] Only a clean diagram reaches the renderer."
+      - "[6] One draw.io file per theme, [7] exported to PNG."
