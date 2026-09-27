@@ -18,7 +18,7 @@
       "spec": "specs/001-model-view-layout-split/spec.md",
       "features": [
         {"id": "P1-01", "description": "ADR-0007 accepted: file layout of model, views and layouts, and how they reference each other", "verify": "docs/adr/0007-*.md with status Accepted", "passes": true},
-        {"id": "P1-02", "description": "JSON Schemas for Model, View and Layout in schemas/v1alpha1", "verify": "every example file validates against its schema in go test", "passes": false},
+        {"id": "P1-02", "description": "JSON Schemas for Model, View and Layout in schemas/v1alpha1", "verify": "every example file validates against its schema in go test", "passes": true},
         {"id": "P1-03", "description": "CLI renders from the split format", "verify": "noodle render examples/cnp-runtime --view runtime produces the same diagram as v0", "passes": false},
         {"id": "P1-04", "description": "CNP runtime example migrated to model.yaml + views/ + layouts/", "verify": "scripts/init.sh lints the migrated example", "passes": false},
         {"id": "P1-05", "description": "Lint rules moved to internal/lint, one rule per file, table-driven tests", "verify": "go test ./internal/lint/... covers every rule with a failing and a passing case", "passes": false},

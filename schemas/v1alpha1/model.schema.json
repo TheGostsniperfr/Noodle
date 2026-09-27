@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TheGostsniperfr/Noodle/schemas/v1alpha1/model.schema.json",
+  "title": "noodle Model",
+  "description": "What exists: elements (zones included), connections, references and annotations. No coordinates, no step numbers (ADR-0002, ADR-0007).",
+  "type": "object",
+  "required": ["apiVersion", "kind"],
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": {"const": "noodle/v1alpha1"},
+    "kind": {"const": "Model"},
+    "elements": {"type": "array", "items": {"$ref": "#/$defs/element"}},
+    "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
+    "references": {"type": "array", "items": {"$ref": "#/$defs/reference"}},
+    "annotations": {"type": "array", "items": {"$ref": "#/$defs/annotation"}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"},
+    "element": {
+      "type": "object",
+      "required": ["id", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "kind": {"enum": ["frontend", "backend", "database", "cloud", "security", "bus", "external", "region", "group"]},
+        "parent": {"$ref": "#/$defs/id", "description": "A zone (kind region or group)."},
+        "title": {"type": "string"},
+        "tech": {"type": "string"},
+        "desc": {"type": "string"},
+        "icon": {"type": "string"},
+        "shape": {"enum": ["box", "cylinder", "actor"]},
+        "color": {"type": "string", "description": "Zones only."},
+        "sub": {"type": "string", "description": "Zones only."},
+        "ports": {"type": "array", "items": {"$ref": "#/$defs/port"}},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        "status": {"enum": ["planned", "deprecated"], "description": "ADR-0008. Absent means live."},
+        "multiplicity": {"type": "string", "minLength": 1, "description": "ADR-0008, e.g. 'one per team'."}
+      }
+    },
+    "port": {
+      "type": "object",
+      "required": ["name", "protocol", "port"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string"},
+        "protocol": {"enum": ["TCP", "UDP", "SCTP"]},
+        "port": {"type": "integer", "minimum": 1, "maximum": 65535}
+      }
+    },
+    "connection": {
+      "type": "object",
+      "required": ["id", "from", "to", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "from": {"$ref": "#/$defs/id", "description": "The side that opens the connection (ADR-0003)."},
+        "to": {"$ref": "#/$defs/id", "description": "The side that listens."},
+        "port": {"type": "string", "description": "Name of a port of the target."},
+        "protocol": {"type": "string"},
+        "verb": {"type": "string"},
+        "kind": {"enum": ["flow", "auth", "tunnel", "async"]},
+        "denied": {"type": "boolean", "description": "A policy refuses this connection."}
+      }
+    },
+    "reference": {
+      "type": "object",
+      "required": ["id", "from", "to"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "from": {"$ref": "#/$defs/id"},
+        "to": {"$ref": "#/$defs/id"},
+        "kind": {"type": "string", "description": "parentRef, targetRef, envFrom, …"}
+      }
+    },
+    "annotation": {
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "severity": {"enum": ["low", "medium", "high"]},
+        "title": {"type": "string"},
+        "text": {"type": "string"},
+        "targets": {"type": "array", "items": {"$ref": "#/$defs/id"}}
+      }
+    }
+  }
+}
