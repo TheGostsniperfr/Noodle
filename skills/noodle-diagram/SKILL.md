@@ -102,6 +102,39 @@ project belongs upstream in noodle's `assets/icons/`.
   each other are not: the lint rejects it.
 - Flow reads left to right: actors → edge/SaaS → cluster → data.
 
+## Grouping and naming
+
+- **Never mix an exploded instance with an aggregate sibling in one group.** To show what
+  is allowed or denied between instances, draw two generic instances (`<app-a>`,
+  `<app-b>`) side by side, not one detailed app next to an "other apps" box.
+- **Group by capability, not by "core" or "misc".** "Managed services" (DBaaS, MQaaS),
+  "Observability", "Gateway API". A component that is not deployed yet sits in its
+  capability group, marked as planned, never in a "planned" bucket.
+- **One group, one role.** Docs and tooling are two groups, not "docs · tooling".
+- **Generic names stay explicit:** `<app-a>-backend`, the public URL in the group's
+  `sub`, injected variables in labels (`GET $APP_B_URL/api`).
+
+## Check before drawing a flow
+
+- **Client-side calls go through the browser.** A SPA's `fetch()` runs in the browser and
+  comes back through the gateway. Before drawing frontend → backend, look for a reverse
+  proxy (`proxy_pass`) and read the NetworkPolicy. If neither allows it, draw it as a
+  denied flow with a note.
+- **Verify live when read access exists** (`kubectl get`, pod spec, policies) and say
+  what was verified in `meta`.
+
+## Recipes
+
+**Application runtime view** ("what does my app see?"). Callers left, gateway, the app's
+namespace in the centre, reachable dependencies right, a "denied destinations" column
+last. Add a `Runtime contract` card: injected env vars, how secrets arrive, sandbox
+(user, filesystem, capabilities), endpoints the app must expose, sizing.
+
+**Repository map** ("where do I commit?"). Teams left, the real SCM tree in the centre
+(from the provisioning code, not the docs), what reads each repo on the right (GitOps
+controller, registry, provisioning targets). One repo per app drawn as a stack. A card
+"I want to change… → commit in" is the answer most readers came for.
+
 ## Required parts
 
 Title with a one-line question, scope and out-of-scope lines, version, source path.

@@ -29,6 +29,21 @@
   "backlog": [
     {"id": "B-01", "description": "Exported .drawio.svg weighs 2.5 MB because draw.io embeds PNG fallbacks for every HTML label", "passes": false},
     {"id": "B-02", "description": "Release workflow publishing prebuilt binaries, as a download fallback in bin/noodle", "passes": false},
-    {"id": "B-03", "description": "CNP global view (all components, on-prem + AWS + GCP) as the first large test of cable management", "passes": false}
+    {"id": "B-03", "description": "CNP global view (all components, on-prem + AWS + GCP) as the first large test of cable management", "passes": false},
+    {"id": "B-04", "description": "Labels render code-like text literally: JetBrains Mono ligatures are disabled, so '<app>-frontend' keeps its hyphen", "verify": "go test ./cmd/noodle -run TestNoLigatures, and a node titled '<app>-frontend' renders with a plain hyphen in the PNG", "passes": true},
+    {"id": "B-05", "description": "Element and zone field status: planned | deprecated, rendered as hatch or dotted style with a legend entry (ADR-0008)", "verify": "a spec with a planned node and a planned zone lints and renders; the legend lists 'planned'", "passes": false},
+    {"id": "B-06", "description": "Element field multiplicity: <text>, rendered as two dashed offset copies behind the box, footprint known to the lint, text listed in the legend (ADR-0008)", "verify": "a stacked node next to an edge within 20 px is reported by the lint", "passes": false},
+    {"id": "B-07", "description": "Lint reports text overflow in cards, notes and the legend, not only in nodes", "verify": "a legend card too narrow for 'object reference, not traffic' fails the lint", "passes": false},
+    {"id": "B-08", "description": "h: auto for cards and height: auto for the canvas, sized from their content", "verify": "a card with h: auto has no more than one empty line of padding after rendering", "passes": false},
+    {"id": "B-09", "description": "noodle build <dir> --out <dir> --themes dark,light --png [--svg]: lints and renders every spec in one call, SVG opt-in", "verify": "one command rebuilds a folder of three specs in both themes", "passes": false},
+    {"id": "B-10", "description": "Symbolic edge endpoints: from: node.side@ratio, so moving a node does not break its edges", "verify": "moving a node 40 px keeps every attached edge valid without editing paths", "passes": false},
+    {"id": "B-11", "description": "Named lanes (lanes: {name: {x|y}}) reusable in edge paths, for backbones and corridors", "verify": "two edges sharing a lane stay parallel after the lane moves", "passes": false},
+    {"id": "B-12", "description": "Zone-relative node positions and zone layout: row | column with gap, zone auto-sized to its content", "verify": "a zone with layout: row places three nodes without absolute coordinates", "passes": false},
+    {"id": "B-13", "description": "Lint findings carry a fix hint (e.g. 'try label_offset [0,-22]', 'move endpoint to y >= 437')", "verify": "every overlap and badge-on-icon finding prints a hint", "passes": false},
+    {"id": "B-14", "description": "Structured gaps: gaps: [{id, title, text, on: [ids]}] generate the badges and the Gaps card; the lint rejects orphan badges and entries", "verify": "a badge with no gaps entry fails the lint", "passes": false},
+    {"id": "B-15", "description": "Steps card generated from edge step_text in step order, so the card and the arrows never disagree", "verify": "removing a numbered edge removes its line from the card", "passes": false},
+    {"id": "B-16", "description": "Context view preset: view kind context, focus <node>: callers | gateway | focus namespace | reachable | denied, derived from the model", "verify": "the app-runtime-view regression fixture can be produced from a model with one focus id", "passes": false},
+    {"id": "B-17", "description": "Lookup card type: two columns 'I want to change... -> go to', for repository and ownership maps", "verify": "a card with rows: [[q, a], ...] renders aligned columns", "passes": false},
+    {"id": "B-18", "description": "Provenance field ref on nodes and edges (file:line or command), listed in an optional sources card", "verify": "a node with ref: prints it in the sources card", "passes": false}
   ]
 }

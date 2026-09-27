@@ -2,7 +2,7 @@
 
 - Status: **Draft**, ready for planning
 - Phase: 1 (see `docs/ROADMAP.md`, acceptance in `docs/features.json` P1-*)
-- Decisions it builds on: ADR-0002, ADR-0003, ADR-0004
+- Decisions it builds on: ADR-0002, ADR-0003, ADR-0004, ADR-0008
 
 ## Why
 
@@ -25,7 +25,8 @@ facts.
 ## Requirements
 
 - **FR-001** A `Model` file describes elements (including zones), connections, references,
-  ports and annotations, with no coordinates and no step numbers.
+  ports and annotations, with no coordinates and no step numbers. Elements carry the
+  optional `status` and `multiplicity` fields of ADR-0008.
 - **FR-002** A `View` file selects part of a model and adds presentation: kind
   (`topology` or `sequence`), numbered scenarios, notes, cards, redaction.
 - **FR-003** A `Layout` file gives, for one view, positions, sizes, edge paths, label
@@ -63,6 +64,10 @@ IcePanel step types beyond plain numbered messages (phase 4).
 - [NEEDS CLARIFICATION] Where the edge `kind` lives: `auth` or `tunnel` is a property of
   the connection (model), but `blocked` is a claim a view makes. Proposal: model keeps
   connection nature, views may add `blocked` overlays.
+- [NEEDS CLARIFICATION] How layouts address geometry. Field use showed absolute edge
+  points are the main cost of every layout change. Settle in ADR-0007 whether `v1alpha1`
+  layouts support symbolic endpoints (`node.side@ratio`, B-10), named lanes (B-11) and
+  zone-relative positions with row/column layout (B-12), or reserve room for them.
 
 ## Next steps
 
