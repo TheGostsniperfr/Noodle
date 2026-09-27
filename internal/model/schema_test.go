@@ -69,7 +69,7 @@ func contractFiles(t *testing.T, root string) map[string]string {
 func TestSchemas_AcceptEveryContractFileInTheRepository(t *testing.T) {
 	t.Parallel()
 	schemas := compileSchemas(t)
-	files := contractFiles(t, "testdata")
+	files := contractFiles(t, "testdata/minimal")
 	for path, kind := range contractFiles(t, "../../examples") {
 		files[path] = kind
 	}
@@ -95,6 +95,7 @@ func TestSchemas_Reject(t *testing.T) {
 		name, kind, doc string
 	}{
 		{"a blocked connection kind, replaced by denied", "Model", modelHead + "connections: [{id: c, from: a, to: b, kind: blocked}]\n"},
+		{"enforced_by without denied", "Model", modelHead + "connections: [{id: c, from: a, to: b, kind: flow, enforced_by: [np]}]\n"},
 		{"multiplicity as a boolean flag", "Model", modelHead + "elements: [{id: a, kind: backend, multiplicity: true}]\n"},
 		{"a port number out of range", "Model", modelHead + "elements: [{id: a, kind: backend, ports: [{name: p, protocol: TCP, port: 70000}]}]\n"},
 		{"a view without type", "View", viewHead + "title: T\n"},

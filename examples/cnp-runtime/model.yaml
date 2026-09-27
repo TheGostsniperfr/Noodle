@@ -72,7 +72,7 @@ connections:
   - {id: e-a-vso-vault, from: vso, to: vault, port: http, protocol: HTTP, verb: read, kind: async}
   - {id: e-b-vso-secret, from: vso, to: app-secret, protocol: K8s API, verb: write Secret, kind: async}
 
-  # Must not happen. G1: nothing in code enforces it yet.
+  # Must not happen. No enforced_by: nothing in code enforces it yet (G1).
   - {id: x-cross-tenant, from: g-tenant-a, to: g-tenant-b, verb: cross-tenant traffic, kind: flow, denied: true}
 
 references:

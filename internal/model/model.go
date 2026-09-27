@@ -56,7 +56,10 @@ type Connection struct {
 	Protocol string `yaml:"protocol"`
 	Verb     string `yaml:"verb"`
 	Kind     string `yaml:"kind"`
-	Denied   bool   `yaml:"denied"`
+	// Denied is the intent that this connection must not happen; EnforcedBy names the
+	// elements that make it so (ADR-0010). Denied without EnforcedBy is intent only.
+	Denied     bool     `yaml:"denied"`
+	EnforcedBy []string `yaml:"enforced_by"`
 }
 
 type Reference struct {

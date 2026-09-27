@@ -1,0 +1,7 @@
+apiVersion: noodle/v1alpha1
+kind: Layout
+elements:
+  z-cluster: {x: 40, y: 40, w: 700, h: 300}
+  api: {x: 40, y: 100, w: 240, h: 80}
+edges:
+  c-api-db: {from: api.east, to: db.left, waypoints: [lane:bus]}

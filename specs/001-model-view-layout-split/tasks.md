@@ -20,7 +20,8 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
   (`examples/cnp-runtime/{model.yaml,views/runtime.yaml,layouts/runtime.yaml}`), checked
   by the schemas and `model.Check` in `go test`. Findings folded into the contract:
   endpoints line up with their neighbour by default and accept `@NNpx`; annotations may
-  target connections.
+  target connections; `denied` is intent and `enforced_by` names what enforces it
+  (ADR-0010).
 
 ## B · Resolver (P1-03)
 

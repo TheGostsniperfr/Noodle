@@ -1,0 +1,9 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: z-cluster, kind: region, title: CLUSTER}
+  - {id: api, kind: backend, parent: z-cluster, title: API}
+  - {id: db, kind: database, parent: z-cluster, title: Postgres, ports: [{name: pg, protocol: TCP, port: 5432}]}
+connections:
+  - {id: c-api-db, from: api, to: db, port: postgres, protocol: SQL, verb: query, kind: flow}
+  - {id: x-db-api, from: db, to: api, kind: flow, denied: true, enforced_by: [netpol-default-deny]}

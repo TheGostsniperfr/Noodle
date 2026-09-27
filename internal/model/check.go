@@ -103,6 +103,12 @@ func (c *checker) checkModel() {
 		if !connectionKinds[cn.Kind] {
 			c.errf(file, cn.ID, "unknown connection kind %q", cn.Kind)
 		}
+		if len(cn.EnforcedBy) > 0 && !cn.Denied {
+			c.errf(file, cn.ID, "enforced_by is for denied connections only")
+		}
+		for _, id := range cn.EnforcedBy {
+			c.mustElement(file, cn.ID, "enforced_by", id)
+		}
 		c.mustElement(file, cn.ID, "from", cn.From)
 		if to, ok := c.mustElement(file, cn.ID, "to", cn.To); ok && cn.Port != "" && !hasPort(to, cn.Port) {
 			c.errf(file, cn.ID, "port %q is not a port of %s", cn.Port, cn.To)
