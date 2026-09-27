@@ -8,7 +8,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `./scripts/init.sh`: fix anything red before new work.
 2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: task T05 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
+3. Next action: task T11 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
    then the tasks in order. Sonnet is enough: the decisions are in ADR-0007.
 
 ## Open threads outside this repo
@@ -43,6 +43,13 @@ decisions go in ADRs, acceptance in `features.json`.
   annotations may target connections (G1, G6).
 - ADR-0010: `denied` is the intent, `enforced_by` names the elements that enforce it.
   CNP's `x-cross-tenant` has none, which is G1. Lint rule for it: backlog B-24.
+- T05 to T09: `internal/resolve` turns model + view + layout into the v0 geometry:
+  relative positions, endpoints aligned with their neighbour or offset, lanes, step
+  numbers, derived labels and badges. An aligned endpoint that lands beside its box is
+  an error. `model.Check` also checks routes exist and run from `from` to `to`.
+- T10, T12: `noodle render DIR [-view ID]`. The split CNP example renders pixel for pixel
+  like v0 (`magick compare -metric AE` = 0, both themes), linted by init.sh and CI.
+  P1-03 and P1-04 pass. Next: P1-05 (lint into `internal/lint`), then the OIDC sequence.
 
 ### 2026-09-27 · Field feedback from a second platform
 

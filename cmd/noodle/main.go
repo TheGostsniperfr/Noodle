@@ -7,9 +7,18 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/TheGostsniperfr/Noodle/internal/diagram"
 )
 
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "render" {
+		if err := renderCommand(os.Args[2:]); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		return
+	}
 	out := flag.String("o", "", "output .drawio path (lint only when empty)")
 	icons := flag.String("icons", "", "comma-separated directories of extra <name>.svg icons, searched before the built-in ones")
 	themeName := flag.String("theme", "dark", "dark or light")
@@ -26,7 +35,7 @@ func main() {
 		return
 	}
 	if flag.NArg() != 1 {
-		fmt.Fprintln(os.Stderr, "usage: noodle [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]] spec.yaml\n       noodle -list-icons [-icons DIR]")
+		fmt.Fprintln(os.Stderr, "usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]]\n       noodle [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]] spec.yaml   (v0 single file)\n       noodle -list-icons [-icons DIR]")
 		os.Exit(2)
 	}
 	if err := run(flag.Arg(0), *out, *themeName, set); err != nil {
@@ -54,6 +63,10 @@ func run(specPath, out, themeName string, icons *iconSet) error {
 	if err != nil {
 		return err
 	}
+	return lintAndRender(spec, out, th, icons)
+}
+
+func lintAndRender(spec *diagram.Spec, out string, th *Theme, icons *iconSet) error {
 	findings := lint(spec)
 	for _, f := range findings {
 		fmt.Fprintf(os.Stderr, "lint: %-28s %s\n", f.where, f.msg)
