@@ -42,7 +42,7 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 
 ## C · Lint (P1-05)
 
-- [ ] **T11** `internal/lint`: one file per rule from `cmd/noodle/lint.go`, same messages.
+- [x] **T11** `internal/lint`: one file per rule from `cmd/noodle/lint.go`, same messages.
   Each rule has a passing and a failing table case. Flip **P1-05**.
 
 ## D · Migration (P1-04, P1-03)

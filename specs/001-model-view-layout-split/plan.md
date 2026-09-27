@@ -24,7 +24,8 @@ system dir ──load──▶ Model, View, Layout ──check refs──▶ res
 | `schemas/v1alpha1/` | `model.schema.json`, `view.schema.json`, `layout.schema.json`, hand-written | none |
 | `internal/diagram` | the resolved geometry, today's `Spec`, `Zone`, `Node`, `Edge`, `Card`, `Note`, `Rect`, `Point` moved out of `cmd/noodle/spec.go` | none |
 | `internal/resolve` | topology: relative positions → absolute, `element.side@ratio` → point, `lane:` → coordinate, steps → `[n]` label prefixes, annotations → badges, `denied` → blocked style; sequence: computed columns and rows | `model`, `diagram` |
-| `internal/lint` | one rule per file, moved from `cmd/noodle/lint.go` with the same messages (FR-006) | `diagram` |
+| `internal/house` | house style shared by lint and renderers (ADR-0006): themes, font metrics, text width, port badges, label and zone-title boxes | `diagram` |
+| `internal/lint` | one rule per file, moved from `cmd/noodle/lint.go` with the same messages (FR-006) | `diagram`, `house` |
 | `cmd/noodle` | CLI and draw.io renderer | all of the above |
 
 Contracts first: `internal/lint` and the renderer depend on `internal/diagram` only,

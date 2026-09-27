@@ -9,6 +9,8 @@ import (
 	"strings"
 
 	"github.com/TheGostsniperfr/Noodle/internal/diagram"
+	"github.com/TheGostsniperfr/Noodle/internal/house"
+	"github.com/TheGostsniperfr/Noodle/internal/lint"
 )
 
 func main() {
@@ -55,7 +57,7 @@ func splitList(s string) []string {
 }
 
 func run(specPath, out, themeName string, icons *iconSet) error {
-	th, err := themeByName(themeName)
+	th, err := house.ThemeByName(themeName)
 	if err != nil {
 		return err
 	}
@@ -66,10 +68,10 @@ func run(specPath, out, themeName string, icons *iconSet) error {
 	return lintAndRender(spec, out, th, icons)
 }
 
-func lintAndRender(spec *diagram.Spec, out string, th *Theme, icons *iconSet) error {
-	findings := lint(spec)
+func lintAndRender(spec *diagram.Spec, out string, th *house.Theme, icons *iconSet) error {
+	findings := lint.Lint(spec)
 	for _, f := range findings {
-		fmt.Fprintf(os.Stderr, "lint: %-28s %s\n", f.where, f.msg)
+		fmt.Fprintf(os.Stderr, "lint: %-28s %s\n", f.Where, f.Msg)
 	}
 	if len(findings) > 0 {
 		return fmt.Errorf("%d lint finding(s)", len(findings))
@@ -77,7 +79,7 @@ func lintAndRender(spec *diagram.Spec, out string, th *Theme, icons *iconSet) er
 	if out == "" {
 		return nil
 	}
-	r := &renderer{spec: spec, th: th, icons: icons, cache: map[string]string{}, ports: portBadges(spec)}
+	r := &renderer{spec: spec, th: th, icons: icons, cache: map[string]string{}, ports: house.PortBadges(spec)}
 	xml, err := r.render()
 	if err != nil {
 		return err

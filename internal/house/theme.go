@@ -1,4 +1,6 @@
-package main
+// Package house is the house style of ADR-0006, shared by the lint and the renderers:
+// palettes, font metrics, and the boxes that text, labels and port badges occupy.
+package house
 
 import "fmt"
 
@@ -12,47 +14,47 @@ type Theme struct {
 	Title, Text, Muted, Warn, Accent string
 	StepFill, StepText               string
 	PortText                         string
-	Nodes                            map[string]nodeKind
+	Nodes                            map[string]NodeKind
 	Zones                            map[string]string
-	Edges                            map[string]edgeKind
+	Edges                            map[string]EdgeKind
 }
 
-type nodeKind struct{ Stroke, Fill, Legend string }
+type NodeKind struct{ Stroke, Fill, Legend string }
 
-type edgeKind struct {
+type EdgeKind struct {
 	Stroke, LabelColor, Dash, EndArrow, Legend string
 	Width                                      float64
 }
 
 const (
-	fontFamily    = "JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace"
-	titleFontSize = 12.0
-	subFontSize   = 10.0
-	edgeFontSize  = 10.0
-	zoneFontSize  = 11.0
-	portFontSize  = 9.0
-	charWidthEm   = 0.6
-	lineHeightEm  = 1.25
+	FontFamily    = "JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace"
+	TitleFontSize = 12.0
+	SubFontSize   = 10.0
+	EdgeFontSize  = 10.0
+	ZoneFontSize  = 11.0
+	PortFontSize  = 9.0
+	CharWidthEm   = 0.6
+	LineHeightEm  = 1.25
 
-	iconSize      = 28.0
-	iconInset     = 12.0
-	textPadLeft   = iconInset + iconSize + 10
-	zoneIconSize  = 18.0
-	actorLabelGap = 6.0
-	labelPadX     = 4.0
-	labelPadY     = 2.0
-	portPadX      = 4.0
-	portHeight    = 16.0
+	IconSize      = 28.0
+	IconInset     = 12.0
+	TextPadLeft   = IconInset + IconSize + 10
+	ZoneIconSize  = 18.0
+	ActorLabelGap = 6.0
+	LabelPadX     = 4.0
+	LabelPadY     = 2.0
+	PortPadX      = 4.0
+	PortHeight    = 16.0
 
-	minNodeGap     = 24.0
-	minZoneGap     = 60.0
-	obstacleMargin = 4.0
+	MinNodeGap     = 24.0
+	MinZoneGap     = 60.0
+	ObstacleMargin = 4.0
 )
 
-var nodeKindOrder = []string{"frontend", "backend", "database", "cloud", "security", "bus", "external"}
-var edgeKindOrder = []string{"flow", "auth", "tunnel", "async", "blocked", "link"}
+var NodeKindOrder = []string{"frontend", "backend", "database", "cloud", "security", "bus", "external"}
+var EdgeKindOrder = []string{"flow", "auth", "tunnel", "async", "blocked", "link"}
 
-var legendNodes = map[string]string{
+var LegendNodes = map[string]string{
 	"frontend": "client / frontend",
 	"backend":  "service / routing",
 	"database": "data / secrets",
@@ -62,7 +64,7 @@ var legendNodes = map[string]string{
 	"external": "external / out of scope",
 }
 
-var legendEdges = map[string]string{
+var LegendEdges = map[string]string{
 	"flow":    "connection, client → server",
 	"auth":    "authentication connection",
 	"tunnel":  "outbound tunnel, opened in advance",
@@ -71,18 +73,18 @@ var legendEdges = map[string]string{
 	"link":    "object reference, not traffic",
 }
 
-func nodes(pairs ...string) map[string]nodeKind {
-	m := map[string]nodeKind{}
+func nodes(pairs ...string) map[string]NodeKind {
+	m := map[string]NodeKind{}
 	for i := 0; i < len(pairs); i += 3 {
-		m[pairs[i]] = nodeKind{Stroke: pairs[i+1], Fill: pairs[i+2], Legend: legendNodes[pairs[i]]}
+		m[pairs[i]] = NodeKind{Stroke: pairs[i+1], Fill: pairs[i+2], Legend: LegendNodes[pairs[i]]}
 	}
 	return m
 }
 
-func edges(pairs map[string][2]string, blockedEnd string) map[string]edgeKind {
+func edges(pairs map[string][2]string, blockedEnd string) map[string]EdgeKind {
 	dash := map[string]string{"auth": "6 4", "tunnel": "3 3", "async": "6 4", "blocked": "6 4", "link": "2 3"}
 	width := map[string]float64{"blocked": 1.8, "link": 1.2}
-	m := map[string]edgeKind{}
+	m := map[string]EdgeKind{}
 	for k, c := range pairs {
 		w := width[k]
 		if w == 0 {
@@ -95,12 +97,12 @@ func edges(pairs map[string][2]string, blockedEnd string) map[string]edgeKind {
 		if k == "link" {
 			end = "open"
 		}
-		m[k] = edgeKind{Stroke: c[0], LabelColor: c[1], Dash: dash[k], EndArrow: end, Legend: legendEdges[k], Width: w}
+		m[k] = EdgeKind{Stroke: c[0], LabelColor: c[1], Dash: dash[k], EndArrow: end, Legend: LegendEdges[k], Width: w}
 	}
 	return m
 }
 
-var themes = map[string]*Theme{
+var Themes = map[string]*Theme{
 	"dark": {
 		Name: "dark", Background: "#020617", GridLine: "#1e293b",
 		CardFill: "#0b1222", CardStroke: "#1e293b",
@@ -145,14 +147,14 @@ var themes = map[string]*Theme{
 	},
 }
 
-func themeByName(name string) (*Theme, error) {
-	t, ok := themes[name]
+func ThemeByName(name string) (*Theme, error) {
+	t, ok := Themes[name]
 	if !ok {
 		return nil, fmt.Errorf("unknown theme %q", name)
 	}
 	return t, nil
 }
 
-func textWidth(s string, fontSize float64) float64 {
-	return float64(len([]rune(s))) * fontSize * charWidthEm
+func TextWidth(s string, fontSize float64) float64 {
+	return float64(len([]rune(s))) * fontSize * CharWidthEm
 }

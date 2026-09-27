@@ -8,7 +8,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `./scripts/init.sh`: fix anything red before new work.
 2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: task T11 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
+3. Next action: task T14 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
    then the tasks in order. Sonnet is enough: the decisions are in ADR-0007.
 
 ## Open threads outside this repo
@@ -49,7 +49,11 @@ decisions go in ADRs, acceptance in `features.json`.
   an error. `model.Check` also checks routes exist and run from `from` to `to`.
 - T10, T12: `noodle render DIR [-view ID]`. The split CNP example renders pixel for pixel
   like v0 (`magick compare -metric AE` = 0, both themes), linted by init.sh and CI.
-  P1-03 and P1-04 pass. Next: P1-05 (lint into `internal/lint`), then the OIDC sequence.
+  P1-03 and P1-04 pass.
+- T11: lint rules in `internal/lint`, one per file, each with a failing case against a
+  clean spec; house style (themes, metrics, badge and label boxes) in `internal/house`.
+  draw.io output byte-identical on every spec; lint messages identical, in the same order,
+  on two deliberately broken specs (27 findings). P1-05 passes.
 
 ### 2026-09-27 · Field feedback from a second platform
 
