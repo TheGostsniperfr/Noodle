@@ -57,6 +57,8 @@ elements:
   z: {x: 0, y: 0, w: 600, h: 300}
   a: {x: 20, y: 40, w: 200, h: 80}
   b: {x: 300, y: 40, w: 200, h: 80}
+cards:
+  card: {x: 0, y: 320, w: 600, h: 60}
 edges:
   c-ab: {from: a.right, to: b.left}
 `
@@ -136,7 +138,13 @@ func TestCheck_ReportsFileIDAndReason(t *testing.T) {
 			filepath.Join("layouts", "v.yaml"), "c-ab3", `lane "bus" is not defined`},
 		{"lane with both x and y", baseModel, baseView, baseLayout + "lanes: {bus: {x: 1, y: 2}}\n",
 			filepath.Join("layouts", "v.yaml"), "bus", "lane needs exactly one of x or y"},
-		{"card the view does not define", baseModel, baseView, baseLayout + "cards: {other: {x: 0, y: 0, w: 1, h: 1}}\n",
+		{"route drawn backwards", baseModel, baseView, layoutHead + "canvas: {width: 800, height: 400}\nelements:\n  z: {x: 0, y: 0, w: 600, h: 300}\n  a: {x: 20, y: 40, w: 200, h: 80}\n  b: {x: 300, y: 40, w: 200, h: 80}\nedges:\n  c-ab: {from: b.left, to: a.right}\n",
+			filepath.Join("layouts", "v.yaml"), "c-ab", `endpoint "b.left" must be on a, the from of the edge`},
+		{"edge between shown elements without route", baseModel, baseView, layoutHead + "elements:\n  z: {x: 0, y: 0, w: 600, h: 300}\n  a: {x: 20, y: 40, w: 200, h: 80}\n  b: {x: 300, y: 40, w: 200, h: 80}\n",
+			filepath.Join("layouts", "v.yaml"), "c-ab", "edge between shown elements has no route"},
+		{"card without position", baseModel, strings.Replace(baseView, "{id: card, title: C}", "{id: card, title: C}, {id: card2, title: D}", 1), baseLayout,
+			filepath.Join("layouts", "v.yaml"), "card2", "card has no position"},
+		{"card the view does not define", baseModel, baseView, strings.Replace(baseLayout, "cards:\n", "cards:\n  other: {x: 0, y: 0, w: 1, h: 1}\n", 1),
 			filepath.Join("layouts", "v.yaml"), "other", "card is not defined in the view"},
 	}
 	for _, tt := range tests {
