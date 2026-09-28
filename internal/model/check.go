@@ -15,12 +15,14 @@ type Finding struct {
 func (f Finding) String() string { return fmt.Sprintf("%s: %s: %s", f.File, f.ID, f.Msg) }
 
 var (
-	elementKinds    = set("frontend", "backend", "database", "cloud", "security", "bus", "external", "region", "group")
+	elementKinds    = set("frontend", "backend", "database", "cloud", "security", "bus", "external", "tool", "region", "group")
 	connectionKinds = set("flow", "auth", "tunnel", "async")
 	statuses        = set("", "planned", "deprecated")
 	shapes          = set("", "box", "cylinder", "actor")
-	viewTypes       = set("topology", "sequence")
-	sides           = set("left", "right", "top", "bottom")
+	viewTypes       = set("topology", "sequence", "landscape")
+	// computedViews take no layout file: their geometry follows from the view alone.
+	computedViews = set("sequence", "landscape")
+	sides         = set("left", "right", "top", "bottom")
 )
 
 func set(vs ...string) map[string]bool {
@@ -156,7 +158,7 @@ func hasPort(e Element, name string) bool {
 func (c *checker) checkView(v *View) {
 	file := filepath.Join("views", v.ID+".yaml")
 	if !viewTypes[v.Type] {
-		c.errf(file, v.ID, "type %q, want topology or sequence", v.Type)
+		c.errf(file, v.ID, "type %q, want topology, sequence or landscape", v.Type)
 	}
 	for _, inc := range v.Include {
 		c.mustElement(file, v.ID, "include", strings.TrimSuffix(inc, "/**"))
@@ -178,10 +180,15 @@ func (c *checker) checkView(v *View) {
 		}
 	}
 	for _, id := range sortedKeys(v.Labels) {
-		if !c.edgeIDs[id] {
+		if v.Type == "landscape" {
+			if _, ok := c.elements[id]; !ok {
+				c.errf(file, id, "label for an unknown element")
+			}
+		} else if !c.edgeIDs[id] {
 			c.errf(file, id, "label for an unknown connection or reference")
 		}
 	}
+	c.checkLandscape(file, v)
 	if len(v.Participants) > 0 && v.Type != "sequence" {
 		c.errf(file, v.ID, "participants are for sequence views only")
 	}
@@ -192,8 +199,8 @@ func (c *checker) checkView(v *View) {
 	if v.Type == "topology" && !hasLayout {
 		c.errf(file, v.ID, "topology view has no layouts/%s.yaml", v.ID)
 	}
-	if v.Type == "sequence" && hasLayout {
-		c.errf(file, v.ID, "sequence views are computed and take no layout (ADR-0007)")
+	if computedViews[v.Type] && hasLayout {
+		c.errf(file, v.ID, "%s views are computed and take no layout (ADR-0007, ADR-0011)", v.Type)
 	}
 }
 
@@ -274,6 +281,42 @@ func (c *checker) checkSequence(file string, v *View) {
 			}
 		}
 	}
+}
+
+// checkLandscape: every item is a component of the model, shown once (ADR-0011).
+func (c *checker) checkLandscape(file string, v *View) {
+	if v.Type != "landscape" {
+		if len(v.Bands) > 0 || len(v.Side) > 0 {
+			c.errf(file, v.ID, "bands and side are for landscape views only")
+		}
+		return
+	}
+	if len(v.Bands) == 0 {
+		c.errf(file, v.ID, "landscape view has no bands")
+	}
+	seen := map[string]bool{}
+	items := func(sections []Section) {
+		for _, s := range sections {
+			for _, id := range s.Items {
+				if e, ok := c.mustElement(file, id, "item", id); ok && e.IsZone() {
+					c.errf(file, id, "item is a zone, want a component")
+				}
+				if seen[id] {
+					c.errf(file, id, "item shown twice")
+				}
+				seen[id] = true
+			}
+		}
+	}
+	bandIDs := map[string]bool{}
+	for _, b := range v.Bands {
+		if b.ID == "" || bandIDs[b.ID] {
+			c.errf(file, v.ID, "band %q: missing or duplicate id", b.ID)
+		}
+		bandIDs[b.ID] = true
+		items(b.Sections)
+	}
+	items(v.Side)
 }
 
 func (c *checker) checkLayout(l *Layout) {

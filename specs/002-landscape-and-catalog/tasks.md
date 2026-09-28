@@ -17,7 +17,7 @@ example PNG and look at it.
 
 ## B · Landscape (P1b-03, P1b-04, P1b-05)
 
-- [ ] **T04** Model and schema: kind `tool`; view `type: landscape`, `bands`, `side`,
+- [x] **T04** Model and schema: kind `tool`; view `type: landscape`, `bands`, `side`,
   `labels`. Checks: unknown item, duplicate item. Table-driven tests.
 - [ ] **T05** `resolve.Landscape`: bands to `band` zones, sections to `group` zones,
   items to `tile` nodes, computed grid. Test: a two-band system resolves to the expected

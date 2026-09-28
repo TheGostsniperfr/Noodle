@@ -36,6 +36,10 @@ decisions go in ADRs, acceptance in `features.json`.
 - T02: `planned` renders hatched and dashed with a target pill on the top border, `deprecated`
   dotted with the title struck, zones too; legend lines for the statuses used. Checked on the
   DockAir platform diagram, dark and light. P1b-01, P1b-02 and B-05 pass.
+- T03 deferred until after T12: the DockAir script also draws `.stacked` copies (B-06), so it
+  cannot be deleted yet.
+- T04: element kind `tool` (external palette), view type `landscape` with `bands`, `side`,
+  `width`; checks for unknown, zone or duplicate items and element labels.
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 
