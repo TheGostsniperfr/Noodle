@@ -19,9 +19,9 @@ var (
 	connectionKinds = set("flow", "auth", "tunnel", "async")
 	statuses        = set("", "planned", "deprecated")
 	shapes          = set("", "box", "cylinder", "actor")
-	viewTypes       = set("topology", "sequence", "landscape")
+	viewTypes       = set("topology", "sequence", "landscape", "catalog")
 	// computedViews take no layout file: their geometry follows from the view alone.
-	computedViews = set("sequence", "landscape")
+	computedViews = set("sequence", "landscape", "catalog")
 	sides         = set("left", "right", "top", "bottom")
 )
 
@@ -34,12 +34,13 @@ func set(vs ...string) map[string]bool {
 }
 
 type checker struct {
-	s        *System
-	findings []Finding
-	elements map[string]Element
-	conns    map[string]Connection
-	edgeIDs  map[string]bool
-	ends     map[string][2]string
+	s         *System
+	findings  []Finding
+	elements  map[string]Element
+	conns     map[string]Connection
+	edgeIDs   map[string]bool
+	offerings map[string]bool
+	ends      map[string][2]string
 }
 
 func (c *checker) errf(file, id, format string, args ...any) {
@@ -49,7 +50,7 @@ func (c *checker) errf(file, id, format string, args ...any) {
 // Check reports every broken reference and invalid value across the model, its views
 // and their layouts. An empty result means the system can be resolved.
 func Check(s *System) []Finding {
-	c := &checker{s: s, elements: map[string]Element{}, conns: map[string]Connection{}, edgeIDs: map[string]bool{}, ends: map[string][2]string{}}
+	c := &checker{s: s, elements: map[string]Element{}, conns: map[string]Connection{}, edgeIDs: map[string]bool{}, offerings: map[string]bool{}, ends: map[string][2]string{}}
 	c.checkModel()
 	for _, id := range s.ViewIDs() {
 		c.checkView(s.Views[id])
@@ -128,6 +129,19 @@ func (c *checker) checkModel() {
 		c.mustElement(file, r.ID, "from", r.From)
 		c.mustElement(file, r.ID, "to", r.To)
 	}
+	for _, o := range c.s.Model.Offerings {
+		unique(o.ID)
+		c.offerings[o.ID] = true
+		if !statuses[o.Status] {
+			c.errf(file, o.ID, "unknown status %q, want planned or deprecated", o.Status)
+		}
+		if o.Target != "" && o.Status != "planned" {
+			c.errf(file, o.ID, "target is for planned offerings only (ADR-0013)")
+		}
+		for _, id := range o.BackedBy {
+			c.mustElement(file, o.ID, "backed_by", id)
+		}
+	}
 	for _, a := range c.s.Model.Annotations {
 		unique(a.ID)
 		for _, t := range a.Targets {
@@ -158,10 +172,19 @@ func hasPort(e Element, name string) bool {
 func (c *checker) checkView(v *View) {
 	file := filepath.Join("views", v.ID+".yaml")
 	if !viewTypes[v.Type] {
-		c.errf(file, v.ID, "type %q, want topology, sequence or landscape", v.Type)
+		c.errf(file, v.ID, "type %q, want topology, sequence, landscape or catalog", v.Type)
 	}
 	for _, inc := range v.Include {
+		if v.Type == "catalog" {
+			if !c.offerings[inc] {
+				c.errf(file, inc, "include is not an offering of the model")
+			}
+			continue
+		}
 		c.mustElement(file, v.ID, "include", strings.TrimSuffix(inc, "/**"))
+	}
+	if v.Columns != 0 && (v.Type != "catalog" || v.Columns < 1 || v.Columns > 4) {
+		c.errf(file, v.ID, "columns is for catalog views, from 1 to 4")
 	}
 	if v.Type == "sequence" {
 		c.checkSequence(file, v)

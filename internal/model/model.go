@@ -18,6 +18,22 @@ type Model struct {
 	Connections []Connection `yaml:"connections"`
 	References  []Reference  `yaml:"references"`
 	Annotations []Annotation `yaml:"annotations"`
+	Offerings   []Offering   `yaml:"offerings"`
+}
+
+// Offering is what a platform promises its users and how to get it (ADR-0012).
+// BackedBy lists the elements that deliver it.
+type Offering struct {
+	ID       string   `yaml:"id"`
+	Title    string   `yaml:"title"`
+	Icon     string   `yaml:"icon"`
+	Summary  string   `yaml:"summary"`
+	Provides []string `yaml:"provides"`
+	Request  string   `yaml:"request"`
+	BackedBy []string `yaml:"backed_by"`
+	Owner    string   `yaml:"owner"`
+	Status   string   `yaml:"status"`
+	Target   string   `yaml:"target"`
 }
 
 // Element is a component or a zone. Zones have kind region or group and may carry
@@ -99,6 +115,8 @@ type View struct {
 	Bands []Band    `yaml:"bands"`
 	Side  []Section `yaml:"side"`
 	Width float64   `yaml:"width"`
+	// Catalog views (ADR-0012): cards per row; Include lists offering ids.
+	Columns int `yaml:"columns"`
 }
 
 // Band is one row of a landscape. Flow draws an arrow between consecutive sections.
