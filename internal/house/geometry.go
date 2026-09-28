@@ -170,3 +170,36 @@ func ZoneTitleBox(z diagram.Zone) diagram.Rect {
 	}
 	return diagram.Rect{X: x, Y: z.Y + 4, W: w, H: math.Max(ZoneFontSize*LineHeightEm, ZoneIconSize) + 6}
 }
+
+// PillText is what a planned box's pill says: its target, or "planned" without one
+// (ADR-0013).
+func PillText(status, target string) string {
+	if status != "planned" {
+		return ""
+	}
+	if target != "" {
+		return target
+	}
+	return "planned"
+}
+
+// NodePillRect straddles the top border of a planned node, flush with its right end,
+// like a tag clipped on the box.
+func NodePillRect(n diagram.Node) (diagram.Rect, bool) {
+	text := PillText(n.Status, n.Target)
+	if text == "" {
+		return diagram.Rect{}, false
+	}
+	w := PortWidth(text)
+	return diagram.Rect{X: n.X + n.W - w - 10, Y: n.Y - PortHeight/2, W: w, H: PortHeight}, true
+}
+
+// ZonePillRect sits on the zone's title row, after the title.
+func ZonePillRect(z diagram.Zone) (diagram.Rect, bool) {
+	text := PillText(z.Status, z.Target)
+	if text == "" {
+		return diagram.Rect{}, false
+	}
+	t := ZoneTitleBox(z)
+	return diagram.Rect{X: t.X + t.W + 6, Y: t.Y + (t.H-PortHeight)/2, W: PortWidth(text), H: PortHeight}, true
+}
