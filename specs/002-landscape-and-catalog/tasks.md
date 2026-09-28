@@ -9,7 +9,7 @@ example PNG and look at it.
 - [x] **T01** `status` and `target` flow through resolve into `diagram.Node` and
   `diagram.Zone`, zone values inherited by children that set none. Check: `target`
   without `planned` fails. Schemas updated.
-- [ ] **T02** Render `planned` (hatch, dashed, 60 % text, 40 % icon), `deprecated`
+- [x] **T02** Render `planned` (hatch, dashed, 60 % text, 40 % icon), `deprecated`
   (dotted, struck title), the target pill, and legend lines for the statuses used.
   Flip **P1b-01**, **P1b-02**.
 - [ ] **T03** Parity with DockAir's `postprocess-drawio.py` on its three diagrams;

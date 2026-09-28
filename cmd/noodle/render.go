@@ -54,7 +54,15 @@ func xmlAttr(s string) string {
 	return b.String()
 }
 
-func style(parts ...string) string { return strings.Join(parts, ";") + ";" }
+func style(parts ...string) string {
+	kept := parts[:0:0]
+	for _, p := range parts {
+		if p != "" {
+			kept = append(kept, p)
+		}
+	}
+	return strings.Join(kept, ";") + ";"
+}
 
 func font(size float64, color string) string {
 	return fmt.Sprintf("fontFamily=%s;fontSize=%g;fontColor=%s", house.FontFamily, size, color)
@@ -97,12 +105,28 @@ func (r *renderer) vertex(id, parent, value, st string, x, y, w, h float64) {
 }
 
 func (r *renderer) image(id, parent, icon string, x, y, size float64) error {
+	return r.imageStyled(id, parent, icon, x, y, size, "")
+}
+
+func (r *renderer) imageStyled(id, parent, icon string, x, y, size float64, extra string) error {
 	uri, err := r.iconURI(icon)
 	if err != nil {
 		return err
 	}
-	r.vertex(id, parent, "", style("shape=image", "image="+uri, "imageAspect=1", "editable=0", "connectable=0", "movable=0", "resizable=0"), x, y, size, size)
+	r.vertex(id, parent, "", style("shape=image", "image="+uri, "imageAspect=1", "editable=0", "connectable=0", "movable=0", "resizable=0", extra), x, y, size, size)
 	return nil
+}
+
+// hatch is draw.io's sketch fill for planned boxes (ADR-0008); dotted marks deprecated ones.
+const (
+	hatch  = "fillStyle=hatch;hachureGap=9;hachureAngle=-41;fillWeight=1;"
+	dotted = "1 3"
+)
+
+func (r *renderer) pill(id, text string, b diagram.Rect) {
+	st := style("rounded=1", "arcSize=50", "html=1", "fillColor="+r.th.Muted, "strokeColor=none", "align=center",
+		"verticalAlign=middle", "fontStyle=1", "movable=0", "connectable=0", font(house.PortFontSize, r.th.PortText))
+	r.vertex(id, "1", html.EscapeString(text), st, b.X, b.Y, b.W, b.H)
 }
 
 func (r *renderer) open() {
@@ -187,25 +211,46 @@ func (r *renderer) zone(z diagram.Zone) error {
 	if z.Sub != "" {
 		v += fmt.Sprintf(`&nbsp;&nbsp;<font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, house.SubFontSize, html.EscapeString(z.Sub))
 	}
-	st := style("rounded=1", "absoluteArcSize=1", fmt.Sprintf("arcSize=%d", arc), "html=1",
-		"fillColor="+color, fmt.Sprintf("fillOpacity=%d", opacity), "strokeColor="+color, fmt.Sprintf("strokeWidth=%g", width),
-		"dashed=1", "dashPattern="+dash, "container=0", "collapsible=0")
+	fill := style("fillColor="+color, fmt.Sprintf("fillOpacity=%d", opacity))
+	titleOpacity := ""
+	switch z.Status {
+	case "planned":
+		fill = style("fillColor="+r.th.Hatch, "fillOpacity=35") + hatch
+		titleOpacity = "textOpacity=60"
+	case "deprecated":
+		dash = dotted
+		v = strings.Replace(v, "<b>", "<b><s>", 1)
+		v = strings.Replace(v, "</b>", "</s></b>", 1)
+	}
+	st := style("rounded=1", "absoluteArcSize=1", fmt.Sprintf("arcSize=%d", arc), "html=1") + fill +
+		style("strokeColor="+color, fmt.Sprintf("strokeWidth=%g", width), "dashed=1", "dashPattern="+dash, "container=0", "collapsible=0")
 	r.vertex(z.ID, "1", "", st, z.X, z.Y, z.W, z.H)
 	// Title and icon share one row and are both centred on it; draw.io's own label
 	// padding would otherwise leave the icon a few pixels above the text.
 	title := house.ZoneTitleBox(z)
 	rowY := title.Y - z.Y
 	r.vertex(z.ID+"__title", z.ID, v, style("text", "html=1", "align=left", "verticalAlign=middle", "spacing=0",
-		fmt.Sprintf("spacingLeft=%g", pad-12), font(house.ZoneFontSize, color), "movable=0", "resizable=0", "connectable=0"),
+		fmt.Sprintf("spacingLeft=%g", pad-12), font(house.ZoneFontSize, color), "movable=0", "resizable=0", "connectable=0", titleOpacity),
 		12, rowY, title.W, title.H)
+	if pill, ok := house.ZonePillRect(z); ok {
+		r.pill(z.ID+"__pill", house.PillText(z.Status, z.Target), pill)
+	}
 	if z.Icon != "" {
-		return r.image(z.ID+"__icon", z.ID, z.Icon, 12, rowY+(title.H-house.ZoneIconSize)/2, house.ZoneIconSize)
+		iconStyle := ""
+		if z.Status == "planned" {
+			iconStyle = "opacity=40"
+		}
+		return r.imageStyled(z.ID+"__icon", z.ID, z.Icon, 12, rowY+(title.H-house.ZoneIconSize)/2, house.ZoneIconSize, iconStyle)
 	}
 	return nil
 }
 
 func (r *renderer) nodeLabel(n diagram.Node) string {
-	v := fmt.Sprintf(`<b><font color="%s" style="font-size:%gpx">%s</font></b>`, r.th.Title, house.TitleFontSize, html.EscapeString(n.Title))
+	title := html.EscapeString(n.Title)
+	if n.Status == "deprecated" {
+		title = "<s>" + title + "</s>"
+	}
+	v := fmt.Sprintf(`<b><font color="%s" style="font-size:%gpx">%s</font></b>`, r.th.Title, house.TitleFontSize, title)
 	if n.Badge != "" {
 		v += fmt.Sprintf(` <b><font color="%s" style="font-size:%gpx">⚠ %s</font></b>`, r.th.Warn, house.SubFontSize, html.EscapeString(n.Badge))
 	}
@@ -244,9 +289,17 @@ func (r *renderer) node(n diagram.Node) error {
 	if n.Icon != "" {
 		pad = house.TextPadLeft
 	}
-	st := style(append(shape, "html=1", "whiteSpace=wrap", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5",
+	fill, iconStyle := "fillColor="+k.Fill+";", ""
+	switch n.Status {
+	case "planned":
+		fill = style("fillColor="+r.th.Hatch) + hatch + style("dashed=1", "dashPattern=6 4", "textOpacity=60")
+		iconStyle = "opacity=40"
+	case "deprecated":
+		fill += style("dashed=1", "dashPattern="+dotted)
+	}
+	st := style(shape...) + fill + style("html=1", "whiteSpace=wrap", "strokeColor="+k.Stroke, "strokeWidth=1.5",
 		"align=left", "verticalAlign=top", fmt.Sprintf("spacingLeft=%g", pad), fmt.Sprintf("spacingTop=%g", top-4), "spacingRight=8",
-		font(house.TitleFontSize, r.th.Text))...)
+		font(house.TitleFontSize, r.th.Text))
 	r.vertex(n.ID, "1", r.nodeLabel(n), st, n.X, n.Y, n.W, n.H)
 	if n.Icon != "" {
 		iconY := house.IconInset
@@ -254,7 +307,12 @@ func (r *renderer) node(n diagram.Node) error {
 			iconY += 8
 		}
 		// Child of the node so it moves with it when edited by hand in draw.io.
-		return r.image(n.ID+"__icon", n.ID, n.Icon, house.IconInset, iconY, house.IconSize)
+		if err := r.imageStyled(n.ID+"__icon", n.ID, n.Icon, house.IconInset, iconY, house.IconSize, iconStyle); err != nil {
+			return err
+		}
+	}
+	if pill, ok := house.NodePillRect(n); ok {
+		r.pill(n.ID+"__pill", house.PillText(n.Status, n.Target), pill)
 	}
 	return nil
 }
@@ -369,6 +427,30 @@ func (r *renderer) legendText(id, text string, x, y, w float64) {
 	r.vertex(id, "1", text, style("text", "html=1", "align=left", "verticalAlign=middle", font(10.5, r.th.Text)), x, y, w, 22)
 }
 
+// legendStatuses explains the planned and deprecated styles used in the diagram, so the
+// hatch and the dots never carry meaning alone (ADR-0006, ADR-0008).
+func (r *renderer) legendStatuses(x, y, w float64) {
+	used := map[string]bool{}
+	for _, n := range r.spec.Nodes {
+		used[n.Status] = true
+	}
+	for _, z := range r.spec.Zones {
+		used[z.Status] = true
+	}
+	k := r.th.Nodes["external"]
+	if used["planned"] {
+		r.vertex("legend-planned", "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+r.th.Hatch)+hatch+
+			style("dashed=1", "dashPattern=6 4", "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+2, 40, 18)
+		r.legendText("legend-planned-text", "planned · pill: target", x+52, y, w)
+		y += 26
+	}
+	if used["deprecated"] {
+		r.vertex("legend-deprecated", "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill,
+			"dashed=1", "dashPattern="+dotted, "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+2, 40, 18)
+		r.legendText("legend-deprecated-text", "deprecated", x+52, y, w)
+	}
+}
+
 func (r *renderer) legend(c diagram.Card) {
 	usedNodes, usedEdges := map[string]bool{}, map[string]bool{}
 	for _, n := range r.spec.Nodes {
@@ -421,6 +503,7 @@ func (r *renderer) legend(c diagram.Card) {
 		r.legendText("legend-edge-"+kind+"-text", k.Legend, x+52, y, c.W/2-72)
 		y += 26
 	}
+	r.legendStatuses(x, y, c.W/2-72)
 	notes := fmt.Sprintf(`Large dashed frame: infra perimeter · small: functional group<br><font color="%s"><b>⚠ Gx</b></font>: docs and code disagree, see "Gaps"`, r.th.Warn)
 	r.vertex(c.ID+"-notes", "1", notes, style("text", "html=1", "align=left", "verticalAlign=top", "whiteSpace=wrap", font(10.5, r.th.Muted)), c.X+20, c.Y+c.H-50, c.W-40, 40)
 }

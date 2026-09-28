@@ -14,9 +14,12 @@ type Theme struct {
 	Title, Text, Muted, Warn, Accent string
 	StepFill, StepText               string
 	PortText                         string
-	Nodes                            map[string]NodeKind
-	Zones                            map[string]string
-	Edges                            map[string]EdgeKind
+	// Hatch fills planned boxes (ADR-0008): the same grey whatever the kind, so a
+	// planned box reads as absent before its colour is read.
+	Hatch string
+	Nodes map[string]NodeKind
+	Zones map[string]string
+	Edges map[string]EdgeKind
 }
 
 type NodeKind struct{ Stroke, Fill, Legend string }
@@ -107,7 +110,7 @@ var Themes = map[string]*Theme{
 		Name: "dark", Background: "#020617", GridLine: "#1e293b",
 		CardFill: "#0b1222", CardStroke: "#1e293b",
 		Title: "#f8fafc", Text: "#e2e8f0", Muted: "#94a3b8", Warn: "#fb923c", Accent: "#34d399",
-		StepFill: "#f8fafc", StepText: "#020617", PortText: "#020617",
+		StepFill: "#f8fafc", StepText: "#020617", PortText: "#020617", Hatch: "#64748b",
 		Nodes: nodes(
 			"frontend", "#22d3ee", "#0c2234",
 			"backend", "#34d399", "#0b2d31",
@@ -128,7 +131,7 @@ var Themes = map[string]*Theme{
 		Name: "light", Background: "#f8fafc", GridLine: "#e2e8f0",
 		CardFill: "#ffffff", CardStroke: "#e2e8f0",
 		Title: "#0f172a", Text: "#1e293b", Muted: "#475569", Warn: "#c2410c", Accent: "#059669",
-		StepFill: "#0f172a", StepText: "#ffffff", PortText: "#ffffff",
+		StepFill: "#0f172a", StepText: "#ffffff", PortText: "#ffffff", Hatch: "#94a3b8",
 		Nodes: nodes(
 			"frontend", "#0891b2", "#ecfeff",
 			"backend", "#059669", "#ecfdf5",

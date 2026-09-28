@@ -33,6 +33,9 @@ decisions go in ADRs, acceptance in `features.json`.
 - Branch `feat/landscape-catalog-views`.
 - T01: `target` in the model, `System.Status` inherits status and target from zones,
   both carried into the resolved diagram; check rejects a target on a non-planned element.
+- T02: `planned` renders hatched and dashed with a target pill on the top border, `deprecated`
+  dotted with the title struck, zones too; legend lines for the statuses used. Checked on the
+  DockAir platform diagram, dark and light. P1b-01, P1b-02 and B-05 pass.
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 
