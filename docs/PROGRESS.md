@@ -31,6 +31,8 @@ decisions go in ADRs, acceptance in `features.json`.
 - Order after acceptance: T01 to T13 of spec 002 (planned rendering first, B-05), then the
   sequence tasks T14, T15 of spec 001 with a DockAir delivery sequence, then T13, T16, T17.
 - Branch `feat/landscape-catalog-views`.
+- T01: `target` in the model, `System.Status` inherits status and target from zones,
+  both carried into the resolved diagram; check rejects a target on a non-planned element.
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 

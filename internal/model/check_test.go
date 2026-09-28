@@ -100,6 +100,10 @@ func TestCheck_ReportsFileIDAndReason(t *testing.T) {
 			"model.yaml", "x", `unknown element kind "server"`},
 		{"unknown status", modelHead + "elements: [{id: x, kind: backend, status: gone}]\n", viewHead + "type: sequence\n", "",
 			"model.yaml", "x", `unknown status "gone"`},
+		{"target on a live element", modelHead + "elements: [{id: x, kind: backend, target: SP1}]\n", viewHead + "type: sequence\n", "",
+			"model.yaml", "x", "target is for planned elements only"},
+		{"target on a child of a planned zone is valid", modelHead + "elements: [{id: z, kind: group, status: planned}, {id: x, kind: bus, parent: z, target: SP1}]\n", viewHead + "type: sequence\n", "",
+			"", "", ""},
 		{"parent that is not a zone", modelHead + "elements: [{id: x, kind: backend}, {id: y, kind: backend, parent: x}]\n", viewHead + "type: sequence\n", "",
 			"model.yaml", "y", `parent "x" is not a zone`},
 		{"connection to a missing element", baseModel + "  - {id: c-ax, from: a, to: x, kind: flow}\n", baseView, baseLayout,
@@ -179,6 +183,33 @@ func TestCheck_ReportsFileIDAndReason(t *testing.T) {
 				}
 			}
 			assert.NotEmpty(t, match, "want %s: %s: %s…, got %v", tt.wantFile, tt.wantID, tt.wantMsg, findings)
+		})
+	}
+}
+
+func TestStatus_InheritsFromTheNearestZoneThatSetsIt(t *testing.T) {
+	t.Parallel()
+	s := system(t, modelHead+`elements:
+  - {id: obs, kind: region, status: planned, target: SP2}
+  - {id: loki, kind: backend, parent: obs}
+  - {id: mq, kind: bus, parent: obs, target: SP1}
+  - {id: old, kind: backend, parent: obs, status: deprecated}
+  - {id: live, kind: backend}
+`, viewHead+"type: sequence\n", "")
+
+	tests := []struct{ id, wantStatus, wantTarget string }{
+		{"loki", "planned", "SP2"},
+		{"mq", "planned", "SP1"},
+		{"old", "deprecated", ""},
+		{"live", "", ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.id, func(t *testing.T) {
+			t.Parallel()
+
+			status, target := s.Status(tt.id)
+
+			assert.Equal(t, [2]string{tt.wantStatus, tt.wantTarget}, [2]string{status, target})
 		})
 	}
 }

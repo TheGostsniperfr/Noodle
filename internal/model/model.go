@@ -36,6 +36,7 @@ type Element struct {
 	Ports        []Port   `yaml:"ports"`
 	Tags         []string `yaml:"tags"`
 	Status       string   `yaml:"status"`
+	Target       string   `yaml:"target"`
 	Multiplicity string   `yaml:"multiplicity"`
 }
 

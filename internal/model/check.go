@@ -86,6 +86,9 @@ func (c *checker) checkModel() {
 		if !statuses[e.Status] {
 			c.errf(file, e.ID, "unknown status %q, want planned or deprecated", e.Status)
 		}
+		if status, _ := c.s.Status(e.ID); e.Target != "" && status != "planned" {
+			c.errf(file, e.ID, "target is for planned elements only (ADR-0013)")
+		}
 		if !shapes[e.Shape] {
 			c.errf(file, e.ID, "unknown shape %q", e.Shape)
 		}
@@ -364,6 +367,30 @@ func (c *checker) checkEndpoint(file, edgeID, end string) {
 	if !sides[side] {
 		c.errf(file, edgeID, "endpoint %q: side %q, want left, right, top or bottom", end, side)
 	}
+}
+
+// Status returns an element's status and target, inherited from the nearest enclosing
+// zone that sets them (ADR-0008, ADR-0013). Parents must exist; Check reports those
+// that do not.
+func (s *System) Status(id string) (status, target string) {
+	byID := make(map[string]Element, len(s.Model.Elements))
+	for _, e := range s.Model.Elements {
+		byID[e.ID] = e
+	}
+	for seen := map[string]bool{}; id != "" && !seen[id]; id = byID[id].Parent {
+		seen[id] = true
+		e := byID[id]
+		if status == "" {
+			status = e.Status
+		}
+		if target == "" {
+			target = e.Target
+		}
+		if status != "" && (status != "planned" || target != "") {
+			break
+		}
+	}
+	return status, target
 }
 
 // Included returns the element ids a view shows, sorted. No include means all.

@@ -49,34 +49,40 @@ func (s *Spec) AnchorRect(id string) (Rect, bool) {
 
 // Zone is a dashed boundary: "region" for an infra or trust perimeter, "group" for a functional category inside one.
 type Zone struct {
-	ID    string  `yaml:"id"`
-	Kind  string  `yaml:"kind"`
-	Label string  `yaml:"label"`
-	Sub   string  `yaml:"sub"`
-	Color string  `yaml:"color"`
-	Icon  string  `yaml:"icon"`
-	X     float64 `yaml:"x"`
-	Y     float64 `yaml:"y"`
-	W     float64 `yaml:"w"`
-	H     float64 `yaml:"h"`
+	ID    string `yaml:"id"`
+	Kind  string `yaml:"kind"`
+	Label string `yaml:"label"`
+	Sub   string `yaml:"sub"`
+	Color string `yaml:"color"`
+	Icon  string `yaml:"icon"`
+	// Status and Target follow ADR-0008 and ADR-0013; a zone's apply to its children.
+	Status string  `yaml:"status"`
+	Target string  `yaml:"target"`
+	X      float64 `yaml:"x"`
+	Y      float64 `yaml:"y"`
+	W      float64 `yaml:"w"`
+	H      float64 `yaml:"h"`
 }
 
 func (z Zone) Rect() Rect { return Rect{z.X, z.Y, z.W, z.H} }
 
 // Node text follows the C4 triptych: name, [technology], one-line responsibility.
 type Node struct {
-	ID    string  `yaml:"id"`
-	Kind  string  `yaml:"kind"`
-	Shape string  `yaml:"shape"` // box (default), cylinder, actor
-	Icon  string  `yaml:"icon"`
-	Title string  `yaml:"title"`
-	Tech  string  `yaml:"tech"`
-	Desc  string  `yaml:"desc"`
-	Badge string  `yaml:"badge"`
-	X     float64 `yaml:"x"`
-	Y     float64 `yaml:"y"`
-	W     float64 `yaml:"w"`
-	H     float64 `yaml:"h"`
+	ID    string `yaml:"id"`
+	Kind  string `yaml:"kind"`
+	Shape string `yaml:"shape"` // box (default), cylinder, actor
+	Icon  string `yaml:"icon"`
+	Title string `yaml:"title"`
+	Tech  string `yaml:"tech"`
+	Desc  string `yaml:"desc"`
+	Badge string `yaml:"badge"`
+	// Status and Target are already inherited from enclosing zones.
+	Status string  `yaml:"status"`
+	Target string  `yaml:"target"`
+	X      float64 `yaml:"x"`
+	Y      float64 `yaml:"y"`
+	W      float64 `yaml:"w"`
+	H      float64 `yaml:"h"`
 }
 
 func (n Node) Rect() Rect { return Rect{n.X, n.Y, n.W, n.H} }
