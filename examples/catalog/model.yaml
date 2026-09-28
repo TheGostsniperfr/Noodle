@@ -1,0 +1,41 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: cnpg-operator, kind: database, icon: cnpg, title: CloudNativePG}
+  - {id: vault, kind: security, icon: vault, title: Vault}
+  - {id: envoy, kind: backend, icon: envoy-gateway, title: Envoy Gateway}
+  - {id: argocd, kind: backend, icon: argo, title: Argo CD}
+  - {id: cilium, kind: security, icon: cilium, title: Cilium}
+  - {id: keycloak, kind: security, icon: keycloak, title: Keycloak, status: planned}
+offerings:
+  - id: dbaas
+    title: Database as a Service
+    icon: cnpg
+    summary: One PostgreSQL cluster per application, primary and replica on separate nodes.
+    provides:
+      - RW endpoint for the app, RO endpoint for reporting
+      - Credentials generated and injected, never written in Git
+    request: "database.enabled: true in the app values"
+    backed_by: [cnpg-operator, vault]
+    owner: platform
+  - id: app-hosting
+    title: App as a Service
+    icon: argo
+    summary: An application is a values file; the platform chart renders everything else.
+    provides:
+      - Namespace, route, network policies and service account
+      - New release candidates deployed automatically
+    request: "a pull request adding apps/<name>/values.yaml"
+    backed_by: [argocd, envoy, cilium]
+    owner: platform
+  - id: sso
+    title: Single sign-on
+    icon: keycloak
+    summary: One login for every internal application, groups mapped to roles.
+    provides:
+      - OIDC client per application
+    request: "sso.enabled: true in the app values"
+    backed_by: [keycloak, envoy]
+    owner: platform
+    status: planned
+    target: SP2
