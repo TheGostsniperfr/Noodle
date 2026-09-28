@@ -48,6 +48,8 @@ decisions go in ADRs, acceptance in `features.json`.
   landscape item without icon.
 - T07: `examples/landscape` (bands, side column, flow, planned with and without target, a
   tool), rendered dark and light, in `init.sh` and CI. P1b-03 to P1b-05 pass.
+- T08: `offerings` in the model (ids share the model id space), view type `catalog` with
+  `include` of offering ids and `columns` 1 to 4; checks on `backed_by`, status, target.
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 

@@ -12,9 +12,27 @@
     "elements": {"type": "array", "items": {"$ref": "#/$defs/element"}},
     "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
     "references": {"type": "array", "items": {"$ref": "#/$defs/reference"}},
-    "annotations": {"type": "array", "items": {"$ref": "#/$defs/annotation"}}
+    "annotations": {"type": "array", "items": {"$ref": "#/$defs/annotation"}},
+    "offerings": {"type": "array", "items": {"$ref": "#/$defs/offering"}, "description": "What the platform offers its users (ADR-0012)."}
   },
   "$defs": {
+    "offering": {
+      "type": "object",
+      "required": ["id", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "title": {"type": "string"},
+        "icon": {"type": "string"},
+        "summary": {"type": "string"},
+        "provides": {"type": "array", "items": {"type": "string"}},
+        "request": {"type": "string", "description": "How a user gets it, e.g. a values key."},
+        "backed_by": {"type": "array", "items": {"$ref": "#/$defs/id"}, "description": "Element ids."},
+        "owner": {"type": "string"},
+        "status": {"enum": ["planned", "deprecated"]},
+        "target": {"type": "string", "minLength": 1}
+      }
+    },
     "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"},
     "element": {
       "type": "object",

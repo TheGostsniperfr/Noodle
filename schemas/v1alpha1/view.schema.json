@@ -21,7 +21,8 @@
       "enum": [
         "topology",
         "sequence",
-        "landscape"
+        "landscape",
+        "catalog"
       ]
     },
     "title": {
@@ -42,7 +43,7 @@
         "type": "string",
         "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*(/\\*\\*)?$"
       },
-      "description": "Element ids, or zone/** for a subtree. Absent means everything."
+      "description": "Element ids, or zone/** for a subtree; offering ids in catalog views. Absent means everything."
     },
     "steps": {
       "type": "array",
@@ -99,6 +100,12 @@
       "type": "number",
       "exclusiveMinimum": 0,
       "description": "Landscape views only: canvas width the grid wraps to."
+    },
+    "columns": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4,
+      "description": "Catalog views only: cards per row (ADR-0012)."
     }
   },
   "$defs": {

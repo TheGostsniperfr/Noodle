@@ -30,7 +30,7 @@ example PNG and look at it.
 
 ## C · Catalog (P1b-06)
 
-- [ ] **T08** Model and schema: `offerings`, `backed_by` check; view `type: catalog`,
+- [x] **T08** Model and schema: `offerings`, `backed_by` check; view `type: catalog`,
   `columns`.
 - [ ] **T09** `resolve.Catalog` and the `offering` card; row heights from content; card
   text overflow in the lint.
