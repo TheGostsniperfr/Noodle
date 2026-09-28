@@ -120,3 +120,22 @@ func TestLandscape_DrawsFlowArrowsBetweenSectionsOnly(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, got.Arrows, 1, "delivery has flow: true and two sections; other bands none")
 }
+
+func TestCatalog_LaysCardsInRowsOfEqualHeight(t *testing.T) {
+	t.Parallel()
+	s, err := model.LoadSystem("../../examples/catalog")
+	require.NoError(t, err)
+	require.Empty(t, model.Check(s))
+
+	got, err := resolve.View(s, "catalog")
+
+	require.NoError(t, err)
+	require.Len(t, got.Offerings, 3)
+	first, second, third := got.Offerings[0], got.Offerings[1], got.Offerings[2]
+	assert.Equal(t, []bool{true, true, true, true}, []bool{
+		first.Y == second.Y && first.H == second.H,
+		first.X < second.X,
+		third.Y >= first.Y+first.H,
+		len(first.Logos) == 2 && first.Request.Y > first.LabelsY[1],
+	})
+}

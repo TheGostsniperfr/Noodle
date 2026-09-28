@@ -32,7 +32,7 @@ example PNG and look at it.
 
 - [x] **T08** Model and schema: `offerings`, `backed_by` check; view `type: catalog`,
   `columns`.
-- [ ] **T09** `resolve.Catalog` and the `offering` card; row heights from content; card
+- [x] **T09** `resolve.Catalog` and the `offering` card; row heights from content; card
   text overflow in the lint.
 - [ ] **T10** `examples/catalog` with a planned offering. Flip **P1b-06**.
 

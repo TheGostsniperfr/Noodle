@@ -21,6 +21,8 @@ func View(s *model.System, viewID string) (*diagram.Spec, error) {
 	switch v.Type {
 	case "landscape":
 		return Landscape(s, viewID)
+	case "catalog":
+		return Catalog(s, viewID)
 	default:
 		return Topology(s, viewID)
 	}

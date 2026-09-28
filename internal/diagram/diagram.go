@@ -36,7 +36,34 @@ type Spec struct {
 	// Arrows are reading aids between groups (a landscape's flow), not connections:
 	// they carry no semantics and the edge rules ignore them.
 	Arrows []Arrow `yaml:"arrows"`
+	// Offerings are catalog cards (ADR-0012), laid out by the catalog resolver.
+	Offerings []Offering `yaml:"-"`
 }
+
+// Offering is a resolved catalog card. Text is already wrapped to the card width; each
+// block's Y is absolute, so the renderer and the lint agree on where text sits.
+type Offering struct {
+	ID, Title, Icon string
+	Status, Target  string
+	Summary         Block
+	Provides        []Block // one per bullet
+	Request         Block
+	Logos           []Logo
+	LabelsY         [3]float64 // "you get", "request", "backed by" label rows; 0 when absent
+	X, Y, W, H      float64
+}
+
+type Block struct {
+	Lines []string
+	Y     float64
+}
+
+type Logo struct {
+	Icon, Title string
+	X, Y        float64
+}
+
+func (o Offering) Rect() Rect { return Rect{o.X, o.Y, o.W, o.H} }
 
 type Arrow struct {
 	ID       string `yaml:"id"`
