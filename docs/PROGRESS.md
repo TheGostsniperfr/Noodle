@@ -46,6 +46,8 @@ decisions go in ADRs, acceptance in `features.json`.
   sections inherit the band colour; flow arrows are `diagram.Arrow`, no semantics.
 - T06: lint findings carry `Warn`; warnings print as `warn:` and never block. First one: a
   landscape item without icon.
+- T07: `examples/landscape` (bands, side column, flow, planned with and without target, a
+  tool), rendered dark and light, in `init.sh` and CI. P1b-03 to P1b-05 pass.
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 

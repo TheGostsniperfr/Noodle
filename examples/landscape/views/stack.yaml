@@ -1,0 +1,33 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: landscape
+title: Example · Tech stack
+subtitle: A landscape view (ADR-0011) resolved from the model, with no layout file.
+bands:
+  - id: delivery
+    title: Delivery
+    sub: from code to running platform
+    color: emerald
+    flow: true
+    sections:
+      - {title: Provisioning, items: [terraform]}
+      - {title: GitOps, items: [argocd]}
+  - id: services
+    title: Platform services
+    sub: what apps consume
+    color: violet
+    sections:
+      - {title: Traffic, items: [envoy]}
+      - {title: Data, items: [cnpg]}
+      - {title: Secrets, items: [vault]}
+  - id: runtime
+    title: Runtime
+    sub: the foundation
+    color: sky
+    sections:
+      - {title: Kubernetes platform, items: [kubernetes, cilium]}
+side:
+  - {title: Identity, color: rose, items: [keycloak]}
+  - {title: Edge, color: amber, items: [cloudflare]}
+labels:
+  cnpg: CloudNativePG

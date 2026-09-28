@@ -1,0 +1,12 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: kubernetes, kind: backend, icon: kubernetes, title: Kubernetes, tech: container runtime}
+  - {id: cilium, kind: security, icon: cilium, title: Cilium, tech: "eBPF, default-deny"}
+  - {id: terraform, kind: tool, icon: rack, title: Terraform, tech: infrastructure as code}
+  - {id: argocd, kind: backend, icon: argo, title: Argo CD, tech: GitOps sync}
+  - {id: envoy, kind: backend, icon: envoy-gateway, title: Envoy Gateway, tech: Gateway API}
+  - {id: cnpg, kind: database, icon: cnpg, title: CloudNativePG, tech: PostgreSQL per app}
+  - {id: vault, kind: security, icon: vault, title: Vault, tech: kv2 secrets}
+  - {id: keycloak, kind: security, icon: keycloak, title: Keycloak, tech: OIDC provider, status: planned, target: SP2}
+  - {id: cloudflare, kind: cloud, icon: cloudflare, title: Cloudflare, tech: tunnels and DNS, status: planned}
