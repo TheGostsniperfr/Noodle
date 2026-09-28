@@ -142,7 +142,7 @@ func (r *renderer) offering(o diagram.Offering) error {
 	if o.Status == "planned" {
 		// Lighter than a planned node: a card carries paragraphs the hatch must not drown.
 		fill = style("fillColor="+r.th.Hatch, "fillOpacity=45") + hatch + style("dashed=1", "dashPattern=6 4")
-		fade = "textOpacity=60"
+		fade = "textOpacity=75"
 	}
 	r.vertex(o.ID, "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=16")+fill+
 		style("strokeColor="+r.th.Accent, "strokeWidth=1.5", "movable=0"), o.X, o.Y, o.W, o.H)
@@ -384,7 +384,8 @@ func (r *renderer) node(n diagram.Node) error {
 	fill, iconStyle := "fillColor="+k.Fill+";", ""
 	switch n.Status {
 	case "planned":
-		fill = style("fillColor="+r.th.Hatch) + hatch + style("dashed=1", "dashPattern=6 4", "textOpacity=60")
+		// Hatch at half strength and text at 75 %: at slide scale a full hatch drowns the title.
+		fill = style("fillColor="+r.th.Hatch, "fillOpacity=50") + hatch + style("dashed=1", "dashPattern=6 4", "textOpacity=75")
 		iconStyle = "opacity=40"
 	case "deprecated":
 		fill += style("dashed=1", "dashPattern="+dotted)
