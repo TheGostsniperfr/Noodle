@@ -38,7 +38,7 @@ example PNG and look at it.
 
 ## D · DockAir (P1b-07)
 
-- [ ] **T11** Icons: `icon-curator` fetches the missing logos, verified with
+- [x] **T11** Icons: `icon-curator` fetches the missing logos, verified with
   `noodle -list-icons`.
 - [ ] **T12** DockAir model: tools and planned items with targets, offerings from its
   service catalog; views `tech-stack` and `service-catalog` in `dockair-docs`.

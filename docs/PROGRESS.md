@@ -54,6 +54,10 @@ decisions go in ADRs, acceptance in `features.json`.
   lint and renderer agree; card: icon and title, summary, you get, how to request (tinted
   box), backed-by logos; rows share the tallest height. Lint: offering text overflow, overlap.
 - T10: `examples/catalog` with a planned offering, dark and light, in `init.sh` and CI. P1b-06 passes.
+- T11: 20 logos in `assets/icons` (simple-icons with brand colour, CNCF artwork, project repos for
+  dagster, loki, grafana-alloy cropped to their mark); `.dark` variants for sqlalchemy and trivy.
+  Not found: checkov (text tile, lint warning), alertmanager (no official mark, the model uses
+  the prometheus logo).
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 
