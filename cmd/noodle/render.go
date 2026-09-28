@@ -134,6 +134,79 @@ func (r *renderer) arrow(a diagram.Arrow) {
 `, a.ID, xmlAttr(st), a.From.X(), a.From.Y(), a.To.X(), a.To.Y())
 }
 
+// offering draws a catalog card (ADR-0012) from the blocks the resolver placed.
+func (r *renderer) offering(o diagram.Offering) error {
+	const pad = house.OfferingPad
+	lineH := house.OfferingLineH(house.OfferingFontSize)
+	fill, fade := "fillColor="+r.th.CardFill+";", ""
+	if o.Status == "planned" {
+		// Lighter than a planned node: a card carries paragraphs the hatch must not drown.
+		fill = style("fillColor="+r.th.Hatch, "fillOpacity=45") + hatch + style("dashed=1", "dashPattern=6 4")
+		fade = "textOpacity=60"
+	}
+	r.vertex(o.ID, "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=16")+fill+
+		style("strokeColor="+r.th.Accent, "strokeWidth=1.5", "movable=0"), o.X, o.Y, o.W, o.H)
+	text := func(id, value string, x, y, w, h, size float64, color string, extra ...string) {
+		st := style(append([]string{"text", "html=1", "align=left", "verticalAlign=top", "spacing=0", "whiteSpace=nowrap",
+			font(size, color), fade}, extra...)...)
+		r.vertex(id, "1", value, st, x, y, w, h)
+	}
+	x, inner := o.X+pad, o.W-2*pad
+	titleX := x
+	if o.Icon != "" {
+		iconStyle := ""
+		if o.Status == "planned" {
+			iconStyle = "opacity=40"
+		}
+		if err := r.imageStyled(o.ID+"__icon", "1", o.Icon, x, o.Y+pad+2, house.IconSize, iconStyle); err != nil {
+			return err
+		}
+		titleX += house.IconSize + 10
+	}
+	text(o.ID+"__title", "<b>"+html.EscapeString(o.Title)+"</b>", titleX, o.Y+pad, inner-(titleX-x), house.OfferingHeaderH, 14, r.th.Title, "verticalAlign=middle")
+	join := func(lines []string) string {
+		esc := make([]string, len(lines))
+		for i, l := range lines {
+			esc[i] = html.EscapeString(l)
+		}
+		return strings.Join(esc, "<br>")
+	}
+	if len(o.Summary.Lines) > 0 {
+		text(o.ID+"__summary", join(o.Summary.Lines), x, o.Summary.Y, inner, float64(len(o.Summary.Lines))*lineH, house.OfferingFontSize, r.th.Text)
+	}
+	for i, label := range []string{"YOU GET", "HOW TO REQUEST", "BACKED BY"} {
+		if o.LabelsY[i] != 0 {
+			text(fmt.Sprintf("%s__label%d", o.ID, i), "<b>"+label+"</b>", x, o.LabelsY[i], inner, house.OfferingLineH(house.OfferingLabelSize), house.OfferingLabelSize, r.th.Muted)
+		}
+	}
+	for i, b := range o.Provides {
+		h := float64(len(b.Lines)) * lineH
+		text(fmt.Sprintf("%s__bullet%d", o.ID, i), "•", x, b.Y, house.OfferingBulletIndent, h, house.OfferingFontSize, r.th.Accent)
+		text(fmt.Sprintf("%s__provides%d", o.ID, i), join(b.Lines), x+house.OfferingBulletIndent, b.Y, inner-house.OfferingBulletIndent, h, house.OfferingFontSize, r.th.Text)
+	}
+	if len(o.Request.Lines) > 0 {
+		h := float64(len(o.Request.Lines))*lineH + 2*house.OfferingRequestPad
+		r.vertex(o.ID+"__request-box", "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=8", "fillColor="+r.th.GridLine, "strokeColor=none", "movable=0"),
+			x, o.Request.Y-house.OfferingRequestPad, inner, h)
+		text(o.ID+"__request", join(o.Request.Lines), x+house.OfferingRequestPad, o.Request.Y, inner-2*house.OfferingRequestPad, h-2*house.OfferingRequestPad,
+			house.OfferingFontSize, r.th.Title)
+	}
+	for i, l := range o.Logos {
+		lx := l.X
+		if l.Icon != "" {
+			if err := r.image(fmt.Sprintf("%s__logo%d", o.ID, i), "1", l.Icon, l.X, l.Y, house.OfferingLogoSize); err != nil {
+				return err
+			}
+			lx += house.OfferingLogoSize + 6
+		}
+		text(fmt.Sprintf("%s__logo%d-text", o.ID, i), html.EscapeString(l.Title), lx, l.Y, house.TextWidth(l.Title, 10)+4, house.OfferingLogoSize, 10, r.th.Text, "verticalAlign=middle")
+	}
+	if pill, ok := house.NodePillRect(diagram.Node{Status: o.Status, Target: o.Target, X: o.X, Y: o.Y, W: o.W, H: o.H}); ok {
+		r.pill(o.ID+"__pill", house.PillText(o.Status, o.Target), pill)
+	}
+	return nil
+}
+
 func (r *renderer) pill(id, text string, b diagram.Rect) {
 	st := style("rounded=1", "arcSize=50", "html=1", "fillColor="+r.th.Muted, "strokeColor=none", "align=center",
 		"verticalAlign=middle", "fontStyle=1", "movable=0", "connectable=0", font(house.PortFontSize, r.th.PortText))
@@ -184,6 +257,11 @@ func (r *renderer) render() (string, error) {
 	}
 	for _, c := range s.Cards {
 		r.card(c)
+	}
+	for _, o := range s.Offerings {
+		if err := r.offering(o); err != nil {
+			return "", err
+		}
 	}
 	return r.close(), nil
 }

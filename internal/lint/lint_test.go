@@ -81,6 +81,10 @@ func TestLint_EveryRuleFlagsItsCase(t *testing.T) {
 		}, "e2", "step [1] already used on e"},
 		{"node icon", "landscape item without a logo", func(s *diagram.Spec) { s.Type = "landscape" },
 			"a", "no icon"},
+		{"offering text", "a word wider than the card", func(s *diagram.Spec) {
+			s.Offerings = append(s.Offerings, diagram.Offering{ID: "o", Title: "O", X: 0, Y: 600, W: 200, H: 100,
+				Summary: diagram.Block{Lines: []string{"averyveryverylongwordthatcannotwrapanywhere"}, Y: 650}})
+		}, "o", "overflows"},
 		{"steps", "two steps on one edge", func(s *diagram.Spec) { s.Edges[0].Label = "[1] [2] GET" },
 			"e", "carries 2 steps, want at most one"},
 	}

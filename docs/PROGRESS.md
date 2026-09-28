@@ -50,6 +50,9 @@ decisions go in ADRs, acceptance in `features.json`.
   tool), rendered dark and light, in `init.sh` and CI. P1b-03 to P1b-05 pass.
 - T08: `offerings` in the model (ids share the model id space), view type `catalog` with
   `include` of offering ids and `columns` 1 to 4; checks on `backed_by`, status, target.
+- T09: `resolve.Catalog`, `diagram.Offering` with text pre-wrapped by `house.Wrap` so resolver,
+  lint and renderer agree; card: icon and title, summary, you get, how to request (tinted
+  box), backed-by logos; rows share the tallest height. Lint: offering text overflow, overlap.
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 

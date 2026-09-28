@@ -35,6 +35,7 @@ var rules = []rule{
 	checkCollinear,
 	checkSteps,
 	checkNodeIcon,
+	checkOfferingText,
 }
 
 type linter struct {

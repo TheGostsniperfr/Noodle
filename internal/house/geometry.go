@@ -203,3 +203,41 @@ func ZonePillRect(z diagram.Zone) (diagram.Rect, bool) {
 	t := ZoneTitleBox(z)
 	return diagram.Rect{X: t.X + t.W + 6, Y: t.Y + (t.H-PortHeight)/2, W: PortWidth(text), H: PortHeight}, true
 }
+
+// Wrap breaks text at spaces into lines no wider than width at fontSize. A word wider
+// than width stays whole on its own line; the lint then reports it.
+func Wrap(text string, fontSize, width float64) []string {
+	var lines []string
+	line := ""
+	for _, word := range strings.Fields(text) {
+		next := word
+		if line != "" {
+			next = line + " " + word
+		}
+		if line != "" && TextWidth(next, fontSize) > width {
+			lines = append(lines, line)
+			next = word
+		}
+		line = next
+	}
+	if line != "" {
+		lines = append(lines, line)
+	}
+	return lines
+}
+
+// Offering card metrics (ADR-0012), shared by the catalog resolver, the lint and the
+// renderer.
+const (
+	OfferingPad          = 20.0
+	OfferingHeaderH      = 32.0
+	OfferingFontSize     = 11.0
+	OfferingLabelSize    = 9.0
+	OfferingGap          = 12.0
+	OfferingLogoSize     = 20.0
+	OfferingBulletIndent = 14.0
+	OfferingRequestPad   = 8.0
+)
+
+// OfferingLineH is the height of one text line in an offering card.
+func OfferingLineH(size float64) float64 { return math.Ceil(size * LineHeightEm) }
