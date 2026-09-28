@@ -53,6 +53,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T09: `resolve.Catalog`, `diagram.Offering` with text pre-wrapped by `house.Wrap` so resolver,
   lint and renderer agree; card: icon and title, summary, you get, how to request (tinted
   box), backed-by logos; rows share the tallest height. Lint: offering text overflow, overlap.
+- T10: `examples/catalog` with a planned offering, dark and light, in `init.sh` and CI. P1b-06 passes.
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 

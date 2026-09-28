@@ -34,7 +34,7 @@ example PNG and look at it.
   `columns`.
 - [x] **T09** `resolve.Catalog` and the `offering` card; row heights from content; card
   text overflow in the lint.
-- [ ] **T10** `examples/catalog` with a planned offering. Flip **P1b-06**.
+- [x] **T10** `examples/catalog` with a planned offering. Flip **P1b-06**.
 
 ## D · DockAir (P1b-07)
 
