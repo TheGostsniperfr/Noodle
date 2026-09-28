@@ -40,7 +40,7 @@ example PNG and look at it.
 
 - [x] **T11** Icons: `icon-curator` fetches the missing logos, verified with
   `noodle -list-icons`.
-- [ ] **T12** DockAir model: tools and planned items with targets, offerings from its
+- [x] **T12** DockAir model: tools and planned items with targets, offerings from its
   service catalog; views `tech-stack` and `service-catalog` in `dockair-docs`.
   `noodle:diagram-reviewer` review, findings fixed. Flip **P1b-07**.
 

@@ -36,7 +36,7 @@
         {"id": "P1b-04", "description": "Landscape view resolves to a computed grid with no layout file", "verify": "noodle render examples/landscape --view stack renders dark and light, lint green", "passes": true},
         {"id": "P1b-05", "description": "Landscape checks: unknown or duplicate item is an error, item without icon a warning", "verify": "go test covers each check with a failing and a passing case", "passes": true},
         {"id": "P1b-06", "description": "Offerings in the model and view type catalog, one card per offering (ADR-0012)", "verify": "noodle render examples/catalog --view catalog renders dark and light, lint green; an unknown backed_by id fails", "passes": true},
-        {"id": "P1b-07", "description": "DockAir tech stack and service catalogue rendered from its model", "verify": "dockair-docs renders views tech-stack and service-catalog; diagram-reviewer reports no blocking finding", "passes": false}
+        {"id": "P1b-07", "description": "DockAir tech stack and service catalogue rendered from its model", "verify": "dockair-docs renders views tech-stack and service-catalog; diagram-reviewer reports no blocking finding", "passes": true}
       ]
     }
   ],
