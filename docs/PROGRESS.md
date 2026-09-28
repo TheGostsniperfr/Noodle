@@ -44,6 +44,8 @@ decisions go in ADRs, acceptance in `features.json`.
   a new tile shape, so the node text and spacing lint apply as is. Sections stretch to fill
   their line with tiles centred; width fits the widest band (max 2400 px) unless set;
   sections inherit the band colour; flow arrows are `diagram.Arrow`, no semantics.
+- T06: lint findings carry `Warn`; warnings print as `warn:` and never block. First one: a
+  landscape item without icon.
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 

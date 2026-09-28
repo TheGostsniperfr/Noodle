@@ -79,6 +79,8 @@ func TestLint_EveryRuleFlagsItsCase(t *testing.T) {
 		{"steps", "a step used twice", func(s *diagram.Spec) {
 			s.Edges = append(s.Edges, diagram.Edge{ID: "e2", From: "a", To: "b", Kind: "link", Label: "[1] ref", Path: []diagram.Point{{180, 200}, {180, 240}, {560, 240}, {560, 200}}})
 		}, "e2", "step [1] already used on e"},
+		{"node icon", "landscape item without a logo", func(s *diagram.Spec) { s.Type = "landscape" },
+			"a", "no icon"},
 		{"steps", "two steps on one edge", func(s *diagram.Spec) { s.Edges[0].Label = "[1] [2] GET" },
 			"e", "carries 2 steps, want at most one"},
 	}
