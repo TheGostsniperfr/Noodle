@@ -54,7 +54,7 @@ const (
 	ObstacleMargin = 4.0
 )
 
-var NodeKindOrder = []string{"frontend", "backend", "database", "cloud", "security", "bus", "external"}
+var NodeKindOrder = []string{"frontend", "backend", "database", "cloud", "security", "bus", "external", "tool"}
 var EdgeKindOrder = []string{"flow", "auth", "tunnel", "async", "blocked", "link"}
 
 var LegendNodes = map[string]string{
@@ -65,6 +65,7 @@ var LegendNodes = map[string]string{
 	"security": "security / identity",
 	"bus":      "bus / messaging",
 	"external": "external / out of scope",
+	"tool":     "tool, no runtime traffic",
 }
 
 var LegendEdges = map[string]string{
@@ -119,6 +120,7 @@ var Themes = map[string]*Theme{
 			"security", "#fb7185", "#3f152f",
 			"bus", "#fb923c", "#563c2f",
 			"external", "#94a3b8", "#172033",
+			"tool", "#94a3b8", "#172033",
 		),
 		Zones: map[string]string{"cyan": "#22d3ee", "emerald": "#34d399", "violet": "#a78bfa", "amber": "#fbbf24",
 			"rose": "#fb7185", "orange": "#fb923c", "slate": "#94a3b8", "indigo": "#818cf8", "sky": "#38bdf8"},
@@ -140,6 +142,7 @@ var Themes = map[string]*Theme{
 			"security", "#e11d48", "#fff1f2",
 			"bus", "#ea580c", "#fff7ed",
 			"external", "#64748b", "#f1f5f9",
+			"tool", "#64748b", "#f1f5f9",
 		),
 		Zones: map[string]string{"cyan": "#0891b2", "emerald": "#059669", "violet": "#7c3aed", "amber": "#d97706",
 			"rose": "#e11d48", "orange": "#ea580c", "slate": "#64748b", "indigo": "#4f46e5", "sky": "#0284c7"},

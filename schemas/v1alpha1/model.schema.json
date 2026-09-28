@@ -22,7 +22,7 @@
       "additionalProperties": false,
       "properties": {
         "id": {"$ref": "#/$defs/id"},
-        "kind": {"enum": ["frontend", "backend", "database", "cloud", "security", "bus", "external", "region", "group"]},
+        "kind": {"enum": ["frontend", "backend", "database", "cloud", "security", "bus", "external", "tool", "region", "group"], "description": "tool: built or run with, receives no traffic (ADR-0011)."},
         "parent": {"$ref": "#/$defs/id", "description": "A zone (kind region or group)."},
         "title": {"type": "string"},
         "tech": {"type": "string"},

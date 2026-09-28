@@ -94,6 +94,29 @@ type View struct {
 	Participants []string          `yaml:"participants"`
 	Cards        []Card            `yaml:"cards"`
 	Notes        []Note            `yaml:"notes"`
+	// Landscape views (ADR-0011): rows of sections, an optional side column, and the
+	// canvas width the grid wraps to.
+	Bands []Band    `yaml:"bands"`
+	Side  []Section `yaml:"side"`
+	Width float64   `yaml:"width"`
+}
+
+// Band is one row of a landscape. Flow draws an arrow between consecutive sections.
+type Band struct {
+	ID       string    `yaml:"id"`
+	Title    string    `yaml:"title"`
+	Sub      string    `yaml:"sub"`
+	Color    string    `yaml:"color"`
+	Icon     string    `yaml:"icon"`
+	Flow     bool      `yaml:"flow"`
+	Sections []Section `yaml:"sections"`
+}
+
+// Section groups landscape items; Items are element ids.
+type Section struct {
+	Title string   `yaml:"title"`
+	Color string   `yaml:"color"`
+	Items []string `yaml:"items"`
 }
 
 // Step is a connection id in a topology view, and a message, reply or note in a
