@@ -24,7 +24,7 @@ example PNG and look at it.
   geometry.
 - [x] **T06** Render `band` zones and `tile` nodes; section flow arrows when `flow: true`.
   Lint warning for items without icon.
-- [ ] **T07** `examples/landscape`: small system covering bands, side column, flow,
+- [x] **T07** `examples/landscape`: small system covering bands, side column, flow,
   a planned item with target, a `tool`. Dark and light in `init.sh` and CI. Flip
   **P1b-03**, **P1b-04**, **P1b-05**.
 
