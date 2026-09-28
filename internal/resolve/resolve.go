@@ -11,6 +11,21 @@ import (
 	"github.com/TheGostsniperfr/Noodle/internal/model"
 )
 
+// View resolves topology and landscape views. Sequence views have their own geometry,
+// see Sequence.
+func View(s *model.System, viewID string) (*diagram.Spec, error) {
+	v, ok := s.Views[viewID]
+	if !ok {
+		return nil, fmt.Errorf("resolve: no view %q", viewID)
+	}
+	switch v.Type {
+	case "landscape":
+		return Landscape(s, viewID)
+	default:
+		return Topology(s, viewID)
+	}
+}
+
 // Topology resolves a topology view. The system must pass model.Check first: missing
 // ids here are programming errors, reported but not explained.
 func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
