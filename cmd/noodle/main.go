@@ -13,6 +13,8 @@ import (
 	"github.com/TheGostsniperfr/Noodle/internal/lint"
 )
 
+const slideMargin = 24.0
+
 func main() {
 	if len(os.Args) > 1 && os.Args[1] == "render" {
 		if err := renderCommand(os.Args[2:]); err != nil {
@@ -25,6 +27,7 @@ func main() {
 	icons := flag.String("icons", "", "comma-separated directories of extra <name>.svg icons, searched before the built-in ones")
 	themeName := flag.String("theme", "dark", "dark or light")
 	listIcons := flag.Bool("list-icons", false, "print the available icon names and exit")
+	slide := flag.Bool("slide", false, "drawing only, cropped to its content: no header, cards or notes")
 	flag.Parse()
 
 	set, err := newIconSet(splitList(*icons))
@@ -40,7 +43,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, "usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]]\n       noodle [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]] spec.yaml   (v0 single file)\n       noodle -list-icons [-icons DIR]")
 		os.Exit(2)
 	}
-	if err := run(flag.Arg(0), *out, *themeName, set); err != nil {
+	if err := run(flag.Arg(0), *out, *themeName, set, *slide); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
@@ -56,7 +59,7 @@ func splitList(s string) []string {
 	return out
 }
 
-func run(specPath, out, themeName string, icons *iconSet) error {
+func run(specPath, out, themeName string, icons *iconSet, slide bool) error {
 	th, err := house.ThemeByName(themeName)
 	if err != nil {
 		return err
@@ -65,10 +68,11 @@ func run(specPath, out, themeName string, icons *iconSet) error {
 	if err != nil {
 		return err
 	}
-	return lintAndRender(spec, out, th, icons)
+	return lintAndRender(spec, out, th, icons, slide)
 }
 
-func lintAndRender(spec *diagram.Spec, out string, th *house.Theme, icons *iconSet) error {
+// lintAndRender lints the full diagram, so a slide crop never hides a finding.
+func lintAndRender(spec *diagram.Spec, out string, th *house.Theme, icons *iconSet, slide bool) error {
 	errors := 0
 	for _, f := range lint.Lint(spec) {
 		level := "lint"
@@ -84,6 +88,9 @@ func lintAndRender(spec *diagram.Spec, out string, th *house.Theme, icons *iconS
 	}
 	if out == "" {
 		return nil
+	}
+	if slide {
+		spec.ForSlide(slideMargin)
 	}
 	r := &renderer{spec: spec, th: th, icons: icons, cache: map[string]string{}, ports: house.PortBadges(spec)}
 	xml, err := r.render()

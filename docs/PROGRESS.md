@@ -65,6 +65,9 @@ decisions go in ADRs, acceptance in `features.json`.
   blocking finding fixed and checked live: app databases run PostgreSQL 18.4, BI 17.7. Other
   fixes: no flow arrows on delivery (the order was not true), collaboration moved to the
   developer platform, TLS at the SiOps edge. P1b-07 passes. Not committed in dockair-docs.
+- `-slide` render flag (both CLI forms): drawing only, no header, cards or notes, canvas
+  cropped to the content. Lint still runs on the full diagram. Asked by Brian: pasted in a
+  slide, the full export wasted most of the space on frame and legend.
 - Next: T13 (skill), then T03 once B-06 lands, then spec 001 T14 (sequence).
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned

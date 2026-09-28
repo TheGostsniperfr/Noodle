@@ -276,6 +276,9 @@ func (r *renderer) background() {
 
 func (r *renderer) header() {
 	s := r.spec
+	if s.Title == "" && s.Subtitle == "" && len(s.Meta) == 0 {
+		return
+	}
 	r.vertex("header-dot", "1", "", style("ellipse", "fillColor="+r.th.Accent, "strokeColor=none"), 40, 44, 12, 12)
 	title := fmt.Sprintf(`<b>%s</b>`, html.EscapeString(s.Title))
 	r.vertex("header-title", "1", title, style("text", "html=1", "align=left", "verticalAlign=middle", font(24, r.th.Title)), 64, 30, s.Width-400, 40)

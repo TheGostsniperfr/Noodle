@@ -20,6 +20,7 @@ func renderCommand(args []string) error {
 	out := fs.String("o", "", "output .drawio path (lint only when empty)")
 	icons := fs.String("icons", "", "comma-separated directories of extra <name>.svg icons")
 	themeName := fs.String("theme", "dark", "dark or light")
+	slide := fs.Bool("slide", false, "drawing only, cropped to its content: no header, cards or notes")
 	var dirs []string
 	for len(args) > 0 {
 		if err := fs.Parse(args); err != nil {
@@ -71,7 +72,7 @@ func renderCommand(args []string) error {
 	if err != nil {
 		return err
 	}
-	return lintAndRender(spec, *out, th, set)
+	return lintAndRender(spec, *out, th, set, *slide)
 }
 
 // renderSequenceView lints the participant boxes only: rows and columns are computed,
