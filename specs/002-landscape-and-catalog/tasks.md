@@ -22,7 +22,7 @@ example PNG and look at it.
 - [x] **T05** `resolve.Landscape`: bands to `band` zones, sections to `group` zones,
   items to `tile` nodes, computed grid. Test: a two-band system resolves to the expected
   geometry.
-- [ ] **T06** Render `band` zones and `tile` nodes; section flow arrows when `flow: true`.
+- [x] **T06** Render `band` zones and `tile` nodes; section flow arrows when `flow: true`.
   Lint warning for items without icon.
 - [ ] **T07** `examples/landscape`: small system covering bands, side column, flow,
   a planned item with target, a `tool`. Dark and light in `init.sh` and CI. Flip

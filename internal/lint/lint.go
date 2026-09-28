@@ -12,7 +12,11 @@ import (
 	"github.com/TheGostsniperfr/Noodle/internal/house"
 )
 
-type Finding struct{ Where, Msg string }
+// Finding is an error unless Warn: warnings are printed but never block rendering.
+type Finding struct {
+	Where, Msg string
+	Warn       bool
+}
 
 type rule func(*linter)
 
@@ -30,6 +34,7 @@ var rules = []rule{
 	checkLabelOverlaps,
 	checkCollinear,
 	checkSteps,
+	checkNodeIcon,
 }
 
 type linter struct {
@@ -39,7 +44,11 @@ type linter struct {
 }
 
 func (l *linter) errf(where, format string, args ...any) {
-	l.findings = append(l.findings, Finding{where, fmt.Sprintf(format, args...)})
+	l.findings = append(l.findings, Finding{Where: where, Msg: fmt.Sprintf(format, args...)})
+}
+
+func (l *linter) warnf(where, format string, args ...any) {
+	l.findings = append(l.findings, Finding{Where: where, Msg: fmt.Sprintf(format, args...), Warn: true})
 }
 
 func Lint(s *diagram.Spec) []Finding {

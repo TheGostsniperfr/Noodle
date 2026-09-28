@@ -69,12 +69,18 @@ func run(specPath, out, themeName string, icons *iconSet) error {
 }
 
 func lintAndRender(spec *diagram.Spec, out string, th *house.Theme, icons *iconSet) error {
-	findings := lint.Lint(spec)
-	for _, f := range findings {
-		fmt.Fprintf(os.Stderr, "lint: %-28s %s\n", f.Where, f.Msg)
+	errors := 0
+	for _, f := range lint.Lint(spec) {
+		level := "lint"
+		if f.Warn {
+			level = "warn"
+		} else {
+			errors++
+		}
+		fmt.Fprintf(os.Stderr, "%s: %-28s %s\n", level, f.Where, f.Msg)
 	}
-	if len(findings) > 0 {
-		return fmt.Errorf("%d lint finding(s)", len(findings))
+	if errors > 0 {
+		return fmt.Errorf("%d lint finding(s)", errors)
 	}
 	if out == "" {
 		return nil
