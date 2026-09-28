@@ -16,5 +16,8 @@ that supersedes the old one.
 | [0009](0009-view-type-field.md) | A view's perspective is `type`, not `kind` | Accepted |
 | [0010](0010-denied-and-enforcement.md) | A denied connection names what enforces it | Accepted |
 | [0011](0011-sequence-messages.md) | A sequence step is a message over a model connection | Accepted |
+| [0011](0011-landscape-view.md) | A landscape view shows the technology stack | Accepted |
+| [0012](0012-offerings-and-catalog-view.md) | Platform offerings live in the model; a catalog view shows them | Accepted |
+| [0013](0013-planned-target.md) | A planned element names when it is expected | Accepted |
 
 Template: Context · Decision · Consequences. Keep it under a page.

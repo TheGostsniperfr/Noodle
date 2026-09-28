@@ -8,8 +8,8 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `./scripts/init.sh`: fix anything red before new work.
 2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: task T16 in [`tasks.md`](../specs/001-model-view-layout-split/tasks.md),
-   then the tasks in order. Sonnet is enough: the decisions are in ADR-0007.
+3. Next action: spec 002, task T01 in [`tasks.md`](../specs/002-landscape-and-catalog/tasks.md),
+   then its tasks in order; afterwards T16 of spec 001.
 
 ## Open threads outside this repo
 
@@ -20,6 +20,17 @@ decisions go in ADRs, acceptance in `features.json`.
 | `~/.dotfiles` | noodle plugin installed declaratively (commit `9bf7e57`) | pushed. `nixos-rebuild switch` still to run. |
 
 ## Log
+
+### 2026-09-28 · Spec 002 drafted: landscape and catalog views
+
+- Brian agreed to a phase 1b before phase 1 closes: tech stack (landscape) and service
+  catalogue (catalog) views, both derived from the model, computed grid, no layout file.
+- ADR-0011 (landscape view, element kind `tool`), ADR-0012 (`offerings` in the model,
+  catalog view), ADR-0013 (`target` on planned items), accepted by Brian. Spec, plan and tasks in `specs/002-landscape-and-catalog/`, features
+  P1b-01 to P1b-07. First consumer: the DockAir Sprint 0 deck.
+- Order after acceptance: T01 to T13 of spec 002 (planned rendering first, B-05), then the
+  sequence tasks T14, T15 of spec 001 with a DockAir delivery sequence, then T13, T16, T17.
+- Branch `feat/landscape-catalog-views`.
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 

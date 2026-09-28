@@ -24,6 +24,20 @@
         {"id": "P1-05", "description": "Lint rules moved to internal/lint, one rule per file, table-driven tests", "verify": "go test ./internal/lint/... covers every rule with a failing and a passing case", "passes": true},
         {"id": "P1-06", "description": "Second view on the same model: the OIDC login as a sequence", "verify": "two views render from one model.yaml; lint green", "passes": true}
       ]
+    },
+    {
+      "id": "1b",
+      "title": "Landscape and catalog views",
+      "spec": "specs/002-landscape-and-catalog/spec.md",
+      "features": [
+        {"id": "P1b-01", "description": "Elements and zones with status planned or deprecated render in the core per ADR-0008, with legend lines", "verify": "a system with planned and deprecated elements renders hatched and dotted boxes with no post-processing", "passes": false},
+        {"id": "P1b-02", "description": "A planned element, zone or offering shows its target as a pill (ADR-0013)", "verify": "target renders on a planned tile; target without status planned fails model.Check", "passes": false},
+        {"id": "P1b-03", "description": "Element kind tool and view type landscape in the v1alpha1 schemas (ADR-0011)", "verify": "examples/landscape validates against the schemas in go test", "passes": false},
+        {"id": "P1b-04", "description": "Landscape view resolves to a computed grid with no layout file", "verify": "noodle render examples/landscape --view stack renders dark and light, lint green", "passes": false},
+        {"id": "P1b-05", "description": "Landscape checks: unknown or duplicate item is an error, item without icon a warning", "verify": "go test covers each check with a failing and a passing case", "passes": false},
+        {"id": "P1b-06", "description": "Offerings in the model and view type catalog, one card per offering (ADR-0012)", "verify": "noodle render examples/catalog --view catalog renders dark and light, lint green; an unknown backed_by id fails", "passes": false},
+        {"id": "P1b-07", "description": "DockAir tech stack and service catalogue rendered from its model", "verify": "dockair-docs renders views tech-stack and service-catalog; diagram-reviewer reports no blocking finding", "passes": false}
+      ]
     }
   ],
   "backlog": [
