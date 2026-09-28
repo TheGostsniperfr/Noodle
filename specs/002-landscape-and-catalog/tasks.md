@@ -6,7 +6,7 @@ example PNG and look at it.
 
 ## A · Planned status in the core (P1b-01, P1b-02)
 
-- [ ] **T01** `status` and `target` flow through resolve into `diagram.Node` and
+- [x] **T01** `status` and `target` flow through resolve into `diagram.Node` and
   `diagram.Zone`, zone values inherited by children that set none. Check: `target`
   without `planned` fails. Schemas updated.
 - [ ] **T02** Render `planned` (hatch, dashed, 60 % text, 40 % icon), `deprecated`

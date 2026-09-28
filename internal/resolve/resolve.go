@@ -46,9 +46,11 @@ func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
 		if err != nil {
 			return nil, err
 		}
+		status, target := s.Status(e.ID)
 		if e.IsZone() {
 			out.Zones = append(out.Zones, diagram.Zone{
 				ID: e.ID, Kind: e.Kind, Label: e.Title, Sub: e.Sub, Color: e.Color, Icon: e.Icon,
+				Status: status, Target: target,
 				X: box.X, Y: box.Y, W: box.W, H: box.H,
 			})
 			continue
@@ -56,6 +58,7 @@ func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
 		out.Nodes = append(out.Nodes, diagram.Node{
 			ID: e.ID, Kind: e.Kind, Shape: e.Shape, Icon: e.Icon, Title: e.Title, Tech: e.Tech,
 			Desc: e.Desc, Badge: strings.Join(badges[e.ID], " "),
+			Status: status, Target: target,
 			X: box.X, Y: box.Y, W: box.W, H: box.H,
 		})
 	}

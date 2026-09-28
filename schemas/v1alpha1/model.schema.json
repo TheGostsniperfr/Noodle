@@ -34,6 +34,7 @@
         "ports": {"type": "array", "items": {"$ref": "#/$defs/port"}},
         "tags": {"type": "array", "items": {"type": "string"}},
         "status": {"enum": ["planned", "deprecated"], "description": "ADR-0008. Absent means live."},
+        "target": {"type": "string", "minLength": 1, "description": "ADR-0013. When a planned element is expected, e.g. 'SP1'."},
         "multiplicity": {"type": "string", "minLength": 1, "description": "ADR-0008, e.g. 'one per team'."}
       }
     },
