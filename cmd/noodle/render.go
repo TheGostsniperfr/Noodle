@@ -123,6 +123,17 @@ const (
 	dotted = "1 3"
 )
 
+func (r *renderer) arrow(a diagram.Arrow) {
+	st := style("edgeStyle=none", "html=1", "strokeColor="+r.th.Muted, "strokeWidth=2.5", "endArrow=block", "endFill=1", "endSize=8")
+	fmt.Fprintf(&r.b, `        <mxCell id="%s" value="" style="%s" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="%g" y="%g" as="sourcePoint" />
+            <mxPoint x="%g" y="%g" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+`, a.ID, xmlAttr(st), a.From.X(), a.From.Y(), a.To.X(), a.To.Y())
+}
+
 func (r *renderer) pill(id, text string, b diagram.Rect) {
 	st := style("rounded=1", "arcSize=50", "html=1", "fillColor="+r.th.Muted, "strokeColor=none", "align=center",
 		"verticalAlign=middle", "fontStyle=1", "movable=0", "connectable=0", font(house.PortFontSize, r.th.PortText))
@@ -163,6 +174,9 @@ func (r *renderer) render() (string, error) {
 		if err := r.node(n); err != nil {
 			return "", err
 		}
+	}
+	for _, a := range s.Arrows {
+		r.arrow(a)
 	}
 	r.portBadges()
 	for _, n := range s.Notes {

@@ -19,7 +19,7 @@ example PNG and look at it.
 
 - [x] **T04** Model and schema: kind `tool`; view `type: landscape`, `bands`, `side`,
   `labels`. Checks: unknown item, duplicate item. Table-driven tests.
-- [ ] **T05** `resolve.Landscape`: bands to `band` zones, sections to `group` zones,
+- [x] **T05** `resolve.Landscape`: bands to `band` zones, sections to `group` zones,
   items to `tile` nodes, computed grid. Test: a two-band system resolves to the expected
   geometry.
 - [ ] **T06** Render `band` zones and `tile` nodes; section flow arrows when `flow: true`.

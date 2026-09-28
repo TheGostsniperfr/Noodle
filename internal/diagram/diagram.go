@@ -20,7 +20,9 @@ func (r Rect) Contains(o Rect) bool {
 }
 
 type Spec struct {
-	ID       string   `yaml:"id"`
+	ID string `yaml:"id"`
+	// Type is the view type it was resolved from; empty for topology and v0 files.
+	Type     string   `yaml:"-"`
 	Title    string   `yaml:"title"`
 	Subtitle string   `yaml:"subtitle"`
 	Meta     []string `yaml:"meta"`
@@ -31,6 +33,14 @@ type Spec struct {
 	Edges    []Edge   `yaml:"edges"`
 	Notes    []Note   `yaml:"notes"`
 	Cards    []Card   `yaml:"cards"`
+	// Arrows are reading aids between groups (a landscape's flow), not connections:
+	// they carry no semantics and the edge rules ignore them.
+	Arrows []Arrow `yaml:"arrows"`
+}
+
+type Arrow struct {
+	ID       string `yaml:"id"`
+	From, To Point
 }
 
 func (s *Spec) AnchorRect(id string) (Rect, bool) {

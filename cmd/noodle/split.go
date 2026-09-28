@@ -67,7 +67,7 @@ func renderCommand(args []string) error {
 	if v.Type == "sequence" {
 		return renderSequenceView(s, id, *out, th, set)
 	}
-	spec, err := resolve.Topology(s, id)
+	spec, err := resolve.View(s, id)
 	if err != nil {
 		return err
 	}

@@ -40,6 +40,10 @@ decisions go in ADRs, acceptance in `features.json`.
   cannot be deleted yet.
 - T04: element kind `tool` (external palette), view type `landscape` with `bands`, `side`,
   `width`; checks for unknown, zone or duplicate items and element labels.
+- T05: `resolve.Landscape` and `resolve.View` (dispatch by type). Items are plain nodes, not
+  a new tile shape, so the node text and spacing lint apply as is. Sections stretch to fill
+  their line with tiles centred; width fits the widest band (max 2400 px) unless set;
+  sections inherit the band colour; flow arrows are `diagram.Arrow`, no semantics.
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 

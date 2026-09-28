@@ -84,3 +84,39 @@ elements:
 	assert.Equal(t, [4]string{"planned", "SP2", "planned", "SP2"},
 		[4]string{got.Zones[0].Status, got.Zones[0].Target, got.Nodes[0].Status, got.Nodes[0].Target})
 }
+
+func TestLandscape_PlacesItemsInsideTheirSectionAndBand(t *testing.T) {
+	t.Parallel()
+	s, err := model.LoadSystem("../../examples/landscape")
+	require.NoError(t, err)
+	require.Empty(t, model.Check(s))
+
+	got, err := resolve.View(s, "stack")
+
+	require.NoError(t, err)
+	zones := map[string]diagram.Rect{}
+	for _, z := range got.Zones {
+		zones[z.ID] = z.Rect()
+	}
+	nodes := map[string]diagram.Rect{}
+	for _, n := range got.Nodes {
+		nodes[n.ID] = n.Rect()
+	}
+	contains := func(zone, node string) bool { return zones[zone].Contains(nodes[node]) }
+	assert.Equal(t, []bool{true, true, true, true, true}, []bool{
+		contains("delivery", "argocd"), contains("delivery-1", "argocd"),
+		contains("runtime-0", "cilium"), contains("side-0", "keycloak"),
+		zones["delivery"].Y+zones["delivery"].H < zones["services"].Y,
+	})
+}
+
+func TestLandscape_DrawsFlowArrowsBetweenSectionsOnly(t *testing.T) {
+	t.Parallel()
+	s, err := model.LoadSystem("../../examples/landscape")
+	require.NoError(t, err)
+
+	got, err := resolve.View(s, "stack")
+
+	require.NoError(t, err)
+	assert.Len(t, got.Arrows, 1, "delivery has flow: true and two sections; other bands none")
+}
