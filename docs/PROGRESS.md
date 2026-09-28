@@ -58,6 +58,8 @@ decisions go in ADRs, acceptance in `features.json`.
   dagster, loki, grafana-alloy cropped to their mark); `.dark` variants for sqlalchemy and trivy.
   Not found: checkov (text tile, lint warning), alertmanager (no official mark, the model uses
   the prometheus logo).
+- Planned boxes and cards: hatch at 50 % and text at 75 %, after the diagram-reviewer found
+  17 planned tiles hard to read at slide scale.
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 
