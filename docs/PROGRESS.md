@@ -60,6 +60,12 @@ decisions go in ADRs, acceptance in `features.json`.
   the prometheus logo).
 - Planned boxes and cards: hatch at 50 % and text at 75 %, after the diagram-reviewer found
   17 planned tiles hard to read at slide scale.
+- T12: DockAir system in `dockair-docs/docs/02-architecture/systems/dockair` (47 elements, 9
+  offerings), views `tech-stack` (width 2900) and `service-catalog` (3 columns). Reviewer's one
+  blocking finding fixed and checked live: app databases run PostgreSQL 18.4, BI 17.7. Other
+  fixes: no flow arrows on delivery (the order was not true), collaboration moved to the
+  developer platform, TLS at the SiOps edge. P1b-07 passes. Not committed in dockair-docs.
+- Next: T13 (skill), then T03 once B-06 lands, then spec 001 T14 (sequence).
 
 ### 2026-09-27 · ADR-0007 accepted, phase 1 planned
 
