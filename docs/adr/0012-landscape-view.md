@@ -1,4 +1,4 @@
-# ADR-0011 · A landscape view shows the technology stack
+# ADR-0012 · A landscape view shows the technology stack
 
 - Status: Accepted
 - Date: 2026-09-28
@@ -48,7 +48,7 @@ is, or should be, an element of the architecture model. Some are not runtime com
 - **Lint.** An item that is not a model element, or appears twice in one view, is an
   error. An item without an icon is a warning. The geometry rules of ADR-0006 apply to
   the resolved grid unchanged.
-- `planned` items render as ADR-0008 says, with their target (ADR-0013).
+- `planned` items render as ADR-0008 says, with their target (ADR-0014).
 
 ## Consequences
 

@@ -1,4 +1,4 @@
-# ADR-0012 · Platform offerings live in the model; a catalog view shows them
+# ADR-0013 · Platform offerings live in the model; a catalog view shows them
 
 - Status: Accepted
 - Date: 2026-09-28
@@ -28,7 +28,7 @@ elements the model already has.
       request: "database.enabled: true in app-configs"
       backed_by: [cnpg-operator, vault]
       owner: socle
-      status: planned            # optional, ADR-0008 values, target from ADR-0013
+      status: planned            # optional, ADR-0008 values, target from ADR-0014
   ```
 
   `backed_by` ids must exist in the model. `owner` is free text.

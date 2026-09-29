@@ -3,7 +3,7 @@ package lint
 import "github.com/TheGostsniperfr/Noodle/internal/house"
 
 // checkOfferingText: every line of a catalog card fits its width, and cards do not
-// overlap (ADR-0012). The resolver wraps at spaces, so this catches single long words.
+// overlap (ADR-0013). The resolver wraps at spaces, so this catches single long words.
 func checkOfferingText(l *linter) {
 	for i, o := range l.s.Offerings {
 		inner := o.W - 2*house.OfferingPad

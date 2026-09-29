@@ -36,7 +36,7 @@ type Spec struct {
 	// Arrows are reading aids between groups (a landscape's flow), not connections:
 	// they carry no semantics and the edge rules ignore them.
 	Arrows []Arrow `yaml:"arrows"`
-	// Offerings are catalog cards (ADR-0012), laid out by the catalog resolver.
+	// Offerings are catalog cards (ADR-0013), laid out by the catalog resolver.
 	Offerings []Offering `yaml:"-"`
 }
 
@@ -92,7 +92,7 @@ type Zone struct {
 	Sub   string `yaml:"sub"`
 	Color string `yaml:"color"`
 	Icon  string `yaml:"icon"`
-	// Status and Target follow ADR-0008 and ADR-0013; a zone's apply to its children.
+	// Status and Target follow ADR-0008 and ADR-0014; a zone's apply to its children.
 	Status string  `yaml:"status"`
 	Target string  `yaml:"target"`
 	X      float64 `yaml:"x"`

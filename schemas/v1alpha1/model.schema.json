@@ -13,7 +13,7 @@
     "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
     "references": {"type": "array", "items": {"$ref": "#/$defs/reference"}},
     "annotations": {"type": "array", "items": {"$ref": "#/$defs/annotation"}},
-    "offerings": {"type": "array", "items": {"$ref": "#/$defs/offering"}, "description": "What the platform offers its users (ADR-0012)."}
+    "offerings": {"type": "array", "items": {"$ref": "#/$defs/offering"}, "description": "What the platform offers its users (ADR-0013)."}
   },
   "$defs": {
     "offering": {
@@ -40,7 +40,7 @@
       "additionalProperties": false,
       "properties": {
         "id": {"$ref": "#/$defs/id"},
-        "kind": {"enum": ["frontend", "backend", "database", "cloud", "security", "bus", "external", "tool", "region", "group"], "description": "tool: built or run with, receives no traffic (ADR-0011)."},
+        "kind": {"enum": ["frontend", "backend", "database", "cloud", "security", "bus", "external", "tool", "region", "group"], "description": "tool: built or run with, receives no traffic (ADR-0012)."},
         "parent": {"$ref": "#/$defs/id", "description": "A zone (kind region or group)."},
         "title": {"type": "string"},
         "tech": {"type": "string"},
@@ -52,7 +52,7 @@
         "ports": {"type": "array", "items": {"$ref": "#/$defs/port"}},
         "tags": {"type": "array", "items": {"type": "string"}},
         "status": {"enum": ["planned", "deprecated"], "description": "ADR-0008. Absent means live."},
-        "target": {"type": "string", "minLength": 1, "description": "ADR-0013. When a planned element is expected, e.g. 'SP1'."},
+        "target": {"type": "string", "minLength": 1, "description": "ADR-0014. When a planned element is expected, e.g. 'SP1'."},
         "multiplicity": {"type": "string", "minLength": 1, "description": "ADR-0008, e.g. 'one per team'."}
       }
     },

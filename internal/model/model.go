@@ -21,7 +21,7 @@ type Model struct {
 	Offerings   []Offering   `yaml:"offerings"`
 }
 
-// Offering is what a platform promises its users and how to get it (ADR-0012).
+// Offering is what a platform promises its users and how to get it (ADR-0013).
 // BackedBy lists the elements that deliver it.
 type Offering struct {
 	ID       string   `yaml:"id"`
@@ -110,12 +110,12 @@ type View struct {
 	Participants []string          `yaml:"participants"`
 	Cards        []Card            `yaml:"cards"`
 	Notes        []Note            `yaml:"notes"`
-	// Landscape views (ADR-0011): rows of sections, an optional side column, and the
+	// Landscape views (ADR-0012): rows of sections, an optional side column, and the
 	// canvas width the grid wraps to.
 	Bands []Band    `yaml:"bands"`
 	Side  []Section `yaml:"side"`
 	Width float64   `yaml:"width"`
-	// Catalog views (ADR-0012): cards per row; Include lists offering ids.
+	// Catalog views (ADR-0013): cards per row; Include lists offering ids.
 	Columns int `yaml:"columns"`
 }
 

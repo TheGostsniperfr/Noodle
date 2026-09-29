@@ -25,8 +25,8 @@ decisions go in ADRs, acceptance in `features.json`.
 
 - Brian agreed to a phase 1b before phase 1 closes: tech stack (landscape) and service
   catalogue (catalog) views, both derived from the model, computed grid, no layout file.
-- ADR-0011 (landscape view, element kind `tool`), ADR-0012 (`offerings` in the model,
-  catalog view), ADR-0013 (`target` on planned items), accepted by Brian. Spec, plan and tasks in `specs/002-landscape-and-catalog/`, features
+- ADR-0012 (landscape view, element kind `tool`), ADR-0013 (`offerings` in the model,
+  catalog view), ADR-0014 (`target` on planned items), accepted by Brian. Spec, plan and tasks in `specs/002-landscape-and-catalog/`, features
   P1b-01 to P1b-07. First consumer: the DockAir Sprint 0 deck.
 - Order after acceptance: T01 to T13 of spec 002 (planned rendering first, B-05), then the
   sequence tasks T14, T15 of spec 001 with a DockAir delivery sequence, then T13, T16, T17.

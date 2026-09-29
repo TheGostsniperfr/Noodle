@@ -172,7 +172,7 @@ func ZoneTitleBox(z diagram.Zone) diagram.Rect {
 }
 
 // PillText is what a planned box's pill says: its target, or "planned" without one
-// (ADR-0013).
+// (ADR-0014).
 func PillText(status, target string) string {
 	if status != "planned" {
 		return ""
@@ -226,7 +226,7 @@ func Wrap(text string, fontSize, width float64) []string {
 	return lines
 }
 
-// Offering card metrics (ADR-0012), shared by the catalog resolver, the lint and the
+// Offering card metrics (ADR-0013), shared by the catalog resolver, the lint and the
 // renderer.
 const (
 	OfferingPad          = 20.0

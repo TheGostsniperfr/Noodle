@@ -90,7 +90,7 @@ func (c *checker) checkModel() {
 			c.errf(file, e.ID, "unknown status %q, want planned or deprecated", e.Status)
 		}
 		if status, _ := c.s.Status(e.ID); e.Target != "" && status != "planned" {
-			c.errf(file, e.ID, "target is for planned elements only (ADR-0013)")
+			c.errf(file, e.ID, "target is for planned elements only (ADR-0014)")
 		}
 		if !shapes[e.Shape] {
 			c.errf(file, e.ID, "unknown shape %q", e.Shape)
@@ -136,7 +136,7 @@ func (c *checker) checkModel() {
 			c.errf(file, o.ID, "unknown status %q, want planned or deprecated", o.Status)
 		}
 		if o.Target != "" && o.Status != "planned" {
-			c.errf(file, o.ID, "target is for planned offerings only (ADR-0013)")
+			c.errf(file, o.ID, "target is for planned offerings only (ADR-0014)")
 		}
 		for _, id := range o.BackedBy {
 			c.mustElement(file, o.ID, "backed_by", id)
@@ -223,7 +223,7 @@ func (c *checker) checkView(v *View) {
 		c.errf(file, v.ID, "topology view has no layouts/%s.yaml", v.ID)
 	}
 	if computedViews[v.Type] && hasLayout {
-		c.errf(file, v.ID, "%s views are computed and take no layout (ADR-0007, ADR-0011)", v.Type)
+		c.errf(file, v.ID, "%s views are computed and take no layout (ADR-0007, ADR-0012)", v.Type)
 	}
 }
 
@@ -306,7 +306,7 @@ func (c *checker) checkSequence(file string, v *View) {
 	}
 }
 
-// checkLandscape: every item is a component of the model, shown once (ADR-0011).
+// checkLandscape: every item is a component of the model, shown once (ADR-0012).
 func (c *checker) checkLandscape(file string, v *View) {
 	if v.Type != "landscape" {
 		if len(v.Bands) > 0 || len(v.Side) > 0 {
@@ -436,7 +436,7 @@ func (c *checker) checkEndpoint(file, edgeID, end string) {
 }
 
 // Status returns an element's status and target, inherited from the nearest enclosing
-// zone that sets them (ADR-0008, ADR-0013). Parents must exist; Check reports those
+// zone that sets them (ADR-0008, ADR-0014). Parents must exist; Check reports those
 // that do not.
 func (s *System) Status(id string) (status, target string) {
 	byID := make(map[string]Element, len(s.Model.Elements))
