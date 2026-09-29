@@ -1,7 +1,7 @@
 # Plan 002 · Landscape and catalog views
 
-Spec: [`spec.md`](spec.md). Decisions: ADR-0011 (landscape, `tool`), ADR-0012
-(offerings, catalog), ADR-0013 (`target`).
+Spec: [`spec.md`](spec.md). Decisions: ADR-0012 (landscape, `tool`), ADR-0013
+(offerings, catalog), ADR-0014 (`target`).
 
 ## Approach
 

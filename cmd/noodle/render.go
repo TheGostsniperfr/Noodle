@@ -134,7 +134,7 @@ func (r *renderer) arrow(a diagram.Arrow) {
 `, a.ID, xmlAttr(st), a.From.X(), a.From.Y(), a.To.X(), a.To.Y())
 }
 
-// offering draws a catalog card (ADR-0012) from the blocks the resolver placed.
+// offering draws a catalog card (ADR-0013) from the blocks the resolver placed.
 func (r *renderer) offering(o diagram.Offering) error {
 	const pad = house.OfferingPad
 	lineH := house.OfferingLineH(house.OfferingFontSize)

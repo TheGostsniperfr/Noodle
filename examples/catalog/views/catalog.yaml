@@ -2,6 +2,6 @@ apiVersion: noodle/v1alpha1
 kind: View
 type: catalog
 title: Example · Service catalogue
-subtitle: A catalog view (ADR-0012) resolved from the model's offerings, with no layout file.
+subtitle: A catalog view (ADR-0013) resolved from the model's offerings, with no layout file.
 include: [dbaas, app-hosting, sso]
 columns: 2

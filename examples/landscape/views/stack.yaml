@@ -2,7 +2,7 @@ apiVersion: noodle/v1alpha1
 kind: View
 type: landscape
 title: Example · Tech stack
-subtitle: A landscape view (ADR-0011) resolved from the model, with no layout file.
+subtitle: A landscape view (ADR-0012) resolved from the model, with no layout file.
 bands:
   - id: delivery
     title: Delivery

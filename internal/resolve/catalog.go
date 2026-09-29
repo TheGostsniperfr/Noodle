@@ -18,7 +18,7 @@ const (
 	logoFontSize     = 10.0
 )
 
-// Catalog resolves a catalog view (ADR-0012): one card per offering, in include order
+// Catalog resolves a catalog view (ADR-0013): one card per offering, in include order
 // (all offerings when include is empty), columns per row, each row as tall as its
 // tallest card. The system must pass model.Check first.
 func Catalog(s *model.System, viewID string) (*diagram.Spec, error) {

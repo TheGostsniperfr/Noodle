@@ -3,8 +3,8 @@
 - Status: **Planned** (`plan.md`, `tasks.md`)
 - Phase: 1b, an extension agreed with Brian on 2026-09-28 before phase 1 closes
   (T13 to T17 of spec 001 stay open and follow this spec)
-- Decisions it builds on: ADR-0006, ADR-0007, ADR-0008, ADR-0009, ADR-0011, ADR-0012,
-  ADR-0013
+- Decisions it builds on: ADR-0006, ADR-0007, ADR-0008, ADR-0009, ADR-0012, ADR-0013,
+  ADR-0014
 
 ## Why
 
@@ -32,14 +32,14 @@ rendered by project post-processing (backlog B-05). It moves into the core first
   60 %, icon at 40 %; `deprecated` renders dotted with the title struck through; the
   legend lists the statuses used (ADR-0008, B-05).
 - **FR-002** `target` on a planned element, zone or offering renders as a pill; `target`
-  without `status: planned` is a check error (ADR-0013).
+  without `status: planned` is a check error (ADR-0014).
 - **FR-003** Element kind `tool` exists in the model schema and renders with the
-  `external` palette unless a view overrides the colour (ADR-0011).
+  `external` palette unless a view overrides the colour (ADR-0012).
 - **FR-004** A `landscape` view with `bands` (sections of items), an optional `side`
-  column and `labels` resolves, lints and renders with no layout file (ADR-0011).
+  column and `labels` resolves, lints and renders with no layout file (ADR-0012).
 - **FR-005** Landscape checks: unknown item, duplicate item in one view (errors), item
   without icon (warning).
-- **FR-006** `offerings` in the model with `backed_by` references checked (ADR-0012).
+- **FR-006** `offerings` in the model with `backed_by` references checked (ADR-0013).
 - **FR-007** A `catalog` view with `include` and `columns` resolves, lints and renders
   one card per offering with no layout file.
 - **FR-008** JSON Schemas in `schemas/v1alpha1/` cover every new field and type; every
@@ -62,4 +62,4 @@ the landscape (phase 3 viewer), costs or owners as landscape overlays.
 ## Open questions
 
 None left: model placement, `tool`, `offerings` and `target` were agreed with Brian on
-2026-09-28 and are written as ADR-0011 to ADR-0013.
+2026-09-28 and are written as ADR-0012 to ADR-0014.

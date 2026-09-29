@@ -26,7 +26,7 @@ const (
 	sideSectionsWidth = 1 // tiles per row in the side column
 )
 
-// Landscape resolves a landscape view (ADR-0011): bands become region zones, sections
+// Landscape resolves a landscape view (ADR-0012): bands become region zones, sections
 // group zones, items plain nodes, laid out in a computed grid. The system must pass
 // model.Check first.
 func Landscape(s *model.System, viewID string) (*diagram.Spec, error) {
