@@ -15,8 +15,9 @@ decisions go in ADRs, acceptance in `features.json`.
 
 | Where | What | Status |
 |---|---|---|
-| `~/Documents/aepita/ing2/3-Istor/cnp-docs` | CNP runtime specs and diagrams (`architecture/`), the old generator `tools/archgen` and skill `.claude/skills/cnp-diagram` | **uncommitted**. The generator and skill are superseded by this plugin. Proposal: keep `architecture/specs` + diagrams, delete `tools/archgen` and the local skill, render with the plugin. |
+| `~/Documents/aepita/ing2/3-Istor/cnp-docs` | CNP diagrams as one noodle system `architecture/cnp`: platform overview, app runtime view, request path, OIDC login; archgen and the local skill removed | branch `feat/add-noodle-schema` pushed (1bfed51), for Brian to review. |
 | CNP platform | Security gaps found while mapping: G1 no Cilium tenant isolation in code, G2 no groups-claim authorization in SecurityPolicy, G3 plain HTTP in cluster including Vault (`tls_disable`), G4 tunnels bound to Envoy's hashed Service name, G5 one tunnel per app on `cloudflared:latest`, G6 token call probably hairpins through Cloudflare | documented in the diagram only. Deserve issues in the CNP repos. G1 and G2 first. |
+| CNP platform | **G7**: the CMP `/api` route has no OIDC policy and the backend decodes JWTs with `verify_signature`, `verify_aud` and `verify_exp` off (`CMP/backend/app/services/keycloak_service.py:476`, `routers/account.py:45`): a forged token is accepted | found 2026-09-30, in the diagram only. Deserves an issue first. |
 | `~/.dotfiles` | noodle plugin installed declaratively (commit `9bf7e57`) | pushed. `nixos-rebuild switch` still to run. |
 
 ## Log
