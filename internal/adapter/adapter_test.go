@@ -23,12 +23,12 @@ type stubAdapter struct {
 
 func (s stubAdapter) Name() string { return s.name }
 
-func (s stubAdapter) Discover(context.Context, adapter.Source) (*model.Fragment, error) {
+func (s stubAdapter) Discover(context.Context, adapter.Source) (*model.Fragment, adapter.Stats, error) {
 	f := &model.Fragment{}
 	for _, id := range s.ids {
 		f.Elements = append(f.Elements, model.DiscoveredElement{Element: model.Element{ID: id, Kind: "backend"}, Src: model.Src{Object: id}})
 	}
-	return f, nil
+	return f, adapter.Stats{}, nil
 }
 
 func TestNewRegistry_Fails(t *testing.T) {
@@ -68,7 +68,7 @@ func TestRun_StampsProvenanceAndSortsByID(t *testing.T) {
 	a := stubAdapter{name: "k8s", ids: []string{"k8s:p/service/b", "k8s:p/deployment/a"}}
 	at := time.Date(2026, 9, 30, 14, 0, 0, 0, time.FixedZone("CEST", 2*3600))
 
-	f, err := adapter.Run(context.Background(), a, adapter.Source{Paths: []string{"a.yaml", "dir"}}, "abc123", at)
+	f, _, err := adapter.Run(context.Background(), a, adapter.Source{Paths: []string{"a.yaml", "dir"}}, "abc123", at)
 
 	require.NoError(t, err)
 	assert.Equal(t, model.Provenance{Adapter: "k8s", Source: "a.yaml,dir", Ref: "abc123", ObservedAt: "2026-09-30T12:00:00Z"}, f.Provenance)
@@ -79,7 +79,7 @@ func TestRun_Fails_OnAnIDWithoutTheAdapterPrefix(t *testing.T) {
 	t.Parallel()
 	a := stubAdapter{name: "k8s", ids: []string{"tf:aws_instance.a"}}
 
-	_, err := adapter.Run(context.Background(), a, adapter.Source{Reader: strings.NewReader("")}, "", time.Now())
+	_, _, err := adapter.Run(context.Background(), a, adapter.Source{Reader: strings.NewReader("")}, "", time.Now())
 
 	assert.ErrorContains(t, err, `id "tf:aws_instance.a" is not a discovered id k8s:<path>`)
 }
@@ -94,7 +94,7 @@ func TestRegistry_RunsAnAdapterEndToEnd_IntoAFragmentTheSystemLoads(t *testing.T
 
 	a, err := reg.Get("k8s")
 	require.NoError(t, err)
-	f, err := adapter.Run(context.Background(), a, adapter.Source{Paths: []string{"manifests"}}, "", time.Unix(0, 0))
+	f, _, err := adapter.Run(context.Background(), a, adapter.Source{Paths: []string{"manifests"}}, "", time.Unix(0, 0))
 	require.NoError(t, err)
 	var buf bytes.Buffer
 	require.NoError(t, model.EncodeFragment(&buf, f))

@@ -54,6 +54,7 @@ noodle render architecture/platform -view runtime                          # che
 noodle render architecture/platform -view runtime -theme dark -o out.drawio  # then render
 noodle render architecture/platform -view runtime -icons .noodle/icons -slide  # project icons, drawing only
 noodle migrate old-spec.yaml architecture/platform                        # a v0 single file, once
+helm template my-release chart/ | noodle discover k8s - -o architecture/platform/discovered/k8s-helm.yaml
 noodle -list-icons
 drawio -x -f png -s 2 --border 20 -o out.png out.drawio
 ```

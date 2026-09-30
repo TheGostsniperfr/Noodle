@@ -17,7 +17,18 @@ import (
 type Adapter interface {
 	// Name is the prefix of every id the adapter emits, e.g. k8s.
 	Name() string
-	Discover(ctx context.Context, src Source) (*model.Fragment, error)
+	Discover(ctx context.Context, src Source) (*model.Fragment, Stats, error)
+}
+
+// Stats is what an adapter read and left out, so a run shows whether discovery pays
+// for itself against reading the source directly.
+type Stats struct {
+	InputBytes int
+	// NoiseBytes is the part of InputBytes no reader would need, such as CRD schemas.
+	NoiseBytes int
+	Objects    int
+	// Skipped counts objects left out, by reason.
+	Skipped map[string]int
 }
 
 // Source is either Paths (files or directories) or Reader, e.g. stdin.
@@ -75,20 +86,27 @@ func (r *Registry) Get(name string) (Adapter, error) {
 
 // Run discovers, stamps the provenance and sorts every list by id, so the same input
 // gives the same fragment byte for byte whatever order the adapter found things in.
-func Run(ctx context.Context, a Adapter, src Source, ref string, observedAt time.Time) (*model.Fragment, error) {
-	f, err := a.Discover(ctx, src)
+func Run(ctx context.Context, a Adapter, src Source, ref string, observedAt time.Time) (*model.Fragment, Stats, error) {
+	f, stats, err := a.Discover(ctx, src)
 	if err != nil {
-		return nil, fmt.Errorf("%s: %w", a.Name(), err)
+		return nil, stats, fmt.Errorf("%s: %w", a.Name(), err)
 	}
 	f.APIVersion, f.Kind = model.APIVersion, "Fragment"
 	f.Provenance = model.Provenance{Adapter: a.Name(), Source: src.Name(), Ref: ref, ObservedAt: observedAt.UTC().Format(time.RFC3339)}
 	sort.SliceStable(f.Elements, func(i, j int) bool { return f.Elements[i].ID < f.Elements[j].ID })
 	sort.SliceStable(f.Connections, func(i, j int) bool { return f.Connections[i].ID < f.Connections[j].ID })
 	sort.SliceStable(f.References, func(i, j int) bool { return f.References[i].ID < f.References[j].ID })
+	sort.SliceStable(f.Unresolved, func(i, j int) bool {
+		a, b := f.Unresolved[i], f.Unresolved[j]
+		if a.Kind != b.Kind {
+			return a.Kind < b.Kind
+		}
+		return a.Value < b.Value
+	})
 	if err := checkPrefix(f, a.Name()+":"); err != nil {
-		return nil, fmt.Errorf("%s: %w", a.Name(), err)
+		return nil, stats, fmt.Errorf("%s: %w", a.Name(), err)
 	}
-	return f, nil
+	return f, stats, nil
 }
 
 // checkPrefix holds a third-party adapter to ADR-0015: its ids name it and are well formed.

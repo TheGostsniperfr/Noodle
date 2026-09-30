@@ -23,6 +23,24 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-09-30 · Token cost of a diagram, fact-finder agent
 
+- ADR-0017 proposed: yaml.v3 decoding without apimachinery (keeps `src` lines),
+  deterministic host resolvers, `unresolved` in the fragment with token guards, agent
+  answers remembered as rules. Accepted after review.
+- Spec 003 T03: `internal/adapter/k8s` reads files, directories, stdin, multi-document,
+  `List` and JSON with yaml.v3; a repeated key keeps its last value (a rendered Keycloak
+  chart has one); skips owned objects, generated kinds, Helm test and delete hooks, CRDs
+  and duplicates; walks skip hidden directories and name Helm charts and Kustomize
+  directories as `unrendered`. Elements: workloads (tech with the short image),
+  Services, namespaces as zones; no title, the id holds the name. Unknown kinds: one
+  `unresolved` line per kind with a count. `Stats` and a summary line on stderr.
+- `scripts/discover-eval.sh` renders real repositories on a copy and compares. Prod,
+  inventory only (connections come in T04): PAE argocd ~277k tokens of manifests
+  without CRD schemas to a ~6.8k fragment, 87 elements; majoutes ~35k to ~0.8k; DockAir
+  ~78k to ~3.4k. The input is rendered output, larger than the sources an agent reads:
+  T13 measures against the agent. Findings: majoutes charts set no namespace (Argo CD
+  does, T05 fixes it); useful unknown kinds are operator CRs (CNPG Cluster, Prometheus,
+  ImageUpdater, SecurityPolicy).
+
 - Spec 003 T02 (P6a-02): `internal/adapter` (interface, explicit `Registry`, `Source`,
   `Run` stamps provenance, sorts by id and rejects ids without the adapter prefix);
   `model.EncodeFragment` writes one flow item per line; `noodle discover ADAPTER

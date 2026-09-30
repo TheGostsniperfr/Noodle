@@ -108,6 +108,18 @@ type Fragment struct {
 	Elements    []DiscoveredElement    `yaml:"elements"`
 	Connections []DiscoveredConnection `yaml:"connections"`
 	References  []DiscoveredReference  `yaml:"references"`
+	Unresolved  []Unresolved           `yaml:"unresolved"`
+}
+
+// Unresolved is what an adapter saw but could not settle, kept for an agent or a person
+// to answer (ADR-0017). Count is set when one entry stands for several objects.
+type Unresolved struct {
+	About []string `yaml:"about,omitempty"`
+	Kind  string   `yaml:"kind"`
+	Value string   `yaml:"value,omitempty"`
+	Hint  string   `yaml:"hint,omitempty"`
+	Count int      `yaml:"count,omitempty"`
+	Src   Src      `yaml:"src"`
 }
 
 type Provenance struct {

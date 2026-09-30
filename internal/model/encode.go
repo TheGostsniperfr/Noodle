@@ -34,7 +34,7 @@ func EncodeFragment(w io.Writer, f *Fragment) error {
 	lists := []struct {
 		key   string
 		items []any
-	}{{"elements", toAny(f.Elements)}, {"connections", toAny(f.Connections)}, {"references", toAny(f.References)}}
+	}{{"elements", toAny(f.Elements)}, {"connections", toAny(f.Connections)}, {"references", toAny(f.References)}, {"unresolved", toAny(f.Unresolved)}}
 	for _, l := range lists {
 		if len(l.items) == 0 {
 			continue

@@ -18,7 +18,7 @@ touching `go.mod`.
 
 ## C · Kubernetes adapter (P6a-03, P6a-04)
 
-- [ ] **T03** Decode files, directories, stdin, multi-document and `kind: List`; skip
+- [x] **T03** Decode files, directories, stdin, multi-document and `kind: List`; skip
   status, managed fields and generated kinds; build the index. Workloads, Services,
   namespaces as zones, ports.
 - [ ] **T04** Routes: Gateway, HTTPRoute, GRPCRoute, Ingress; Service to workload by
