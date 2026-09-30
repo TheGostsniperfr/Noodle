@@ -29,7 +29,7 @@ func main() {
 			if err != nil {
 				return err
 			}
-			return discoverCommand(context.Background(), reg, args, os.Stdin, os.Stdout)
+			return discoverCommand(context.Background(), reg, args, os.Stdin, os.Stdout, os.Stderr)
 		}}
 		if cmd, ok := commands[os.Args[1]]; ok {
 			if err := cmd(os.Args[2:]); err != nil {

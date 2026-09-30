@@ -7,20 +7,23 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/TheGostsniperfr/Noodle/internal/adapter"
+	"github.com/TheGostsniperfr/Noodle/internal/adapter/k8s"
 	"github.com/TheGostsniperfr/Noodle/internal/model"
 )
 
 const discoverUsage = "usage: noodle discover ADAPTER [PATH…|-] [-o fragment.yaml] [-ref REF] [-observed-at RFC3339]"
 
 // adapters lists every adapter noodle ships.
-func adapters() (*adapter.Registry, error) { return adapter.NewRegistry() }
+func adapters() (*adapter.Registry, error) { return adapter.NewRegistry(k8s.Adapter{}) }
 
 // discoverCommand is "noodle discover ADAPTER [PATH…|-]": no path or - reads stdin.
 // Flags may come before or after the arguments.
-func discoverCommand(ctx context.Context, reg *adapter.Registry, args []string, stdin io.Reader, stdout io.Writer) error {
+func discoverCommand(ctx context.Context, reg *adapter.Registry, args []string, stdin io.Reader, stdout, stderr io.Writer) error {
 	fs := flag.NewFlagSet("discover", flag.ContinueOnError)
 	out := fs.String("o", "", "output fragment path, usually <system>/discovered/<adapter>-<source>.yaml (stdout when empty)")
 	ref := fs.String("ref", "", "version of the source, e.g. a Git commit")
@@ -53,7 +56,7 @@ func discoverCommand(ctx context.Context, reg *adapter.Registry, args []string, 
 			return fmt.Errorf("-observed-at: %w", err)
 		}
 	}
-	f, err := adapter.Run(ctx, a, src, *ref, at)
+	f, stats, err := adapter.Run(ctx, a, src, *ref, at)
 	if err != nil {
 		return err
 	}
@@ -61,6 +64,13 @@ func discoverCommand(ctx context.Context, reg *adapter.Registry, args []string, 
 	if err := model.EncodeFragment(&buf, f); err != nil {
 		return err
 	}
+	settled := *f
+	settled.Unresolved = nil
+	var without bytes.Buffer
+	if err := model.EncodeFragment(&without, &settled); err != nil {
+		return err
+	}
+	fmt.Fprintln(stderr, summary(a.Name(), stats, f, buf.Len(), buf.Len()-without.Len()))
 	if *out == "" {
 		_, err = stdout.Write(buf.Bytes())
 		return err
@@ -78,4 +88,34 @@ func source(paths []string, stdin io.Reader) (adapter.Source, error) {
 		}
 	}
 	return adapter.Source{Paths: paths}, nil
+}
+
+// summary is the line that tells whether discovery pays: what was read against what an
+// agent will read instead. Tokens are estimated at four bytes each.
+func summary(name string, st adapter.Stats, f *model.Fragment, fragmentBytes, unresolvedBytes int) string {
+	skipped, reasons := 0, make([]string, 0, len(st.Skipped))
+	for r, n := range st.Skipped {
+		skipped += n
+		reasons = append(reasons, fmt.Sprintf("%s %d", r, n))
+	}
+	sort.Strings(reasons)
+	why := ""
+	if len(reasons) > 0 {
+		why = " (" + strings.Join(reasons, ", ") + ")"
+	}
+	noise := ""
+	if st.NoiseBytes > 0 {
+		noise = fmt.Sprintf(" (~%s without CRD schemas)", kTokens(st.InputBytes-st.NoiseBytes))
+	}
+	return fmt.Sprintf("%s: read %d objects, ~%s tokens%s; skipped %d%s; fragment %d elements, %d connections, %d references, %d unresolved, ~%s tokens (unresolved ~%s)",
+		name, st.Objects, kTokens(st.InputBytes), noise, skipped, why,
+		len(f.Elements), len(f.Connections), len(f.References), len(f.Unresolved), kTokens(fragmentBytes), kTokens(unresolvedBytes))
+}
+
+func kTokens(bytes int) string {
+	t := float64(bytes) / 4
+	if t < 1000 {
+		return fmt.Sprintf("%.0f", t)
+	}
+	return fmt.Sprintf("%.1fk", t/1000)
 }

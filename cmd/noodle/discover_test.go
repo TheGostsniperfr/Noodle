@@ -21,7 +21,7 @@ type lineAdapter struct{}
 
 func (lineAdapter) Name() string { return "lines" }
 
-func (lineAdapter) Discover(_ context.Context, src adapter.Source) (*model.Fragment, error) {
+func (lineAdapter) Discover(_ context.Context, src adapter.Source) (*model.Fragment, adapter.Stats, error) {
 	f := &model.Fragment{}
 	sc := bufio.NewScanner(src.Reader)
 	for n := 1; sc.Scan(); n++ {
@@ -34,7 +34,7 @@ func (lineAdapter) Discover(_ context.Context, src adapter.Source) (*model.Fragm
 		}
 		f.Elements = append(f.Elements, model.DiscoveredElement{Element: model.Element{ID: "lines:" + sc.Text(), Kind: "backend", Title: sc.Text()}, Src: at})
 	}
-	return f, sc.Err()
+	return f, adapter.Stats{}, sc.Err()
 }
 
 func TestDiscoverCommand_WritesAFragmentTheSystemLoads_AndARerunIsIdentical(t *testing.T) {
@@ -48,10 +48,10 @@ func TestDiscoverCommand_WritesAFragmentTheSystemLoads_AndARerunIsIdentical(t *t
 	args := []string{"lines", "-", "-o", out, "-observed-at", "2026-09-30T12:00:00Z"}
 	var stdout bytes.Buffer
 
-	require.NoError(t, discoverCommand(context.Background(), reg, args, strings.NewReader("worker\napi\nworker->api\n"), &stdout))
+	require.NoError(t, discoverCommand(context.Background(), reg, args, strings.NewReader("worker\napi\nworker->api\n"), &stdout, &bytes.Buffer{}))
 	first, err := os.ReadFile(out)
 	require.NoError(t, err)
-	require.NoError(t, discoverCommand(context.Background(), reg, args, strings.NewReader("worker\napi\nworker->api\n"), &stdout))
+	require.NoError(t, discoverCommand(context.Background(), reg, args, strings.NewReader("worker\napi\nworker->api\n"), &stdout, &bytes.Buffer{}))
 	second, err := os.ReadFile(out)
 	require.NoError(t, err)
 	s, err := model.LoadSystem(dir)
@@ -87,9 +87,19 @@ func TestDiscoverCommand_Fails(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := discoverCommand(context.Background(), reg, tt.args, strings.NewReader(""), &bytes.Buffer{})
+			err := discoverCommand(context.Background(), reg, tt.args, strings.NewReader(""), &bytes.Buffer{}, &bytes.Buffer{})
 
 			assert.ErrorContains(t, err, tt.wantErr)
 		})
 	}
+}
+
+func TestSummary_ComparesWhatWasReadWithTheFragment(t *testing.T) {
+	stats := adapter.Stats{InputBytes: 400_000, NoiseBytes: 300_000, Objects: 12, Skipped: map[string]int{"owned": 2, "crd": 1}}
+	f := &model.Fragment{Elements: make([]model.DiscoveredElement, 5), Unresolved: make([]model.Unresolved, 1)}
+
+	line := summary("k8s", stats, f, 8_000, 400)
+
+	assert.Equal(t, "k8s: read 12 objects, ~100.0k tokens (~25.0k without CRD schemas); skipped 3 (crd 1, owned 2); "+
+		"fragment 5 elements, 0 connections, 0 references, 1 unresolved, ~2.0k tokens (unresolved ~100)", line)
 }

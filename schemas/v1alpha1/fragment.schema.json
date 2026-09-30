@@ -12,7 +12,8 @@
     "provenance": {"$ref": "#/$defs/provenance"},
     "elements": {"type": "array", "items": {"$ref": "#/$defs/element"}},
     "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
-    "references": {"type": "array", "items": {"$ref": "#/$defs/reference"}}
+    "references": {"type": "array", "items": {"$ref": "#/$defs/reference"}},
+    "unresolved": {"type": "array", "items": {"$ref": "#/$defs/unresolved"}, "description": "What the adapter saw but could not settle (ADR-0017)."}
   },
   "$defs": {
     "id": {"type": "string", "pattern": "^[a-z][a-z0-9]*:\\S+$", "description": "<adapter>:<path>, derived from the source, e.g. k8s:prod/deployment/api."},
@@ -84,6 +85,19 @@
         "src": {"$ref": "#/$defs/src"}
       },
       "dependentSchemas": {"enforced_by": {"required": ["denied"], "properties": {"denied": {"const": true}}}}
+    },
+    "unresolved": {
+      "type": "object",
+      "required": ["kind", "src"],
+      "additionalProperties": false,
+      "properties": {
+        "about": {"type": "array", "items": {"$ref": "#/$defs/id"}, "minItems": 1},
+        "kind": {"enum": ["env-url", "unknown-kind", "unmatched-selector", "missing-backend", "unknown-provider", "unrendered"]},
+        "value": {"type": "string"},
+        "hint": {"type": "string", "pattern": "^[a-z0-9-]+$", "description": "A short code, not prose (ADR-0017)."},
+        "count": {"type": "integer", "minimum": 2},
+        "src": {"$ref": "#/$defs/src"}
+      }
     },
     "reference": {
       "type": "object",
