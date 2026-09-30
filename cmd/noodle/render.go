@@ -393,6 +393,14 @@ func (r *renderer) node(n diagram.Node) error {
 	case "deprecated":
 		fill += style("dashed=1", "dashPattern="+dotted)
 	}
+	// Drawn before the box so they sit behind it, the farthest first (ADR-0008).
+	if n.Multiplicity != "" {
+		for _, depth := range []float64{2, 1} {
+			d := depth * house.StackOffset
+			r.vertex(fmt.Sprintf("%s__stack%g", n.ID, depth), "1", "", style(shape...)+style("fillColor="+k.Fill, "strokeColor="+k.Stroke,
+				"strokeWidth=1.5", "dashed=1", "dashPattern=4 3", "editable=0", "movable=0", "connectable=0"), n.X+d, n.Y-d, n.W, n.H)
+		}
+	}
 	st := style(shape...) + fill + style("html=1", "whiteSpace=wrap", "strokeColor="+k.Stroke, "strokeWidth=1.5",
 		"align=left", "verticalAlign=top", fmt.Sprintf("spacingLeft=%g", pad), fmt.Sprintf("spacingTop=%g", top-4), "spacingRight=8",
 		font(house.TitleFontSize, r.th.Text))
@@ -523,8 +531,9 @@ func (r *renderer) legendText(id, text string, x, y, w float64) {
 	r.vertex(id, "1", text, style("text", "html=1", "align=left", "verticalAlign=middle", font(10.5, r.th.Text)), x, y, w, 22)
 }
 
-// legendStatuses explains the planned and deprecated styles used in the diagram, so the
-// hatch and the dots never carry meaning alone (ADR-0006, ADR-0008).
+// legendStatuses explains the planned and deprecated styles and each stacked box used in
+// the diagram, so the hatch, the dots and the stacks never carry meaning alone (ADR-0006,
+// ADR-0008).
 func (r *renderer) legendStatuses(x, y, w float64) {
 	used := map[string]bool{}
 	for _, n := range r.spec.Nodes {
@@ -544,6 +553,23 @@ func (r *renderer) legendStatuses(x, y, w float64) {
 		r.vertex("legend-deprecated", "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill,
 			"dashed=1", "dashPattern="+dotted, "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+2, 40, 18)
 		r.legendText("legend-deprecated-text", "deprecated", x+52, y, w)
+		y += 26
+	}
+	shown := map[string]bool{}
+	for i, n := range r.spec.Nodes {
+		if n.Multiplicity == "" || n.Shape == "actor" || shown[n.Multiplicity] {
+			continue
+		}
+		shown[n.Multiplicity] = true
+		for depth := 2.0; depth >= 0; depth-- {
+			st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5")
+			if depth > 0 {
+				st += style("dashed=1", "dashPattern=4 3")
+			}
+			r.vertex(fmt.Sprintf("legend-stack-%d-%g", i, depth), "1", "", st, x+3*depth, y+4-3*depth, 34, 14)
+		}
+		r.legendText(fmt.Sprintf("legend-stack-%d-text", i), html.EscapeString(n.Multiplicity), x+52, y, w)
+		y += 26
 	}
 }
 

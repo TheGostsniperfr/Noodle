@@ -12,9 +12,9 @@ They exercise what the CNP example does not:
 | `app-runtime-view/` | one-application context layout (callers, gateway, namespace, reachable, denied), `blocked` edge to a zone, `link` edges to zones |
 | `repo-map/` | a non-network diagram: teams, a source-control tree, consumers; `link` references between repositories |
 
-Boxes that the source project styled as planned or stacked (ADR-0008) render plain
-here, since v0 had no field for it. `status` can be added to these models now that
-B-05 has landed; `multiplicity` waits for B-06.
+`repo-map` draws its per-application and per-tool repositories as stacks
+(`multiplicity`, ADR-0008). Boxes the source project styled as planned still render
+plain: `status` can be added to these models now that B-05 has landed.
 
 ```bash
 for d in platform-overview app-runtime-view repo-map; do

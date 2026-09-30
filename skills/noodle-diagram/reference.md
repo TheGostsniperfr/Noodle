@@ -43,6 +43,7 @@ Components and zones are both elements. A zone has kind `region` or `group`.
 | `ports` | `[{name: https, protocol: TCP, port: 443}]`: listening ports, drawn as badges where connections land |
 | `status` | `planned` (hatched) or `deprecated` (dotted, struck title); a zone's applies to its children |
 | `target` | `planned` only: when it is expected, e.g. `SP2`, `Q1 2027`; drawn as a pill |
+| `multiplicity` | the box stands for many alike, e.g. `one per application`: drawn as a stack, the text in the legend |
 | `tags` | free labels, e.g. `risk:G4` |
 
 ### Connection: traffic

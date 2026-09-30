@@ -75,7 +75,7 @@ func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
 		out.Nodes = append(out.Nodes, diagram.Node{
 			ID: e.ID, Kind: e.Kind, Shape: e.Shape, Icon: e.Icon, Title: e.Title, Tech: e.Tech,
 			Desc: e.Desc, Badge: strings.Join(badges[e.ID], " "),
-			Status: status, Target: target,
+			Status: status, Target: target, Multiplicity: e.Multiplicity,
 			X: box.X, Y: box.Y, W: box.W, H: box.H,
 		})
 	}

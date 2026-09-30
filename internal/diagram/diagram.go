@@ -114,12 +114,15 @@ type Node struct {
 	Desc  string `yaml:"desc"`
 	Badge string `yaml:"badge"`
 	// Status and Target are already inherited from enclosing zones.
-	Status string  `yaml:"status"`
-	Target string  `yaml:"target"`
-	X      float64 `yaml:"x"`
-	Y      float64 `yaml:"y"`
-	W      float64 `yaml:"w"`
-	H      float64 `yaml:"h"`
+	Status string `yaml:"status"`
+	Target string `yaml:"target"`
+	// Multiplicity says what the box stands for many of (ADR-0008); it draws the box
+	// as a stack. Not part of the v0 file format.
+	Multiplicity string  `yaml:"-"`
+	X            float64 `yaml:"x"`
+	Y            float64 `yaml:"y"`
+	W            float64 `yaml:"w"`
+	H            float64 `yaml:"h"`
 }
 
 func (n Node) Rect() Rect { return Rect{n.X, n.Y, n.W, n.H} }

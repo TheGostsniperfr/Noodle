@@ -48,6 +48,9 @@ decisions go in ADRs, acceptance in `features.json`.
   (header overlap) and B-26 (card taller than its box).
 - `bin/noodle` rebuild hash now covers `internal/`: plugin users had a stale binary after
   any change there.
+- B-06: `multiplicity` renders as two dashed copies 10 px up and right behind the box;
+  the lint keeps their footprint clear (`house.NodeFootprint`), the legend lists each
+  text. `repo-map` fixture stacked. Unblocks deleting DockAir's post-processor (002 T03).
 - Benchmark brief in Notion: "Benchmark · Token cost of a diagram", to paste in the PR.
 - fact-finder trial on PAE: right on routes, GitOps and secrets; missed the edge forwarder
   and credential-implied connections, prompt fixed. Its "no Image Updater" was the old
