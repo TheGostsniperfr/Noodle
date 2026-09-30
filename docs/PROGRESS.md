@@ -8,8 +8,8 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `./scripts/init.sh`: fix anything red before new work.
 2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: close phase 1: T13, T16, T17 of spec 001, T03 and T13 of spec 002.
-   Then spec 003, task T01 in [`tasks.md`](../specs/003-static-discovery/tasks.md).
+3. Next action: spec 003, task T01 in [`tasks.md`](../specs/003-static-discovery/tasks.md).
+   Phases 1 and 1b are closed.
 
 ## Open threads outside this repo
 
@@ -51,6 +51,10 @@ decisions go in ADRs, acceptance in `features.json`.
 - B-06: `multiplicity` renders as two dashed copies 10 px up and right behind the box;
   the lint keeps their footprint clear (`house.NodeFootprint`), the legend lists each
   text. `repo-map` fixture stacked. Unblocks deleting DockAir's post-processor (002 T03).
+- Spec 002 T03: dockair-docs !20 merged. Its three diagrams are v1alpha1 systems,
+  `postprocess-drawio.py` and its side files deleted, PNGs compressed with pngquant
+  (`PNG_QUALITY`): draw.io 30.2.6 exports PNGs 3 to 4 times larger than before.
+  Phases 1 and 1b closed. Still on v0: PAE and cnp-docs (`noodle migrate` when needed).
 - Benchmark brief in Notion: "Benchmark · Token cost of a diagram", to paste in the PR.
 - fact-finder trial on PAE: right on routes, GitOps and secrets; missed the edge forwarder
   and credential-implied connections, prompt fixed. Its "no Image Updater" was the old
