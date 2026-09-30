@@ -10,6 +10,8 @@ awk '/^## Start here/{on=1} /^## Open threads/{on=0} on' docs/PROGRESS.md
 echo "## Next features (docs/features.json)"
 jq -r '.phases[] | .features[] | select(.passes == false) | "- \(.id) \(.description)"' docs/features.json | head -5
 echo
+echo "Backlog: https://github.com/users/TheGostsniperfr/projects/5 (gh project item-list 5 --owner TheGostsniperfr)"
+echo
 echo "## Git"
 echo "- branch $(git branch --show-current), last commit: $(git log -1 --format='%h %s (%cr)')"
 dirty="$(git status --porcelain | wc -l)"

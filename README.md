@@ -75,6 +75,7 @@ The format is in [the skill reference](skills/noodle-diagram/reference.md).
 - [Vision](docs/VISION.md): the problem, principles and capability levels L0 to L6
 - [Architecture](docs/ARCHITECTURE.md): modules, contracts, interfaces, storage and security
 - [Progress](docs/PROGRESS.md): where the work stands and where the next session starts
+- [Project board](https://github.com/users/TheGostsniperfr/projects/5): the backlog, one issue per item
 - [Roadmap](docs/ROADMAP.md): phases and their exit criteria, checked in [features.json](docs/features.json)
 - [Specs](specs/): one spec per piece of work, written before the code
 - [Decisions](docs/adr/README.md): ADRs

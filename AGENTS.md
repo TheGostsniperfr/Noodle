@@ -23,6 +23,15 @@ A one-line "in progress" note satisfies it.
 
 **End.** When Brian stops ("je reprends demain", "on s'arrête là"), run the `wrap-up` skill.
 
+## Backlog
+
+Planning lives on the [GitHub project board](https://github.com/users/TheGostsniperfr/projects/5)
+(Idea, To Do, In Progress, Done), one issue per item. Read it with
+`gh project item-list 5 --owner TheGostsniperfr`. The board says what to work on next;
+`docs/features.json` says what is verified. A backlog id `B-NN` names the same item in
+both: put it in the issue body. Close the issue in the PR that flips its `passes`
+(`Closes #NN`), and open an issue for any new backlog item or spec.
+
 ## Model guidance
 
 The main session model is Brian's choice (`/model`). Subagents pin theirs.
