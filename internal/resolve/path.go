@@ -225,6 +225,20 @@ func (r *resolver) path(id string, route model.EdgeRoute) ([]diagram.Point, erro
 	return dedupe(pts), nil
 }
 
+// EdgePath resolves one route against the layout of a topology view, as Topology would
+// draw it. It lets a tool try several routes for the same edge.
+func EdgePath(s *model.System, viewID, edgeID string, route model.EdgeRoute) ([]diagram.Point, error) {
+	l, ok := s.Layouts[viewID]
+	if !ok {
+		return nil, fmt.Errorf("resolve: view %q has no layout", viewID)
+	}
+	r := &resolver{s: s, v: s.Views[viewID], l: l, elements: map[string]model.Element{}, abs: map[string]diagram.Rect{}}
+	for _, e := range s.Model.Elements {
+		r.elements[e.ID] = e
+	}
+	return r.path(edgeID, route)
+}
+
 func dedupe(pts []diagram.Point) []diagram.Point {
 	out := pts[:1]
 	for _, p := range pts[1:] {

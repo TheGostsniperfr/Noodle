@@ -16,12 +16,15 @@ import (
 const slideMargin = 24.0
 
 func main() {
-	if len(os.Args) > 1 && os.Args[1] == "render" {
-		if err := renderCommand(os.Args[2:]); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+	if len(os.Args) > 1 {
+		commands := map[string]func([]string) error{"render": renderCommand, "migrate": migrateCommand}
+		if cmd, ok := commands[os.Args[1]]; ok {
+			if err := cmd(os.Args[2:]); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+			return
 		}
-		return
 	}
 	out := flag.String("o", "", "output .drawio path (lint only when empty)")
 	icons := flag.String("icons", "", "comma-separated directories of extra <name>.svg icons, searched before the built-in ones")
@@ -40,7 +43,7 @@ func main() {
 		return
 	}
 	if flag.NArg() != 1 {
-		fmt.Fprintln(os.Stderr, "usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]]\n       noodle [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]] spec.yaml   (v0 single file)\n       noodle -list-icons [-icons DIR]")
+		fmt.Fprintln(os.Stderr, "usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]]\n       noodle [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]] spec.yaml   (v0 single file)\n       noodle migrate SPEC.yaml DIR   (v0 single file to a v1alpha1 system)\n       noodle -list-icons [-icons DIR]")
 		os.Exit(2)
 	}
 	if err := run(flag.Arg(0), *out, *themeName, set, *slide); err != nil {
