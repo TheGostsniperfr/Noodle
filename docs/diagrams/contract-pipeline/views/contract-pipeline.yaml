@@ -1,0 +1,47 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+title: Noodle · Phase 1 · Contract pipeline
+subtitle: How does a system directory become a diagram, and which file holds which fact?
+meta:
+  - 'Scope: noodle CLI after phase 1, per ADR-0007 and specs/001 plan.md · arrows are data handoffs in process order, not network connections'
+  - 'Out of scope: SVG renderer (phase 2), MCP server (2b), web viewer (3), auto-layout (6)'
+  - 'v0.1 · source: docs/diagrams/contract-pipeline'
+steps:
+  - e-1-git-loader
+  - e-2-loader-resolver
+  - e-3-resolver-diagram
+  - e-4-diagram-lint
+  - e-5-lint-renderer
+  - e-6-renderer-drawio
+  - e-7-drawio-png
+notes:
+  - id: n-sequence
+    text: 'Sequence views have no layout: columns in order of first appearance, one row per step.'
+cards:
+  - id: card-legend
+    title: Legend
+    color: slate
+    legend: true
+    lines: []
+  - id: card-files
+    title: Which file holds which fact
+    color: orange
+    legend: false
+    lines:
+      - '**model.yaml** · elements and zones, connections (flow, auth, tunnel, async, denied), references, gaps, status, multiplicity'
+      - '**views/<id>.yaml** · include, steps [1] and [A], label overrides, cards, notes, participants (sequence)'
+      - '**layouts/<view-id>.yaml** · canvas, positions relative to the parent zone, endpoints id.side@ratio, named lanes'
+      - A view's model is the model.yaml of its directory. Every id a view or layout uses must exist there.
+      - A reviewer reads model.yaml and views/; layouts/ churns without hiding facts.
+  - id: card-steps
+    title: Pipeline · one render
+    color: cyan
+    legend: false
+    lines:
+      - '[1] The loader parses the three files strictly and checks every id reference; JSON Schemas validate the same files in go test.'
+      - '[2] The resolver gets the model, the view and its layout.'
+      - '[3] It emits absolute geometry: points, labels ''[n] verb · protocol'', gap badges.'
+      - '[4] The v0 geometry rules check it, with the same messages.'
+      - '[5] Only a clean diagram reaches the renderer.'
+      - '[6] One draw.io file per theme, [7] exported to PNG.'

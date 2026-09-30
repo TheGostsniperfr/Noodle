@@ -1,0 +1,33 @@
+apiVersion: noodle/v1alpha1
+kind: Layout
+canvas: {width: 3100, height: 1100}
+elements:
+  z-git: {x: 40, y: 220, w: 420, h: 480}
+  z-cli: {x: 580, y: 220, w: 2060, h: 480}
+  z-out: {x: 2740, y: 220, w: 320, h: 480}
+  model-file: {x: 30, y: 70, w: 350, h: 90}
+  view-file: {x: 30, y: 190, w: 350, h: 90}
+  layout-file: {x: 30, y: 310, w: 350, h: 90}
+  loader: {x: 40, y: 190, w: 260, h: 90}
+  schemas: {x: 40, y: 350, w: 260, h: 90}
+  resolver: {x: 480, y: 190, w: 260, h: 90}
+  diagram: {x: 920, y: 190, w: 260, h: 90}
+  lint: {x: 1360, y: 190, w: 260, h: 90}
+  renderer: {x: 1760, y: 190, w: 260, h: 90}
+  drawio-file: {x: 30, y: 190, w: 260, h: 90}
+  png-file: {x: 30, y: 350, w: 260, h: 90}
+edges:
+  e-1-git-loader: {from: z-git.right, to: loader.left@45px, label_at: [520, 455]}
+  e-2-loader-resolver: {from: loader.right, to: resolver.left}
+  e-3-resolver-diagram: {from: resolver.right, to: diagram.left}
+  e-4-diagram-lint: {from: diagram.right, to: lint.left}
+  e-5-lint-renderer: {from: lint.right, to: renderer.left}
+  e-6-renderer-drawio: {from: renderer.right, to: drawio-file.left}
+  e-7-drawio-png: {from: drawio-file.bottom, to: png-file.top, label_at: [2900, 535]}
+  r-schemas-git: {from: schemas.left, to: z-git.right, label_at: [520, 615]}
+notes:
+  n-sequence: {x: 1060, y: 530, w: 300, h: 70}
+cards:
+  card-files: {x: 720, y: 760, w: 1160, h: 300}
+  card-legend: {x: 40, y: 760, w: 640, h: 300}
+  card-steps: {x: 1920, y: 760, w: 1140, h: 300}
