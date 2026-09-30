@@ -2,6 +2,8 @@
 
 -
 
+Closes #
+
 ## Visual change
 
 <!-- Required when the PR changes what noodle draws (shape, icon, style, label, layout,
