@@ -6,8 +6,8 @@ before the contracts it depends on are frozen.
 | Phase | Level | Deliverable | Done when |
 |---|---|---|---|
 | **0** ✅ | · | Repository, vision, architecture, ADRs, v0 generator and skill migrated from the CNP experiment; Claude Code plugin + marketplace, Nix package | `/plugin install noodle@noodle` works on a fresh machine |
-| **1** | L0 | Contracts `v1alpha1`: model, view, layout as separate files, with JSON Schemas; lint rules moved into `internal/lint`; CNP runtime example migrated | one model, two views (nominal path, OIDC), lint green |
-| **1b** | L0 | Landscape (tech stack) and catalog (service catalogue) views, `planned` status and target rendered in the core (spec 002, agreed 2026-09-28 before phase 1 closes) | a platform renders its tech stack and service catalogue from its model, planned items hatched with their target |
+| **1** ✅ | L0 | Contracts `v1alpha1`: model, view, layout as separate files, with JSON Schemas; lint rules moved into `internal/lint`; CNP runtime example migrated | one model, two views (nominal path, OIDC), lint green |
+| **1b** ✅ | L0 | Landscape (tech stack) and catalog (service catalogue) views, `planned` status and target rendered in the core (spec 002, agreed 2026-09-28 before phase 1 closes) | a platform renders its tech stack and service catalogue from its model, planned items hatched with their target |
 | **6a** | L4 | Slice of phase 6 pulled forward (ADR-0016, spec 003): `Fragment` contract, adapter interface, Kubernetes adapter from manifests or `kubectl get -o yaml`, merge and drift report, token benchmark | the PAE platform diagram is built from a discovered fragment, cheaper than an agent reading the manifests, with no loss of connections |
 | **2** | L0 | Own SVG renderer from the same geometry; animated flow dashes via CSS, which also work when the SVG is shown as an image | the example renders to SVG without draw.io and animates in a README |
 | **2b** | L6 | Read-only MCP server over the model: list elements, find a path, explain a connection, validate | an agent answers "how does a request reach app X?" from the model alone |
@@ -31,7 +31,7 @@ before the contracts it depends on are frozen.
 - **Live and actions last.** They need infrastructure access, storage and an
   authorization model.
 
-## Next up: phase 1
+## Next up: phase 6a
 
-Spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-Acceptance: features `P1-*` in [`features.json`](features.json).
+Spec: [`specs/003-static-discovery/spec.md`](../specs/003-static-discovery/spec.md).
+Acceptance: features `P6a-*` in [`features.json`](features.json).

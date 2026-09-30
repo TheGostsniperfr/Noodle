@@ -8,15 +8,16 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `./scripts/init.sh`: fix anything red before new work.
 2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: close phase 1: T13, T16, T17 of spec 001, T03 and T13 of spec 002.
-   Then spec 003, task T01 in [`tasks.md`](../specs/003-static-discovery/tasks.md).
+3. Next action: spec 003, task T01 in [`tasks.md`](../specs/003-static-discovery/tasks.md).
+   Phases 1 and 1b are closed.
 
 ## Open threads outside this repo
 
 | Where | What | Status |
 |---|---|---|
-| `~/Documents/aepita/ing2/3-Istor/cnp-docs` | CNP runtime specs and diagrams (`architecture/`), the old generator `tools/archgen` and skill `.claude/skills/cnp-diagram` | **uncommitted**. The generator and skill are superseded by this plugin. Proposal: keep `architecture/specs` + diagrams, delete `tools/archgen` and the local skill, render with the plugin. |
+| `~/Documents/aepita/ing2/3-Istor/cnp-docs` | CNP diagrams as one noodle system `architecture/cnp`: platform overview, app runtime view, request path, OIDC login; archgen and the local skill removed | branch `feat/add-noodle-schema` pushed (1bfed51), for Brian to review. |
 | CNP platform | Security gaps found while mapping: G1 no Cilium tenant isolation in code, G2 no groups-claim authorization in SecurityPolicy, G3 plain HTTP in cluster including Vault (`tls_disable`), G4 tunnels bound to Envoy's hashed Service name, G5 one tunnel per app on `cloudflared:latest`, G6 token call probably hairpins through Cloudflare | documented in the diagram only. Deserve issues in the CNP repos. G1 and G2 first. |
+| CNP platform | **G7**: the CMP `/api` route has no OIDC policy and the backend decodes JWTs with `verify_signature`, `verify_aud` and `verify_exp` off (`CMP/backend/app/services/keycloak_service.py:476`, `routers/account.py:45`): a forged token is accepted | found 2026-09-30, in the diagram only. Deserves an issue first. |
 | `~/.dotfiles` | noodle plugin installed declaratively (commit `9bf7e57`) | pushed. `nixos-rebuild switch` still to run. |
 
 ## Log
@@ -51,6 +52,10 @@ decisions go in ADRs, acceptance in `features.json`.
 - B-06: `multiplicity` renders as two dashed copies 10 px up and right behind the box;
   the lint keeps their footprint clear (`house.NodeFootprint`), the legend lists each
   text. `repo-map` fixture stacked. Unblocks deleting DockAir's post-processor (002 T03).
+- Spec 002 T03: dockair-docs !20 merged. Its three diagrams are v1alpha1 systems,
+  `postprocess-drawio.py` and its side files deleted, PNGs compressed with pngquant
+  (`PNG_QUALITY`): draw.io 30.2.6 exports PNGs 3 to 4 times larger than before.
+  Phases 1 and 1b closed. Still on v0: PAE and cnp-docs (`noodle migrate` when needed).
 - Benchmark brief in Notion: "Benchmark · Token cost of a diagram", to paste in the PR.
 - fact-finder trial on PAE: right on routes, GitOps and secrets; missed the edge forwarder
   and credential-implied connections, prompt fixed. Its "no Image Updater" was the old

@@ -12,8 +12,10 @@ example PNG and look at it.
 - [x] **T02** Render `planned` (hatch, dashed, 60 % text, 40 % icon), `deprecated`
   (dotted, struck title), the target pill, and legend lines for the statuses used.
   Flip **P1b-01**, **P1b-02**.
-- [ ] **T03** Parity with DockAir's `postprocess-drawio.py` on its three diagrams;
+- [x] **T03** Parity with DockAir's `postprocess-drawio.py` on its three diagrams;
   delete the script and its side files in `dockair-docs` (separate MR there).
+  Done in dockair-docs !20 after B-06: planned matches by eye (the core's lighter hatch
+  is deliberate), stacks identical.
 
 ## B · Landscape (P1b-03, P1b-04, P1b-05)
 
