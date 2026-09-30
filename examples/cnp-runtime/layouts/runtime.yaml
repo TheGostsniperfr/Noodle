@@ -2,6 +2,16 @@ apiVersion: noodle/v1alpha1
 kind: Layout
 canvas: {width: 2340, height: 1800}
 
+# Corridors shared by edges. Moving a lane moves every edge on it.
+lanes:
+  tunnel-app: {x: 680}
+  tunnel-platform: {x: 700}
+  connectors: {x: 1100}
+  tenant-bus: {y: 700}
+  pods-west: {x: 1760}
+  secrets-east: {x: 2265}
+  tenant-bottom: {y: 880}
+
 # Element boxes are relative to their parent zone. Edge waypoints and labels are
 # canvas coordinates. An endpoint without @ slides along its side to line up with the
 # next waypoint, or with the other end when there is none.
@@ -34,25 +44,25 @@ elements:
 
 edges:
   e-1-browser-edge: {from: user.right, to: cf-edge.left}
-  e-2-tunnel-app: {from: cloudflared-app.left, to: cf-edge.right, waypoints: [[680, 780], [680, 530]], label_at: [680, 655], against_flow: true}
-  e-3-connector-envoy: {from: cloudflared-app.right, to: envoy-shared-gateway.left, waypoints: [[1100, 780], [1100, 525]], label_at: [1100, 650]}
-  e-4-envoy-service: {from: envoy-shared-gateway.bottom, to: app-service.top, waypoints: [[1440, 700], [1590, 700]], label_at: [1515, 700]}
+  e-2-tunnel-app: {from: cloudflared-app.left, to: cf-edge.right@110px, waypoints: [lane:tunnel-app], label_at: [680, 655], against_flow: true}
+  e-3-connector-envoy: {from: cloudflared-app.right, to: envoy-shared-gateway.left@105px, waypoints: [lane:connectors], label_at: [1100, 650]}
+  e-4-envoy-service: {from: envoy-shared-gateway.bottom@280px, to: app-service.top, waypoints: [lane:tenant-bus], label_at: [1515, 700]}
   e-5-service-pods: {from: app-service.right@50px, to: app-pods.left}
   e-6-pods-db: {from: app-pods.bottom, to: cnpg.top}
 
-  e-oidc-platform-tunnel: {from: cloudflared-platform.left, to: cf-edge.right, waypoints: [[700, 360], [700, 440]], label_at: [700, 400], against_flow: true}
-  e-oidc-platform-envoy: {from: cloudflared-platform.right, to: envoy-shared-gateway.left, waypoints: [[1100, 360], [1100, 472]], label_at: [1100, 405]}
+  e-oidc-platform-tunnel: {from: cloudflared-platform.left, to: cf-edge.right@20px, waypoints: [lane:tunnel-platform], label_at: [700, 400], against_flow: true}
+  e-oidc-platform-envoy: {from: cloudflared-platform.right, to: envoy-shared-gateway.left@52px, waypoints: [lane:connectors], label_at: [1100, 405]}
   e-oidc-envoy-keycloak: {from: envoy-shared-gateway.right, to: keycloak.left}
   e-oidc-token-hairpin: {from: envoy-shared-gateway.left@75px, to: cf-edge.right, label_at: [900, 495], against_flow: true}
 
   e-a-vso-vault: {from: vso.bottom, to: vault.top}
-  e-b-vso-secret: {from: vso.right, to: app-secret.top, waypoints: [[2265, 350], [2265, 880], [1590, 880]], label_at: [2150, 880]}
+  e-b-vso-secret: {from: vso.right, to: app-secret.top, waypoints: [lane:secrets-east, lane:tenant-bottom], label_at: [2150, 880]}
 
   r-ctp-gateway: {from: client-traffic-policy.bottom, to: envoy-shared-gateway.top}
   r-route-gateway: {from: httproute.top, to: envoy-shared-gateway.bottom}
   r-policy-route: {from: security-policy.top, to: httproute.bottom}
   r-policy-secret: {from: security-policy.right@40px, to: app-secret.left}
-  r-pods-secret: {from: app-pods.left, to: app-secret.right, waypoints: [[1760, 812], [1760, 960]], label_at: [1730, 960]}
+  r-pods-secret: {from: app-pods.left@72px, to: app-secret.right, waypoints: [lane:pods-west], label_at: [1730, 960]}
 
   x-cross-tenant: {from: g-tenant-a.bottom@80px, to: g-tenant-b.top, label_at: [840, 1115], label_offset: [178, 0]}
 

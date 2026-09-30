@@ -32,6 +32,8 @@ decisions go in ADRs, acceptance in `features.json`.
   facets reserved, files now and a graph DB only when L5 history or scale needs it) and
   ADR-0016 (k8s discovery before the viewer, own Go adapter on k8s libraries; existing
   tools map k8s objects, not client-to-server connections). Auto-layout is the next spec.
+- Spec 001 T13: CNP runtime layout on named lanes (tunnels, connectors, tenant bus,
+  secrets) with `@px` exits; draw.io output byte-identical in both themes.
 - Benchmark brief in Notion: "Benchmark · Token cost of a diagram", to paste in the PR.
 - fact-finder trial on PAE: right on routes, GitOps and secrets; missed the edge forwarder
   and credential-implied connections, prompt fixed. Its "no Image Updater" was the old
