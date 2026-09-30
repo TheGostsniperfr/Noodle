@@ -4,6 +4,7 @@ package model
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -54,6 +55,8 @@ type Element struct {
 	Status       string   `yaml:"status"`
 	Target       string   `yaml:"target"`
 	Multiplicity string   `yaml:"multiplicity"`
+	// Matches lists the discovered ids this element stands for (ADR-0015).
+	Matches []string `yaml:"matches"`
 }
 
 func (e Element) IsZone() bool { return e.Kind == "region" || e.Kind == "group" }
@@ -93,6 +96,56 @@ type Annotation struct {
 	Text     string   `yaml:"text"`
 	Targets  []string `yaml:"targets"`
 }
+
+// Fragment is what an adapter discovers from one source (ADR-0015). Its ids are
+// discovered ids, never curated ones; the curated model links to them with matches.
+type Fragment struct {
+	APIVersion string `yaml:"apiVersion"`
+	Kind       string `yaml:"kind"`
+	// ID is the file stem, <adapter>-<source>.
+	ID          string                 `yaml:"-"`
+	Provenance  Provenance             `yaml:"provenance"`
+	Elements    []DiscoveredElement    `yaml:"elements"`
+	Connections []DiscoveredConnection `yaml:"connections"`
+	References  []DiscoveredReference  `yaml:"references"`
+}
+
+type Provenance struct {
+	Adapter    string `yaml:"adapter"`
+	Source     string `yaml:"source"`
+	Ref        string `yaml:"ref"`
+	ObservedAt string `yaml:"observedAt"`
+}
+
+// Src is where one discovered item comes from: a file and line, or an API object.
+type Src struct {
+	File   string `yaml:"file"`
+	Line   int    `yaml:"line"`
+	Object string `yaml:"object"`
+}
+
+type DiscoveredElement struct {
+	Element `yaml:",inline"`
+	Src     Src `yaml:"src"`
+}
+
+// DiscoveredConnection is Inferred when a heuristic found it, such as a Service DNS
+// name in an env value, rather than a manifest that declares it.
+type DiscoveredConnection struct {
+	Connection `yaml:",inline"`
+	Inferred   bool `yaml:"inferred"`
+	Src        Src  `yaml:"src"`
+}
+
+type DiscoveredReference struct {
+	Reference `yaml:",inline"`
+	Src       Src `yaml:"src"`
+}
+
+// discoveredID is <adapter>:<path>, e.g. k8s:prod/deployment/api (ADR-0015).
+var discoveredID = regexp.MustCompile(`^[a-z][a-z0-9]*:\S+$`)
+
+func IsDiscoveredID(id string) bool { return discoveredID.MatchString(id) }
 
 type View struct {
 	APIVersion string `yaml:"apiVersion"`

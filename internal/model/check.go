@@ -103,6 +103,7 @@ func (c *checker) checkModel() {
 			}
 		}
 	}
+	c.checkMatches(file)
 	for _, cn := range c.s.Model.Connections {
 		unique(cn.ID)
 		c.conns[cn.ID] = cn
@@ -147,6 +148,26 @@ func (c *checker) checkModel() {
 		for _, t := range a.Targets {
 			if _, ok := c.elements[t]; !ok && !c.edgeIDs[t] {
 				c.errf(file, a.ID, "target %q does not exist in the model", t)
+			}
+		}
+	}
+}
+
+// checkMatches keeps each discovered id on one curated element at most, so a merge
+// never has to choose between two.
+func (c *checker) checkMatches(file string) {
+	matchedBy := map[string]string{}
+	for _, e := range c.s.Model.Elements {
+		for _, id := range e.Matches {
+			switch owner, taken := matchedBy[id]; {
+			case !IsDiscoveredID(id):
+				c.errf(file, e.ID, "matches %q is not a discovered id <adapter>:<path>", id)
+			case taken && owner == e.ID:
+				c.errf(file, e.ID, "matches %q twice", id)
+			case taken:
+				c.errf(file, e.ID, "matches %q, already matched by %s", id, owner)
+			default:
+				matchedBy[id] = e.ID
 			}
 		}
 	}

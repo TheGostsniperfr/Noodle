@@ -1,0 +1,11 @@
+apiVersion: noodle/v1alpha1
+kind: Fragment
+provenance: {adapter: k8s, source: manifests, ref: 40bc6a9, observedAt: "2026-09-30T12:00:00Z"}
+elements:
+  - {id: "k8s:prod/namespace/prod", kind: group, title: prod, src: {file: manifests/namespace.yaml, line: 1}}
+  - {id: "k8s:prod/deployment/api", kind: backend, parent: "k8s:prod/namespace/prod", title: api, ports: [{name: http, protocol: TCP, port: 8080}], src: {file: manifests/api.yaml, line: 1}}
+  - {id: "k8s:prod/service/api", kind: backend, parent: "k8s:prod/namespace/prod", title: api, ports: [{name: https, protocol: TCP, port: 443}], src: {file: manifests/api.yaml, line: 24}}
+  - {id: "k8s:prod/deployment/worker", kind: backend, parent: "k8s:prod/namespace/prod", title: worker, src: {object: prod/Deployment/worker}}
+connections:
+  - {id: "k8s:prod/service/api->deployment/api", from: "k8s:prod/service/api", to: "k8s:prod/deployment/api", port: http, kind: flow, src: {file: manifests/api.yaml, line: 24}}
+  - {id: "k8s:prod/deployment/worker->service/api", from: "k8s:prod/deployment/worker", to: "k8s:prod/service/api", port: https, kind: flow, inferred: true, src: {object: prod/Deployment/worker}}
