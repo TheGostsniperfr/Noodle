@@ -31,6 +31,7 @@ The main session model is Brian's choice (`/model`). Subagents pin theirs.
 |---|---|
 | Specs, ADRs, architecture, open questions, anything that sets direction | Opus, high effort |
 | Implementing tasks from a `tasks.md` that is already clear | Sonnet |
+| Collecting a diagram's facts from code (skill step 1) | `noodle:fact-finder` agent (Sonnet) |
 | Reviewing a rendered diagram as a tech lead | `noodle:diagram-reviewer` agent (Opus) |
 | Mechanical work: fetching and recolouring logos, variants | `noodle:icon-curator` agent (Haiku) |
 

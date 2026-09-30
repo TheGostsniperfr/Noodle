@@ -21,6 +21,18 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-09-30 · Token cost of a diagram, fact-finder agent
+
+- Measured the PAE diagram session (29/09, 137 turns, noodle dev excluded), cost weighted
+  at cache read ×0.1, cache write ×1.25, output ×5: discovery ~41 % (50 `cat`/`grep`
+  turns, each rereading the context), geometry ~20 % (45 % of diagram output tokens),
+  lint and render ~11 %, PNG review ~2 %, fixed overhead ~21 %.
+- Static discovery (phase 6 adapters) would save ~35-40 %, plus auto-layout ~60-70 %.
+  Proposal, not decided: spec 003 pulling a k8s manifest adapter and a draft auto-layout
+  forward, after T16 of spec 001.
+- Stopgap shipped: `agents/fact-finder.md` (Sonnet, read-only) runs skill step 1 in its
+  own context and returns a `v1alpha1`-shaped YAML inventory with a source on every fact.
+
 ### 2026-09-28 · Spec 002 drafted: landscape and catalog views
 
 - Brian agreed to a phase 1b before phase 1 closes: tech stack (landscape) and service
