@@ -38,6 +38,19 @@
         {"id": "P1b-06", "description": "Offerings in the model and view type catalog, one card per offering (ADR-0013)", "verify": "noodle render examples/catalog --view catalog renders dark and light, lint green; an unknown backed_by id fails", "passes": true},
         {"id": "P1b-07", "description": "DockAir tech stack and service catalogue rendered from its model", "verify": "dockair-docs renders views tech-stack and service-catalog; diagram-reviewer reports no blocking finding", "passes": true}
       ]
+    },
+    {
+      "id": "6a",
+      "title": "Static discovery from Kubernetes",
+      "features": [
+        {"id": "P6a-01", "description": "Fragment contract with provenance and src, matches on model elements", "verify": "go test ./internal/model/... validates fragment and model schemas and rejects malformed or duplicate matches", "passes": false},
+        {"id": "P6a-02", "description": "Adapter interface and registry behind noodle discover", "verify": "go test ./internal/adapter/... runs a test adapter end to end through the registry", "passes": false},
+        {"id": "P6a-03", "description": "k8s adapter derives elements, connections and references from manifests", "verify": "noodle discover k8s examples/discovery-k8s/manifests equals the golden fragment, twice in a row", "passes": false},
+        {"id": "P6a-04", "description": "Manifests and kubectl get -o yaml output give the same fragment", "verify": "go test ./internal/adapter/k8s/... compares both inputs of the example", "passes": false},
+        {"id": "P6a-05", "description": "Merge and drift report against the curated model", "verify": "noodle drift examples/discovery-k8s equals the expected report", "passes": false},
+        {"id": "P6a-06", "description": "Skill runs discovery first and fact-finder only for what is left", "verify": "a diagram of examples/discovery-k8s built with the skill reads no manifest file directly", "passes": false},
+        {"id": "P6a-07", "description": "Token benchmark of three discovery arms on the same diagram", "verify": "Notion page Benchmark · Token cost of a diagram lists cost and connection recall for arms A, B and C", "passes": false}
+      ]
     }
   ],
   "backlog": [
