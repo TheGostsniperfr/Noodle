@@ -1,0 +1,84 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: z-internet, kind: region, color: slate, icon: globe, title: INTERNET · USERS}
+  - {id: z-openstack, kind: region, color: rose, icon: openstack, title: OPENSTACK · PRIVATE CLOUD, sub: 'network internal · 10.20.0.0/24, shared with the edge team and prod'}
+  - {id: z-edge, kind: region, parent: z-openstack, color: amber, icon: nginx, title: EDGE TEAM, sub: RKE2 · FIP .10}
+  - {id: z-cluster, kind: region, parent: z-openstack, color: cyan, icon: talos, title: ACME STAGING CLUSTER, sub: Talos 1.13 · K8s 1.32 · 1 CP m1.medium + 3 workers m1.large · pods 10.44/16 · svc 10.45/16}
+  - {id: g-gateway, kind: group, parent: z-cluster, color: emerald, icon: envoy-gateway, title: GATEWAY API, sub: ns envoy-gateway · Envoy Gateway 1.8.1}
+  - {id: g-apps, kind: group, parent: z-cluster, color: indigo, icon: k8s-ns, title: BUSINESS APPLICATIONS, sub: '8 namespaces, same generic-app-chart · 2 shown'}
+  - {id: g-app-a, kind: group, parent: g-apps, color: sky, icon: k8s-ns, title: APP <app-a>, sub: 'ns <app-a> · https://<app-a>.staging.acme.example'}
+  - {id: g-app-b, kind: group, parent: g-apps, color: violet, icon: k8s-ns, title: APP <app-b>, sub: 'ns <app-b> · https://<app-b>.staging.acme.example'}
+  - {id: g-bi, kind: group, parent: z-cluster, color: sky, icon: k8s-ns, title: DATA · BI, sub: ns airbyte · dagster · metabase · bi-warehouse}
+  - {id: g-managed, kind: group, parent: z-cluster, color: violet, icon: cnpg, title: MANAGED SERVICES, sub: DBaaS · MQaaS · simulation}
+  - {id: g-core, kind: group, parent: z-cluster, color: slate, icon: kubernetes, title: CLUSTER CORE}
+  - {id: g-gitops, kind: group, parent: z-cluster, color: orange, icon: argo, title: GITOPS, sub: ns argocd}
+  - {id: g-secrets, kind: group, parent: z-cluster, color: rose, icon: vault, title: SECRETS, sub: ns vault · vault-secrets-operator}
+  - {id: g-observability, kind: group, parent: z-cluster, color: slate, icon: prometheus, title: OBSERVABILITY, sub: 'planned, not deployed'}
+  - {id: z-shared-it, kind: region, color: orange, icon: gitlab, title: SHARED IT SERVICES}
+  - {id: user, kind: frontend, parent: z-internet, shape: actor, icon: user, title: User, desc: browser}
+  - {id: admin, kind: frontend, parent: z-internet, shape: actor, icon: user, title: Platform admin, desc: kubectl · talosctl}
+  - {id: developer, kind: frontend, parent: z-internet, shape: actor, icon: user, title: App developer, desc: git push}
+  - {id: edge-ingress, kind: cloud, parent: z-edge, icon: nginx, title: Shared Ingress, tech: '[nginx · Let''s Encrypt HTTP01]', desc: TLS ends · *.staging wildcard, ports: [{name: tcp-443, protocol: TCP, port: 443}]}
+  - {id: envoy-eg, kind: backend, parent: g-gateway, icon: envoy, title: eg · north-south, tech: '[Gateway · NodePort 30080]', desc: Host routing + GitLab OIDC, ports: [{name: tcp-30080, protocol: TCP, port: 30080}]}
+  - {id: envoy-eg-internal, kind: backend, parent: g-gateway, icon: envoy, title: eg-internal, tech: '[ClusterIP 10.96.0.100]', desc: 'App-to-app, no OIDC', ports: [{name: tcp-80, protocol: TCP, port: 80}]}
+  - {id: a-frontend, kind: frontend, parent: g-app-a, icon: k8s-deploy, title: <app-a>-frontend, tech: '[Deployment · nginx SPA]', desc: Static files only, ports: [{name: tcp-80, protocol: TCP, port: 80}]}
+  - {id: a-backend, kind: backend, parent: g-app-a, icon: k8s-deploy, title: <app-a>-backend, tech: '[Deployment · FastAPI]', desc: Business API /api/v1, ports: [{name: tcp-8000, protocol: TCP, port: 8000}]}
+  - {id: a-db, kind: database, parent: g-app-a, shape: cylinder, icon: cnpg, title: <app-a>-db, tech: '[CloudNativePG · PG 17]', desc: 1 primary + 1 replica, ports: [{name: tcp-5432, protocol: TCP, port: 5432}]}
+  - {id: b-backend, kind: backend, parent: g-app-b, icon: k8s-deploy, title: <app-b>-backend, tech: '[Deployment · FastAPI]', desc: Business API /api/v1, ports: [{name: tcp-8000, protocol: TCP, port: 8000}]}
+  - {id: b-frontend, kind: frontend, parent: g-app-b, icon: k8s-deploy, title: <app-b>-frontend, tech: '[Deployment · nginx SPA]', desc: Static files only}
+  - {id: b-db, kind: database, parent: g-app-b, shape: cylinder, icon: cnpg, title: <app-b>-db, tech: '[CloudNativePG · PG 17]', desc: 1 primary + 1 replica, ports: [{name: tcp-5432, protocol: TCP, port: 5432}]}
+  - {id: dagster, kind: backend, parent: g-bi, icon: k8s-deploy, title: Dagster, tech: '[orchestrator]', desc: Schedules syncs}
+  - {id: airbyte, kind: backend, parent: g-bi, icon: airbyte, title: Airbyte, tech: '[ELT]', desc: Reads app DB replicas, ports: [{name: tcp-8001, protocol: TCP, port: 8001}]}
+  - {id: bi-warehouse, kind: database, parent: g-bi, shape: cylinder, icon: cnpg, title: bi-warehouse, tech: '[CloudNativePG]', desc: Analytics store, ports: [{name: tcp-5432, protocol: TCP, port: 5432}]}
+  - {id: metabase, kind: frontend, parent: g-bi, icon: metabase, title: Metabase, tech: '[BI dashboards]', desc: Queries the warehouse}
+  - {id: cnpg-operator, kind: database, parent: g-managed, icon: cnpg, title: CNPG operator, tech: '[cloudnative-pg 0.29]', desc: PostgreSQL per app}
+  - {id: rabbitmq, kind: external, parent: g-managed, icon: rabbitmq, title: RabbitMQ · soon, tech: '[Cluster Operator · MQaaS]', desc: Async events · 1 vhost/app}
+  - {id: clock, kind: external, parent: g-managed, icon: k8s-deploy, title: Clock · soon, tech: '[platform service]', desc: 'Simulated time, ticks'}
+  - {id: kube-apiserver, kind: backend, parent: g-core, icon: kubernetes, title: kube-apiserver, tech: '[cp-1 · 10.20.0.11]', desc: 'Also Talos API :50000', ports: [{name: tcp-6443, protocol: TCP, port: 6443}]}
+  - {id: cilium, kind: security, parent: g-core, icon: cilium, title: Cilium, tech: '[eBPF · no kube-proxy · VXLAN]', desc: Default-deny + per-app CNP}
+  - {id: argocd, kind: backend, parent: g-gitops, icon: argo, title: Argo CD, tech: '[App-of-Apps · Dex GitLab SSO]', desc: 'Auto-sync, prune, self-heal'}
+  - {id: image-updater, kind: backend, parent: g-gitops, icon: argo, title: Image Updater, tech: '[argocd-image-updater]', desc: Tracks vX.Y.Z-rc.N tags}
+  - {id: vso, kind: database, parent: g-secrets, icon: vault, title: Vault Secrets Operator, tech: '[ricoberger · K8s operator]', desc: Vault KV to K8s Secrets}
+  - {id: vault, kind: database, parent: g-secrets, icon: vault, title: Vault, tech: '[raft · tls_disable]', desc: kvv2 · K8s auth, ports: [{name: tcp-8200, protocol: TCP, port: 8200}]}
+  - {id: prometheus, kind: external, parent: g-observability, icon: prometheus, title: Prometheus, tech: '[kube-prometheus-stack]', desc: Scrapes /metrics}
+  - {id: loki, kind: external, parent: g-observability, icon: grafana, title: Loki + Alloy, tech: '[logs · DaemonSet]', desc: JSON stdout logs}
+  - {id: grafana, kind: external, parent: g-observability, icon: grafana, title: Grafana, tech: '[dashboards]', desc: Exposed to the CMP}
+  - {id: boundary, kind: security, parent: z-shared-it, icon: boundary, title: Boundary, tech: '[HashiCorp · shared instance]', desc: Brokered TCP sessions}
+  - {id: gitlab-oidc, kind: security, parent: z-shared-it, icon: gitlab, title: GitLab OIDC, tech: '[IdP · groups_direct claim]', desc: 'Login, tokens, JWKS', ports: [{name: tcp-443, protocol: TCP, port: 443}]}
+  - {id: gitlab-repos, kind: external, parent: z-shared-it, icon: gitlab, title: GitLab repositories, tech: '[infra · generic-app-chart · app-configs]', desc: Desired state of the cluster, ports: [{name: tcp-22, protocol: TCP, port: 22}]}
+  - {id: gitlab-registry, kind: external, parent: z-shared-it, icon: gitlab, title: GitLab CI + registry, tech: '[registry.acme.example]', desc: Builds and stores images, ports: [{name: tcp-443, protocol: TCP, port: 443}]}
+connections:
+  - {id: e-1-user-edge, from: user, to: edge-ingress, kind: flow, port: tcp-443, protocol: HTTPS, verb: GET}
+  - {id: e-2-edge-eg, from: edge-ingress, to: envoy-eg, kind: flow, port: tcp-30080, protocol: HTTP, verb: forward}
+  - {id: e-3-eg-a-backend, from: envoy-eg, to: a-backend, kind: flow, port: tcp-8000, protocol: HTTP, verb: /api}
+  - {id: e-4-a-backend-a-db, from: a-backend, to: a-db, kind: flow, port: tcp-5432, protocol: SQL, verb: query}
+  - {id: e-5-a-backend-eg-internal, from: a-backend, to: envoy-eg-internal, kind: flow, port: tcp-80, protocol: HTTP, verb: GET $APP_B_URL/api}
+  - {id: e-6-eg-internal-b-backend, from: envoy-eg-internal, to: b-backend, kind: flow, port: tcp-8000, protocol: HTTP, verb: /api}
+  - {id: e-7-b-backend-b-db, from: b-backend, to: b-db, kind: flow, port: tcp-5432, protocol: SQL, verb: query}
+  - {id: e-eg-a-frontend, from: envoy-eg, to: a-frontend, kind: flow, port: tcp-80, protocol: HTTP, verb: / SPA}
+  - {id: x-a-frontend-a-backend, from: a-frontend, to: a-backend, kind: flow, protocol: denied, verb: frontend pod to backend, denied: true}
+  - {id: x-a-backend-b-db, from: a-backend, to: b-db, kind: flow, protocol: denied, verb: cross-app DB, denied: true}
+  - {id: x-app-a-app-b, from: g-app-a, to: g-app-b, kind: flow, protocol: denied, verb: direct pod-to-pod, denied: true}
+  - {id: e-oidc-eg-gitlab, from: envoy-eg, to: gitlab-oidc, kind: auth, port: tcp-443, protocol: HTTPS, verb: OIDC code exchange + JWKS}
+  - {id: e-a-dev-repos, from: developer, to: gitlab-repos, kind: flow, port: tcp-22, protocol: SSH, verb: git push}
+  - {id: e-b-updater-registry, from: image-updater, to: gitlab-registry, kind: async, port: tcp-443, protocol: HTTPS, verb: poll rc tags}
+  - {id: e-c-updater-repos, from: image-updater, to: gitlab-repos, kind: async, port: tcp-22, protocol: SSH, verb: write tag}
+  - {id: e-d-argocd-repos, from: argocd, to: gitlab-repos, kind: async, port: tcp-22, protocol: SSH, verb: pull}
+  - {id: e-e-nodes-registry, from: z-cluster, to: gitlab-registry, kind: async, port: tcp-443, protocol: HTTPS, verb: image pull}
+  - {id: e-f-vso-vault, from: vso, to: vault, kind: async, port: tcp-8200, verb: read}
+  - {id: e-g-dagster-airbyte, from: dagster, to: airbyte, kind: async, port: tcp-8001, verb: trigger}
+  - {id: e-h-airbyte-a-db, from: airbyte, to: a-db, kind: async, port: tcp-5432, protocol: SQL (bi_reader), verb: extract replica}
+  - {id: e-i-airbyte-warehouse, from: airbyte, to: bi-warehouse, kind: async, port: tcp-5432, verb: load}
+  - {id: e-metabase-warehouse, from: metabase, to: bi-warehouse, kind: flow, port: tcp-5432, protocol: SQL, verb: query}
+  - {id: e-admin-boundary, from: admin, to: boundary, kind: auth, protocol: OIDC, verb: login}
+  - {id: e-boundary-apiserver, from: boundary, to: kube-apiserver, kind: tunnel, port: tcp-6443, protocol: TCP, verb: brokered session}
+references:
+  - {id: r-argocd-app-b, from: argocd, to: g-app-b, kind: applies}
+  - {id: r-cnpg-apps, from: cnpg-operator, to: g-apps, kind: reconciles}
+annotations:
+  - {id: G1, targets: [edge-ingress, a-db, vault]}
+  - {id: G2, targets: [envoy-eg]}
+  - {id: G5, targets: [envoy-eg-internal]}
+  - {id: G3, targets: [rabbitmq, clock, prometheus, loki, grafana]}
+  - {id: G4, targets: [vso]}

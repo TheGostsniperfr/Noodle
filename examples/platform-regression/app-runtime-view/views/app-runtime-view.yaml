@@ -1,0 +1,68 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+title: Acme · staging · Application runtime view
+subtitle: 'Seen from inside an application''s pods: who can reach it, what it can reach, and what the platform hands it.'
+meta:
+  - 'Scope: one business app deployed with generic-app-chart + secure-route, staging, as of 2026-09-27 · derived from code and checked live on ticketing'
+  - 'Out of scope: the edge team edge and TLS (see platform-staging) · OIDC login sequence · CI pipeline · BI extraction · prod differences (2+ replicas, 3 DB instances)'
+  - 'v0.1 · source: examples/platform-regression/app-runtime-view · anonymized from a real platform, kept as a regression fixture'
+steps:
+  - e-1-user-eg
+  - e-2-eg-backend
+  - e-3-backend-db
+  - e-4-backend-other-apis
+background:
+  - e-a-vso-vault
+notes:
+  - id: n-302
+    text: 'No session: eg replies **302** to GitLab. Signed in but not in allowedGroups: **403**. The app never sees either.'
+cards:
+  - id: card-legend
+    title: Legend
+    color: slate
+    legend: true
+    lines: []
+  - id: card-data-plane
+    title: Request path · data plane
+    color: cyan
+    legend: false
+    lines:
+      - '[1] A signed-in user calls https://<app>.staging.acme.example/api. TLS already ended at the edge team.'
+      - '[2] eg checks the GitLab id-token cookie and the route''s allowedGroups, then proxies plain HTTP to the backend Service.'
+      - '[3] The backend queries its own CNPG cluster with DATABASE_URL.'
+      - '[4] It calls another app on its public hostname from <APP>_URL. hostAliases pins that name to eg-internal, which routes /api only.'
+      - Other apps call this one the same way, unauthenticated.
+      - 'To verify: whether the id-token cookie reaches the backend, i.e. whether the app can read the user''s identity.'
+  - id: card-control-plane
+    title: Background · control plane
+    color: violet
+    legend: false
+    lines:
+      - 'Argo CD renders generic-app-chart: team values from app-configs first, platform baseline last, so the baseline wins on images, security and vault[].'
+      - The migration Job runs as a PreSync hook before each rollout.
+      - '[A] VSO reads the app''s Vault path with the role pinned by the baseline, and writes it as a K8s Secret.'
+      - CNPG creates <app>-db and publishes <app>-db-app, the source of DATABASE_*.
+      - Image Updater bumps the image tag in app-configs on every rc build.
+  - id: card-contract
+    title: Runtime contract · what the pod sees
+    color: indigo
+    legend: false
+    lines:
+      - '**Env, always:** APP_NAME, APP_COMPONENT, APP_ENV, APP_DOMAIN, POD_NAME, POD_NAMESPACE, LOG_LEVEL.'
+      - '**Env, database:** DATABASE_HOST, _PORT, _NAME, _USER, _PASSWORD, _URL (driver from urlScheme).'
+      - '**Env, other apps:** <APP>_URL for the 8 known apps, e.g. BOOKING_URL=http://booking.staging.acme.example.'
+      - '**Secrets:** each vault[] entry becomes a Secret, injected as env via injectInto. No files, no Vault token. Rotation needs a restart.'
+      - '**Sandbox:** non-root uid 1000, read-only root, writable /tmp 64Mi, all capabilities dropped, seccomp RuntimeDefault.'
+      - '**Must expose:** HTTP on 8000 (backend) or 8080 (frontend), /health/live, /health/ready, /metrics. JSON logs on stdout.'
+      - '**Sizing:** 1 replica, 100m/128Mi request, 500m/512Mi limit, required anti-affinity.'
+  - id: card-gaps
+    title: Gaps between docs and code
+    color: orange
+    legend: false
+    lines:
+      - '!!G1!! **East-west auth.** eg-internal has no SecurityPolicy. Any app pod can call any app''s /api, and the callee cannot tell who is calling.'
+      - '!!G2!! **No broker.** Docs promise RabbitMQ with one vhost per app. Not deployed, RABBITMQ_URL not injected, egress rule off. The template''s publisher and worker cannot run.'
+      - '!!G3!! **Archetype vs contract.** Backends serve /health and /ready, not /health/live and /health/ready. Frontends run stock nginx as root on port 80.'
+      - '!!G4!! **Observability.** /metrics is required but no Prometheus runs. Logs only through kubectl.'
+      - '!!G5!! **Durability.** The DB sits on local-path (node-pinned), backups off. FLIGHT_TRACKING_URL is injected but that app does not exist.'

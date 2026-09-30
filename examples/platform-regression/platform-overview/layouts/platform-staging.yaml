@@ -1,0 +1,87 @@
+apiVersion: noodle/v1alpha1
+kind: Layout
+canvas: {width: 3400, height: 2280}
+elements:
+  z-internet: {x: 40, y: 220, w: 240, h: 1580}
+  z-openstack: {x: 340, y: 220, w: 3020, h: 1230}
+  z-edge: {x: 30, y: 70, w: 300, h: 440}
+  z-cluster: {x: 400, y: 70, w: 2580, h: 1130}
+  g-gateway: {x: 30, y: 50, w: 380, h: 520}
+  g-apps: {x: 490, y: 50, w: 1020, h: 710}
+  g-app-a: {x: 30, y: 50, w: 960, h: 280}
+  g-app-b: {x: 30, y: 400, w: 960, h: 280}
+  g-bi: {x: 1590, y: 50, w: 960, h: 400}
+  g-managed: {x: 1590, y: 510, w: 960, h: 250}
+  g-core: {x: 130, y: 820, w: 280, h: 290}
+  g-gitops: {x: 490, y: 820, w: 600, h: 290}
+  g-secrets: {x: 1170, y: 820, w: 600, h: 290}
+  g-observability: {x: 1830, y: 820, w: 720, h: 290}
+  z-shared-it: {x: 340, y: 1510, w: 3020, h: 290}
+  user: {x: 84, y: 222, w: 56, h: 56}
+  admin: {x: 84, y: 1362, w: 56, h: 56}
+  developer: {x: 84, y: 1482, w: 56, h: 56}
+  edge-ingress: {x: 20, y: 130, w: 260, h: 110}
+  envoy-eg: {x: 60, y: 60, w: 280, h: 140}
+  envoy-eg-internal: {x: 100, y: 380, w: 240, h: 100}
+  a-frontend: {x: 30, y: 30, w: 250, h: 80}
+  a-backend: {x: 30, y: 160, w: 250, h: 90}
+  a-db: {x: 440, y: 130, w: 240, h: 110}
+  b-backend: {x: 30, y: 50, w: 250, h: 90}
+  b-frontend: {x: 30, y: 165, w: 250, h: 80}
+  b-db: {x: 440, y: 30, w: 240, h: 110}
+  dagster: {x: 20, y: 90, w: 200, h: 90}
+  airbyte: {x: 330, y: 90, w: 230, h: 90}
+  bi-warehouse: {x: 680, y: 70, w: 250, h: 150}
+  metabase: {x: 330, y: 280, w: 230, h: 90}
+  cnpg-operator: {x: 30, y: 80, w: 270, h: 90}
+  rabbitmq: {x: 340, y: 80, w: 280, h: 90}
+  clock: {x: 660, y: 80, w: 270, h: 90}
+  kube-apiserver: {x: 20, y: 50, w: 250, h: 80}
+  cilium: {x: 20, y: 170, w: 250, h: 80}
+  argocd: {x: 30, y: 60, w: 260, h: 100}
+  image-updater: {x: 320, y: 60, w: 250, h: 100}
+  vso: {x: 20, y: 60, w: 260, h: 100}
+  vault: {x: 370, y: 60, w: 210, h: 100}
+  prometheus: {x: 30, y: 70, w: 200, h: 90}
+  loki: {x: 260, y: 70, w: 200, h: 90}
+  grafana: {x: 490, y: 70, w: 200, h: 90}
+  boundary: {x: 60, y: 70, w: 280, h: 100}
+  gitlab-oidc: {x: 420, y: 80, w: 300, h: 90}
+  gitlab-repos: {x: 920, y: 80, w: 320, h: 110}
+  gitlab-registry: {x: 1320, y: 80, w: 300, h: 110}
+edges:
+  e-1-user-edge: {from: user.right, to: edge-ingress.left}
+  e-2-edge-eg: {from: edge-ingress.right, to: envoy-eg.left@70px, label_offset: [0, -22]}
+  e-3-eg-a-backend: {from: envoy-eg.right, to: a-backend.left, waypoints: [[1170, 515], [1170, 600]], label_at: [1170, 560]}
+  e-4-a-backend-a-db: {from: a-backend.right, to: a-db.left@70px}
+  e-5-a-backend-eg-internal: {from: a-backend.left, to: envoy-eg-internal.right, waypoints: [[1200, 625], [1200, 760]], label_at: [1200, 700], against_flow: true}
+  e-6-eg-internal-b-backend: {from: envoy-eg-internal.right, to: b-backend.left, waypoints: [[1230, 800], [1230, 860]], label_at: [1230, 830]}
+  e-7-b-backend-b-db: {from: b-backend.right, to: b-db.left}
+  e-eg-a-frontend: {from: envoy-eg.right, to: a-frontend.left@60px, label_at: [1200, 480]}
+  x-a-frontend-a-backend: {from: a-frontend.bottom, to: a-backend.top, label_offset: [130, 0]}
+  x-a-backend-b-db: {from: a-backend.bottom, to: b-db.top, waypoints: [[1500, 705], [1760, 705]], label_at: [1640, 705]}
+  x-app-a-app-b: {from: g-app-a.bottom, to: g-app-b.top@890px, label_offset: [-110, 0]}
+  e-oidc-eg-gitlab: {from: envoy-eg.bottom, to: gitlab-oidc.top@85px, label_at: [845, 1475]}
+  e-a-dev-repos: {from: developer.right, to: gitlab-repos.left, waypoints: [[1230, 1730], [1230, 1660]]}
+  e-b-updater-registry: {from: image-updater.bottom, to: gitlab-registry.top@60px, label_at: [1720, 1470]}
+  e-c-updater-repos: {from: image-updater.bottom, to: gitlab-repos.top, waypoints: [[1600, 1480], [1480, 1480]], label_at: [1540, 1480]}
+  e-d-argocd-repos: {from: argocd.bottom, to: gitlab-repos.top, label_at: [1390, 1440]}
+  e-e-nodes-registry: {from: z-cluster.bottom, to: gitlab-registry.top@210px, label_at: [1870, 1475]}
+  e-f-vso-vault: {from: vso.right, to: vault.left@65px, label_offset: [0, -24]}
+  e-g-dagster-airbyte: {from: dagster.right, to: airbyte.left@70px, label_offset: [0, -22]}
+  e-h-airbyte-a-db: {from: airbyte.bottom, to: a-db.right, waypoints: [[2690, 575]], label_at: [2100, 575], against_flow: true}
+  e-i-airbyte-warehouse: {from: airbyte.right, to: bi-warehouse.left@70px, label_offset: [0, -22]}
+  e-metabase-warehouse: {from: metabase.right, to: bi-warehouse.left, waypoints: [[2950, 665], [2950, 530]], label_at: [2950, 600]}
+  e-admin-boundary: {from: admin.right, to: boundary.left}
+  e-boundary-apiserver: {from: boundary.right, to: kube-apiserver.top, waypoints: [[705, 1630], [705, 1075], [1100, 1075]], label_at: [705, 1300]}
+  r-argocd-app-b: {from: argocd.top, to: g-app-b.bottom@220px}
+  r-cnpg-apps: {from: cnpg-operator.left, to: g-apps.right, waypoints: [[2290, 925], [2290, 1000]], label_at: [2290, 960]}
+notes:
+  n-302: {x: 52, y: 560, w: 216, h: 100}
+  n-apply: {x: 52, y: 850, w: 216, h: 110}
+  n-spa: {x: 52, y: 700, w: 216, h: 110}
+cards:
+  card-control-plane: {x: 1480, y: 1860, w: 900, h: 380}
+  card-data-plane: {x: 630, y: 1860, w: 820, h: 380}
+  card-gaps: {x: 2410, y: 1860, w: 950, h: 380}
+  card-legend: {x: 40, y: 1860, w: 560, h: 380}

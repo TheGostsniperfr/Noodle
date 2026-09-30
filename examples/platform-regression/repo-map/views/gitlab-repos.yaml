@@ -1,0 +1,57 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+title: Acme · GitLab repositories
+subtitle: Where do I commit to change something, and what reads that repository?
+meta:
+  - 'Scope: GitLab group acme as provisioned by platform/gitlab-provisioning (Terraform), as of 2026-09-27 · consumers from platform/infra Argo CD Applications'
+  - 'Out of scope: branch protections and approval rules per repo · CI pipeline internals · personal forks'
+  - 'v0.1 · source: examples/platform-regression/repo-map · anonymized from a real platform, kept as a regression fixture'
+steps:
+  - e-1-app-team-app-repo
+  - e-2-app-repo-registry
+  - e-3-argocd-app-configs
+  - e-4-argocd-deploy
+notes:
+  - id: n-apps
+    text: 'Same layout in every app repo: generated from **app-templates**, CI from **ci-cd-templates**, images FROM **base-images**.'
+  - id: n-bi
+    text: One repo per BI tool. Its namespace, route and network policy live in **platform/infra**.
+cards:
+  - id: card-legend
+    title: Legend
+    color: slate
+    legend: true
+    lines: []
+  - id: card-where
+    title: I want to change… → commit in
+    color: indigo
+    legend: false
+    lines:
+      - '**My app''s code, tests, Dockerfile, CI** → applications/<app> (app team).'
+      - '**My app''s image tag, env vars, replicas in staging** → platform/app-configs, apps/<app>/values-staging.yaml (app team MR). Prod values need platform approval (CODEOWNERS).'
+      - '**Security settings, probes, secrets list, route, allowed groups** → platform/infra, gitops/apps/<app>/ (platform team). The baseline loads last and wins.'
+      - '**A new secret value** → Vault, via the platform team. Never in Git.'
+      - '**A CI job for everyone** → devops/ci-cd-templates. **A new app** → start from devops/app-templates.'
+      - '**What the chart renders for every app** → platform/generic-app-chart. **A base image** → platform/base-images.'
+      - '**BI connectors, pipelines, dashboards** → bi/<tool>.'
+      - '**Someone''s GitLab access or a new repo** → platform/gitlab-provisioning. **VMs, network, security groups** → platform/openstack-provisioning.'
+      - '**Platform docs** → platform/platform-docs. **Cross-team standards, ADRs** → urbaniste/architecture-docs.'
+  - id: card-steps
+    title: From commit to cluster
+    color: cyan
+    legend: false
+    lines:
+      - '[1] The app team pushes to applications/<app>.'
+      - '[2] Its pipeline (ci-cd-templates) builds and pushes a vX.Y.Z-rc.N image.'
+      - '[3] Image Updater sees the new tag and commits it to app-configs.'
+      - '[4] Argo CD pulls app-configs, generic-app-chart and infra, renders the app and applies it.'
+      - 'Stacked boxes: one repo per app or per tool, same shape.'
+  - id: card-gaps
+    title: Gaps between docs and code
+    color: orange
+    legend: false
+    lines:
+      - '!!G1!! **Apps.** flight-tracking has a repo but no Argo CD Application. app-sandbox exists but is not in the docs tree.'
+      - '!!G2!! **Products.** clock-service, actors-simulator and platform-sdk repos exist. Nothing from them is deployed.'
+      - '**Docs tree** (gitlab-structure.md) misses app-configs, bi/, urbaniste/ and the members role group.'

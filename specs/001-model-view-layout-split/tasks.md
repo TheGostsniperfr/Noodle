@@ -62,6 +62,7 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 
 ## F · Cleanup
 
-- [ ] **T16** Migrate `examples/platform-regression` to one directory per diagram.
+- [x] **T16** Migrate `examples/platform-regression` to one directory per diagram.
+  Done with `noodle migrate`, draw.io byte-identical to v0 in both themes.
 - [ ] **T17** Remove the v0 reader and `runtime-request-path.yaml` (FR-009); update the
   skill and README examples to the split format.

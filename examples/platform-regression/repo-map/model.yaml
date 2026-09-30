@@ -1,0 +1,61 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: z-teams, kind: region, color: slate, icon: user, title: TEAMS}
+  - {id: z-gitlab, kind: region, color: orange, icon: gitlab, title: GITLAB · acme, sub: git.acme.example/acme · tree managed as code by platform/gitlab-provisioning}
+  - {id: g-applications, kind: group, parent: z-gitlab, color: indigo, icon: gitlab, title: APPLICATIONS, sub: 'applications/ · owner: each app team'}
+  - {id: g-devops, kind: group, parent: z-gitlab, color: emerald, icon: gitlab, title: DEVOPS, sub: devops/}
+  - {id: g-bi, kind: group, parent: z-gitlab, color: sky, icon: gitlab, title: BI, sub: 'bi/ · owner: BI team'}
+  - {id: g-platform, kind: group, parent: z-gitlab, color: violet, icon: gitlab, title: PLATFORM, sub: 'platform/ · owner: platform team'}
+  - {id: g-deploy, kind: group, parent: g-platform, color: violet, icon: argo, title: GITOPS · DEPLOYMENT STATE, sub: read by Argo CD}
+  - {id: g-prov, kind: group, parent: g-platform, color: amber, icon: openstack, title: PROVISIONING · IAC}
+  - {id: g-products, kind: group, parent: g-platform, color: cyan, icon: k8s-deploy, title: PLATFORM PRODUCTS}
+  - {id: g-docs, kind: group, parent: g-platform, color: slate, icon: gitlab, title: DOCS}
+  - {id: g-tooling, kind: group, parent: g-platform, color: emerald, icon: gitlab, title: TOOLING}
+  - {id: g-urbaniste, kind: group, parent: z-gitlab, color: rose, icon: gitlab, title: URBANISTE, sub: urbaniste/}
+  - {id: g-auth, kind: group, parent: z-gitlab, color: rose, icon: gitlab, title: _AUTH-ROLES, sub: 'identity groups, no code'}
+  - {id: z-targets, kind: region, color: cyan, icon: rack, title: WHAT READS IT}
+  - {id: app-team, kind: frontend, parent: z-teams, shape: actor, icon: user, title: App team, desc: 'booking, ticketing…'}
+  - {id: devops-team, kind: frontend, parent: z-teams, shape: actor, icon: user, title: DevOps team}
+  - {id: bi-team, kind: frontend, parent: z-teams, shape: actor, icon: user, title: BI team}
+  - {id: platform-team, kind: frontend, parent: z-teams, shape: actor, icon: user, title: platform team}
+  - {id: app-repo, kind: external, parent: g-applications, icon: gitlab, title: applications/<app>, tech: '[1 repo per app · 7 apps + app-sandbox]', desc: 'App code, tests, Dockerfile, .gitlab-ci.yml', ports: [{name: tcp-22, protocol: TCP, port: 22}]}
+  - {id: ci-cd-templates, kind: external, parent: g-devops, icon: gitlab, title: ci-cd-templates, tech: '[GitLab CI includes]', desc: 'Build, test, scan, push jobs'}
+  - {id: app-templates, kind: external, parent: g-devops, icon: gitlab, title: app-templates, tech: '[FastAPI + Vite boilerplate]', desc: Starting point of every app repo}
+  - {id: cmp, kind: external, parent: g-devops, icon: gitlab, title: cmp, tech: '[developer portal]', desc: Cloud Management Platform UI}
+  - {id: bi-repo, kind: external, parent: g-bi, icon: gitlab, title: bi/<tool>, tech: '[airbyte · dagster · metabase]', desc: 'Connectors, pipelines, dashboards'}
+  - {id: app-configs, kind: database, parent: g-deploy, icon: gitlab, title: app-configs, tech: '[apps/<app>/values-<env>.yaml]', desc: 'Team-owned: image, env, replicas', ports: [{name: tcp-22, protocol: TCP, port: 22}]}
+  - {id: generic-app-chart, kind: database, parent: g-deploy, icon: gitlab, title: generic-app-chart, tech: '[Helm chart]', desc: One chart for every app}
+  - {id: infra, kind: database, parent: g-deploy, icon: gitlab, title: infra, tech: '[gitops/apps · clusters · terraform]', desc: Platform + per-app baseline}
+  - {id: base-images, kind: database, parent: g-deploy, icon: gitlab, title: base-images, tech: '[python-secure · nginx-secure]', desc: Hardened FROM images}
+  - {id: gitlab-provisioning, kind: cloud, parent: g-prov, icon: gitlab, title: gitlab-provisioning, tech: '[Terraform]', desc: 'Groups, repos, members'}
+  - {id: openstack-provisioning, kind: cloud, parent: g-prov, icon: gitlab, title: openstack-provisioning, tech: '[Terraform · Talos]', desc: 'VMs, network, security groups'}
+  - {id: clock-service, kind: external, parent: g-products, icon: gitlab, title: clock-service, tech: '[platform service]', desc: Simulated time}
+  - {id: actors-simulator, kind: external, parent: g-products, icon: gitlab, title: actors-simulator, tech: '[platform service]', desc: 'Passengers, airports, IATA'}
+  - {id: platform-sdk, kind: external, parent: g-products, icon: gitlab, title: platform-sdk, tech: '[library]', desc: Broker client for apps}
+  - {id: platform-docs, kind: external, parent: g-docs, icon: gitlab, title: platform-docs, tech: '[Markdown]', desc: 'Platform docs, these diagrams'}
+  - {id: renovate-bot, kind: external, parent: g-tooling, icon: gitlab, title: renovate-bot, tech: '[scheduled pipeline]', desc: Dependency update MRs}
+  - {id: architecture-docs, kind: external, parent: g-urbaniste, icon: gitlab, title: architecture-docs, tech: '[ADRs · standards]', desc: Cross-team decisions}
+  - {id: auth-roles, kind: security, parent: g-auth, icon: gitlab, title: auth-roles/*, tech: '[GitLab groups · role-* · members]', desc: 'OIDC claims for Argo CD, Envoy, Grafana'}
+  - {id: registry, kind: database, parent: z-targets, icon: gitlab, title: Container registry, tech: '[registry.acme.example]', desc: vX.Y.Z-rc.N images per app, ports: [{name: tcp-443, protocol: TCP, port: 443}]}
+  - {id: argocd, kind: backend, parent: z-targets, icon: argo, title: Argo CD + Image Updater, tech: '[staging and prod clusters]', desc: Syncs cluster state from Git}
+  - {id: gitlab-settings, kind: external, parent: z-targets, icon: gitlab, title: GitLab itself, tech: '[groups · projects · members]', desc: Applied by terraform apply, ports: [{name: tcp-443, protocol: TCP, port: 443}]}
+  - {id: openstack, kind: cloud, parent: z-targets, icon: openstack, title: OpenStack tenant, tech: '[private cloud]', desc: 'Talos VMs, network', ports: [{name: tcp-443, protocol: TCP, port: 443}]}
+connections:
+  - {id: e-1-app-team-app-repo, from: app-team, to: app-repo, kind: flow, port: tcp-22, protocol: SSH, verb: git push}
+  - {id: e-2-app-repo-registry, from: app-repo, to: registry, kind: flow, port: tcp-443, protocol: HTTPS, verb: CI builds + pushes image}
+  - {id: e-3-argocd-app-configs, from: argocd, to: app-configs, kind: async, port: tcp-22, protocol: SSH, verb: Image Updater commits the new tag}
+  - {id: e-4-argocd-deploy, from: argocd, to: g-deploy, kind: async, protocol: SSH, verb: pull + render + apply}
+  - {id: e-app-team-app-configs, from: app-team, to: app-configs, kind: flow, port: tcp-22, verb: MR on values-staging.yaml}
+  - {id: e-devops-team, from: devops-team, to: g-devops, kind: flow, protocol: MR, verb: commit}
+  - {id: e-bi-team, from: bi-team, to: g-bi, kind: flow, protocol: MR, verb: commit}
+  - {id: e-platform-team, from: platform-team, to: g-platform, kind: flow, protocol: MR, verb: commit}
+  - {id: e-gitlab-prov-apply, from: gitlab-provisioning, to: gitlab-settings, kind: async, port: tcp-443, protocol: GitLab API, verb: terraform apply}
+  - {id: e-openstack-prov-apply, from: openstack-provisioning, to: openstack, kind: async, port: tcp-443, protocol: OpenStack API, verb: terraform apply}
+references:
+  - {id: r-app-repo-ci-templates, from: app-repo, to: ci-cd-templates, kind: 'include:project'}
+  - {id: r-app-repo-app-templates, from: app-repo, to: app-templates, kind: bootstrapped from}
+  - {id: r-bi-argocd, from: g-bi, to: argocd, kind: repoURL (bi/*)}
+annotations:
+  - {id: G1, targets: [app-repo]}
+  - {id: G2, targets: [clock-service, actors-simulator, platform-sdk]}

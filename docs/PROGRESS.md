@@ -34,6 +34,11 @@ decisions go in ADRs, acceptance in `features.json`.
   tools map k8s objects, not client-to-server connections). Auto-layout is the next spec.
 - Spec 001 T13: CNP runtime layout on named lanes (tunnels, connectors, tenant bus,
   secrets) with `@px` exits; draw.io output byte-identical in both themes.
+- Spec 001 T16: `noodle migrate SPEC DIR` converts a v0 file to a v1alpha1 system and
+  refuses to write unless it resolves to the same geometry. The three platform-regression
+  fixtures migrated, draw.io byte-identical in both themes; v0 inputs kept in
+  `internal/migrate/testdata`. Agreed with Brian: T17 keeps the v0 reader behind
+  `migrate` only, for PAE, DockAir and cnp-docs.
 - Benchmark brief in Notion: "Benchmark · Token cost of a diagram", to paste in the PR.
 - fact-finder trial on PAE: right on routes, GitOps and secrets; missed the edge forwarder
   and credential-implied connections, prompt fixed. Its "no Image Updater" was the old
