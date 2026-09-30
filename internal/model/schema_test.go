@@ -21,7 +21,7 @@ func compileSchemas(t *testing.T) map[string]*jsonschema.Schema {
 	t.Helper()
 	c := jsonschema.NewCompiler()
 	out := map[string]*jsonschema.Schema{}
-	for _, kind := range []string{"Model", "View", "Layout"} {
+	for _, kind := range []string{"Model", "View", "Layout", "Fragment"} {
 		path, err := filepath.Abs(filepath.Join(schemaDir, strings.ToLower(kind)+".schema.json"))
 		require.NoError(t, err)
 		s, err := c.Compile(path)
@@ -44,7 +44,8 @@ func yamlToJSONValue(t *testing.T, raw []byte) any {
 	return doc
 }
 
-// contractFiles returns every model.yaml, views/*.yaml and layouts/*.yaml under root.
+// contractFiles returns every model.yaml, views/*.yaml, layouts/*.yaml and
+// discovered/*.yaml under root.
 func contractFiles(t *testing.T, root string) map[string]string {
 	t.Helper()
 	files := map[string]string{}
@@ -59,6 +60,8 @@ func contractFiles(t *testing.T, root string) map[string]string {
 			files[path] = "View"
 		case filepath.Base(filepath.Dir(path)) == "layouts":
 			files[path] = "Layout"
+		case filepath.Base(filepath.Dir(path)) == "discovered":
+			files[path] = "Fragment"
 		}
 		return nil
 	})
@@ -98,6 +101,15 @@ func TestSchemas_Reject(t *testing.T) {
 		{"enforced_by without denied", "Model", modelHead + "connections: [{id: c, from: a, to: b, kind: flow, enforced_by: [np]}]\n"},
 		{"multiplicity as a boolean flag", "Model", modelHead + "elements: [{id: a, kind: backend, multiplicity: true}]\n"},
 		{"a port number out of range", "Model", modelHead + "elements: [{id: a, kind: backend, ports: [{name: p, protocol: TCP, port: 70000}]}]\n"},
+		{"a curated id in matches", "Model", modelHead + "elements: [{id: a, kind: backend, matches: [api]}]\n"},
+		{"the same id twice in matches", "Model", modelHead + `elements: [{id: a, kind: backend, matches: ["k8s:p/service/a", "k8s:p/service/a"]}]` + "\n"},
+		{"a fragment without provenance", "Fragment", fragmentHead},
+		{"a curated id in a fragment", "Fragment", fragmentHead + fragmentProvenance + "elements: [{id: api, kind: backend, src: {object: p/Deployment/api}}]\n"},
+		{"a fragment item without src", "Fragment", fragmentHead + fragmentProvenance + `elements: [{id: "k8s:p/deployment/api", kind: backend}]` + "\n"},
+		{"a src with a line but no file", "Fragment", fragmentHead + fragmentProvenance + `elements: [{id: "k8s:p/deployment/api", kind: backend, src: {object: o, line: 3}}]` + "\n"},
+		{"a src that is both a file and an object", "Fragment", fragmentHead + fragmentProvenance + `elements: [{id: "k8s:p/deployment/api", kind: backend, src: {file: f, object: o}}]` + "\n"},
+		{"curated presentation in a fragment", "Fragment", fragmentHead + fragmentProvenance + `elements: [{id: "k8s:p/deployment/api", kind: backend, status: planned, src: {file: f}}]` + "\n"},
+		{"matches in a fragment", "Fragment", fragmentHead + fragmentProvenance + `elements: [{id: "k8s:p/deployment/api", kind: backend, matches: ["k8s:x/y/z"], src: {file: f}}]` + "\n"},
 		{"a view without type", "View", viewHead + "title: T\n"},
 		{"participants on a topology view", "View", viewHead + "type: topology\nparticipants: [a]\n"},
 		{"a message step in a topology view", "View", viewHead + "type: topology\nsteps: [{from: a, to: b, over: c}]\n"},
@@ -120,3 +132,8 @@ func TestSchemas_Reject(t *testing.T) {
 		})
 	}
 }
+
+const (
+	fragmentHead       = "apiVersion: noodle/v1alpha1\nkind: Fragment\n"
+	fragmentProvenance = `provenance: {adapter: k8s, source: manifests, observedAt: "2026-09-30T12:00:00Z"}` + "\n"
+)

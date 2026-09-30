@@ -23,9 +23,13 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-09-30 · Token cost of a diagram, fact-finder agent
 
+- Spec 003 T01 (P6a-01): `kind: Fragment` contract and schema, `matches` on model
+  elements, loader reads `discovered/`. Choices within ADR-0015: discovered id
+  `<adapter>:<path>`; `src` is `{file, line}` or `{object}`; connections carry
+  `inferred` for FR-005 heuristics; fragment elements take no curated presentation
+  (status, shape, color) nor `matches`. A discovered id is matched by one element at most.
 - Backlog moved from Notion to the [GitHub project board](https://github.com/users/TheGostsniperfr/projects/5),
   referenced in AGENTS.md, README, the SessionStart hook and the PR template (`Closes #`).
-
 - Measured the PAE diagram session (29/09, 137 turns, noodle dev excluded), cost weighted
   at cache read ×0.1, cache write ×1.25, output ×5: discovery ~41 % (50 `cat`/`grep`
   turns, each rereading the context), geometry ~20 % (45 % of diagram output tokens),

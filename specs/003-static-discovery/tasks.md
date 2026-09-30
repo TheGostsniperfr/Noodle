@@ -6,7 +6,7 @@ touching `go.mod`.
 
 ## A · Contract (P6a-01)
 
-- [ ] **T01** `Fragment`, `Provenance`, `Src` and `Element.Matches` in `internal/model`;
+- [x] **T01** `Fragment`, `Provenance`, `Src` and `Element.Matches` in `internal/model`;
   `fragment.schema.json` and `matches` in the model schema; loader reads `discovered/`.
   Checks: `matches` well-formed and unique. Table-driven tests. Flip **P6a-01**.
 

@@ -43,7 +43,7 @@
       "id": "6a",
       "title": "Static discovery from Kubernetes",
       "features": [
-        {"id": "P6a-01", "description": "Fragment contract with provenance and src, matches on model elements", "verify": "go test ./internal/model/... validates fragment and model schemas and rejects malformed or duplicate matches", "passes": false},
+        {"id": "P6a-01", "description": "Fragment contract with provenance and src, matches on model elements", "verify": "go test ./internal/model/... validates fragment and model schemas and rejects malformed or duplicate matches", "passes": true},
         {"id": "P6a-02", "description": "Adapter interface and registry behind noodle discover", "verify": "go test ./internal/adapter/... runs a test adapter end to end through the registry", "passes": false},
         {"id": "P6a-03", "description": "k8s adapter derives elements, connections and references from manifests", "verify": "noodle discover k8s examples/discovery-k8s/manifests equals the golden fragment, twice in a row", "passes": false},
         {"id": "P6a-04", "description": "Manifests and kubectl get -o yaml output give the same fragment", "verify": "go test ./internal/adapter/k8s/... compares both inputs of the example", "passes": false},

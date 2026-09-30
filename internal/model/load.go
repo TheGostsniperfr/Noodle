@@ -19,6 +19,8 @@ type System struct {
 	Model   *Model
 	Views   map[string]*View
 	Layouts map[string]*Layout
+	// Fragments are read from discovered/ when it exists (ADR-0015).
+	Fragments map[string]*Fragment
 }
 
 func (s *System) ViewIDs() []string {
@@ -31,7 +33,7 @@ func (s *System) ViewIDs() []string {
 }
 
 func LoadSystem(dir string) (*System, error) {
-	s := &System{Dir: dir, Model: &Model{}, Views: map[string]*View{}, Layouts: map[string]*Layout{}}
+	s := &System{Dir: dir, Model: &Model{}, Views: map[string]*View{}, Layouts: map[string]*Layout{}, Fragments: map[string]*Fragment{}}
 	if err := decodeFile(filepath.Join(dir, "model.yaml"), "Model", s.Model); err != nil {
 		return nil, fmt.Errorf("LoadSystem: %w", err)
 	}
@@ -56,6 +58,17 @@ func LoadSystem(dir string) (*System, error) {
 			return nil, fmt.Errorf("LoadSystem: %w", err)
 		}
 		s.Layouts[l.ID] = l
+	}
+	fragments, err := yamlFiles(filepath.Join(dir, "discovered"))
+	if err != nil {
+		return nil, fmt.Errorf("LoadSystem: %w", err)
+	}
+	for _, path := range fragments {
+		f := &Fragment{ID: stem(path)}
+		if err := decodeFile(path, "Fragment", f); err != nil {
+			return nil, fmt.Errorf("LoadSystem: %w", err)
+		}
+		s.Fragments[f.ID] = f
 	}
 	return s, nil
 }

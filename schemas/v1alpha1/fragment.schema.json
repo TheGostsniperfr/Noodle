@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TheGostsniperfr/Noodle/schemas/v1alpha1/fragment.schema.json",
+  "title": "noodle Fragment",
+  "description": "What one adapter discovered from one source (ADR-0015). Generated, never edited: the curated model links to its ids with matches.",
+  "type": "object",
+  "required": ["apiVersion", "kind", "provenance"],
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": {"const": "noodle/v1alpha1"},
+    "kind": {"const": "Fragment"},
+    "provenance": {"$ref": "#/$defs/provenance"},
+    "elements": {"type": "array", "items": {"$ref": "#/$defs/element"}},
+    "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
+    "references": {"type": "array", "items": {"$ref": "#/$defs/reference"}}
+  },
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9]*:\\S+$", "description": "<adapter>:<path>, derived from the source, e.g. k8s:prod/deployment/api."},
+    "provenance": {
+      "type": "object",
+      "required": ["adapter", "source", "observedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "adapter": {"type": "string", "minLength": 1},
+        "source": {"type": "string", "minLength": 1, "description": "What was read: a path, '-' for stdin, a cluster context."},
+        "ref": {"type": "string", "description": "Version of the source, e.g. a Git commit."},
+        "observedAt": {"type": "string", "format": "date-time"}
+      }
+    },
+    "port": {
+      "type": "object",
+      "required": ["name", "protocol", "port"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string"},
+        "protocol": {"enum": ["TCP", "UDP", "SCTP"]},
+        "port": {"type": "integer", "minimum": 1, "maximum": 65535}
+      }
+    },
+    "src": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "file": {"type": "string", "minLength": 1},
+        "line": {"type": "integer", "minimum": 1},
+        "object": {"type": "string", "minLength": 1, "description": "An API object, e.g. prod/Deployment/api."}
+      },
+      "oneOf": [{"required": ["file"]}, {"required": ["object"]}],
+      "dependentRequired": {"line": ["file"]}
+    },
+    "element": {
+      "type": "object",
+      "required": ["id", "kind", "src"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "kind": {"enum": ["frontend", "backend", "database", "cloud", "security", "bus", "external", "tool", "region", "group"]},
+        "parent": {"$ref": "#/$defs/id"},
+        "title": {"type": "string"},
+        "tech": {"type": "string"},
+        "desc": {"type": "string"},
+        "icon": {"type": "string"},
+        "ports": {"type": "array", "items": {"$ref": "#/$defs/port"}},
+        "tags": {"type": "array", "items": {"type": "string"}},
+        "multiplicity": {"type": "string", "minLength": 1},
+        "src": {"$ref": "#/$defs/src"}
+      }
+    },
+    "connection": {
+      "type": "object",
+      "required": ["id", "from", "to", "kind", "src"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "from": {"$ref": "#/$defs/id"},
+        "to": {"$ref": "#/$defs/id"},
+        "port": {"type": "string"},
+        "protocol": {"type": "string"},
+        "verb": {"type": "string"},
+        "kind": {"enum": ["flow", "auth", "tunnel", "async"]},
+        "denied": {"type": "boolean"},
+        "enforced_by": {"type": "array", "items": {"$ref": "#/$defs/id"}, "minItems": 1},
+        "inferred": {"type": "boolean", "description": "Found by a heuristic, e.g. a Service DNS name in an env value."},
+        "src": {"$ref": "#/$defs/src"}
+      },
+      "dependentSchemas": {"enforced_by": {"required": ["denied"], "properties": {"denied": {"const": true}}}}
+    },
+    "reference": {
+      "type": "object",
+      "required": ["id", "from", "to", "src"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "from": {"$ref": "#/$defs/id"},
+        "to": {"$ref": "#/$defs/id"},
+        "kind": {"type": "string"},
+        "src": {"$ref": "#/$defs/src"}
+      }
+    }
+  }
+}
