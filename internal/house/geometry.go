@@ -183,6 +183,20 @@ func PillText(status, target string) string {
 	return "planned"
 }
 
+// StackOffset is how far each of the two copies behind a stacked node sits up and to
+// the right (ADR-0008).
+const StackOffset = 10.0
+
+// NodeFootprint is the area a node covers, its stack copies included, which the lint
+// keeps clear.
+func NodeFootprint(n diagram.Node) diagram.Rect {
+	r := n.Rect()
+	if n.Multiplicity == "" || n.Shape == "actor" {
+		return r
+	}
+	return diagram.Rect{X: r.X, Y: r.Y - 2*StackOffset, W: r.W + 2*StackOffset, H: r.H + 2*StackOffset}
+}
+
 // NodePillRect straddles the top border of a planned node, flush with its right end,
 // like a tag clipped on the box.
 func NodePillRect(n diagram.Node) (diagram.Rect, bool) {

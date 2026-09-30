@@ -19,11 +19,11 @@ elements:
   - {id: devops-team, kind: frontend, parent: z-teams, shape: actor, icon: user, title: DevOps team}
   - {id: bi-team, kind: frontend, parent: z-teams, shape: actor, icon: user, title: BI team}
   - {id: platform-team, kind: frontend, parent: z-teams, shape: actor, icon: user, title: platform team}
-  - {id: app-repo, kind: external, parent: g-applications, icon: gitlab, title: applications/<app>, tech: '[1 repo per app · 7 apps + app-sandbox]', desc: 'App code, tests, Dockerfile, .gitlab-ci.yml', ports: [{name: tcp-22, protocol: TCP, port: 22}]}
+  - {id: app-repo, kind: external, parent: g-applications, icon: gitlab, title: applications/<app>, tech: '[1 repo per app · 7 apps + app-sandbox]', desc: 'App code, tests, Dockerfile, .gitlab-ci.yml', ports: [{name: tcp-22, protocol: TCP, port: 22}], multiplicity: one per application}
   - {id: ci-cd-templates, kind: external, parent: g-devops, icon: gitlab, title: ci-cd-templates, tech: '[GitLab CI includes]', desc: 'Build, test, scan, push jobs'}
   - {id: app-templates, kind: external, parent: g-devops, icon: gitlab, title: app-templates, tech: '[FastAPI + Vite boilerplate]', desc: Starting point of every app repo}
   - {id: cmp, kind: external, parent: g-devops, icon: gitlab, title: cmp, tech: '[developer portal]', desc: Cloud Management Platform UI}
-  - {id: bi-repo, kind: external, parent: g-bi, icon: gitlab, title: bi/<tool>, tech: '[airbyte · dagster · metabase]', desc: 'Connectors, pipelines, dashboards'}
+  - {id: bi-repo, kind: external, parent: g-bi, icon: gitlab, title: bi/<tool>, tech: '[airbyte · dagster · metabase]', desc: 'Connectors, pipelines, dashboards', multiplicity: one per BI tool}
   - {id: app-configs, kind: database, parent: g-deploy, icon: gitlab, title: app-configs, tech: '[apps/<app>/values-<env>.yaml]', desc: 'Team-owned: image, env, replicas', ports: [{name: tcp-22, protocol: TCP, port: 22}]}
   - {id: generic-app-chart, kind: database, parent: g-deploy, icon: gitlab, title: generic-app-chart, tech: '[Helm chart]', desc: One chart for every app}
   - {id: infra, kind: database, parent: g-deploy, icon: gitlab, title: infra, tech: '[gitops/apps · clusters · terraform]', desc: Platform + per-app baseline}

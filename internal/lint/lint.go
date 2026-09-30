@@ -71,7 +71,7 @@ type obstacle struct {
 func (l *linter) obstacles() []obstacle {
 	var obs []obstacle
 	for _, n := range l.s.Nodes {
-		obs = append(obs, obstacle{name: "node " + n.ID, rect: n.Rect(), owner: n.ID, node: true})
+		obs = append(obs, obstacle{name: "node " + n.ID, rect: house.NodeFootprint(n), owner: n.ID, node: true})
 		if n.Shape == "actor" {
 			obs = append(obs, obstacle{name: "label of " + n.ID, rect: house.ActorLabelBox(n), owner: n.ID})
 		}

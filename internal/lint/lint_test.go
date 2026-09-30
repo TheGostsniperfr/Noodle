@@ -70,6 +70,14 @@ func TestLint_EveryRuleFlagsItsCase(t *testing.T) {
 			s.Edges[0].Path = []diagram.Point{{180, 200}, {180, 240}, {560, 240}, {560, 200}}
 			s.Edges[0].Port, s.Edges[0].Kind = "", "link"
 		}, "e", "segment 1 crosses node m"},
+		{"node spacing", "stack copies closer than 24 px", func(s *diagram.Spec) {
+			s.Nodes[0].Multiplicity = "one per team"
+			s.Nodes[0].X = 225
+		}, "a", "closer than 24px to b"},
+		{"edge crossings", "segment within 20 px above a stacked box", func(s *diagram.Spec) {
+			s.Nodes[1].Multiplicity = "one per team"
+			s.Edges = append(s.Edges, stackedPathEdge())
+		}, "e2", "segment 1 crosses node b"},
 		{"label overlaps", "label over a note", func(s *diagram.Spec) {
 			s.Notes = append(s.Notes, diagram.Note{ID: "n", Text: "x", X: 340, Y: 100, W: 40, H: 56})
 		}, "e", "label overlaps note n"},
@@ -104,4 +112,21 @@ func TestLint_EveryRuleFlagsItsCase(t *testing.T) {
 			assert.True(t, hit, "want %s: %s…, got %v", tt.where, tt.msg, findings)
 		})
 	}
+}
+
+// stackedPathEdge leaves a from the top and runs 14 px above b before entering it from
+// the top: clear of a plain box, inside the copies of a stacked one.
+func stackedPathEdge() diagram.Edge {
+	return diagram.Edge{ID: "e2", From: "a", To: "b", Kind: "link",
+		Path: []diagram.Point{{180, 120}, {180, 106}, {600, 106}, {600, 120}}}
+}
+
+func TestLint_PlainBoxIgnoresAnEdgeThatWouldCrossItsStack(t *testing.T) {
+	t.Parallel()
+	s := clean()
+	s.Edges = append(s.Edges, stackedPathEdge())
+
+	findings := lint.Lint(s)
+
+	assert.Empty(t, findings)
 }
