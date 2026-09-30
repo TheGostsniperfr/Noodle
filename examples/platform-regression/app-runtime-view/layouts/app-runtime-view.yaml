@@ -1,0 +1,53 @@
+apiVersion: noodle/v1alpha1
+kind: Layout
+canvas: {width: 2840, height: 1820}
+elements:
+  z-callers: {x: 40, y: 220, w: 280, h: 640}
+  z-cluster: {x: 380, y: 220, w: 1920, h: 1110}
+  g-gateway: {x: 40, y: 70, w: 340, h: 440}
+  g-app: {x: 460, y: 70, w: 900, h: 720}
+  g-deps: {x: 1440, y: 70, w: 440, h: 720}
+  g-controllers: {x: 460, y: 860, w: 1420, h: 220}
+  g-denied: {x: 2360, y: 290, w: 440, h: 790}
+  user: {x: 112, y: 202, w: 56, h: 56}
+  caller-app: {x: 20, y: 360, w: 240, h: 90}
+  envoy-eg: {x: 30, y: 90, w: 280, h: 110}
+  envoy-eg-internal: {x: 30, y: 270, w: 280, h: 110}
+  app-frontend: {x: 40, y: 60, w: 260, h: 90}
+  app-backend: {x: 40, y: 210, w: 260, h: 130}
+  app-db: {x: 460, y: 180, w: 240, h: 130}
+  app-secrets: {x: 420, y: 400, w: 240, h: 90}
+  app-migration: {x: 40, y: 550, w: 260, h: 80}
+  app-sa: {x: 700, y: 550, w: 180, h: 80}
+  other-apis: {x: 40, y: 320, w: 370, h: 100}
+  coredns: {x: 40, y: 470, w: 370, h: 100}
+  rabbitmq: {x: 40, y: 605, w: 370, h: 90}
+  denied-internet: {x: 30, y: 90, w: 380, h: 90}
+  denied-pods: {x: 30, y: 230, w: 380, h: 90}
+  denied-platform: {x: 30, y: 370, w: 380, h: 90}
+  argocd: {x: 40, y: 80, w: 260, h: 100}
+  vso: {x: 410, y: 80, w: 270, h: 100}
+  vault: {x: 780, y: 80, w: 220, h: 100}
+  cnpg-operator: {x: 1100, y: 80, w: 290, h: 100}
+edges:
+  e-1-user-eg: {from: user.right, to: envoy-eg.left}
+  e-2-eg-backend: {from: envoy-eg.right, to: app-backend.left, waypoints: [[800, 470], [800, 575]], label_at: [800, 520]}
+  e-3-backend-db: {from: app-backend.right, to: app-db.left@90px, label_offset: [0, -24]}
+  e-4-backend-other-apis: {from: app-backend.right, to: other-apis.left, waypoints: [[1220, 585], [1220, 660]], label_at: [1640, 660]}
+  e-eg-frontend: {from: envoy-eg.right, to: app-frontend.left@60px, label_at: [800, 410]}
+  e-caller-eg-internal: {from: caller-app.right, to: envoy-eg-internal.left}
+  e-eg-internal-backend: {from: envoy-eg-internal.right, to: app-backend.left@110px}
+  e-backend-dns: {from: app-backend.right, to: coredns.left, waypoints: [[1180, 615], [1180, 830]], label_at: [1680, 830]}
+  x-app-denied: {from: g-app.bottom, to: g-denied.left, waypoints: [[1700, 1045]], label_at: [1950, 1045]}
+  e-a-vso-vault: {from: vso.right, to: vault.left, label_offset: [0, -24]}
+  r-backend-secrets: {from: app-backend.bottom, to: app-secrets.left, waypoints: [[1100, 735]], label_at: [1100, 690]}
+  r-vso-secrets: {from: vso.top, to: app-secrets.bottom@130px, label_at: [1390, 1040]}
+  r-argocd-app: {from: argocd.top, to: g-app.bottom@280px}
+notes:
+  n-302: {x: 52, y: 700, w: 266, h: 110}
+cards:
+  card-contract: {x: 1580, y: 1390, w: 620, h: 390}
+  card-control-plane: {x: 1100, y: 1390, w: 460, h: 390}
+  card-data-plane: {x: 560, y: 1390, w: 520, h: 390}
+  card-gaps: {x: 2220, y: 1390, w: 580, h: 390}
+  card-legend: {x: 40, y: 1390, w: 500, h: 390}

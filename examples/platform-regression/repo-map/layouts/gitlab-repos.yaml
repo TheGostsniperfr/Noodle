@@ -1,0 +1,66 @@
+apiVersion: noodle/v1alpha1
+kind: Layout
+canvas: {width: 3000, height: 2400}
+elements:
+  z-teams: {x: 40, y: 220, w: 240, h: 1760}
+  z-gitlab: {x: 340, y: 220, w: 1900, h: 1760}
+  g-applications: {x: 40, y: 70, w: 1820, h: 190}
+  g-devops: {x: 40, y: 320, w: 1820, h: 190}
+  g-bi: {x: 40, y: 570, w: 1820, h: 190}
+  g-platform: {x: 40, y: 820, w: 1820, h: 700}
+  g-deploy: {x: 30, y: 50, w: 1420, h: 190}
+  g-prov: {x: 30, y: 300, w: 700, h: 180}
+  g-products: {x: 790, y: 300, w: 1000, h: 180}
+  g-docs: {x: 30, y: 540, w: 370, h: 140}
+  g-tooling: {x: 460, y: 540, w: 370, h: 140}
+  g-urbaniste: {x: 40, y: 1580, w: 700, h: 150}
+  g-auth: {x: 800, y: 1580, w: 1060, h: 150}
+  z-targets: {x: 2300, y: 220, w: 660, h: 1760}
+  app-team: {x: 84, y: 182, w: 56, h: 56}
+  devops-team: {x: 84, y: 387, w: 56, h: 56}
+  bi-team: {x: 84, y: 637, w: 56, h: 56}
+  platform-team: {x: 84, y: 902, w: 56, h: 56}
+  app-repo: {x: 40, y: 70, w: 340, h: 90}
+  ci-cd-templates: {x: 40, y: 70, w: 340, h: 90}
+  app-templates: {x: 420, y: 70, w: 340, h: 90}
+  cmp: {x: 800, y: 70, w: 340, h: 90}
+  bi-repo: {x: 40, y: 70, w: 340, h: 90}
+  app-configs: {x: 30, y: 70, w: 310, h: 90}
+  generic-app-chart: {x: 380, y: 70, w: 310, h: 90}
+  infra: {x: 730, y: 70, w: 310, h: 90}
+  base-images: {x: 1080, y: 70, w: 310, h: 90}
+  gitlab-provisioning: {x: 30, y: 60, w: 310, h: 90}
+  openstack-provisioning: {x: 370, y: 60, w: 310, h: 90}
+  clock-service: {x: 30, y: 60, w: 290, h: 90}
+  actors-simulator: {x: 350, y: 60, w: 290, h: 90}
+  platform-sdk: {x: 670, y: 60, w: 290, h: 90}
+  platform-docs: {x: 30, y: 40, w: 310, h: 80}
+  renovate-bot: {x: 30, y: 40, w: 310, h: 80}
+  architecture-docs: {x: 40, y: 50, w: 340, h: 80}
+  auth-roles: {x: 40, y: 50, w: 500, h: 80}
+  registry: {x: 60, y: 160, w: 540, h: 100}
+  argocd: {x: 60, y: 930, w: 540, h: 110}
+  gitlab-settings: {x: 60, y: 1180, w: 540, h: 90}
+  openstack: {x: 60, y: 1400, w: 540, h: 90}
+edges:
+  e-1-app-team-app-repo: {from: app-team.right, to: app-repo.left}
+  e-2-app-repo-registry: {from: app-repo.right, to: registry.left@65px}
+  e-3-argocd-app-configs: {from: argocd.bottom, to: app-configs.bottom, waypoints: [[2400, 1310], [605, 1310]], label_at: [1500, 1310], against_flow: true}
+  e-4-argocd-deploy: {from: argocd.left, to: g-deploy.right@110px, against_flow: true}
+  e-app-team-app-configs: {from: app-team.right, to: app-configs.left, waypoints: [[300, 450], [300, 1225]], label_at: [300, 1010]}
+  e-devops-team: {from: devops-team.right, to: g-devops.left, label_at: [235, 635]}
+  e-bi-team: {from: bi-team.right, to: g-bi.left, label_at: [235, 885]}
+  e-platform-team: {from: platform-team.right, to: g-platform.left, label_at: [235, 1150]}
+  e-gitlab-prov-apply: {from: gitlab-provisioning.bottom, to: gitlab-settings.left, waypoints: [[595, 1540], [2330, 1540], [2330, 1470]], label_at: [760, 1540]}
+  e-openstack-prov-apply: {from: openstack-provisioning.bottom, to: openstack.left, waypoints: [[935, 1555], [2345, 1555], [2345, 1690]], label_at: [1700, 1555]}
+  r-app-repo-ci-templates: {from: app-repo.bottom, to: ci-cd-templates.top@180px}
+  r-app-repo-app-templates: {from: app-repo.bottom, to: app-templates.top, waypoints: [[740, 510], [960, 510]], label_at: [850, 510]}
+  r-bi-argocd: {from: g-bi.right, to: argocd.top, waypoints: [[2270, 885], [2270, 1120], [2450, 1120]], label_at: [2270, 1000]}
+notes:
+  n-apps: {x: 860, y: 355, w: 760, h: 70}
+  n-bi: {x: 860, y: 860, w: 620, h: 70}
+cards:
+  card-gaps: {x: 2420, y: 2040, w: 540, h: 320}
+  card-legend: {x: 40, y: 2040, w: 500, h: 320}
+  card-steps: {x: 1760, y: 2040, w: 640, h: 320}
+  card-where: {x: 560, y: 2040, w: 1180, h: 320}

@@ -1,0 +1,76 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+title: Acme · staging · Platform overview
+subtitle: What runs in Acme staging, and which path do a user request, a deployment and a secret take through it?
+meta:
+  - 'Scope: Acme staging cluster as of 2026-09-27 · derived from code (platform/infra, generic-app-chart, openstack-provisioning, app-templates) and checked live on admin@staging'
+  - 'Out of scope: prod cluster (same layout, own Argo CD) · the edge team internals · CI pipeline internals · OIDC login sequence · per-app runtime contract (see app-runtime-view)'
+  - 'v0.1 · source: examples/platform-regression/platform-overview · anonymized from a real platform, kept as a regression fixture'
+steps:
+  - e-1-user-edge
+  - e-2-edge-eg
+  - e-3-eg-a-backend
+  - e-4-a-backend-a-db
+  - e-5-a-backend-eg-internal
+  - e-6-eg-internal-b-backend
+  - e-7-b-backend-b-db
+background:
+  - e-a-dev-repos
+  - e-b-updater-registry
+  - e-c-updater-repos
+  - e-d-argocd-repos
+  - e-e-nodes-registry
+  - e-f-vso-vault
+  - e-g-dagster-airbyte
+  - e-h-airbyte-a-db
+  - e-i-airbyte-warehouse
+notes:
+  - id: n-302
+    text: Without a session, eg replies **302** to GitLab OIDC. Login is a separate sequence diagram.
+  - id: n-spa
+    text: 'The SPA''s fetch() runs in the **browser**: /api goes back through eg as [3], never pod to pod.'
+  - id: n-apply
+    text: 'Argo CD, VSO and CNPG act through the **kube-apiserver**: they write objects, never talk to pods.'
+cards:
+  - id: card-legend
+    title: Legend
+    color: slate
+    legend: true
+    lines: []
+  - id: card-data-plane
+    title: Request path · data plane
+    color: cyan
+    legend: false
+    lines:
+      - A signed-in user calls <app-a>, whose backend needs <app-b>.
+      - '[1] Browser sends GET https://<app-a>.staging.acme.example/api/v1/…. DNS wildcard points to the edge team FIP. the edge team nginx terminates TLS.'
+      - '[2] the edge team forwards plain HTTP to NodePort 30080 on any worker (static Endpoints, maintained by hand).'
+      - '[3] eg matches the HTTPRoute by Host, checks the GitLab id-token cookie against allowedGroups, proxies /api to <app-a>-backend.'
+      - '[4] <app-a>-backend queries <app-a>-db.'
+      - '[5] It calls http://<app-b>.staging.acme.example/api from APP_B_URL. hostAliases pins that name to eg-internal: no OIDC, /api only.'
+      - '[6] eg-internal proxies to <app-b>-backend. [7] It queries <app-b>-db.'
+      - 'Cilium drops everything else: frontend to backend, <app-a> to <app-b> pod to pod, <app-a> to <app-b>-db.'
+  - id: card-control-plane
+    title: Background · control plane
+    color: violet
+    legend: false
+    lines:
+      - '[A] A developer pushes. GitLab CI builds and pushes vX.Y.Z-rc.N images to the registry.'
+      - '[B] Image Updater polls the registry for new rc tags. [C] It commits the tag to app-configs.'
+      - '[D] Argo CD pulls infra + generic-app-chart + app-configs and applies each app namespace. Platform baseline values load last and win.'
+      - '[E] Kubelets pull the images with a read-only pull secret synced from Vault.'
+      - '[F] VSO authenticates with its ServiceAccount, reads kvv2 and writes plain K8s Secrets into app namespaces.'
+      - '[G] Dagster triggers Airbyte syncs. [H] Airbyte reads each app DB replica as bi_reader. [I] It loads bi-warehouse.'
+      - Admins reach the API server and Talos API only through Boundary. No SSH, no public FIP.
+  - id: card-gaps
+    title: Gaps between docs and code
+    color: orange
+    legend: false
+    lines:
+      - '!!G1!! **Storage and transport.** Docs: Cinder CSI + WAL backups to Ceph S3. Code: local-path only (node-pinned), CNPG backup off. TLS ends at the edge team. the edge team to NodePort and Vault run plain HTTP.'
+      - '!!G2!! **Isolation.** Docs: staging and prod physically separated. Code: same subnet 10.20.0.0/24, security groups only. NodePorts 30000-32767 open to 0.0.0.0/0: any host on the subnet reaches eg without the edge team.'
+      - '!!G3!! **Missing services.** RabbitMQ, the observability stack and the Clock are documented, not deployed. Chart rules for RabbitMQ egress and Prometheus ingress target absent namespaces.'
+      - '!!G4!! **Secret scoping.** Every Vault role is bound to VSO''s ServiceAccount. Per-app scoping relies on the baseline pinning vaultRole (ADR-0001), not on Vault.'
+      - '!!G5!! **East-west auth.** eg-internal has no SecurityPolicy: any app can call any app''s /api, the callee cannot identify the caller.'
+      - 'Sizing: docs say m1.medium workers, Terraform provisions m1.large. Leftover empty namespaces: my-app, app-templates.'

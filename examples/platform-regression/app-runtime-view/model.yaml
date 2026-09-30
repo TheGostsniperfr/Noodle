@@ -1,0 +1,51 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: z-callers, kind: region, color: slate, icon: globe, title: CALLERS}
+  - {id: z-cluster, kind: region, color: cyan, icon: talos, title: ACME STAGING CLUSTER, sub: Cilium default-deny · every allowed flow is explicit}
+  - {id: g-gateway, kind: group, parent: z-cluster, color: emerald, icon: envoy-gateway, title: GATEWAY API, sub: ns envoy-gateway}
+  - {id: g-app, kind: group, parent: z-cluster, color: indigo, icon: k8s-ns, title: NAMESPACE <app>, sub: owned by the app team · 1 replica in staging}
+  - {id: g-deps, kind: group, parent: z-cluster, color: sky, icon: cilium, title: REACHABLE DEPENDENCIES, sub: egress allowed by the app's CNP}
+  - {id: g-controllers, kind: group, parent: z-cluster, color: violet, icon: kubernetes, title: PLATFORM CONTROLLERS}
+  - {id: g-denied, kind: group, color: rose, icon: cilium, title: DENIED DESTINATIONS, sub: no allow rule}
+  - {id: user, kind: frontend, parent: z-callers, shape: actor, icon: user, title: User, desc: 'browser, GitLab account'}
+  - {id: caller-app, kind: external, parent: z-callers, icon: k8s-deploy, title: Other app backend, tech: '[any app namespace]', desc: Calls $<APP>_URL/api}
+  - {id: envoy-eg, kind: backend, parent: g-gateway, icon: envoy, title: eg · north-south, tech: '[OIDC + groups_direct check]', desc: Public *.staging hostnames}
+  - {id: envoy-eg-internal, kind: backend, parent: g-gateway, icon: envoy, title: eg-internal · east-west, tech: '[ClusterIP 10.96.0.100]', desc: 'Same hostnames, /api only', ports: [{name: tcp-80, protocol: TCP, port: 80}]}
+  - {id: app-frontend, kind: frontend, parent: g-app, icon: k8s-deploy, title: <app>-frontend, tech: '[Deployment · nginx SPA]', desc: 'Static UI, no server logic', ports: [{name: tcp-8080, protocol: TCP, port: 8080}]}
+  - {id: app-backend, kind: backend, parent: g-app, icon: k8s-deploy, title: <app>-backend, tech: '[Deployment · FastAPI · uid 1000]', desc: 'Team code: API + business rules', ports: [{name: tcp-8000, protocol: TCP, port: 8000}]}
+  - {id: app-db, kind: database, parent: g-app, shape: cylinder, icon: cnpg, title: <app>-db, tech: '[CNPG · owner <app>]', desc: The only DB the app reaches, ports: [{name: tcp-5432, protocol: TCP, port: 5432}]}
+  - {id: app-secrets, kind: database, parent: g-app, icon: k8s-secret, title: Secrets, tech: '[K8s Secret · env only]', desc: <app>-db-app · <app>-<entry>}
+  - {id: app-migration, kind: backend, parent: g-app, icon: k8s-pod, title: <app>-migration, tech: '[Job · Argo CD PreSync]', desc: alembic upgrade head}
+  - {id: app-sa, kind: security, parent: g-app, icon: k8s-sa, title: ServiceAccount, tech: '[no token mounted]', desc: No K8s API}
+  - {id: other-apis, kind: backend, parent: g-deps, icon: envoy, title: Other apps' APIs, tech: '[via eg-internal · hostAliases]', desc: 'http://<other>.staging.acme.example', ports: [{name: tcp-80, protocol: TCP, port: 80}]}
+  - {id: coredns, kind: backend, parent: g-deps, icon: kubernetes, title: CoreDNS, tech: '[kube-system]', desc: Name resolution, ports: [{name: udp-53, protocol: UDP, port: 53}]}
+  - {id: rabbitmq, kind: bus, parent: g-deps, icon: rabbitmq, title: RabbitMQ, tech: '[not deployed · egress rule off]', desc: 'Documented: one vhost per app'}
+  - {id: denied-internet, kind: external, parent: g-denied, icon: globe, title: 'Internet, external APIs', tech: '[no egress rule]', desc: Dropped at the pod}
+  - {id: denied-pods, kind: external, parent: g-denied, icon: k8s-pod, title: Other apps' pods and DBs, tech: '[pod-to-pod]', desc: Only reachable through eg-internal}
+  - {id: denied-platform, kind: external, parent: g-denied, icon: kubernetes, title: 'kube-apiserver, Vault', tech: '[no token, no route]', desc: Platform APIs stay platform-only}
+  - {id: argocd, kind: backend, parent: g-controllers, icon: argo, title: Argo CD, tech: '[generic-app-chart + baseline]', desc: Renders and applies the app}
+  - {id: vso, kind: database, parent: g-controllers, icon: vault, title: Vault Secrets Operator, tech: '[ricoberger]', desc: Vault KV to K8s Secrets}
+  - {id: vault, kind: database, parent: g-controllers, icon: vault, title: Vault, tech: '[kvv2]', desc: apps/<env>/<app>/*, ports: [{name: tcp-8200, protocol: TCP, port: 8200}]}
+  - {id: cnpg-operator, kind: database, parent: g-controllers, icon: cnpg, title: CNPG operator, tech: '[cnpg-system]', desc: 'Runs <app>-db, writes its Secret'}
+connections:
+  - {id: e-1-user-eg, from: user, to: envoy-eg, kind: flow, protocol: HTTPS, verb: GET /api}
+  - {id: e-2-eg-backend, from: envoy-eg, to: app-backend, kind: flow, port: tcp-8000, protocol: HTTP, verb: proxy}
+  - {id: e-3-backend-db, from: app-backend, to: app-db, kind: flow, port: tcp-5432, protocol: SQL, verb: query}
+  - {id: e-4-backend-other-apis, from: app-backend, to: other-apis, kind: flow, port: tcp-80, protocol: HTTP, verb: GET $BOOKING_URL/api/v1/…}
+  - {id: e-eg-frontend, from: envoy-eg, to: app-frontend, kind: flow, port: tcp-8080, protocol: HTTP, verb: / SPA}
+  - {id: e-caller-eg-internal, from: caller-app, to: envoy-eg-internal, kind: flow, port: tcp-80, protocol: HTTP, verb: no auth}
+  - {id: e-eg-internal-backend, from: envoy-eg-internal, to: app-backend, kind: flow, port: tcp-8000, protocol: HTTP, verb: /api}
+  - {id: e-backend-dns, from: app-backend, to: coredns, kind: flow, port: udp-53, protocol: DNS, verb: resolve}
+  - {id: x-app-denied, from: g-app, to: g-denied, kind: flow, protocol: dropped by Cilium, verb: any other egress, denied: true}
+  - {id: e-a-vso-vault, from: vso, to: vault, kind: async, port: tcp-8200, verb: read}
+references:
+  - {id: r-backend-secrets, from: app-backend, to: app-secrets, kind: env / envFrom}
+  - {id: r-vso-secrets, from: vso, to: app-secrets, kind: writes Secret}
+  - {id: r-argocd-app, from: argocd, to: g-app, kind: applies}
+annotations:
+  - {id: G1, targets: [envoy-eg-internal]}
+  - {id: G3, targets: [app-frontend, app-backend]}
+  - {id: G4, targets: [app-backend]}
+  - {id: G5, targets: [app-db]}
+  - {id: G2, targets: [rabbitmq]}
