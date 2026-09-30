@@ -1,0 +1,132 @@
+id: app-runtime-view
+title: "Acme · staging · Application runtime view"
+subtitle: "Seen from inside an application's pods: who can reach it, what it can reach, and what the platform hands it."
+meta:
+  - "Scope: one business app deployed with generic-app-chart + secure-route, staging, as of 2026-09-27 · derived from code and checked live on ticketing"
+  - "Out of scope: the edge team edge and TLS (see platform-staging) · OIDC login sequence · CI pipeline · BI extraction · prod differences (2+ replicas, 3 DB instances)"
+  - "v0.1 · source: examples/platform-regression/app-runtime-view.yaml · anonymized from a real platform, kept as a regression fixture"
+width: 2840
+height: 1820
+
+zones:
+  - {id: z-callers, kind: region, color: slate, icon: globe, label: "CALLERS", x: 40, y: 220, w: 280, h: 640}
+  - {id: z-cluster, kind: region, color: cyan, icon: talos, label: "ACME STAGING CLUSTER", sub: "Cilium default-deny · every allowed flow is explicit", x: 380, y: 220, w: 1920, h: 1110}
+  - {id: g-gateway, kind: group, color: emerald, icon: envoy-gateway, label: "GATEWAY API", sub: "ns envoy-gateway", x: 420, y: 290, w: 340, h: 440}
+  - {id: g-app, kind: group, color: indigo, icon: k8s-ns, label: "NAMESPACE <app>", sub: "owned by the app team · 1 replica in staging", x: 840, y: 290, w: 900, h: 720}
+  - {id: g-deps, kind: group, color: sky, icon: cilium, label: "REACHABLE DEPENDENCIES", sub: "egress allowed by the app's CNP", x: 1820, y: 290, w: 440, h: 720}
+  - {id: g-controllers, kind: group, color: violet, icon: kubernetes, label: "PLATFORM CONTROLLERS", x: 840, y: 1080, w: 1420, h: 220}
+  - {id: g-denied, kind: group, color: rose, icon: cilium, label: "DENIED DESTINATIONS", sub: "no allow rule", x: 2360, y: 290, w: 440, h: 790}
+
+nodes:
+  - {id: user, kind: frontend, shape: actor, icon: user, title: "User", desc: "browser, GitLab account", x: 152, y: 422, w: 56, h: 56}
+  - {id: caller-app, kind: external, icon: k8s-deploy, title: "Other app backend", tech: "[any app namespace]", desc: "Calls $<APP>_URL/api", x: 60, y: 580, w: 240, h: 90}
+
+  - {id: envoy-eg, kind: backend, icon: envoy, title: "eg · north-south", tech: "[OIDC + groups_direct check]", desc: "Public *.staging hostnames", x: 450, y: 380, w: 280, h: 110}
+  - {id: envoy-eg-internal, kind: backend, icon: envoy, title: "eg-internal · east-west", badge: G1, tech: "[ClusterIP 10.96.0.100]", desc: "Same hostnames, /api only", x: 450, y: 560, w: 280, h: 110}
+
+  - {id: app-frontend, kind: frontend, icon: k8s-deploy, title: "<app>-frontend", badge: G3, tech: "[Deployment · nginx SPA]", desc: "Static UI, no server logic", x: 880, y: 350, w: 260, h: 90}
+  - {id: app-backend, kind: backend, icon: k8s-deploy, title: "<app>-backend", badge: "G3 G4", tech: "[Deployment · FastAPI · uid 1000]", desc: "Team code: API + business rules", x: 880, y: 500, w: 260, h: 130}
+  - {id: app-db, kind: database, shape: cylinder, icon: cnpg, title: "<app>-db", badge: G5, tech: "[CNPG · owner <app>]", desc: "The only DB the app reaches", x: 1300, y: 470, w: 240, h: 130}
+  - {id: app-secrets, kind: database, icon: k8s-secret, title: "Secrets", tech: "[K8s Secret · env only]", desc: "<app>-db-app · <app>-<entry>", x: 1260, y: 690, w: 240, h: 90}
+  - {id: app-migration, kind: backend, icon: k8s-pod, title: "<app>-migration", tech: "[Job · Argo CD PreSync]", desc: "alembic upgrade head", x: 880, y: 840, w: 260, h: 80}
+  - {id: app-sa, kind: security, icon: k8s-sa, title: "ServiceAccount", tech: "[no token mounted]", desc: "No K8s API", x: 1540, y: 840, w: 180, h: 80}
+
+  - {id: other-apis, kind: backend, icon: envoy, title: "Other apps' APIs", tech: "[via eg-internal · hostAliases]", desc: "http://<other>.staging.acme.example", x: 1860, y: 610, w: 370, h: 100}
+  - {id: coredns, kind: backend, icon: kubernetes, title: "CoreDNS", tech: "[kube-system]", desc: "Name resolution", x: 1860, y: 760, w: 370, h: 100}
+  - {id: rabbitmq, kind: bus, icon: rabbitmq, title: "RabbitMQ", badge: G2, tech: "[not deployed · egress rule off]", desc: "Documented: one vhost per app", x: 1860, y: 895, w: 370, h: 90}
+
+  - {id: denied-internet, kind: external, icon: globe, title: "Internet, external APIs", tech: "[no egress rule]", desc: "Dropped at the pod", x: 2390, y: 380, w: 380, h: 90}
+  - {id: denied-pods, kind: external, icon: k8s-pod, title: "Other apps' pods and DBs", tech: "[pod-to-pod]", desc: "Only reachable through eg-internal", x: 2390, y: 520, w: 380, h: 90}
+  - {id: denied-platform, kind: external, icon: kubernetes, title: "kube-apiserver, Vault", tech: "[no token, no route]", desc: "Platform APIs stay platform-only", x: 2390, y: 660, w: 380, h: 90}
+
+  - {id: argocd, kind: backend, icon: argo, title: "Argo CD", tech: "[generic-app-chart + baseline]", desc: "Renders and applies the app", x: 880, y: 1160, w: 260, h: 100}
+  - {id: vso, kind: database, icon: vault, title: "Vault Secrets Operator", tech: "[ricoberger]", desc: "Vault KV to K8s Secrets", x: 1250, y: 1160, w: 270, h: 100}
+  - {id: vault, kind: database, icon: vault, title: "Vault", tech: "[kvv2]", desc: "apps/<env>/<app>/*", x: 1620, y: 1160, w: 220, h: 100}
+  - {id: cnpg-operator, kind: database, icon: cnpg, title: "CNPG operator", tech: "[cnpg-system]", desc: "Runs <app>-db, writes its Secret", x: 1940, y: 1160, w: 290, h: 100}
+
+edges:
+  # Data plane: a signed-in user calling the app's API, which calls another app.
+  - {id: e-1-user-eg, kind: flow, from: user, to: envoy-eg, label: "[1] GET /api · HTTPS", path: [[208, 450], [450, 450]]}
+  - {id: e-2-eg-backend, kind: flow, from: envoy-eg, to: app-backend, port: "TCP 8000", label: "[2] proxy · HTTP", label_at: [800, 520], path: [[730, 470], [800, 470], [800, 575], [880, 575]]}
+  - {id: e-3-backend-db, kind: flow, from: app-backend, to: app-db, port: "TCP 5432", label: "[3] query · SQL", label_offset: [0, -24], path: [[1140, 560], [1300, 560]]}
+  - {id: e-4-backend-other-apis, kind: flow, from: app-backend, to: other-apis, port: "TCP 80", label: "[4] GET $BOOKING_URL/api/v1/… · HTTP", label_at: [1640, 660], path: [[1140, 585], [1220, 585], [1220, 660], [1860, 660]]}
+  - {id: e-eg-frontend, kind: flow, from: envoy-eg, to: app-frontend, port: "TCP 8080", label: "/ SPA · HTTP", label_at: [800, 410], path: [[730, 410], [880, 410]]}
+
+  # Inbound east-west: another app calling this one.
+  - {id: e-caller-eg-internal, kind: flow, from: caller-app, to: envoy-eg-internal, port: "TCP 80", label: "no auth · HTTP", path: [[300, 625], [450, 625]]}
+  - {id: e-eg-internal-backend, kind: flow, from: envoy-eg-internal, to: app-backend, port: "TCP 8000", label: "/api · HTTP", path: [[730, 610], [880, 610]]}
+
+  # Other allowed egress.
+  - {id: e-backend-dns, kind: flow, from: app-backend, to: coredns, port: "UDP 53", label: "resolve · DNS", label_at: [1680, 830], path: [[1140, 615], [1180, 615], [1180, 830], [1860, 830]]}
+
+  # Denied egress.
+  - {id: x-app-denied, kind: blocked, from: g-app, to: g-denied, label: "any other egress · dropped by Cilium", label_at: [1950, 1045], path: [[1700, 1010], [1700, 1045], [2360, 1045]]}
+
+  # Background: how the namespace gets its secrets.
+  - {id: e-a-vso-vault, kind: async, from: vso, to: vault, port: "TCP 8200", label: "[A] read", label_offset: [0, -24], path: [[1520, 1210], [1620, 1210]]}
+
+  # Object references.
+  - {id: r-backend-secrets, kind: link, from: app-backend, to: app-secrets, label: "env / envFrom", label_at: [1100, 690], path: [[1100, 630], [1100, 735], [1260, 735]]}
+  - {id: r-vso-secrets, kind: link, from: vso, to: app-secrets, label: "writes Secret", label_at: [1390, 1040], path: [[1390, 1160], [1390, 780]]}
+  - {id: r-argocd-app, kind: link, from: argocd, to: g-app, label: "applies", path: [[1120, 1160], [1120, 1010]]}
+
+notes:
+  - {id: n-302, text: "No session: eg replies **302** to GitLab. Signed in but not in allowedGroups: **403**. The app never sees either.", x: 52, y: 700, w: 266, h: 110}
+
+cards:
+  - {id: card-legend, title: "Legend", color: slate, legend: true, x: 40, y: 1390, w: 500, h: 390}
+  - id: card-data-plane
+    title: "Request path · data plane"
+    color: cyan
+    x: 560
+    y: 1390
+    w: 520
+    h: 390
+    lines:
+      - "[1] A signed-in user calls https://<app>.staging.acme.example/api. TLS already ended at the edge team."
+      - "[2] eg checks the GitLab id-token cookie and the route's allowedGroups, then proxies plain HTTP to the backend Service."
+      - "[3] The backend queries its own CNPG cluster with DATABASE_URL."
+      - "[4] It calls another app on its public hostname from <APP>_URL. hostAliases pins that name to eg-internal, which routes /api only."
+      - "Other apps call this one the same way, unauthenticated."
+      - "To verify: whether the id-token cookie reaches the backend, i.e. whether the app can read the user's identity."
+  - id: card-control-plane
+    title: "Background · control plane"
+    color: violet
+    x: 1100
+    y: 1390
+    w: 460
+    h: 390
+    lines:
+      - "Argo CD renders generic-app-chart: team values from app-configs first, platform baseline last, so the baseline wins on images, security and vault[]."
+      - "The migration Job runs as a PreSync hook before each rollout."
+      - "[A] VSO reads the app's Vault path with the role pinned by the baseline, and writes it as a K8s Secret."
+      - "CNPG creates <app>-db and publishes <app>-db-app, the source of DATABASE_*."
+      - "Image Updater bumps the image tag in app-configs on every rc build."
+  - id: card-contract
+    title: "Runtime contract · what the pod sees"
+    color: indigo
+    x: 1580
+    y: 1390
+    w: 620
+    h: 390
+    lines:
+      - "**Env, always:** APP_NAME, APP_COMPONENT, APP_ENV, APP_DOMAIN, POD_NAME, POD_NAMESPACE, LOG_LEVEL."
+      - "**Env, database:** DATABASE_HOST, _PORT, _NAME, _USER, _PASSWORD, _URL (driver from urlScheme)."
+      - "**Env, other apps:** <APP>_URL for the 8 known apps, e.g. BOOKING_URL=http://booking.staging.acme.example."
+      - "**Secrets:** each vault[] entry becomes a Secret, injected as env via injectInto. No files, no Vault token. Rotation needs a restart."
+      - "**Sandbox:** non-root uid 1000, read-only root, writable /tmp 64Mi, all capabilities dropped, seccomp RuntimeDefault."
+      - "**Must expose:** HTTP on 8000 (backend) or 8080 (frontend), /health/live, /health/ready, /metrics. JSON logs on stdout."
+      - "**Sizing:** 1 replica, 100m/128Mi request, 500m/512Mi limit, required anti-affinity."
+  - id: card-gaps
+    title: "Gaps between docs and code"
+    color: orange
+    x: 2220
+    y: 1390
+    w: 580
+    h: 390
+    lines:
+      - "!!G1!! **East-west auth.** eg-internal has no SecurityPolicy. Any app pod can call any app's /api, and the callee cannot tell who is calling."
+      - "!!G2!! **No broker.** Docs promise RabbitMQ with one vhost per app. Not deployed, RABBITMQ_URL not injected, egress rule off. The template's publisher and worker cannot run."
+      - "!!G3!! **Archetype vs contract.** Backends serve /health and /ready, not /health/live and /health/ready. Frontends run stock nginx as root on port 80."
+      - "!!G4!! **Observability.** /metrics is required but no Prometheus runs. Logs only through kubectl."
+      - "!!G5!! **Durability.** The DB sits on local-path (node-pinned), backups off. FLIGHT_TRACKING_URL is injected but that app does not exist."

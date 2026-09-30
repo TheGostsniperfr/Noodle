@@ -1,0 +1,165 @@
+id: platform-staging
+title: "Acme · staging · Platform overview"
+subtitle: "What runs in Acme staging, and which path do a user request, a deployment and a secret take through it?"
+meta:
+  - "Scope: Acme staging cluster as of 2026-09-27 · derived from code (platform/infra, generic-app-chart, openstack-provisioning, app-templates) and checked live on admin@staging"
+  - "Out of scope: prod cluster (same layout, own Argo CD) · the edge team internals · CI pipeline internals · OIDC login sequence · per-app runtime contract (see app-runtime-view)"
+  - "v0.1 · source: examples/platform-regression/platform-overview.yaml · anonymized from a real platform, kept as a regression fixture"
+width: 3400
+height: 2280
+
+zones:
+  - {id: z-internet, kind: region, color: slate, icon: globe, label: "INTERNET · USERS", x: 40, y: 220, w: 240, h: 1580}
+  - {id: z-openstack, kind: region, color: rose, icon: openstack, label: "OPENSTACK · PRIVATE CLOUD", sub: "network internal · 10.20.0.0/24, shared with the edge team and prod", x: 340, y: 220, w: 3020, h: 1230}
+  - {id: z-edge, kind: region, color: amber, icon: nginx, label: "EDGE TEAM", sub: "RKE2 · FIP .10", x: 370, y: 290, w: 300, h: 440}
+  - {id: z-cluster, kind: region, color: cyan, icon: talos, label: "ACME STAGING CLUSTER", sub: "Talos 1.13 · K8s 1.32 · 1 CP m1.medium + 3 workers m1.large · pods 10.44/16 · svc 10.45/16", x: 740, y: 290, w: 2580, h: 1130}
+  - {id: g-gateway, kind: group, color: emerald, icon: envoy-gateway, label: "GATEWAY API", sub: "ns envoy-gateway · Envoy Gateway 1.8.1", x: 770, y: 340, w: 380, h: 520}
+  - {id: g-apps, kind: group, color: indigo, icon: k8s-ns, label: "BUSINESS APPLICATIONS", sub: "8 namespaces, same generic-app-chart · 2 shown", x: 1230, y: 340, w: 1020, h: 710}
+  - {id: g-app-a, kind: group, color: sky, icon: k8s-ns, label: "APP <app-a>", sub: "ns <app-a> · https://<app-a>.staging.acme.example", x: 1260, y: 390, w: 960, h: 280}
+  - {id: g-app-b, kind: group, color: violet, icon: k8s-ns, label: "APP <app-b>", sub: "ns <app-b> · https://<app-b>.staging.acme.example", x: 1260, y: 740, w: 960, h: 280}
+  - {id: g-bi, kind: group, color: sky, icon: k8s-ns, label: "DATA · BI", sub: "ns airbyte · dagster · metabase · bi-warehouse", x: 2330, y: 340, w: 960, h: 400}
+  - {id: g-managed, kind: group, color: violet, icon: cnpg, label: "MANAGED SERVICES", sub: "DBaaS · MQaaS · simulation", x: 2330, y: 800, w: 960, h: 250}
+  - {id: g-core, kind: group, color: slate, icon: kubernetes, label: "CLUSTER CORE", x: 870, y: 1110, w: 280, h: 290}
+  - {id: g-gitops, kind: group, color: orange, icon: argo, label: "GITOPS", sub: "ns argocd", x: 1230, y: 1110, w: 600, h: 290}
+  - {id: g-secrets, kind: group, color: rose, icon: vault, label: "SECRETS", sub: "ns vault · vault-secrets-operator", x: 1910, y: 1110, w: 600, h: 290}
+  - {id: g-observability, kind: group, color: slate, icon: prometheus, label: "OBSERVABILITY", sub: "planned, not deployed", x: 2570, y: 1110, w: 720, h: 290}
+  - {id: z-shared-it, kind: region, color: orange, icon: gitlab, label: "SHARED IT SERVICES", x: 340, y: 1510, w: 3020, h: 290}
+
+nodes:
+  - {id: user, kind: frontend, shape: actor, icon: user, title: "User", desc: "browser", x: 124, y: 442, w: 56, h: 56}
+  - {id: admin, kind: frontend, shape: actor, icon: user, title: "Platform admin", desc: "kubectl · talosctl", x: 124, y: 1582, w: 56, h: 56}
+  - {id: developer, kind: frontend, shape: actor, icon: user, title: "App developer", desc: "git push", x: 124, y: 1702, w: 56, h: 56}
+
+  - {id: edge-ingress, kind: cloud, icon: nginx, title: "Shared Ingress", badge: G1, tech: "[nginx · Let's Encrypt HTTP01]", desc: "TLS ends · *.staging wildcard", x: 390, y: 420, w: 260, h: 110}
+
+  - {id: envoy-eg, kind: backend, icon: envoy, title: "eg · north-south", badge: G2, tech: "[Gateway · NodePort 30080]", desc: "Host routing + GitLab OIDC", x: 830, y: 400, w: 280, h: 140}
+  - {id: envoy-eg-internal, kind: backend, icon: envoy, title: "eg-internal", badge: G5, tech: "[ClusterIP 10.96.0.100]", desc: "App-to-app, no OIDC", x: 870, y: 720, w: 240, h: 100}
+
+  - {id: a-frontend, kind: frontend, icon: k8s-deploy, title: "<app-a>-frontend", tech: "[Deployment · nginx SPA]", desc: "Static files only", x: 1290, y: 420, w: 250, h: 80}
+  - {id: a-backend, kind: backend, icon: k8s-deploy, title: "<app-a>-backend", tech: "[Deployment · FastAPI]", desc: "Business API /api/v1", x: 1290, y: 550, w: 250, h: 90}
+  - {id: a-db, kind: database, shape: cylinder, icon: cnpg, title: "<app-a>-db", badge: G1, tech: "[CloudNativePG · PG 17]", desc: "1 primary + 1 replica", x: 1700, y: 520, w: 240, h: 110}
+
+  - {id: b-backend, kind: backend, icon: k8s-deploy, title: "<app-b>-backend", tech: "[Deployment · FastAPI]", desc: "Business API /api/v1", x: 1290, y: 790, w: 250, h: 90}
+  - {id: b-frontend, kind: frontend, icon: k8s-deploy, title: "<app-b>-frontend", tech: "[Deployment · nginx SPA]", desc: "Static files only", x: 1290, y: 905, w: 250, h: 80}
+  - {id: b-db, kind: database, shape: cylinder, icon: cnpg, title: "<app-b>-db", tech: "[CloudNativePG · PG 17]", desc: "1 primary + 1 replica", x: 1700, y: 770, w: 240, h: 110}
+
+  - {id: dagster, kind: backend, icon: k8s-deploy, title: "Dagster", tech: "[orchestrator]", desc: "Schedules syncs", x: 2350, y: 430, w: 200, h: 90}
+  - {id: airbyte, kind: backend, icon: airbyte, title: "Airbyte", tech: "[ELT]", desc: "Reads app DB replicas", x: 2660, y: 430, w: 230, h: 90}
+  - {id: bi-warehouse, kind: database, shape: cylinder, icon: cnpg, title: "bi-warehouse", tech: "[CloudNativePG]", desc: "Analytics store", x: 3010, y: 410, w: 250, h: 150}
+  - {id: metabase, kind: frontend, icon: metabase, title: "Metabase", tech: "[BI dashboards]", desc: "Queries the warehouse", x: 2660, y: 620, w: 230, h: 90}
+
+  - {id: cnpg-operator, kind: database, icon: cnpg, title: "CNPG operator", tech: "[cloudnative-pg 0.29]", desc: "PostgreSQL per app", x: 2360, y: 880, w: 270, h: 90}
+  - {id: rabbitmq, kind: external, icon: rabbitmq, title: "RabbitMQ · soon", badge: G3, tech: "[Cluster Operator · MQaaS]", desc: "Async events · 1 vhost/app", x: 2670, y: 880, w: 280, h: 90}
+  - {id: clock, kind: external, icon: k8s-deploy, title: "Clock · soon", badge: G3, tech: "[platform service]", desc: "Simulated time, ticks", x: 2990, y: 880, w: 270, h: 90}
+
+  - {id: kube-apiserver, kind: backend, icon: kubernetes, title: "kube-apiserver", tech: "[cp-1 · 10.20.0.11]", desc: "Also Talos API :50000", x: 890, y: 1160, w: 250, h: 80}
+  - {id: cilium, kind: security, icon: cilium, title: "Cilium", tech: "[eBPF · no kube-proxy · VXLAN]", desc: "Default-deny + per-app CNP", x: 890, y: 1280, w: 250, h: 80}
+
+  - {id: argocd, kind: backend, icon: argo, title: "Argo CD", tech: "[App-of-Apps · Dex GitLab SSO]", desc: "Auto-sync, prune, self-heal", x: 1260, y: 1170, w: 260, h: 100}
+  - {id: image-updater, kind: backend, icon: argo, title: "Image Updater", tech: "[argocd-image-updater]", desc: "Tracks vX.Y.Z-rc.N tags", x: 1550, y: 1170, w: 250, h: 100}
+
+  - {id: vso, kind: database, icon: vault, title: "Vault Secrets Operator", badge: G4, tech: "[ricoberger · K8s operator]", desc: "Vault KV to K8s Secrets", x: 1930, y: 1170, w: 260, h: 100}
+  - {id: vault, kind: database, icon: vault, title: "Vault", badge: G1, tech: "[raft · tls_disable]", desc: "kvv2 · K8s auth", x: 2280, y: 1170, w: 210, h: 100}
+
+  - {id: prometheus, kind: external, icon: prometheus, title: "Prometheus", badge: G3, tech: "[kube-prometheus-stack]", desc: "Scrapes /metrics", x: 2600, y: 1180, w: 200, h: 90}
+  - {id: loki, kind: external, icon: grafana, title: "Loki + Alloy", badge: G3, tech: "[logs · DaemonSet]", desc: "JSON stdout logs", x: 2830, y: 1180, w: 200, h: 90}
+  - {id: grafana, kind: external, icon: grafana, title: "Grafana", badge: G3, tech: "[dashboards]", desc: "Exposed to the CMP", x: 3060, y: 1180, w: 200, h: 90}
+
+  - {id: boundary, kind: security, icon: boundary, title: "Boundary", tech: "[HashiCorp · shared instance]", desc: "Brokered TCP sessions", x: 400, y: 1580, w: 280, h: 100}
+  - {id: gitlab-oidc, kind: security, icon: gitlab, title: "GitLab OIDC", tech: "[IdP · groups_direct claim]", desc: "Login, tokens, JWKS", x: 760, y: 1590, w: 300, h: 90}
+  - {id: gitlab-repos, kind: external, icon: gitlab, title: "GitLab repositories", tech: "[infra · generic-app-chart · app-configs]", desc: "Desired state of the cluster", x: 1260, y: 1590, w: 320, h: 110}
+  - {id: gitlab-registry, kind: external, icon: gitlab, title: "GitLab CI + registry", tech: "[registry.acme.example]", desc: "Builds and stores images", x: 1660, y: 1590, w: 300, h: 110}
+
+edges:
+  # Data plane: a signed-in user calls app A, whose backend calls app B.
+  - {id: e-1-user-edge, kind: flow, from: user, to: edge-ingress, port: "TCP 443", label: "[1] GET · HTTPS", path: [[180, 470], [390, 470]]}
+  - {id: e-2-edge-eg, kind: flow, from: edge-ingress, to: envoy-eg, port: "TCP 30080", label: "[2] forward · HTTP", label_offset: [0, -22], path: [[650, 470], [830, 470]]}
+  - {id: e-3-eg-a-backend, kind: flow, from: envoy-eg, to: a-backend, port: "TCP 8000", label: "[3] /api · HTTP", label_at: [1170, 560], path: [[1110, 515], [1170, 515], [1170, 600], [1290, 600]]}
+  - {id: e-4-a-backend-a-db, kind: flow, from: a-backend, to: a-db, port: "TCP 5432", label: "[4] query · SQL", path: [[1540, 590], [1700, 590]]}
+  - {id: e-5-a-backend-eg-internal, kind: flow, from: a-backend, to: envoy-eg-internal, port: "TCP 80", against_flow: true, label: "[5] GET $APP_B_URL/api · HTTP", label_at: [1200, 700], path: [[1290, 625], [1200, 625], [1200, 760], [1110, 760]]}
+  - {id: e-6-eg-internal-b-backend, kind: flow, from: envoy-eg-internal, to: b-backend, port: "TCP 8000", label: "[6] /api · HTTP", label_at: [1230, 830], path: [[1110, 800], [1230, 800], [1230, 860], [1290, 860]]}
+  - {id: e-7-b-backend-b-db, kind: flow, from: b-backend, to: b-db, port: "TCP 5432", label: "[7] query · SQL", path: [[1540, 835], [1700, 835]]}
+  - {id: e-eg-a-frontend, kind: flow, from: envoy-eg, to: a-frontend, port: "TCP 80", label: "/ SPA · HTTP", label_at: [1200, 480], path: [[1110, 480], [1290, 480]]}
+
+  # What Cilium drops between and inside app namespaces.
+  - {id: x-a-frontend-a-backend, kind: blocked, from: a-frontend, to: a-backend, label: "frontend pod to backend · denied", label_offset: [130, 0], path: [[1415, 500], [1415, 550]]}
+  - {id: x-a-backend-b-db, kind: blocked, from: a-backend, to: b-db, label: "cross-app DB · denied", label_at: [1640, 705], path: [[1500, 640], [1500, 705], [1760, 705], [1760, 770]]}
+  - {id: x-app-a-app-b, kind: blocked, from: g-app-a, to: g-app-b, label: "direct pod-to-pod · denied", label_offset: [-110, 0], path: [[2150, 670], [2150, 740]]}
+
+  # Authentication (order lives in a separate OIDC sequence diagram).
+  - {id: e-oidc-eg-gitlab, kind: auth, from: envoy-eg, to: gitlab-oidc, port: "TCP 443", label: "OIDC code exchange + JWKS · HTTPS", label_at: [845, 1475], path: [[845, 540], [845, 1590]]}
+
+  # Control plane: from a git push to a running pod.
+  - {id: e-a-dev-repos, kind: flow, from: developer, to: gitlab-repos, port: "TCP 22", label: "[A] git push · SSH", path: [[180, 1730], [1230, 1730], [1230, 1660], [1260, 1660]]}
+  - {id: e-b-updater-registry, kind: async, from: image-updater, to: gitlab-registry, port: "TCP 443", label: "[B] poll rc tags · HTTPS", label_at: [1720, 1470], path: [[1720, 1270], [1720, 1590]]}
+  - {id: e-c-updater-repos, kind: async, from: image-updater, to: gitlab-repos, port: "TCP 22", label: "[C] write tag · SSH", label_at: [1540, 1480], path: [[1600, 1270], [1600, 1480], [1480, 1480], [1480, 1590]]}
+  - {id: e-d-argocd-repos, kind: async, from: argocd, to: gitlab-repos, port: "TCP 22", label: "[D] pull · SSH", label_at: [1390, 1440], path: [[1390, 1270], [1390, 1590]]}
+  - {id: e-e-nodes-registry, kind: async, from: z-cluster, to: gitlab-registry, port: "TCP 443", label: "[E] image pull · HTTPS", label_at: [1870, 1475], path: [[1870, 1420], [1870, 1590]]}
+  - {id: e-f-vso-vault, kind: async, from: vso, to: vault, port: "TCP 8200", label: "[F] read", label_offset: [0, -24], path: [[2190, 1235], [2280, 1235]]}
+
+  # BI extraction (background).
+  - {id: e-g-dagster-airbyte, kind: async, from: dagster, to: airbyte, port: "TCP 8001", label: "[G] trigger", label_offset: [0, -22], path: [[2550, 500], [2660, 500]]}
+  - {id: e-h-airbyte-a-db, kind: async, from: airbyte, to: a-db, port: "TCP 5432", against_flow: true, label: "[H] extract replica · SQL (bi_reader)", label_at: [2100, 575], path: [[2690, 520], [2690, 575], [1940, 575]]}
+  - {id: e-i-airbyte-warehouse, kind: async, from: airbyte, to: bi-warehouse, port: "TCP 5432", label: "[I] load", label_offset: [0, -22], path: [[2890, 480], [3010, 480]]}
+  - {id: e-metabase-warehouse, kind: flow, from: metabase, to: bi-warehouse, port: "TCP 5432", label: "query · SQL", label_at: [2950, 600], path: [[2890, 665], [2950, 665], [2950, 530], [3010, 530]]}
+
+  # Admin access.
+  - {id: e-admin-boundary, kind: auth, from: admin, to: boundary, label: "login · OIDC", path: [[180, 1610], [400, 1610]]}
+  - {id: e-boundary-apiserver, kind: tunnel, from: boundary, to: kube-apiserver, port: "TCP 6443", label: "brokered session · TCP", label_at: [705, 1300], path: [[680, 1630], [705, 1630], [705, 1075], [1100, 1075], [1100, 1160]]}
+
+  # Object references.
+  - {id: r-argocd-app-b, kind: link, from: argocd, to: g-app-b, label: "applies", path: [[1480, 1170], [1480, 1020]]}
+  - {id: r-cnpg-apps, kind: link, from: cnpg-operator, to: g-apps, label: "reconciles", label_at: [2290, 960], path: [[2360, 925], [2290, 925], [2290, 1000], [2250, 1000]]}
+
+notes:
+  - {id: n-302, text: "Without a session, eg replies **302** to GitLab OIDC. Login is a separate sequence diagram.", x: 52, y: 560, w: 216, h: 100}
+  - {id: n-spa, text: "The SPA's fetch() runs in the **browser**: /api goes back through eg as [3], never pod to pod.", x: 52, y: 700, w: 216, h: 110}
+  - {id: n-apply, text: "Argo CD, VSO and CNPG act through the **kube-apiserver**: they write objects, never talk to pods.", x: 52, y: 850, w: 216, h: 110}
+
+cards:
+  - {id: card-legend, title: "Legend", color: slate, legend: true, x: 40, y: 1860, w: 560, h: 380}
+  - id: card-data-plane
+    title: "Request path · data plane"
+    color: cyan
+    x: 630
+    y: 1860
+    w: 820
+    h: 380
+    lines:
+      - "A signed-in user calls <app-a>, whose backend needs <app-b>."
+      - "[1] Browser sends GET https://<app-a>.staging.acme.example/api/v1/…. DNS wildcard points to the edge team FIP. the edge team nginx terminates TLS."
+      - "[2] the edge team forwards plain HTTP to NodePort 30080 on any worker (static Endpoints, maintained by hand)."
+      - "[3] eg matches the HTTPRoute by Host, checks the GitLab id-token cookie against allowedGroups, proxies /api to <app-a>-backend."
+      - "[4] <app-a>-backend queries <app-a>-db."
+      - "[5] It calls http://<app-b>.staging.acme.example/api from APP_B_URL. hostAliases pins that name to eg-internal: no OIDC, /api only."
+      - "[6] eg-internal proxies to <app-b>-backend. [7] It queries <app-b>-db."
+      - "Cilium drops everything else: frontend to backend, <app-a> to <app-b> pod to pod, <app-a> to <app-b>-db."
+  - id: card-control-plane
+    title: "Background · control plane"
+    color: violet
+    x: 1480
+    y: 1860
+    w: 900
+    h: 380
+    lines:
+      - "[A] A developer pushes. GitLab CI builds and pushes vX.Y.Z-rc.N images to the registry."
+      - "[B] Image Updater polls the registry for new rc tags. [C] It commits the tag to app-configs."
+      - "[D] Argo CD pulls infra + generic-app-chart + app-configs and applies each app namespace. Platform baseline values load last and win."
+      - "[E] Kubelets pull the images with a read-only pull secret synced from Vault."
+      - "[F] VSO authenticates with its ServiceAccount, reads kvv2 and writes plain K8s Secrets into app namespaces."
+      - "[G] Dagster triggers Airbyte syncs. [H] Airbyte reads each app DB replica as bi_reader. [I] It loads bi-warehouse."
+      - "Admins reach the API server and Talos API only through Boundary. No SSH, no public FIP."
+  - id: card-gaps
+    title: "Gaps between docs and code"
+    color: orange
+    x: 2410
+    y: 1860
+    w: 950
+    h: 380
+    lines:
+      - "!!G1!! **Storage and transport.** Docs: Cinder CSI + WAL backups to Ceph S3. Code: local-path only (node-pinned), CNPG backup off. TLS ends at the edge team. the edge team to NodePort and Vault run plain HTTP."
+      - "!!G2!! **Isolation.** Docs: staging and prod physically separated. Code: same subnet 10.20.0.0/24, security groups only. NodePorts 30000-32767 open to 0.0.0.0/0: any host on the subnet reaches eg without the edge team."
+      - "!!G3!! **Missing services.** RabbitMQ, the observability stack and the Clock are documented, not deployed. Chart rules for RabbitMQ egress and Prometheus ingress target absent namespaces."
+      - "!!G4!! **Secret scoping.** Every Vault role is bound to VSO's ServiceAccount. Per-app scoping relies on the baseline pinning vaultRole (ADR-0001), not on Vault."
+      - "!!G5!! **East-west auth.** eg-internal has no SecurityPolicy: any app can call any app's /api, the callee cannot identify the caller."
+      - "Sizing: docs say m1.medium workers, Terraform provisions m1.large. Leftover empty namespaces: my-app, app-templates."
