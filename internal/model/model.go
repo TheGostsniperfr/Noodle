@@ -41,22 +41,22 @@ type Offering struct {
 // color and sub.
 type Element struct {
 	ID           string   `yaml:"id"`
-	Kind         string   `yaml:"kind"`
-	Parent       string   `yaml:"parent"`
-	Title        string   `yaml:"title"`
-	Tech         string   `yaml:"tech"`
-	Desc         string   `yaml:"desc"`
-	Icon         string   `yaml:"icon"`
-	Shape        string   `yaml:"shape"`
-	Color        string   `yaml:"color"`
-	Sub          string   `yaml:"sub"`
-	Ports        []Port   `yaml:"ports"`
-	Tags         []string `yaml:"tags"`
-	Status       string   `yaml:"status"`
-	Target       string   `yaml:"target"`
-	Multiplicity string   `yaml:"multiplicity"`
+	Kind         string   `yaml:"kind,omitempty"`
+	Parent       string   `yaml:"parent,omitempty"`
+	Title        string   `yaml:"title,omitempty"`
+	Tech         string   `yaml:"tech,omitempty"`
+	Desc         string   `yaml:"desc,omitempty"`
+	Icon         string   `yaml:"icon,omitempty"`
+	Shape        string   `yaml:"shape,omitempty"`
+	Color        string   `yaml:"color,omitempty"`
+	Sub          string   `yaml:"sub,omitempty"`
+	Ports        []Port   `yaml:"ports,omitempty"`
+	Tags         []string `yaml:"tags,omitempty"`
+	Status       string   `yaml:"status,omitempty"`
+	Target       string   `yaml:"target,omitempty"`
+	Multiplicity string   `yaml:"multiplicity,omitempty"`
 	// Matches lists the discovered ids this element stands for (ADR-0015).
-	Matches []string `yaml:"matches"`
+	Matches []string `yaml:"matches,omitempty"`
 }
 
 func (e Element) IsZone() bool { return e.Kind == "region" || e.Kind == "group" }
@@ -70,23 +70,23 @@ type Port struct {
 // Connection is opened by From and listened to by To (ADR-0003). Port names a port of To.
 type Connection struct {
 	ID       string `yaml:"id"`
-	From     string `yaml:"from"`
-	To       string `yaml:"to"`
-	Port     string `yaml:"port"`
-	Protocol string `yaml:"protocol"`
-	Verb     string `yaml:"verb"`
-	Kind     string `yaml:"kind"`
+	From     string `yaml:"from,omitempty"`
+	To       string `yaml:"to,omitempty"`
+	Port     string `yaml:"port,omitempty"`
+	Protocol string `yaml:"protocol,omitempty"`
+	Verb     string `yaml:"verb,omitempty"`
+	Kind     string `yaml:"kind,omitempty"`
 	// Denied is the intent that this connection must not happen; EnforcedBy names the
 	// elements that make it so (ADR-0010). Denied without EnforcedBy is intent only.
-	Denied     bool     `yaml:"denied"`
-	EnforcedBy []string `yaml:"enforced_by"`
+	Denied     bool     `yaml:"denied,omitempty"`
+	EnforcedBy []string `yaml:"enforced_by,omitempty"`
 }
 
 type Reference struct {
 	ID   string `yaml:"id"`
-	From string `yaml:"from"`
-	To   string `yaml:"to"`
-	Kind string `yaml:"kind"`
+	From string `yaml:"from,omitempty"`
+	To   string `yaml:"to,omitempty"`
+	Kind string `yaml:"kind,omitempty"`
 }
 
 type Annotation struct {
@@ -111,17 +111,17 @@ type Fragment struct {
 }
 
 type Provenance struct {
-	Adapter    string `yaml:"adapter"`
-	Source     string `yaml:"source"`
-	Ref        string `yaml:"ref"`
-	ObservedAt string `yaml:"observedAt"`
+	Adapter    string `yaml:"adapter,omitempty"`
+	Source     string `yaml:"source,omitempty"`
+	Ref        string `yaml:"ref,omitempty"`
+	ObservedAt string `yaml:"observedAt,omitempty"`
 }
 
 // Src is where one discovered item comes from: a file and line, or an API object.
 type Src struct {
-	File   string `yaml:"file"`
-	Line   int    `yaml:"line"`
-	Object string `yaml:"object"`
+	File   string `yaml:"file,omitempty"`
+	Line   int    `yaml:"line,omitempty"`
+	Object string `yaml:"object,omitempty"`
 }
 
 type DiscoveredElement struct {
@@ -133,8 +133,8 @@ type DiscoveredElement struct {
 // name in an env value, rather than a manifest that declares it.
 type DiscoveredConnection struct {
 	Connection `yaml:",inline"`
-	Inferred   bool `yaml:"inferred"`
-	Src        Src  `yaml:"src"`
+	Inferred   bool `yaml:"inferred,omitempty"`
+	Src        Src  `yaml:"src,omitempty"`
 }
 
 type DiscoveredReference struct {

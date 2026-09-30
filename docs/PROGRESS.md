@@ -23,6 +23,11 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-09-30 · Token cost of a diagram, fact-finder agent
 
+- Spec 003 T02 (P6a-02): `internal/adapter` (interface, explicit `Registry`, `Source`,
+  `Run` stamps provenance, sorts by id and rejects ids without the adapter prefix);
+  `model.EncodeFragment` writes one flow item per line; `noodle discover ADAPTER
+  [PATH…|-] [-o] [-ref] [-observed-at]`. No adapter registered yet: k8s comes in T03.
+
 - Spec 003 T01 (P6a-01): `kind: Fragment` contract and schema, `matches` on model
   elements, loader reads `discovered/`. Choices within ADR-0015: discovered id
   `<adapter>:<path>`; `src` is `{file, line}` or `{object}`; connections carry

@@ -13,6 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
+
+	"github.com/TheGostsniperfr/Noodle/internal/model"
 )
 
 const schemaDir = "../../schemas/v1alpha1"
@@ -88,6 +90,19 @@ func TestSchemas_AcceptEveryContractFileInTheRepository(t *testing.T) {
 			assert.NoError(t, err)
 		})
 	}
+}
+
+func TestSchemas_AcceptEncodedFragment_WithEmptyFieldsLeftOut(t *testing.T) {
+	t.Parallel()
+	schemas := compileSchemas(t)
+	s, err := model.LoadSystem("testdata/minimal")
+	require.NoError(t, err)
+	var buf bytes.Buffer
+
+	require.NoError(t, model.EncodeFragment(&buf, s.Fragments["k8s-manifests"]))
+	err = schemas["Fragment"].Validate(yamlToJSONValue(t, buf.Bytes()))
+
+	assert.NoError(t, err)
 }
 
 func TestSchemas_Reject(t *testing.T) {
