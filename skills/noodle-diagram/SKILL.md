@@ -13,9 +13,14 @@ goes through the spec so the palette, the IDs and the PR diff stay consistent.
 
 ## Workflow
 
-1. **Facts first.** Read the code that implements what the diagram shows (Helm
-   templates, Terraform, K8s manifests), not only `docs/`. When code and docs disagree,
-   draw the code, add `badge: Gx` on the node and an entry in the "Gaps" card.
+1. **Facts first, in a subagent.** Hand the question and the code paths to the
+   `noodle:fact-finder` agent. It reads the code that implements what the diagram shows
+   (Helm templates, Terraform, K8s manifests), not only `docs/`, and returns one YAML
+   inventory with a source on every fact. Work from that inventory: reading the raw
+   files yourself fills this session with YAML that every later turn pays for again.
+   Open a file only to settle an `unknowns` entry or an `inferred` fact the diagram
+   depends on. When code and docs disagree, draw the code, add `badge: Gx` on the node
+   and an entry in the "Gaps" card.
 2. **One question per diagram.** Write it as the subtitle. Anything that does not help
    answer it goes to "Out of scope" in `meta`.
 3. **Write the spec in English** (proper nouns aside), next to the project's docs, for
