@@ -64,5 +64,7 @@ and `./scripts/init.sh` green. Tick the box in the same commit.
 
 - [x] **T16** Migrate `examples/platform-regression` to one directory per diagram.
   Done with `noodle migrate`, draw.io byte-identical to v0 in both themes.
-- [ ] **T17** Remove the v0 reader and `runtime-request-path.yaml` (FR-009); update the
-  skill and README examples to the split format.
+- [x] **T17** Remove the v0 reader and `runtime-request-path.yaml` (FR-009); update the
+  skill and README examples to the split format. The CLI no longer renders v0; its
+  reader stays only behind `noodle migrate` (agreed 2026-09-30) until PAE, DockAir and
+  cnp-docs have moved, then goes.

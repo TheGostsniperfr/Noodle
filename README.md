@@ -7,14 +7,16 @@ diagrams, and aims further: interactive views, guided tours, visual PR diffs, di
 from real clusters, live overlays, and a model AI agents can query.
 See [the vision](docs/VISION.md).
 
-![CNP runtime example](examples/cnp-runtime/runtime-request-path.dark.png)
+![CNP runtime example](examples/cnp-runtime/runtime.dark.png)
 
 ## Status
 
-**v0.** One generator turns a single YAML spec into draw.io in a dark or light theme. It
-refuses to emit a diagram whose lines cross boxes, whose labels collide, or whose arrows
-break the connection semantics. The next phase splits the spec into model, views and
-layout ([roadmap](docs/ROADMAP.md)).
+**Contracts `v1alpha1`.** A system is a model (what exists), views (what each diagram
+shows) and layouts (where a topology is drawn), rendered to draw.io in a dark or light
+theme. Four view types: topology, sequence, landscape (tech stack) and catalog (service
+catalogue). noodle refuses to emit a diagram whose lines cross boxes, whose labels
+collide, or whose arrows break the connection semantics. Next: static discovery from
+Kubernetes manifests ([roadmap](docs/ROADMAP.md)).
 
 ## Install
 
@@ -48,14 +50,25 @@ or just `nix run github:TheGostsniperfr/Noodle -- -list-icons`.
 ## Usage
 
 ```bash
-noodle spec.yaml                                   # lint only
-noodle -theme dark -o out.drawio spec.yaml         # lint, then render
-noodle -icons .noodle/icons -o out.drawio spec.yaml  # with project icons
+noodle render architecture/platform -view runtime                          # check and lint only
+noodle render architecture/platform -view runtime -theme dark -o out.drawio  # then render
+noodle render architecture/platform -view runtime -icons .noodle/icons -slide  # project icons, drawing only
+noodle migrate old-spec.yaml architecture/platform                        # a v0 single file, once
 noodle -list-icons
 drawio -x -f png -s 2 --border 20 -o out.png out.drawio
 ```
 
-The spec format is in [the skill reference](skills/noodle-diagram/reference.md).
+The format is in [the skill reference](skills/noodle-diagram/reference.md).
+
+## Examples
+
+| System | Shows |
+|---|---|
+| [`cnp-runtime`](examples/cnp-runtime) | one model, two views: the runtime topology and the OIDC login sequence |
+| [`sequence-basics`](examples/sequence-basics) | every sequence step kind: messages, a relay against a tunnel, a note, replies |
+| [`landscape`](examples/landscape) | a tech stack: bands, a side column, a pipeline, planned items with a target |
+| [`catalog`](examples/catalog) | a service catalogue built from the model's offerings |
+| [`platform-regression`](examples/platform-regression) | three large topologies from a real platform, kept as regression fixtures |
 
 ## Docs
 

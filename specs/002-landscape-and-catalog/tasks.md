@@ -46,5 +46,5 @@ example PNG and look at it.
 
 ## E · Skill and docs
 
-- [ ] **T13** Skill reference: the two view types, `tool`, `offerings`, `target`, with
+- [x] **T13** Skill reference: the two view types, `tool`, `offerings`, `target`, with
   one recipe each. README example list.
