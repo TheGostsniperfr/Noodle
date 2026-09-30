@@ -14,7 +14,7 @@ while IFS= read -r candidate; do
 done < <(type -ap noodle)
 
 cache="${CLAUDE_PLUGIN_DATA:-${XDG_CACHE_HOME:-$HOME/.cache}/noodle}"
-source_hash="$(cd "$root" && find cmd assets vendor go.mod go.sum -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -c1-16)"
+source_hash="$(cd "$root" && find cmd internal assets vendor go.mod go.sum -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -c1-16)"
 binary="$cache/noodle-$source_hash"
 
 if [[ ! -x "$binary" ]]; then
