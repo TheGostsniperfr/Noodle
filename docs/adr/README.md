@@ -19,5 +19,7 @@ that supersedes the old one.
 | [0012](0012-landscape-view.md) | A landscape view shows the technology stack | Accepted |
 | [0013](0013-offerings-and-catalog-view.md) | Platform offerings live in the model; a catalog view shows them | Accepted |
 | [0014](0014-planned-target.md) | A planned element names when it is expected | Accepted |
+| [0015](0015-discovered-fragments.md) | Adapters write fragments; the curated model matches them | Accepted |
+| [0016](0016-discovery-before-viewer.md) | Static Kubernetes discovery comes before the viewer | Accepted |
 
 Template: Context · Decision · Consequences. Keep it under a page.

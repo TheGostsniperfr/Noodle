@@ -8,8 +8,8 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `./scripts/init.sh`: fix anything red before new work.
 2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: spec 002, task T01 in [`tasks.md`](../specs/002-landscape-and-catalog/tasks.md),
-   then its tasks in order; afterwards T16 of spec 001.
+3. Next action: close phase 1: T13, T16, T17 of spec 001, T03 and T13 of spec 002.
+   Then spec 003, task T01 in [`tasks.md`](../specs/003-static-discovery/tasks.md).
 
 ## Open threads outside this repo
 
@@ -28,8 +28,14 @@ decisions go in ADRs, acceptance in `features.json`.
   turns, each rereading the context), geometry ~20 % (45 % of diagram output tokens),
   lint and render ~11 %, PNG review ~2 %, fixed overhead ~21 %.
 - Static discovery (phase 6 adapters) would save ~35-40 %, plus auto-layout ~60-70 %.
-  Proposal, not decided: spec 003 pulling a k8s manifest adapter and a draft auto-layout
-  forward, after T16 of spec 001.
+- Agreed with Brian: spec 003 (phase 6a) drafted with ADR-0015 (fragments, `matches`,
+  facets reserved, files now and a graph DB only when L5 history or scale needs it) and
+  ADR-0016 (k8s discovery before the viewer, own Go adapter on k8s libraries; existing
+  tools map k8s objects, not client-to-server connections). Auto-layout is the next spec.
+- Benchmark brief in Notion: "Benchmark · Token cost of a diagram", to paste in the PR.
+- fact-finder trial on PAE: right on routes, GitOps and secrets; missed the edge forwarder
+  and credential-implied connections, prompt fixed. Its "no Image Updater" was the old
+  system still on disk; Brian's diagram shows the target, a `planned` case.
 - Stopgap shipped: `agents/fact-finder.md` (Sonnet, read-only) runs skill step 1 in its
   own context and returns a `v1alpha1`-shaped YAML inventory with a source on every fact.
 
