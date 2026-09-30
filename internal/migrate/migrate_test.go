@@ -26,10 +26,11 @@ func loadV0(t *testing.T, path string) *diagram.Spec {
 func TestMigrate_WrittenSystemDrawsTheV0Diagram(t *testing.T) {
 	t.Parallel()
 	specs := []string{
-		"../../examples/cnp-runtime/runtime-request-path.yaml",
+		"testdata/cnp-runtime.yaml",
 		"testdata/platform-overview.yaml",
 		"testdata/app-runtime-view.yaml",
 		"testdata/repo-map.yaml",
+		"testdata/contract-pipeline.yaml",
 	}
 	for _, path := range specs {
 		t.Run(path, func(t *testing.T) {

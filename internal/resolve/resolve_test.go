@@ -35,7 +35,7 @@ func byID(edges []diagram.Edge) []diagram.Edge {
 // the edge order (connections, then references) differ.
 func TestTopology_ReproducesTheV0CNPDiagram(t *testing.T) {
 	t.Parallel()
-	want := loadV0(t, "../../examples/cnp-runtime/runtime-request-path.yaml")
+	want := loadV0(t, "../migrate/testdata/cnp-runtime.yaml")
 	s, err := model.LoadSystem("../../examples/cnp-runtime")
 	require.NoError(t, err)
 	require.Empty(t, model.Check(s))

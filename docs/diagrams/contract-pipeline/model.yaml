@@ -1,0 +1,27 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: z-git, kind: region, color: orange, icon: git, title: GIT · SYSTEM DIRECTORY, sub: reviewed in PRs}
+  - {id: z-cli, kind: region, color: cyan, icon: go, title: NOODLE CLI, sub: noodle render <dir> --view <id>}
+  - {id: z-out, kind: region, color: slate, icon: drawio, title: GENERATED, sub: not committed (ADR-0005)}
+  - {id: model-file, kind: database, parent: z-git, icon: json, title: model.yaml, tech: '[kind Model]', desc: 'What exists: elements, connections'}
+  - {id: view-file, kind: frontend, parent: z-git, icon: json, title: views/<id>.yaml, tech: '[kind View · topology | sequence]', desc: 'What is shown: steps, cards'}
+  - {id: layout-file, kind: external, parent: z-git, icon: json, title: layouts/<view-id>.yaml, tech: '[kind Layout · topology only]', desc: 'Where: relative x/y, lanes'}
+  - {id: loader, kind: backend, parent: z-cli, icon: go, title: Loader, tech: '[internal/model]', desc: 'Strict YAML, id checks'}
+  - {id: schemas, kind: security, parent: z-cli, icon: json, title: JSON Schemas, tech: '[schemas/v1alpha1]', desc: Published contract}
+  - {id: resolver, kind: backend, parent: z-cli, icon: go, title: Resolver, tech: '[internal/resolve]', desc: Symbols to absolute points}
+  - {id: diagram, kind: database, parent: z-cli, icon: go, title: Resolved diagram, tech: '[internal/diagram]', desc: 'The v0 geometry, in memory'}
+  - {id: lint, kind: security, parent: z-cli, icon: go, title: Lint, tech: '[internal/lint]', desc: One rule per file}
+  - {id: renderer, kind: backend, parent: z-cli, icon: go, title: draw.io renderer, tech: '[cmd/noodle]', desc: Unchanged in phase 1}
+  - {id: drawio-file, kind: external, parent: z-out, icon: drawio, title: <view>.<theme>.drawio, tech: '[editable]', desc: One per theme}
+  - {id: png-file, kind: external, parent: z-out, icon: drawio, title: <view>.<theme>.png, tech: '[drawio CLI export]', desc: For docs and PRs}
+connections:
+  - {id: e-1-git-loader, from: z-git, to: loader, kind: flow, verb: parse}
+  - {id: e-2-loader-resolver, from: loader, to: resolver, kind: flow, verb: model + view + layout}
+  - {id: e-3-resolver-diagram, from: resolver, to: diagram, kind: flow, verb: emit geometry}
+  - {id: e-4-diagram-lint, from: diagram, to: lint, kind: flow, verb: check}
+  - {id: e-5-lint-renderer, from: lint, to: renderer, kind: flow, verb: clean only}
+  - {id: e-6-renderer-drawio, from: renderer, to: drawio-file, kind: flow, verb: write}
+  - {id: e-7-drawio-png, from: drawio-file, to: png-file, kind: flow, verb: export}
+references:
+  - {id: r-schemas-git, from: schemas, to: z-git, kind: validates}

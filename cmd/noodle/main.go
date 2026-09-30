@@ -1,5 +1,6 @@
-// noodle turns an architecture spec (YAML) into a draw.io file in the house style,
-// refusing to emit a diagram whose lines cross boxes or whose labels collide.
+// noodle turns an architecture system (model, views and layouts, ADR-0007) into draw.io
+// files in the house style, refusing to emit a diagram whose lines cross boxes or whose
+// labels collide.
 package main
 
 import (
@@ -15,6 +16,10 @@ import (
 
 const slideMargin = 24.0
 
+const usage = `usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]] [-slide]
+       noodle migrate SPEC.yaml DIR   (a v0 single file to a v1alpha1 system)
+       noodle -list-icons [-icons DIR[,DIR]]`
+
 func main() {
 	if len(os.Args) > 1 {
 		commands := map[string]func([]string) error{"render": renderCommand, "migrate": migrateCommand}
@@ -26,30 +31,24 @@ func main() {
 			return
 		}
 	}
-	out := flag.String("o", "", "output .drawio path (lint only when empty)")
 	icons := flag.String("icons", "", "comma-separated directories of extra <name>.svg icons, searched before the built-in ones")
-	themeName := flag.String("theme", "dark", "dark or light")
 	listIcons := flag.Bool("list-icons", false, "print the available icon names and exit")
-	slide := flag.Bool("slide", false, "drawing only, cropped to its content: no header, cards or notes")
 	flag.Parse()
 
+	if !*listIcons {
+		if flag.NArg() == 1 && strings.HasSuffix(flag.Arg(0), ".yaml") {
+			fmt.Fprintf(os.Stderr, "noodle: %s looks like a v0 single file, which is no longer rendered.\nConvert it once with: noodle migrate %s DIR, then: noodle render DIR\n", flag.Arg(0), flag.Arg(0))
+		} else {
+			fmt.Fprintln(os.Stderr, usage)
+		}
+		os.Exit(2)
+	}
 	set, err := newIconSet(splitList(*icons))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	if *listIcons {
-		fmt.Println(strings.Join(set.names(), "\n"))
-		return
-	}
-	if flag.NArg() != 1 {
-		fmt.Fprintln(os.Stderr, "usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]]\n       noodle [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]] spec.yaml   (v0 single file)\n       noodle migrate SPEC.yaml DIR   (v0 single file to a v1alpha1 system)\n       noodle -list-icons [-icons DIR]")
-		os.Exit(2)
-	}
-	if err := run(flag.Arg(0), *out, *themeName, set, *slide); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	fmt.Println(strings.Join(set.names(), "\n"))
 }
 
 func splitList(s string) []string {
@@ -62,19 +61,6 @@ func splitList(s string) []string {
 	return out
 }
 
-func run(specPath, out, themeName string, icons *iconSet, slide bool) error {
-	th, err := house.ThemeByName(themeName)
-	if err != nil {
-		return err
-	}
-	spec, err := loadSpec(specPath)
-	if err != nil {
-		return err
-	}
-	return lintAndRender(spec, out, th, icons, slide)
-}
-
-// lintAndRender lints the full diagram, so a slide crop never hides a finding.
 func lintAndRender(spec *diagram.Spec, out string, th *house.Theme, icons *iconSet, slide bool) error {
 	errors := 0
 	for _, f := range lint.Lint(spec) {
