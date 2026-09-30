@@ -12,7 +12,7 @@ touching `go.mod`.
 
 ## B · Adapter frame (P6a-02)
 
-- [ ] **T02** `internal/adapter`: interface, registry, `Source` from paths or stdin.
+- [x] **T02** `internal/adapter`: interface, registry, `Source` from paths or stdin.
   `noodle discover <adapter> [paths…|-] [-o]`. A test adapter registered in a test runs
   end to end. Flip **P6a-02**.
 
