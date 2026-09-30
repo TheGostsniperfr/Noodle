@@ -1,113 +1,228 @@
-# Spec reference (v0)
+# Reference (`noodle/v1alpha1`)
 
-One YAML file per diagram. Coordinates are absolute pixels, origin top-left, y down.
-Unknown fields are rejected. A full working example is at the end.
+A system is one directory. Unknown fields are rejected; every file carries
+`apiVersion: noodle/v1alpha1` and its `kind`. JSON Schemas are in the noodle repository
+under `schemas/v1alpha1/`.
 
-## Top level
+```
+<system>/
+  model.yaml          kind: Model   what exists: elements, connections, references
+  views/<id>.yaml     kind: View    what one diagram shows; the file stem is the view id
+  layouts/<id>.yaml   kind: Layout  where a topology view draws it; same stem as its view
+```
 
-| Field | Type | Notes |
-|---|---|---|
-| `id` | string | stable, used in draw.io page ids |
-| `title` | string | one line, `Project · Topic · Question` |
-| `subtitle` | string | the one question this diagram answers |
-| `meta` | string[] | scope, out of scope, version and source path, one line each |
-| `width`, `height` | number | canvas size; leave ~40 px margins |
-| `zones` | Zone[] | drawn first, in order |
-| `nodes` | Node[] | |
-| `edges` | Edge[] | |
-| `notes` | Note[] | free text next to a component, e.g. a response that changes the path |
-| `cards` | Card[] | legend, steps and gaps under the diagram |
+One model, several views: a runtime topology, a login sequence, a tech stack and a
+service catalogue can all come from the same `model.yaml`. Only topology views take a
+layout; sequence, landscape and catalog views are computed.
 
-## Zone
+```bash
+noodle render <system> -view <id>                               # check and lint only
+noodle render <system> -view <id> -theme dark -o out.drawio     # then render
+noodle render <system> -view <id> -icons .noodle/icons -slide   # project icons; drawing only
+noodle migrate old-spec.yaml <system>                            # a v0 single file, once
+```
 
-| Field | Notes |
-|---|---|
-| `id` | |
-| `kind` | `region` (infra or trust perimeter, dashed 8·4) or `group` (functional category, dashed 4·4) |
-| `label` | uppercase, role first: `GATEWAY API`, `IDENTITY` |
-| `sub` | small grey text after the label, e.g. the namespace |
-| `color` | `cyan` `emerald` `violet` `amber` `rose` `orange` `slate` `indigo` `sky`; siblings differ |
-| `icon` | environment on regions (`globe`, `rack`, a provider logo), product or `k8s-ns` on groups |
-| `x` `y` `w` `h` | a zone fully contains its nodes and child zones |
+## Model
 
-## Node
+### Element
+
+Components and zones are both elements. A zone has kind `region` or `group`.
 
 | Field | Notes |
 |---|---|
-| `id` | semantic and stable, never renamed for cosmetics |
-| `kind` | `frontend` `backend` `database` `cloud` `security` `bus` `external` |
-| `shape` | `box` (default) · `cylinder` for a datastore · `actor` for a human (icon with label below) |
-| `icon` | see `noodle -list-icons`; project icons via `-icons DIR` |
-| `title` | bold name |
+| `id` | semantic and stable, never renamed for cosmetics; unique across the model |
+| `kind` | `frontend` `backend` `database` `cloud` `security` `bus` `external` · `tool` (built or run with, receives no traffic: IaC, scanners, bots) · `region` (infra or trust perimeter) · `group` (functional category) |
+| `parent` | the zone it sits in; its layout box is relative to that zone |
+| `title` | bold name; zones: uppercase, role first (`GATEWAY API`) |
 | `tech` | `[Technology · variant]`, shown in italics |
 | `desc` | one line: the responsibility |
-| `badge` | e.g. `G2`: links to an entry of the gaps card |
-| `x` `y` `w` `h` | typical box 220–320 × 72–120; actor 56 × 56 |
+| `sub` | zones only: small grey text after the title, e.g. the namespace |
+| `icon` | see `noodle -list-icons`; project icons via `-icons DIR` |
+| `shape` | `box` (default) · `cylinder` for a datastore · `actor` for a human |
+| `color` | zones: `cyan` `emerald` `violet` `amber` `rose` `orange` `slate` `indigo` `sky`; siblings differ |
+| `ports` | `[{name: https, protocol: TCP, port: 443}]`: listening ports, drawn as badges where connections land |
+| `status` | `planned` (hatched) or `deprecated` (dotted, struck title); a zone's applies to its children |
+| `target` | `planned` only: when it is expected, e.g. `SP2`, `Q1 2027`; drawn as a pill |
+| `tags` | free labels, e.g. `risk:G4` |
 
-Text width is estimated at 0.6 em per character: 7.2 px at 12 px (title), 6 px at 10 px
-(tech, desc). Available width is `w − 58` with an icon. The lint reports any overflow.
+### Connection: traffic
 
-## Edge
+Opened by `from`, listened to by `to` (ADR-0003). Requests only, never responses.
 
 | Field | Notes |
 |---|---|
-| `id` | `e-<step>-<from>-<to>` for connections, `r-…` for references, `x-…` for blocked |
-| `from`, `to` | node or zone ids; `from` opens the connection |
-| `kind` | `flow` · `auth` · `tunnel` · `async` · `blocked` · `link` (reference, not traffic) |
-| `label` | `[step] verb · protocol`; `<br>` for a second line; `[1]` numbers, `[A]` letters |
-| `port` | listening port on `to`, e.g. `TCP 443`, `UDP 7844`; drawn as a badge on its border |
-| `against_flow` | `true` only for outbound connections running against the reading direction |
-| `path` | `[[x, y], …]` orthogonal; first point on the border of `from`, last on the border of `to` |
-| `label_at` | `[x, y]` on the drawn path; default is the middle of the longest segment |
-| `label_offset` | `[dx, dy]` to push a long label beside a short segment |
+| `id` | `c-<from>-<to>` or `e-<step>-…`; stable |
+| `from`, `to` | element ids; `from` opens the connection |
+| `kind` | `flow` · `auth` · `tunnel` (outbound, set up in advance) · `async` (background sync) |
+| `port` | a port **name** of `to`; its protocol and number become the badge |
+| `protocol`, `verb` | the label reads `verb · protocol`, e.g. `proxy · HTTP` |
+| `denied` | `true`: this must not happen, drawn as a blocked edge |
+| `enforced_by` | with `denied`: the elements that block it, e.g. a NetworkPolicy (ADR-0010) |
 
-Side rule, except `link` and `against_flow`: the first point is on the right or bottom
-border of `from`, the last on the left or top border of `to`. With a `port`, the drawn
-path stops at the outer edge of the badge; `label_at` must lie on that drawn path.
+### Reference: configuration, not traffic
 
-## Note and Card
+`{id, from, to, kind}` with `kind` the relation: `parentRef`, `targetRef`, `envFrom`,
+`secretKeyRef`. Drawn dotted with an open arrow; never numbered; the side rule does not
+apply.
+
+### Annotation: a gap between docs and code
+
+`{id: G1, severity: high, title: …, text: …, targets: [element or edge ids]}`. Each
+target shows the id as a badge; list the gaps in a card.
+
+### Offering: what a platform provides (ADR-0013)
+
+`{id, title, icon, summary, provides: [..], request, backed_by: [element ids], owner,
+status, target}`. Read by catalog views.
+
+## View
+
+Common fields: `type` (`topology` · `sequence` · `landscape` · `catalog`), `title`
+(`Project · Topic · Question`), `subtitle` (the one question), `meta` (scope, out of
+scope, version and source, one line each).
+
+### Topology
+
+| Field | Notes |
+|---|---|
+| `include` | element ids to show; `z-cluster/**` includes a zone and all it holds; empty shows everything |
+| `steps` | connection ids of the nominal path, in time order: they become `[1]…[n]`, each used once |
+| `background` | control-plane connection ids: `[A]`, `[B]`… |
+| `labels` | `{edge-id: text}` to override a label in this view only |
+| `notes` | `[{id, text}]`: a response that changes the path, next to who sends it |
+| `cards` | `[{id, title, color, legend, lines}]`: `legend: true` generates the legend |
+
+### Sequence (ADR-0004, ADR-0011)
+
+For flows that reuse connections or go back and forth: login, token exchange, retries.
+Each step is exactly one of:
 
 ```yaml
-notes:
-  - {id: n-302, text: "Without a session, Envoy replies **302** …", x: 52, y: 590, w: 196, h: 90}
-cards:
-  - {id: card-legend, title: "Legend", color: slate, legend: true, x: 40, y: 1340, w: 540, h: 420}
-  - id: card-steps
-    title: "Request path · data plane"
-    color: cyan
-    x: 610
-    y: 1340
-    w: 620
-    h: 420
-    lines:
-      - "[1] Browser sends GET … Cloudflare terminates TLS."
+steps:
+  - {id: get, from: browser, to: edge, over: c-browser-edge, text: "GET /"}   # message over a model connection
+  - {note: app, text: "render page"}                                        # note on a participant
+  - {reply: get, text: "200"}                                               # reply, drawn dashed
 ```
 
-Inline markup everywhere text is shown: `[1]` filled step badge, `[A]` outlined step
-badge, `**bold**`, `!!warning!!` in orange.
+A message running against its connection (a relay back through a tunnel) needs a `text`.
+`participants: [..]` fixes the column order; otherwise first appearance.
 
-## Minimal example
+### Landscape: the tech stack (ADR-0012)
+
+Rows of sections of logos, computed; no layout file.
 
 ```yaml
-id: hello
-title: "Demo · Web app"
-subtitle: "How a request reaches the database."
-meta: ["Scope: demo", "v0.1"]
-width: 1100
-height: 520
-zones:
-  - {id: z-internet, kind: region, color: slate, icon: globe, label: "INTERNET", x: 40, y: 40, w: 220, h: 300}
-  - {id: z-cluster, kind: region, color: cyan, icon: kubernetes, label: "CLUSTER", x: 320, y: 40, w: 740, h: 300}
-nodes:
-  - {id: user, kind: frontend, shape: actor, icon: user, title: "User", desc: "browser", x: 122, y: 150, w: 56, h: 56}
-  - {id: api, kind: backend, icon: k8s-deploy, title: "API", tech: "[Deployment]", desc: "Serves requests", x: 380, y: 140, w: 240, h: 80}
-  - {id: db, kind: database, shape: cylinder, icon: cnpg, title: "Postgres", tech: "[CloudNativePG]", desc: "App data", x: 760, y: 130, w: 240, h: 100}
+type: landscape
+bands:
+  - {id: delivery, title: Delivery, sub: from code to running platform, color: emerald, flow: true,
+     sections: [{title: Provisioning, items: [terraform]}, {title: GitOps, items: [argocd]}]}
+side:
+  - {title: Observability, color: orange, items: [grafana, loki]}
+labels: {cnpg: CloudNativePG}
+```
+
+Items are model elements, each shown once; `flow: true` draws arrows between sections.
+
+### Catalog: the service catalogue (ADR-0013)
+
+```yaml
+type: catalog
+include: [dbaas, app-hosting, sso]   # offering ids
+columns: 2                           # 1 to 4
+```
+
+## Layout (topology views)
+
+```yaml
+apiVersion: noodle/v1alpha1
+kind: Layout
+canvas: {width: 2340, height: 1800}
+lanes:
+  connectors: {x: 1100}              # a shared vertical corridor; {y: …} for a horizontal one
+elements:
+  z-cluster: {x: 720, y: 200, w: 1580, h: 1080}   # top level: canvas coordinates
+  g-gateway: {x: 400, y: 60, w: 400, h: 320}      # child: relative to its parent zone
 edges:
-  - {id: e-1-user-api, kind: flow, from: user, to: api, port: "TCP 443", label: "[1] GET · HTTPS", path: [[178, 200], [380, 200]]}
-  - {id: e-2-api-db, kind: flow, from: api, to: db, port: "TCP 5432", label: "[2] query · SQL", path: [[620, 200], [760, 200]]}
+  e-1-browser-edge: {from: user.right, to: cf-edge.left}
+  e-3-connector-envoy: {from: cloudflared-app.right, to: envoy.left@105px, waypoints: [lane:connectors]}
+  e-4-envoy-service: {from: envoy.bottom@280px, to: app-service.top, waypoints: [[1440, 700], [1590, 700]], label_at: [1515, 700]}
+notes:
+  n-302: {x: 52, y: 590, w: 196, h: 90}
 cards:
-  - {id: card-legend, title: "Legend", color: slate, legend: true, x: 40, y: 380, w: 1020, h: 120}
+  card-legend: {x: 40, y: 1340, w: 540, h: 420}
 ```
 
-The CNP runtime example in the noodle repository (`examples/cnp-runtime/`) shows every
-feature at scale.
+- **Endpoints** are `id.side`, `id.side@NN%` or `id.side@NNpx` (offset from the top or
+  left of that side). A bare side slides to line up with the next waypoint, so the first
+  and last segments stay orthogonal.
+- **Waypoints** are canvas points `[x, y]` or `lane:<name>`. Moving a lane moves every
+  edge on it: give parallel edges their own lanes 15 to 20 px apart.
+- `label_at` `[x, y]` on the drawn path, `label_offset` `[dx, dy]`, `against_flow: true`
+  for outbound connections that run against the reading direction.
+- Side rule, except references and `against_flow`: leave from the right or bottom of
+  `from`, enter on the left or top of `to`.
+- Typical box 220–320 × 72–120; actor 56 × 56. Text width is estimated at 0.6 em per
+  character: 7.2 px at 12 px (title), 6 px at 10 px (tech, desc); available width is
+  `w − 58` with an icon. The lint reports any overflow.
+
+## Text markup
+
+Everywhere text is shown: `[1]` filled step badge, `[A]` outlined step badge, `**bold**`,
+`!!warning!!` in orange, `<br>` for a second line in a label.
+
+## Minimal system
+
+`model.yaml`:
+
+```yaml
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: z-internet, kind: region, color: slate, icon: globe, title: INTERNET}
+  - {id: z-cluster, kind: region, color: cyan, icon: kubernetes, title: CLUSTER}
+  - {id: user, kind: frontend, parent: z-internet, shape: actor, icon: user, title: User, desc: browser}
+  - {id: api, kind: backend, parent: z-cluster, icon: k8s-deploy, title: API, tech: "[Deployment]", desc: Serves requests,
+     ports: [{name: https, protocol: TCP, port: 443}]}
+  - {id: db, kind: database, parent: z-cluster, shape: cylinder, icon: cnpg, title: Postgres, tech: "[CloudNativePG]",
+     desc: App data, ports: [{name: pg, protocol: TCP, port: 5432}]}
+connections:
+  - {id: c-user-api, from: user, to: api, kind: flow, port: https, protocol: HTTPS, verb: GET}
+  - {id: c-api-db, from: api, to: db, kind: flow, port: pg, protocol: SQL, verb: query}
+```
+
+`views/request.yaml`:
+
+```yaml
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+title: Demo · Web app · Request path
+subtitle: How a request reaches the database.
+meta: ["Scope: demo", "v0.1 · source: architecture/demo"]
+steps: [c-user-api, c-api-db]
+cards:
+  - {id: card-legend, title: Legend, color: slate, legend: true}
+```
+
+`layouts/request.yaml`:
+
+```yaml
+apiVersion: noodle/v1alpha1
+kind: Layout
+canvas: {width: 1100, height: 820}
+elements:
+  z-internet: {x: 40, y: 220, w: 220, h: 300}
+  z-cluster: {x: 320, y: 220, w: 740, h: 300}
+  user: {x: 82, y: 130, w: 56, h: 56}
+  api: {x: 60, y: 100, w: 240, h: 80}
+  db: {x: 440, y: 90, w: 240, h: 100}
+edges:
+  c-user-api: {from: user.right, to: api.left}
+  c-api-db: {from: api.right, to: db.left}
+cards:
+  card-legend: {x: 40, y: 560, w: 1020, h: 220}
+```
+
+The noodle repository has one example per view type in `examples/`: `cnp-runtime`
+(topology and sequence at scale), `sequence-basics`, `landscape`, `catalog`, and
+`platform-regression` for large topologies.

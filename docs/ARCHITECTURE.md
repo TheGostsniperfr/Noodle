@@ -1,8 +1,9 @@
 # Noodle · Architecture overview
 
-Status: **draft**. The contracts below are sketches to be frozen as `v1alpha1` in
-roadmap phase 1. The v0 generator in `cmd/noodle` predates them and uses a single spec
-that mixes model, view and layout (see ADR-0002).
+Status: **draft**. Model, view and layout are frozen as `v1alpha1` (ADR-0007,
+`schemas/v1alpha1/`); the sketches below also show parts not built yet (tours,
+redaction, overlays, adapters). The v0 single-file format is gone: `noodle migrate`
+converts old files.
 
 ## Shape
 
@@ -45,7 +46,7 @@ that mixes model, view and layout (see ADR-0002).
 
 Phase 1 pipeline and file split (ADR-0007):
 
-![Contract pipeline](diagrams/contract-pipeline.dark.png)
+![Contract pipeline](diagrams/contract-pipeline/contract-pipeline.dark.png)
 
 ### Model: what exists
 

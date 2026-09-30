@@ -39,6 +39,15 @@ decisions go in ADRs, acceptance in `features.json`.
   fixtures migrated, draw.io byte-identical in both themes; v0 inputs kept in
   `internal/migrate/testdata`. Agreed with Brian: T17 keeps the v0 reader behind
   `migrate` only, for PAE, DockAir and cnp-docs.
+- Spec 001 T17 and spec 002 T13: the CLI renders systems only (a `.yaml` argument points
+  to `noodle migrate`); CNP and docs v0 files moved to `internal/migrate/testdata`, docs
+  diagram migrated (byte-identical). Skill `reference.md` rewritten for `v1alpha1`
+  (model, four view types, layout with lanes, a minimal system rendered and looked at),
+  `SKILL.md` workflow on `noodle render`, recipes for tech stack and catalogue; README
+  status, usage and example list. The minimal example exposed two lint gaps: B-25
+  (header overlap) and B-26 (card taller than its box).
+- `bin/noodle` rebuild hash now covers `internal/`: plugin users had a stale binary after
+  any change there.
 - Benchmark brief in Notion: "Benchmark · Token cost of a diagram", to paste in the PR.
 - fact-finder trial on PAE: right on routes, GitOps and secrets; missed the edge forwarder
   and credential-implied connections, prompt fixed. Its "no Image Updater" was the old
