@@ -1,10 +1,9 @@
 # Spec 004 · Access graph and lenses
 
-- Status: **Specified**, decisions settled in ADR-0019; `plan.md` and `tasks.md` next
-- Phase: 6b, after spec 003 T09 (`internal/graph`), which the access view needs for
-  reachability
+- Status: **Planned** (`plan.md`, `tasks.md`)
+- Phase: 6b, built now alongside 6a on its own traversal (ADR-0020)
 - Decisions it builds on: ADR-0003, ADR-0006, ADR-0007, ADR-0008, ADR-0010, ADR-0014,
-  ADR-0015, ADR-0019
+  ADR-0015, ADR-0019, ADR-0020
 
 ## Why
 
@@ -41,7 +40,7 @@ light the infrastructure map per role and, later, answer "who can write X?" over
   `via` ids exist; a subject is never its own resource.
 - **FR-002** Effective access of a subject is the union of its grants and those of every
   group reachable through memberships, with `status` filtered by the requested state.
-  Computed in `internal/graph`, table-tested.
+  Computed in `internal/access` (ADR-0020), table-tested.
 - **FR-003** Derived escalation: a `write` or `admin` grant on an element that appears in
   another grant's `via` yields an escalation path to that grant's resource. Derived
   edges are marked, never stored in the model.
@@ -56,12 +55,12 @@ light the infrastructure map per role and, later, answer "who can write X?" over
   target), escalation paths found.
 - **FR-006** In `state: diff`, `deprecated` grants render dotted and struck, `planned`
   grants hatched with their target pill, as elements do (ADR-0008).
-- **FR-007** `lenses: [{subject, state}]` on a topology view. One output per lens, same
+- **FR-007** `lenses: [{id, subject, state}]` on a topology view. One output per lens, same
   layout. Reached elements keep their colour, get a level badge and a border by level;
   the others render out of focus. In `state: target`, an element the subject loses
   shows a ghost outline marked "removed".
-- **FR-008** `noodle render <system> -view <id> -lens <subject>` selects one lens; the
-  output name carries the lens and the state.
+- **FR-008** `noodle render <system> -view <id> -lens <lens-id>` renders that lens;
+  without `-lens` the view renders as before.
 - **FR-009** Out-of-focus style is distinct from `planned` and keeps text legible; the
   lint checks its contrast like any other text pair.
 - **FR-010** JSON Schemas in `schemas/v1alpha1/` cover every new field; every example
@@ -75,8 +74,7 @@ light the infrastructure map per role and, later, answer "who can write X?" over
 - The CNP segregation plan's two before/after pictures (CMP, tenant member) render from
   a model, reviewed by the `noodle:diagram-reviewer` agent with no blocking finding.
 - An agent answers scenario 4 from the model alone, without reading policy files.
-- Feature entries for this phase are added to `docs/features.json` when the phase is
-  scheduled, and pass their verify step.
+- Features P6b-01 to P6b-06 in `docs/features.json` pass their verify step.
 
 ## Out of scope
 

@@ -29,7 +29,8 @@ decisions go in ADRs, acceptance in `features.json`.
 - ADR-0019 (Accepted) and spec 004: `memberships` and `grants` in the model, an
   `access` view and `lenses` on topology views, from the CNP segregation review. No
   matrix view. Roadmap phase 6b, after spec 003 T09. Plan and tasks still to write.
-- Spec 003 stays the current work.
+- ADR-0020: 6b starts now on its own traversal (`internal/access`); plan and tasks
+  written, features P6b-01 to P6b-06. Spec 003 stays the current work for discovery.
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 

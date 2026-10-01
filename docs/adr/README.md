@@ -24,5 +24,6 @@ that supersedes the old one.
 | [0017](0017-unresolved-and-resolutions.md) | The k8s adapter decodes with yaml.v3 and reports what it cannot resolve | Accepted |
 | [0018](0018-credential-implied-connections-and-operator-rules.md) | Credential-implied connections and operator rules | Accepted |
 | [0019](0019-access-grants-and-access-views.md) | Access grants live in the model; an access graph and lenses show them | Accepted |
+| [0020](0020-access-views-before-graph.md) | Access views are built now, on their own traversal | Accepted |
 
 Template: Context · Decision · Consequences. Keep it under a page.

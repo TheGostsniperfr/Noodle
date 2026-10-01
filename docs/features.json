@@ -54,6 +54,18 @@
         {"id": "P6a-09", "description": "secret-endpoint entries for workloads reading address-like Secret keys, values never read", "verify": "go test ./internal/adapter/k8s/... covers env, envFrom and ExternalSecret targets and asserts no secret value in the fragment", "passes": false},
         {"id": "P6a-10", "description": "Operator rules for CloudNativePG, Prometheus operator, cert-manager issuers and external-dns", "verify": "go test ./internal/adapter/k8s/... has one fixture per rule with the expected elements and connections", "passes": false}
       ]
+    },
+    {
+      "id": "6b",
+      "title": "Access graph and lenses",
+      "features": [
+        {"id": "P6b-01", "description": "Memberships, grants and auth in the model, access view fields and lenses, with checks and schemas", "verify": "go test ./internal/model/... rejects unknown ids, levels, target without planned, membership cycles and misplaced view fields", "passes": false},
+        {"id": "P6b-02", "description": "Effective access, reachers and derived escalations per state", "verify": "go test ./internal/access/... covers groups, nesting, via, states and escalation", "passes": false},
+        {"id": "P6b-03", "description": "Access view resolves, lints and renders with no layout file", "verify": "noodle render examples/access --view cmp-current passes the lint and writes a drawio file", "passes": false},
+        {"id": "P6b-04", "description": "Access view diff state shows removed and planned grants", "verify": "noodle render examples/access --view cmp-diff renders deprecated grants dotted and planned ones dashed with their target", "passes": false},
+        {"id": "P6b-05", "description": "Lenses on a topology view: one output per lens, same layout, dim and level badges", "verify": "noodle render examples/access --view platform -lens cmp-target passes the lint, and go test ./internal/house/... keeps dim text at 3:1", "passes": false},
+        {"id": "P6b-06", "description": "examples/access renders dark and light in init.sh and CI", "verify": "./scripts/init.sh renders every view of examples/access", "passes": false}
+      ]
     }
   ],
   "backlog": [
