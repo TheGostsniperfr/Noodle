@@ -33,6 +33,8 @@ decisions go in ADRs, acceptance in `features.json`.
   written, features P6b-01 to P6b-06. Spec 003 stays the current work for discovery.
 - Spec 004 T01: memberships, grants, auth, access view fields and lenses in the model,
   checks and schemas (P6b-01).
+- Spec 004 T02: `internal/access` (groups, levels, reachers, escalations, subgraph per
+  state), table-tested (P6b-02).
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 

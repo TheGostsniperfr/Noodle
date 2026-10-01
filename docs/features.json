@@ -60,7 +60,7 @@
       "title": "Access graph and lenses",
       "features": [
         {"id": "P6b-01", "description": "Memberships, grants and auth in the model, access view fields and lenses, with checks and schemas", "verify": "go test ./internal/model/... rejects unknown ids, levels, target without planned, membership cycles and misplaced view fields", "passes": true},
-        {"id": "P6b-02", "description": "Effective access, reachers and derived escalations per state", "verify": "go test ./internal/access/... covers groups, nesting, via, states and escalation", "passes": false},
+        {"id": "P6b-02", "description": "Effective access, reachers and derived escalations per state", "verify": "go test ./internal/access/... covers groups, nesting, via, states and escalation", "passes": true},
         {"id": "P6b-03", "description": "Access view resolves, lints and renders with no layout file", "verify": "noodle render examples/access --view cmp-current passes the lint and writes a drawio file", "passes": false},
         {"id": "P6b-04", "description": "Access view diff state shows removed and planned grants", "verify": "noodle render examples/access --view cmp-diff renders deprecated grants dotted and planned ones dashed with their target", "passes": false},
         {"id": "P6b-05", "description": "Lenses on a topology view: one output per lens, same layout, dim and level badges", "verify": "noodle render examples/access --view platform -lens cmp-target passes the lint, and go test ./internal/house/... keeps dim text at 3:1", "passes": false},

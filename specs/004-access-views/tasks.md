@@ -12,7 +12,7 @@ example PNG and look at it.
 
 ## B · Semantics (P6b-02)
 
-- [ ] **T02** `internal/access`: graph per state, `Reach`, `Reachers`, `Escalations`.
+- [x] **T02** `internal/access`: graph per state, `Reach`, `Reachers`, `Escalations`.
   Table-driven tests on a small model. Flip **P6b-02**.
 
 ## C · Access view (P6b-03, P6b-04)
