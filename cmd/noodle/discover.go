@@ -16,7 +16,7 @@ import (
 	"github.com/TheGostsniperfr/Noodle/internal/model"
 )
 
-const discoverUsage = "usage: noodle discover ADAPTER [PATH…|-] [-o fragment.yaml] [-ref REF] [-observed-at RFC3339]"
+const discoverUsage = "usage: noodle discover ADAPTER [PATH…|-] [-o fragment.yaml] [-namespace NS] [-ref REF] [-observed-at RFC3339]"
 
 // adapters lists every adapter noodle ships.
 func adapters() (*adapter.Registry, error) { return adapter.NewRegistry(k8s.Adapter{}) }
@@ -27,6 +27,7 @@ func discoverCommand(ctx context.Context, reg *adapter.Registry, args []string, 
 	fs := flag.NewFlagSet("discover", flag.ContinueOnError)
 	out := fs.String("o", "", "output fragment path, usually <system>/discovered/<adapter>-<source>.yaml (stdout when empty)")
 	ref := fs.String("ref", "", "version of the source, e.g. a Git commit")
+	namespace := fs.String("namespace", "", "namespace of objects that name none, as kubectl apply -n (default: default)")
 	observed := fs.String("observed-at", "", "observation time, RFC 3339 (now when empty)")
 	var pos []string
 	for len(args) > 0 {
@@ -50,6 +51,7 @@ func discoverCommand(ctx context.Context, reg *adapter.Registry, args []string, 
 	if err != nil {
 		return err
 	}
+	src.Namespace = *namespace
 	at := time.Now()
 	if *observed != "" {
 		if at, err = time.Parse(time.RFC3339, *observed); err != nil {

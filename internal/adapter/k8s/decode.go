@@ -31,6 +31,7 @@ type input struct {
 	unrendered []model.Unresolved
 	stats      adapter.Stats
 	seen       map[string]bool
+	namespace  string
 }
 
 // Skip reasons, as counted in Stats.
@@ -50,7 +51,7 @@ const (
 var generatedKinds = set("ControllerRevision", "Endpoints", "EndpointSlice", "Event", "Lease")
 
 func read(ctx context.Context, src adapter.Source) (*input, error) {
-	in := &input{stats: adapter.Stats{Skipped: map[string]int{}}, seen: map[string]bool{}}
+	in := &input{stats: adapter.Stats{Skipped: map[string]int{}}, seen: map[string]bool{}, namespace: or(src.Namespace, "default")}
 	if src.Reader != nil {
 		raw, err := io.ReadAll(src.Reader)
 		if err != nil {
@@ -188,7 +189,7 @@ func (in *input) add(file string, n *yaml.Node, lines lineIndex, end int) error 
 		in.stats.Skipped[skipHelmHook]++
 	default:
 		if o.Namespace == "" && !clusterScoped[kind] {
-			o.Namespace = "default"
+			o.Namespace = in.namespace
 		}
 		// The first definition wins, in path order, so reruns agree.
 		if key := o.APIVersion + " " + o.id(); in.seen[key] {

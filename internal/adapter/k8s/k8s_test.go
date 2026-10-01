@@ -420,13 +420,16 @@ func TestDiscover_WalksADirectory(t *testing.T) {
 	f, stats, err := k8s.Adapter{}.Discover(context.Background(), adapter.Source{Paths: []string{"testdata/repo"}})
 
 	require.NoError(t, err)
-	assert.Equal(t, []string{"k8s:shop/deployment/api", "k8s:shop/statefulset/db", "k8s:shop/namespace/shop"}, ids(f),
+	assert.Equal(t, []string{"k8s:shop/deployment/api", "k8s:shop/statefulset/db", "k8s:shop/service/api", "k8s:shop/httproute/api", "k8s:shop/namespace/shop"}, ids(f),
 		"hidden directories, non-YAML files and the chart's templates are not read")
 	assert.Equal(t, "testdata/repo/apps/api.yaml", element(t, f, "k8s:shop/deployment/api").Src.File)
 	assert.Equal(t, []model.Unresolved{
 		{Kind: "unrendered", Value: "testdata/repo/chart", Hint: "helm", Src: model.Src{File: "testdata/repo/chart/Chart.yaml", Line: 1}},
 		{Kind: "unrendered", Value: "testdata/repo/overlay", Hint: "kustomize", Src: model.Src{File: "testdata/repo/overlay/kustomization.yaml", Line: 1}},
+		{Kind: "missing-backend", Value: "k8s:gateway/gateway/shared", Hint: "gateway", About: []string{"k8s:shop/httproute/api"}, Src: model.Src{File: "testdata/repo/apps/api.yaml", Line: 32}},
 	}, f.Unresolved)
+	assert.Len(t, f.Connections, 1, "the Service to its Deployment")
+	assert.Len(t, f.References, 1, "the route to its Service")
 	assert.Equal(t, 2, stats.Skipped["no-kind"], "values.yaml and docs/notes.yaml")
 }
 
@@ -474,4 +477,14 @@ func TestRun_WritesAFragmentTheSchemaAccepts(t *testing.T) {
 	err = schema.Validate(inst)
 
 	assert.NoError(t, err)
+}
+
+func TestDiscover_PutsObjectsWithoutNamespace_InTheGivenOne(t *testing.T) {
+	t.Parallel()
+	input := "apiVersion: v1\nkind: Service\nmetadata: {name: api}\n---\napiVersion: v1\nkind: Service\nmetadata: {name: db, namespace: data}\n"
+
+	f, _, err := k8s.Adapter{}.Discover(context.Background(), adapter.Source{Reader: strings.NewReader(input), Namespace: "prod-shop"})
+
+	require.NoError(t, err)
+	assert.Equal(t, []string{"k8s:prod-shop/service/api", "k8s:data/service/db", "k8s:data/namespace/data", "k8s:prod-shop/namespace/prod-shop"}, ids(f))
 }
