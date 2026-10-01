@@ -17,7 +17,7 @@ example PNG and look at it.
 
 ## C · Access view (P6b-03, P6b-04)
 
-- [ ] **T03** `resolve.Access`: layers, slots, lanes, ports, labels, cards. Test: a
+- [x] **T03** `resolve.Access`: layers, slots, lanes, ports, labels, cards. Test: a
   small system resolves to the expected layers and passes the lint.
 - [ ] **T04** Render the new edge kinds, the access legend and the diff state. Flip
   **P6b-03**, **P6b-04**.

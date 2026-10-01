@@ -11,7 +11,7 @@ import (
 	"github.com/TheGostsniperfr/Noodle/internal/model"
 )
 
-// View resolves topology and landscape views. Sequence views have their own geometry,
+// View resolves topology, landscape, catalog and access views. Sequence views have their own geometry,
 // see Sequence.
 func View(s *model.System, viewID string) (*diagram.Spec, error) {
 	v, ok := s.Views[viewID]
@@ -23,6 +23,8 @@ func View(s *model.System, viewID string) (*diagram.Spec, error) {
 		return Landscape(s, viewID)
 	case "catalog":
 		return Catalog(s, viewID)
+	case "access":
+		return Access(s, viewID)
 	default:
 		return Topology(s, viewID)
 	}

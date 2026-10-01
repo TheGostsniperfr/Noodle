@@ -27,6 +27,8 @@ type NodeKind struct{ Stroke, Fill, Legend string }
 type EdgeKind struct {
 	Stroke, LabelColor, Dash, EndArrow, Legend string
 	Width                                      float64
+	// Hollow draws the end marker unfilled: a membership's diamond (ADR-0019).
+	Hollow bool
 }
 
 const (
@@ -55,7 +57,8 @@ const (
 )
 
 var NodeKindOrder = []string{"frontend", "backend", "database", "cloud", "security", "bus", "external", "tool"}
-var EdgeKindOrder = []string{"flow", "auth", "tunnel", "async", "blocked", "link"}
+var EdgeKindOrder = []string{"flow", "auth", "tunnel", "async", "blocked", "link",
+	"member", "grant-read", "grant-write", "grant-admin", "grant-breakglass", "escalation"}
 
 var LegendNodes = map[string]string{
 	"frontend": "client / frontend",
@@ -75,6 +78,28 @@ var LegendEdges = map[string]string{
 	"async":   "background sync",
 	"blocked": "must not happen",
 	"link":    "object reference, not traffic",
+	// Access edges (ADR-0019): not traffic, so no block arrow.
+	"member":           "member of, ◇ on the group",
+	"grant-read":       "grant · read, ● on the resource",
+	"grant-write":      "grant · write",
+	"grant-admin":      "grant · admin",
+	"grant-breakglass": "break-glass only",
+	"escalation":       "derived escalation path",
+}
+
+// accessEdges styles access edges: width grows with the level, the end marker sets
+// them apart from connections and references, and the label always names the level.
+func accessEdges(m map[string]EdgeKind, member, read, write, admin, warn [2]string) map[string]EdgeKind {
+	add := func(kind string, c [2]string, width float64, dash, end string, hollow bool) {
+		m[kind] = EdgeKind{Stroke: c[0], LabelColor: c[1], Dash: dash, EndArrow: end, Legend: LegendEdges[kind], Width: width, Hollow: hollow}
+	}
+	add("member", member, 1.2, "", "diamond", true)
+	add("grant-read", read, 1.4, "", "oval", false)
+	add("grant-write", write, 2.2, "", "oval", false)
+	add("grant-admin", admin, 3.0, "", "oval", false)
+	add("grant-breakglass", admin, 1.4, "10 3 2 3", "oval", true)
+	add("escalation", warn, 1.8, "8 4", "open", true)
+	return m
 }
 
 func nodes(pairs ...string) map[string]NodeKind {
@@ -124,10 +149,10 @@ var Themes = map[string]*Theme{
 		),
 		Zones: map[string]string{"cyan": "#22d3ee", "emerald": "#34d399", "violet": "#a78bfa", "amber": "#fbbf24",
 			"rose": "#fb7185", "orange": "#fb923c", "slate": "#94a3b8", "indigo": "#818cf8", "sky": "#38bdf8"},
-		Edges: edges(map[string][2]string{
+		Edges: accessEdges(edges(map[string][2]string{
 			"flow": {"#94a3b8", "#e2e8f0"}, "auth": {"#fb7185", "#fda4af"}, "tunnel": {"#fbbf24", "#fcd34d"},
 			"async": {"#a78bfa", "#c4b5fd"}, "blocked": {"#f87171", "#fca5a5"}, "link": {"#64748b", "#94a3b8"},
-		}, "cross"),
+		}, "cross"), [2]string{"#94a3b8", "#e2e8f0"}, [2]string{"#38bdf8", "#7dd3fc"}, [2]string{"#a78bfa", "#c4b5fd"}, [2]string{"#fb7185", "#fda4af"}, [2]string{"#fb923c", "#fdba74"}),
 	},
 	"light": {
 		Name: "light", Background: "#f8fafc", GridLine: "#e2e8f0",
@@ -146,10 +171,10 @@ var Themes = map[string]*Theme{
 		),
 		Zones: map[string]string{"cyan": "#0891b2", "emerald": "#059669", "violet": "#7c3aed", "amber": "#d97706",
 			"rose": "#e11d48", "orange": "#ea580c", "slate": "#64748b", "indigo": "#4f46e5", "sky": "#0284c7"},
-		Edges: edges(map[string][2]string{
+		Edges: accessEdges(edges(map[string][2]string{
 			"flow": {"#64748b", "#1e293b"}, "auth": {"#e11d48", "#be123c"}, "tunnel": {"#d97706", "#b45309"},
 			"async": {"#7c3aed", "#6d28d9"}, "blocked": {"#dc2626", "#b91c1c"}, "link": {"#94a3b8", "#475569"},
-		}, "cross"),
+		}, "cross"), [2]string{"#64748b", "#334155"}, [2]string{"#0284c7", "#0369a1"}, [2]string{"#7c3aed", "#6d28d9"}, [2]string{"#e11d48", "#be123c"}, [2]string{"#ea580c", "#c2410c"}),
 	},
 }
 

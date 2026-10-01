@@ -1,0 +1,86 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+# A platform with two tenants, a provisioning service, a platform admin and a root
+# account. Grants marked deprecated are removed by the migration, planned ones added by
+# it (ADR-0019): the access views render the current state, the target and the diff.
+elements:
+  - {id: z-people, kind: region, color: slate, icon: user, title: PEOPLE}
+  - {id: alice, kind: frontend, parent: z-people, shape: actor, icon: user, title: Alice, desc: tenant A developer}
+  - {id: ops, kind: frontend, parent: z-people, shape: actor, icon: user, title: Ops, desc: platform admin}
+  - {id: root, kind: external, parent: z-people, shape: actor, icon: user, title: Root account, desc: break-glass only}
+
+  - {id: z-cluster, kind: region, color: cyan, icon: kubernetes, title: CLUSTER}
+  - {id: cmp, kind: backend, parent: z-cluster, icon: k8s-sa, title: CMP, tech: "[ServiceAccount]", desc: Provisions tenant projects}
+
+  - {id: g-identity, kind: group, parent: z-cluster, color: rose, icon: keycloak, title: IDENTITY, sub: keycloak}
+  - {id: grp-member, kind: security, parent: g-identity, icon: keycloak, title: member, tech: "[Keycloak group]", desc: Every tenant developer}
+  - {id: grp-k3s-dev, kind: security, parent: g-identity, icon: keycloak, title: k3s-dev, tech: "[Keycloak group]", desc: Cluster-wide view}
+  - {id: grp-team-a, kind: security, parent: g-identity, icon: keycloak, title: project-a-members, tech: "[Keycloak group]", desc: Tenant A developers}
+  - {id: grp-team-b, kind: security, parent: g-identity, icon: keycloak, title: project-b-members, tech: "[Keycloak group]", desc: Tenant B developers}
+  - {id: grp-infra, kind: security, parent: g-identity, icon: keycloak, title: infra, tech: "[Keycloak group]", desc: Platform admins}
+  - {id: kc-master, kind: security, parent: g-identity, icon: keycloak, title: Master admin, tech: "[Keycloak user]", desc: Admin of every realm}
+  - {id: kc-client-cmp, kind: security, parent: g-identity, icon: keycloak, title: cmp-provisioner, tech: "[Keycloak client]", desc: Scoped to realm platform}
+  - {id: realm-platform, kind: security, parent: g-identity, icon: keycloak, title: Realm platform, tech: "[Keycloak realm]", desc: Users and groups}
+
+  - {id: g-secrets, kind: group, parent: z-cluster, color: violet, icon: vault, title: SECRETS, sub: vault}
+  - {id: root-token, kind: database, parent: g-secrets, icon: k8s-secret, title: Root token, tech: "[Vault token]", desc: "Static, used by scripts"}
+  - {id: role-cmp, kind: database, parent: g-secrets, icon: vault, title: cmp role, tech: "[Vault k8s auth role]", desc: Bound to the CMP SA}
+  - {id: policy-cmp, kind: database, parent: g-secrets, icon: vault, title: cmp-provisioner, tech: "[Vault policy]", desc: "sys/policies/acl/project-*"}
+  - {id: policy-a, kind: database, parent: g-secrets, icon: vault, title: project-a-dev, tech: "[Vault policy]", desc: "project-a/*"}
+  - {id: policy-b, kind: database, parent: g-secrets, icon: vault, title: project-b-dev, tech: "[Vault policy]", desc: "project-b/*"}
+  - {id: policy-admin, kind: database, parent: g-secrets, icon: vault, title: vault_admin, tech: "[Vault policy]", desc: "path *"}
+  - {id: vault-sys, kind: database, parent: g-secrets, shape: cylinder, icon: vault, title: Vault admin, tech: "[sys, auth, policies]", desc: Platform configuration}
+  - {id: vault-a, kind: database, parent: g-secrets, shape: cylinder, icon: vault, title: project-a/, tech: "[KV v2 mount]", desc: Tenant A secrets}
+  - {id: vault-b, kind: database, parent: g-secrets, shape: cylinder, icon: vault, title: project-b/, tech: "[KV v2 mount]", desc: Tenant B secrets}
+
+  - {id: g-delivery, kind: group, parent: z-cluster, color: emerald, icon: argo, title: DELIVERY, sub: argocd}
+  - {id: argocd-readonly, kind: security, parent: g-delivery, icon: argo, title: role:readonly, tech: "[Argo CD policy.csv]", desc: Global read role}
+  - {id: approle-a, kind: security, parent: g-delivery, icon: k8s-crd, title: AppProject A role, tech: "[AppProject role]", desc: Get and sync in A}
+  - {id: apps-all, kind: backend, parent: g-delivery, icon: argo, title: All applications, tech: "[Argo CD]", desc: Every tenant's apps}
+  - {id: apps-a, kind: backend, parent: g-delivery, icon: argo, title: AppProject A, tech: "[Argo CD]", desc: Tenant A apps}
+
+  - {id: g-tenants, kind: group, parent: z-cluster, color: emerald, icon: k8s-ns, title: TENANTS, sub: namespaces}
+  - {id: crb-view, kind: security, parent: g-tenants, icon: k8s-crd, title: oidc-view-binding, tech: "[ClusterRoleBinding]", desc: view on every namespace}
+  - {id: rb-a-view, kind: security, parent: g-tenants, icon: k8s-crd, title: project-a-view, tech: "[RoleBinding]", desc: view in namespace A}
+  - {id: ns-a, kind: backend, parent: g-tenants, icon: k8s-ns, title: Namespace A, tech: "[Namespace]", desc: Tenant A workloads}
+  - {id: ns-b, kind: backend, parent: g-tenants, icon: k8s-ns, title: Namespace B, tech: "[Namespace]", desc: Tenant B workloads}
+
+  - {id: z-aws, kind: region, color: amber, icon: globe, title: AWS, sub: shared-services account}
+  - {id: aws-key, kind: cloud, parent: z-aws, icon: k8s-secret, title: Access key, tech: "[IAM user key]", desc: "Long-lived, shared"}
+  - {id: aws-role, kind: cloud, parent: z-aws, icon: terraform, title: tfstate role, tech: "[IAM role]", desc: Assumed for 1 hour}
+  - {id: tfstate, kind: cloud, parent: z-aws, shape: cylinder, icon: terraform, title: Terraform state, tech: "[S3 bucket]", desc: Every project's state}
+
+memberships:
+  - {id: m-alice-member, subject: alice, group: grp-member, auth: {method: oidc, mfa: true}, status: deprecated}
+  - {id: m-alice-k3s-dev, subject: alice, group: grp-k3s-dev, auth: {method: oidc, mfa: true}, status: deprecated}
+  - {id: m-alice-team-a, subject: alice, group: grp-team-a, auth: {method: oidc, mfa: true}}
+  - {id: m-ops-infra, subject: ops, group: grp-infra, auth: {method: oidc, mfa: true}}
+  - {id: m-cmp-role, subject: cmp, group: role-cmp, auth: {method: k8s-sa, lifetime: 1h}, status: planned, target: P2}
+
+grants:
+  # Tenant developers
+  - {id: g-member-apps, subject: grp-member, resource: apps-all, level: read, via: [argocd-readonly], status: deprecated}
+  - {id: g-k3s-dev-ns, subject: grp-k3s-dev, resource: ns-b, level: read, via: [crb-view], status: deprecated}
+  - {id: g-k3s-dev-ns-a, subject: grp-k3s-dev, resource: ns-a, level: read, via: [crb-view], status: deprecated}
+  - {id: g-team-a-vault, subject: grp-team-a, resource: vault-a, level: write, via: [policy-a]}
+  - {id: g-team-a-apps, subject: grp-team-a, resource: apps-a, level: write, scope: get and sync, via: [approle-a], status: planned, target: P3}
+  - {id: g-team-a-ns, subject: grp-team-a, resource: ns-a, level: read, via: [rb-a-view], status: planned, target: P3}
+  # Tenant B, for the escalation the CMP's policy rights open
+  - {id: g-team-b-vault, subject: grp-team-b, resource: vault-b, level: write, via: [policy-b]}
+  # Platform admins
+  - {id: g-infra-vault, subject: grp-infra, resource: vault-sys, level: admin, via: [policy-admin]}
+  # Provisioning service, today
+  - {id: g-cmp-vault-sys, subject: cmp, resource: vault-sys, level: admin, via: [root-token], auth: {method: static-token}, status: deprecated}
+  - {id: g-cmp-vault-a, subject: cmp, resource: vault-a, level: admin, via: [root-token], auth: {method: static-token}, status: deprecated}
+  - {id: g-cmp-vault-b, subject: cmp, resource: vault-b, level: admin, via: [root-token], auth: {method: static-token}, status: deprecated}
+  - {id: g-cmp-realm, subject: cmp, resource: realm-platform, level: admin, via: [kc-master], auth: {method: password}, status: deprecated}
+  - {id: g-cmp-tfstate, subject: cmp, resource: tfstate, level: admin, via: [aws-key], auth: {method: access-key}, status: deprecated}
+  # Provisioning service, target
+  - {id: g-cmp-policies-a, subject: role-cmp, resource: policy-a, level: write, scope: "sys/policies/acl/project-*", via: [policy-cmp], status: planned, target: P2}
+  - {id: g-cmp-policies-b, subject: role-cmp, resource: policy-b, level: write, scope: "sys/policies/acl/project-*", via: [policy-cmp], status: planned, target: P2}
+  - {id: g-cmp-realm-scoped, subject: cmp, resource: realm-platform, level: write, via: [kc-client-cmp], auth: {method: federated, lifetime: 5m}, status: planned, target: P2}
+  - {id: g-cmp-tfstate-role, subject: cmp, resource: tfstate, level: write, scope: "projects/*", via: [aws-role], auth: {method: federated, lifetime: 1h}, status: planned, target: P4}
+  # Root accounts
+  - {id: g-root-vault, subject: root, resource: vault-sys, level: breakglass}
+  - {id: g-root-realm, subject: root, resource: realm-platform, level: breakglass}
+  - {id: g-root-tfstate, subject: root, resource: tfstate, level: breakglass}

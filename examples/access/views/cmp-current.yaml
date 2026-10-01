@@ -1,0 +1,8 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: access
+title: Platform · Access · cmp (current)
+subtitle: What can the CMP touch today?
+meta: ["Scope: memberships and grants of the example platform", "v0.1 · source: examples/access"]
+focus: {subject: cmp}
+state: current

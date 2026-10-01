@@ -31,6 +31,7 @@ func CanChange(level string) bool { return level == "write" || level == "admin" 
 
 type Graph struct {
 	m       *model.Model
+	state   string
 	groups  map[string][]model.Membership // by subject
 	members map[string][]model.Membership // by group
 	grants  []model.Grant
@@ -38,7 +39,7 @@ type Graph struct {
 
 // New keeps the memberships and grants that count in state. An empty state is current.
 func New(m *model.Model, state string) *Graph {
-	g := &Graph{m: m, groups: map[string][]model.Membership{}, members: map[string][]model.Membership{}}
+	g := &Graph{m: m, state: state, groups: map[string][]model.Membership{}, members: map[string][]model.Membership{}}
 	for _, ms := range m.Memberships {
 		if counts(ms.Status, state) {
 			g.groups[ms.Subject] = append(g.groups[ms.Subject], ms)
@@ -158,12 +159,14 @@ type Escalation struct {
 
 // Escalations derives, for subject, every grant it can obtain by changing an element it
 // holds write or admin on: a mechanism named in another grant's via, or a group that
-// holds a grant. Grants subject already holds are left out.
+// holds a grant. It over-approximates: changing a policy may not be enough to obtain
+// it. Grants that give no more than subject already reaches are left out.
 func (g *Graph) Escalations(subject string) []Escalation {
 	held := map[string]bool{}
 	for _, gr := range g.Grants(subject) {
 		held[gr.ID] = true
 	}
+	levels := g.Levels(subject)
 	var out []Escalation
 	seen := map[string]bool{}
 	for _, own := range g.Grants(subject) {
@@ -171,7 +174,7 @@ func (g *Graph) Escalations(subject string) []Escalation {
 			continue
 		}
 		for _, gr := range g.grants {
-			if held[gr.ID] || seen[own.Resource+"/"+gr.ID] {
+			if held[gr.ID] || seen[own.Resource+"/"+gr.ID] || !opens(gr.Level, levels[gr.Resource]) {
 				continue
 			}
 			if gr.Subject == own.Resource || slices.Contains(gr.Via, own.Resource) {
@@ -181,6 +184,11 @@ func (g *Graph) Escalations(subject string) []Escalation {
 		}
 	}
 	return out
+}
+
+// opens is true when a grant at level would give more than held.
+func opens(level, held string) bool {
+	return held == "" || held == "breakglass" || Stronger(level, held)
 }
 
 func sortedKeys(m map[string]bool) []string {
@@ -241,7 +249,12 @@ func (g *Graph) Subgraph(subject, resource string) []Hop {
 		for _, gr := range g.Grants(subject) {
 			addGrant(gr)
 		}
-		for _, e := range g.Escalations(subject) {
+		// A diff shows where the migration leads, so its escalations are the target's.
+		esc := g
+		if g.state == Diff {
+			esc = New(g.m, Target)
+		}
+		for _, e := range esc.Escalations(subject) {
 			hops = append(hops, Hop{Kind: "escalation", From: subject, To: e.Grant.Resource, Level: e.Grant.Level, Through: e.Through})
 		}
 	case resource != "":

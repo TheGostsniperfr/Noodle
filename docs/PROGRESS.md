@@ -35,6 +35,9 @@ decisions go in ADRs, acceptance in `features.json`.
   checks and schemas (P6b-01).
 - Spec 004 T02: `internal/access` (groups, levels, reachers, escalations, subgraph per
   state), table-tested (P6b-02).
+- Spec 004 T03: `resolve.Access` (longest-path layers, pass-through slots, one lane per
+  edge, ports spread, nudges against the collinear rule, cards), access edge kinds in
+  the theme, `examples/access` model and five access views, all lint-clean.
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 

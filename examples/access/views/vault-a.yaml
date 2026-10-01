@@ -1,0 +1,8 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: access
+title: Platform · Access · project-a/
+subtitle: Who can reach tenant A's secrets today?
+meta: ["Scope: memberships and grants of the example platform", "v0.1 · source: examples/access"]
+focus: {resource: vault-a}
+state: current

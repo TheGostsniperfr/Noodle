@@ -141,13 +141,15 @@ func (n Node) Lines() []string {
 // Edge is drawn from the side that opens the connection to the side that listens.
 // Port names the listening port on the target and becomes a badge on its border.
 type Edge struct {
-	ID          string  `yaml:"id"`
-	From        string  `yaml:"from"`
-	To          string  `yaml:"to"`
-	Kind        string  `yaml:"kind"`
-	Label       string  `yaml:"label"`
-	Port        string  `yaml:"port"`
-	AgainstFlow bool    `yaml:"against_flow"` // outbound connection drawn against the reading direction, e.g. a tunnel
+	ID          string `yaml:"id"`
+	From        string `yaml:"from"`
+	To          string `yaml:"to"`
+	Kind        string `yaml:"kind"`
+	Label       string `yaml:"label"`
+	Port        string `yaml:"port"`
+	AgainstFlow bool   `yaml:"against_flow"` // outbound connection drawn against the reading direction, e.g. a tunnel
+	// Status is planned or deprecated on an access edge in a diff (ADR-0019).
+	Status      string  `yaml:"-"`
 	Path        []Point `yaml:"path"`
 	LabelAt     *Point  `yaml:"label_at"`
 	LabelOffset Point   `yaml:"label_offset"`

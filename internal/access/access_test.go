@@ -114,6 +114,17 @@ func TestEscalations(t *testing.T) {
 	}
 }
 
+func TestEscalations_LeavesOutWhatTheSubjectAlreadyReaches(t *testing.T) {
+	t.Parallel()
+	m := load(t)
+	m.Grants = append(m.Grants, model.Grant{ID: "g-cmp-b", Subject: "cmp-role", Resource: "vault-b", Level: "write", Status: "planned"})
+	g := access.New(m, access.Target)
+
+	escalations := g.Escalations("cmp")
+
+	assert.Empty(t, escalations)
+}
+
 func TestEscalations_ThroughAGroupItCanChange(t *testing.T) {
 	t.Parallel()
 	m := load(t)
