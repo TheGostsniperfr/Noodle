@@ -31,6 +31,8 @@ decisions go in ADRs, acceptance in `features.json`.
   matrix view. Roadmap phase 6b, after spec 003 T09. Plan and tasks still to write.
 - ADR-0020: 6b starts now on its own traversal (`internal/access`); plan and tasks
   written, features P6b-01 to P6b-06. Spec 003 stays the current work for discovery.
+- Spec 004 T01: memberships, grants, auth, access view fields and lenses in the model,
+  checks and schemas (P6b-01).
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 

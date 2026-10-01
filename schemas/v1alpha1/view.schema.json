@@ -22,7 +22,8 @@
         "topology",
         "sequence",
         "landscape",
-        "catalog"
+        "catalog",
+        "access"
       ]
     },
     "title": {
@@ -106,6 +107,34 @@
       "minimum": 1,
       "maximum": 4,
       "description": "Catalog views only: cards per row (ADR-0013)."
+    },
+    "focus": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subject": {
+          "type": "string"
+        },
+        "resource": {
+          "type": "string"
+        }
+      },
+      "description": "Access views only: one subject walked forward or one resource walked backward (ADR-0019)."
+    },
+    "state": {
+      "enum": [
+        "current",
+        "target",
+        "diff"
+      ],
+      "description": "Access views only: which grants count. Default current."
+    },
+    "lenses": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/lens"
+      },
+      "description": "Topology views only: one output per lens, lit for one subject (ADR-0020)."
     }
   },
   "$defs": {
@@ -274,6 +303,28 @@
             "type": "string"
           },
           "description": "Element ids."
+        }
+      }
+    },
+    "lens": {
+      "type": "object",
+      "required": [
+        "id",
+        "subject"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "current",
+            "target"
+          ]
         }
       }
     }

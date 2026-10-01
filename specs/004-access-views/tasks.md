@@ -6,7 +6,7 @@ example PNG and look at it.
 
 ## A · Model (P6b-01)
 
-- [ ] **T01** `memberships`, `grants`, `auth` in the model; view type `access`, `focus`,
+- [x] **T01** `memberships`, `grants`, `auth` in the model; view type `access`, `focus`,
   `state`, `lenses`. Checks of FR-001, membership cycles, view fields. Schemas.
   Table-driven tests. Flip **P6b-01**.
 

@@ -19,9 +19,13 @@ var (
 	connectionKinds = set("flow", "auth", "tunnel", "async")
 	statuses        = set("", "planned", "deprecated")
 	shapes          = set("", "box", "cylinder", "actor")
-	viewTypes       = set("topology", "sequence", "landscape", "catalog")
+	viewTypes       = set("topology", "sequence", "landscape", "catalog", "access")
 	// computedViews take no layout file: their geometry follows from the view alone.
-	computedViews = set("sequence", "landscape", "catalog")
+	computedViews = set("sequence", "landscape", "catalog", "access")
+	levels        = set("read", "write", "admin", "breakglass")
+	authMethods   = set("static-token", "access-key", "password", "oidc", "k8s-sa", "federated")
+	accessStates  = set("", "current", "target", "diff")
+	lensStates    = set("", "current", "target")
 	sides         = set("left", "right", "top", "bottom")
 )
 
@@ -143,6 +147,13 @@ func (c *checker) checkModel() {
 			c.mustElement(file, o.ID, "backed_by", id)
 		}
 	}
+	for _, m := range c.s.Model.Memberships {
+		unique(m.ID)
+	}
+	for _, g := range c.s.Model.Grants {
+		unique(g.ID)
+	}
+	c.checkAccess(file)
 	for _, a := range c.s.Model.Annotations {
 		unique(a.ID)
 		for _, t := range a.Targets {
@@ -193,7 +204,7 @@ func hasPort(e Element, name string) bool {
 func (c *checker) checkView(v *View) {
 	file := filepath.Join("views", v.ID+".yaml")
 	if !viewTypes[v.Type] {
-		c.errf(file, v.ID, "type %q, want topology, sequence, landscape or catalog", v.Type)
+		c.errf(file, v.ID, "type %q, want topology, sequence, landscape, catalog or access", v.Type)
 	}
 	for _, inc := range v.Include {
 		if v.Type == "catalog" {
@@ -233,6 +244,7 @@ func (c *checker) checkView(v *View) {
 		}
 	}
 	c.checkLandscape(file, v)
+	c.checkAccessView(file, v)
 	if len(v.Participants) > 0 && v.Type != "sequence" {
 		c.errf(file, v.ID, "participants are for sequence views only")
 	}
@@ -521,4 +533,111 @@ func sortedKeys[V any](m map[string]V) []string {
 	}
 	sort.Strings(keys)
 	return keys
+}
+
+// checkAccess enforces ADR-0019 on memberships and grants: ids exist, levels and auth
+// methods are known, a target needs planned, and no membership chain loops.
+func (c *checker) checkAccess(file string) {
+	status := func(id, st, target string) {
+		if !statuses[st] {
+			c.errf(file, id, "unknown status %q, want planned or deprecated", st)
+		}
+		if target != "" && st != "planned" {
+			c.errf(file, id, "target is for planned grants and memberships only (ADR-0014)")
+		}
+	}
+	auth := func(id string, a *Auth) {
+		if a != nil && !authMethods[a.Method] {
+			c.errf(file, id, "unknown auth method %q, want static-token, access-key, password, oidc, k8s-sa or federated", a.Method)
+		}
+	}
+	groups := map[string][]string{}
+	for _, m := range c.s.Model.Memberships {
+		c.mustElement(file, m.ID, "subject", m.Subject)
+		c.mustElement(file, m.ID, "group", m.Group)
+		if m.Subject == m.Group {
+			c.errf(file, m.ID, "subject and group are the same element")
+		}
+		status(m.ID, m.Status, m.Target)
+		auth(m.ID, m.Auth)
+		groups[m.Subject] = append(groups[m.Subject], m.Group)
+	}
+	for _, g := range c.s.Model.Grants {
+		c.mustElement(file, g.ID, "subject", g.Subject)
+		c.mustElement(file, g.ID, "resource", g.Resource)
+		if g.Subject == g.Resource {
+			c.errf(file, g.ID, "subject and resource are the same element")
+		}
+		if !levels[g.Level] {
+			c.errf(file, g.ID, "unknown level %q, want read, write, admin or breakglass", g.Level)
+		}
+		for _, id := range g.Via {
+			c.mustElement(file, g.ID, "via", id)
+		}
+		status(g.ID, g.Status, g.Target)
+		auth(g.ID, g.Auth)
+	}
+	// A cycle is reported once, on the membership that closes it.
+	state := map[string]int{}
+	var visit func(string) bool
+	visit = func(id string) bool {
+		state[id] = 1
+		for _, g := range groups[id] {
+			if state[g] == 1 || (state[g] == 0 && visit(g)) {
+				return true
+			}
+		}
+		state[id] = 2
+		return false
+	}
+	for _, m := range c.s.Model.Memberships {
+		if state[m.Subject] == 0 && visit(m.Subject) {
+			c.errf(file, m.ID, "membership cycle through %s", m.Subject)
+			return
+		}
+	}
+}
+
+// checkAccessView keeps focus and state on access views, lenses on topology views
+// (ADR-0019, ADR-0020).
+func (c *checker) checkAccessView(file string, v *View) {
+	if v.Type != "access" {
+		if v.Focus != nil || v.State != "" {
+			c.errf(file, v.ID, "focus and state are for access views only")
+		}
+	} else {
+		if v.Focus != nil {
+			if (v.Focus.Subject == "") == (v.Focus.Resource == "") {
+				c.errf(file, v.ID, "focus names exactly one of subject or resource")
+			}
+			for _, id := range []string{v.Focus.Subject, v.Focus.Resource} {
+				if id != "" {
+					c.mustElement(file, v.ID, "focus", id)
+				}
+			}
+		}
+		if !accessStates[v.State] {
+			c.errf(file, v.ID, "state %q, want current, target or diff", v.State)
+		}
+		if len(v.Include) > 0 || len(v.Steps) > 0 {
+			c.errf(file, v.ID, "an access view selects with focus, not include or steps")
+		}
+	}
+	if len(v.Lenses) > 0 && v.Type != "topology" {
+		c.errf(file, v.ID, "lenses are for topology views only")
+	}
+	seen := map[string]bool{}
+	for _, l := range v.Lenses {
+		switch {
+		case l.ID == "":
+			c.errf(file, v.ID, "a lens needs an id")
+		case seen[l.ID]:
+			c.errf(file, l.ID, "duplicate lens id")
+		}
+		seen[l.ID] = true
+		c.mustElement(file, l.ID, "lens subject", l.Subject)
+		if !lensStates[l.State] {
+			c.errf(file, l.ID, "lens state %q, want current or target", l.State)
+		}
+	}
 }
