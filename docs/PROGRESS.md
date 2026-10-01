@@ -24,6 +24,13 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-10-01 · Access views proposal
+
+- ADR-0019 (Accepted) and spec 004: `memberships` and `grants` in the model, an
+  `access` view and `lenses` on topology views, from the CNP segregation review. No
+  matrix view. Roadmap phase 6b, after spec 003 T09. Plan and tasks still to write.
+- Spec 003 stays the current work.
+
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 
 - ADR-0018 and spec 003 update from the PAE recall check: `secret-endpoint` (T15),
