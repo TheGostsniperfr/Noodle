@@ -4,7 +4,7 @@
 - Phase: 6a, a slice of phase 6 pulled forward (ADR-0016). Starts after T13, T16 and
   T17 of spec 001.
 - Decisions it builds on: ADR-0002, ADR-0003, ADR-0005, ADR-0007, ADR-0008, ADR-0015,
-  ADR-0016
+  ADR-0016, ADR-0017, ADR-0018
 
 ## Why
 
@@ -58,10 +58,19 @@ code cannot say, and a drift report tells when the diagram no longer matches the
   left (unknowns, non-Kubernetes sources) to `fact-finder`.
 - **FR-011** A token benchmark: three arms (agent reads code, `fact-finder`, fragment) on
   the same diagram, cost and accuracy, with a transcript reader in Go.
+- **FR-012** A workload reading a Secret key whose name holds an address gets a
+  `secret-endpoint` entry per Secret, keys named, values never read (ADR-0018).
+- **FR-013** Operator rules: CloudNativePG `Cluster`, Prometheus operator, cert-manager
+  issuers, external-dns provider, each with a fixture (ADR-0018).
+- **FR-014** A checkpoint after T05 and T06: the same diagram built by the agent alone
+  and with the fragment; discovery work continues only if the fragment run costs clearly
+  less and finds as many edges (ADR-0018).
 
 ## Success criteria
 
-- Features P6a-01 to P6a-07 in `docs/features.json` pass their verify step.
+- Features P6a-01 to P6a-10 in `docs/features.json` pass their verify step.
+- The checkpoint (FR-014) is passed before T07 starts; if it fails, the spec is revised
+  rather than continued.
 - `examples/discovery-k8s` discovers, merges and reports drift in `init.sh` and CI, with
   a golden fragment.
 - Rerunning discovery on unchanged input gives an identical file.

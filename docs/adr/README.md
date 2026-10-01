@@ -22,5 +22,6 @@ that supersedes the old one.
 | [0015](0015-discovered-fragments.md) | Adapters write fragments; the curated model matches them | Accepted |
 | [0016](0016-discovery-before-viewer.md) | Static Kubernetes discovery comes before the viewer | Accepted |
 | [0017](0017-unresolved-and-resolutions.md) | The k8s adapter decodes with yaml.v3 and reports what it cannot resolve | Accepted |
+| [0018](0018-credential-implied-connections-and-operator-rules.md) | Credential-implied connections and operator rules | Accepted |
 
 Template: Context · Decision · Consequences. Keep it under a page.

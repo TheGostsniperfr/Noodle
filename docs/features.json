@@ -49,7 +49,10 @@
         {"id": "P6a-04", "description": "Manifests and kubectl get -o yaml output give the same fragment", "verify": "go test ./internal/adapter/k8s/... compares both inputs of the example", "passes": false},
         {"id": "P6a-05", "description": "Merge and drift report against the curated model", "verify": "noodle drift examples/discovery-k8s equals the expected report", "passes": false},
         {"id": "P6a-06", "description": "Skill runs discovery first and fact-finder only for what is left", "verify": "a diagram of examples/discovery-k8s built with the skill reads no manifest file directly", "passes": false},
-        {"id": "P6a-07", "description": "Token benchmark of three discovery arms on the same diagram", "verify": "Notion page Benchmark · Token cost of a diagram lists cost and connection recall for arms A, B and C", "passes": false}
+        {"id": "P6a-07", "description": "Token benchmark of three discovery arms on the same diagram", "verify": "Notion page Benchmark · Token cost of a diagram lists cost and connection recall for arms A, B and C", "passes": false},
+        {"id": "P6a-08", "description": "Checkpoint: the fragment run costs clearly less than the agent alone and finds as many edges", "verify": "PROGRESS records cost and recall of arms A and C on PAE platform-overview and the go or stop decision", "passes": false},
+        {"id": "P6a-09", "description": "secret-endpoint entries for workloads reading address-like Secret keys, values never read", "verify": "go test ./internal/adapter/k8s/... covers env, envFrom and ExternalSecret targets and asserts no secret value in the fragment", "passes": false},
+        {"id": "P6a-10", "description": "Operator rules for CloudNativePG, Prometheus operator, cert-manager issuers and external-dns", "verify": "go test ./internal/adapter/k8s/... has one fixture per rule with the expected elements and connections", "passes": false}
       ]
     }
   ],
