@@ -22,7 +22,8 @@ for repo in "$@"; do
   mkdir -p "$out"
 
   echo "-- raw, as an agent would find it"
-  "$work/noodle" discover k8s "$work/src-$name" -o /dev/null -observed-at 2026-01-01T00:00:00Z
+  # Relative paths, as a user would pass them: every src repeats its file path.
+  (cd "$work" && ./noodle discover k8s "src-$name" -o /dev/null -observed-at 2026-01-01T00:00:00Z)
 
   ok=0 failed=0
   # Library charts under a charts/ directory are dependencies, not releases; Kustomize
@@ -41,7 +42,7 @@ for repo in "$@"; do
   done < <(find "$work/src-$name" \( -name Chart.yaml -o -name kustomization.yaml -o -name kustomization.yml \) | sort)
 
   echo "-- rendered: $ok ok, $failed failed"
-  "$work/noodle" discover k8s "$out" -o "$work/$name.fragment.yaml" -observed-at 2026-01-01T00:00:00Z
+  (cd "$work" && ./noodle discover k8s "rendered-$name" -o "$name.fragment.yaml" -observed-at 2026-01-01T00:00:00Z)
   echo "-- unresolved by kind"
   grep -o 'kind: [a-z-]*, value: [^,}]*' "$work/$name.fragment.yaml" | grep -v 'kind: \(backend\|group\)' | sed 's/^/   /' || true
 done

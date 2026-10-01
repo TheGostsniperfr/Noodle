@@ -23,6 +23,34 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-09-30 · Token cost of a diagram, fact-finder agent
 
+- `noodle discover -namespace NS`: objects that name none land there, as `kubectl apply
+  -n` and an Argo CD destination do. `generic-api` sets no namespace on its Deployment
+  and Service: without it prod and preprod collided in `default`.
+- Recall check against Brian's PAE `platform-overview` (31 edges, 25 inside the cluster),
+  rendered as Argo CD does (release name, destination namespace, three value files):
+  T04 finds 5 (the Gateway routes); T05/T06 should add ~6 (Grafana datasources, ESO to
+  1Password, Argo CD to GitLab, cert-manager issuers, OIDC URL). Blind spot: ~9 edges
+  are credential-implied (DB, S3, SMTP addresses live in 1Password, only secret key
+  names are in Git), and 4 come from operator CRs or controller args (Prometheus to
+  Alertmanager, external-dns `--provider=aws`, image registries, SecurityPolicy OIDC).
+- Found in PAE: `sre/{gatus,longhorn,prometheus-stack}/prod/charts/secure-route-0.1.0.tgz`
+  still say `gateway-infra`, fixed in the source by `c486f8b` (2026-05-29): if Argo CD
+  uses the committed tgz, those routes attach to no Gateway.
+
+- Spec 003 T04: Gateway (listener ports), HTTPRoute, GRPCRoute, TLSRoute, TCPRoute and
+  Ingress as elements (desc: hosts), IngressClass under `k8s:_cluster/`. Connections:
+  Gateway or IngressClass to Service on the Service port name, Service to each selected
+  workload per target port. References: parentRef, backendRef, Ingress backend and class.
+  `unresolved`: `unmatched-selector` (operator-made pods: CNPG, Prometheus) and
+  `missing-backend` for a Service or a Gateway not in the input (hint `service`,
+  `gateway`, `not-a-service`). Edge ids are a 10-hex hash: readable ids repeating from and
+  to cost ~20 % of the fragment.
+- Measured, prod: PAE argocd 93 elements, 36 connections, ~9.8k tokens; DockAir 74
+  elements, 22 connections, ~8.3k tokens. DockAir's 20 `missing-backend` are real: its
+  routes render from the overlays while the apps come from `generic-app-chart` through
+  Argo CD, so the rendered input lacks them. `discover-eval.sh` now passes relative paths,
+  as users do: absolute temp paths in every `src` inflated the count by ~10 %.
+
 - ADR-0017 proposed: yaml.v3 decoding without apimachinery (keeps `src` lines),
   deterministic host resolvers, `unresolved` in the fragment with token guards, agent
   answers remembered as rules. Accepted after review.

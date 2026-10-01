@@ -22,10 +22,17 @@ func (Adapter) Discover(ctx context.Context, src adapter.Source) (*model.Fragmen
 		return nil, in.stats, fmt.Errorf("Discover: %w", err)
 	}
 	idx := newIndex(in.objects)
+	g, u := &graph{}, &unresolvedSet{}
 	f := &model.Fragment{Unresolved: in.unrendered}
 	f.Elements = append(f.Elements, workloads(idx)...)
 	f.Elements = append(f.Elements, services(idx)...)
+	f.Elements = append(f.Elements, gateways(idx)...)
+	f.Elements = append(f.Elements, routes(idx, g, u)...)
+	f.Elements = append(f.Elements, ingresses(idx, g, u)...)
 	f.Elements = append(f.Elements, namespaces(idx, f.Elements)...)
+	selectsPods(idx, g, u)
+	f.Connections, f.References = g.conns, g.refs
+	f.Unresolved = append(f.Unresolved, u.list()...)
 	f.Unresolved = append(f.Unresolved, unknownKinds(idx)...)
 	return f, in.stats, nil
 }

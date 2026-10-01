@@ -21,7 +21,7 @@ touching `go.mod`.
 - [x] **T03** Decode files, directories, stdin, multi-document and `kind: List`; skip
   status, managed fields and generated kinds; build the index. Workloads, Services,
   namespaces as zones, ports.
-- [ ] **T04** Routes: Gateway, HTTPRoute, GRPCRoute, Ingress; Service to workload by
+- [x] **T04** Routes: Gateway, HTTPRoute, GRPCRoute, Ingress; Service to workload by
   selector and target port.
 - [ ] **T05** Secrets and references: envFrom, secretKeyRef, volumes, ExternalSecret,
   SecretStore providers, Argo CD Applications. No secret value in the output.

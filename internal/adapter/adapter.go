@@ -35,6 +35,9 @@ type Stats struct {
 type Source struct {
 	Paths  []string
 	Reader io.Reader
+	// Namespace is where objects that name none are applied, as kubectl apply -n and
+	// an Argo CD destination do. Rendered charts often leave it to the deployer.
+	Namespace string
 }
 
 // Name is what provenance.source records.
