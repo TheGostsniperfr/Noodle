@@ -468,7 +468,7 @@ func (r *renderer) edge(e diagram.Edge) {
 		entry = [2]float64{(pn.X() - dst.X) / dst.W, (pn.Y() - dst.Y) / dst.H}
 	}
 	endFill := "1"
-	if k.EndArrow == "cross" || k.EndArrow == "open" {
+	if k.EndArrow == "cross" || k.EndArrow == "open" || k.Hollow {
 		endFill = "0"
 	}
 	parts := []string{"edgeStyle=orthogonalEdgeStyle", "rounded=1", "orthogonalLoop=1", "html=1", "jumpStyle=arc", "jumpSize=10",
@@ -477,8 +477,8 @@ func (r *renderer) edge(e diagram.Edge) {
 		fmt.Sprintf("exitX=%.4f", (p0.X()-src.X)/src.W), fmt.Sprintf("exitY=%.4f", (p0.Y()-src.Y)/src.H), "exitPerimeter=0",
 		fmt.Sprintf("entryX=%.4f", entry[0]), fmt.Sprintf("entryY=%.4f", entry[1]), "entryPerimeter=0",
 		"labelBackgroundColor=" + r.th.Background, font(house.EdgeFontSize, k.LabelColor)}
-	if k.Dash != "" {
-		parts = append(parts, "dashed=1", "dashPattern="+k.Dash)
+	if dash := edgeDash(k, e.Status); dash != "" {
+		parts = append(parts, "dashed=1", "dashPattern="+dash)
 	}
 	if k.EndArrow == "cross" {
 		parts = append(parts, "endSize=10")
@@ -498,6 +498,18 @@ func (r *renderer) edge(e diagram.Edge) {
 		r.b.WriteString("            </Array>\n")
 	}
 	r.b.WriteString("          </mxGeometry>\n        </mxCell>\n")
+}
+
+// edgeDash is the kind's pattern, replaced on an access edge whose grant is removed
+// (dotted, as deprecated boxes) or planned (dashed, as planned boxes) in a diff.
+func edgeDash(k house.EdgeKind, status string) string {
+	switch status {
+	case "deprecated":
+		return dotted
+	case "planned":
+		return "6 4"
+	}
+	return k.Dash
 }
 
 func (r *renderer) card(c diagram.Card) {
@@ -573,7 +585,71 @@ func (r *renderer) legendStatuses(x, y, w float64) {
 	}
 }
 
+func (r *renderer) legendEdge(id string, k house.EdgeKind, dash string, x, y float64) {
+	endFill := "1"
+	if k.EndArrow == "cross" || k.EndArrow == "open" || k.Hollow {
+		endFill = "0"
+	}
+	st := style("edgeStyle=none", "html=1", "strokeColor="+k.Stroke, fmt.Sprintf("strokeWidth=%g", k.Width), "endArrow="+k.EndArrow, "endFill="+endFill, "endSize=6")
+	if dash != "" {
+		st += "dashed=1;dashPattern=" + dash + ";"
+	}
+	fmt.Fprintf(&r.b, `        <mxCell id="%s" value="" style="%s" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="%g" y="%g" as="sourcePoint" />
+            <mxPoint x="%g" y="%g" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+`, id, xmlAttr(st), x, y+11, x+40, y+11)
+}
+
+// accessLegend explains node kinds, access edges and the diff styles; an access view
+// has no steps, ports or zones to explain.
+func (r *renderer) accessLegend(c diagram.Card) {
+	usedNodes, usedEdges, statuses := map[string]bool{}, map[string]bool{}, map[string]bool{}
+	for _, n := range r.spec.Nodes {
+		usedNodes[n.Kind] = true
+	}
+	for _, e := range r.spec.Edges {
+		usedEdges[e.Kind] = true
+		statuses[e.Status] = true
+	}
+	x, y := c.X+20, c.Y+52
+	for _, kind := range house.NodeKindOrder {
+		if !usedNodes[kind] {
+			continue
+		}
+		k := r.th.Nodes[kind]
+		r.vertex("legend-node-"+kind, "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+4, 22, 14)
+		r.legendText("legend-node-"+kind+"-text", k.Legend, x+32, y, c.W/2-60)
+		y += 26
+	}
+	x, y = c.X+c.W/2-10, c.Y+52
+	for _, kind := range house.EdgeKindOrder {
+		if !usedEdges[kind] {
+			continue
+		}
+		k := r.th.Edges[kind]
+		r.legendEdge("legend-edge-"+kind, k, k.Dash, x, y)
+		r.legendText("legend-edge-"+kind+"-text", k.Legend, x+52, y, c.W/2-52)
+		y += 26
+	}
+	k := r.th.Edges["grant-read"]
+	for _, st := range []struct{ status, dash, text string }{{"planned", "6 4", "planned grant · label: target"}, {"deprecated", dotted, "grant the migration removes"}} {
+		if !statuses[st.status] {
+			continue
+		}
+		r.legendEdge("legend-edge-"+st.status, k, st.dash, x, y)
+		r.legendText("legend-edge-"+st.status+"-text", st.text, x+52, y, c.W/2-52)
+		y += 26
+	}
+}
+
 func (r *renderer) legend(c diagram.Card) {
+	if r.spec.Type == "access" {
+		r.accessLegend(c)
+		return
+	}
 	usedNodes, usedEdges := map[string]bool{}, map[string]bool{}
 	for _, n := range r.spec.Nodes {
 		if n.Shape != "actor" {

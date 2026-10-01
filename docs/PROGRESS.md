@@ -38,6 +38,8 @@ decisions go in ADRs, acceptance in `features.json`.
 - Spec 004 T03: `resolve.Access` (longest-path layers, pass-through slots, one lane per
   edge, ports spread, nudges against the collinear rule, cards), access edge kinds in
   the theme, `examples/access` model and five access views, all lint-clean.
+- Spec 004 T04: render hollow diamonds and dots, diff dashes on access edges, and an
+  access legend without steps or ports (P6b-03, P6b-04).
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 
