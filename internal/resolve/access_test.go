@@ -82,7 +82,7 @@ func TestAccess_RegressionFixturePassesTheLint(t *testing.T) {
 	s, err := model.LoadSystem("testdata/access-regression")
 	require.NoError(t, err)
 	require.Empty(t, model.Check(s))
-	for _, view := range []string{"dev-a-diff", "cmp-current"} {
+	for _, view := range []string{"access-dev-diff", "access-cmp-current", "access-admin-diff", "access-cmp-diff", "access-root-diff", "access-tenant-secrets-target"} {
 		t.Run(view, func(t *testing.T) {
 			t.Parallel()
 			spec, err := resolve.View(s, view)

@@ -114,7 +114,7 @@ scope, version and source, one line each).
 | `labels` | `{edge-id: text}` to override a label in this view only |
 | `notes` | `[{id, text}]`: a response that changes the path, next to who sends it |
 | `cards` | `[{id, title, color, legend, lines}]`: `legend: true` generates the legend |
-| `lenses` | `[{id, subject, state}]`: `-lens <id>` renders the same drawing lit for one subject (ADR-0020) |
+| `lenses` | `[{id, subject, state}]`: `-lens <id>` renders the same drawing lit for one subject (ADR-0020); a reached element the view hides lights its nearest shown zone |
 
 ### Sequence (ADR-0004, ADR-0011)
 

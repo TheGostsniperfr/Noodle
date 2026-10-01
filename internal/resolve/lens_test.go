@@ -80,3 +80,27 @@ func TestLens_RejectsAnUnknownLens(t *testing.T) {
 
 	assert.ErrorContains(t, err, `no lens "nobody"`)
 }
+
+func TestLens_LightsTheZoneOfAReachedElementTheViewHides(t *testing.T) {
+	t.Parallel()
+	s, err := model.LoadSystem("../../examples/access")
+	require.NoError(t, err)
+	v := s.Views["platform"]
+	var kept []string
+	for _, id := range v.Include {
+		if id != "vault-a" {
+			kept = append(kept, id)
+		}
+	}
+	v.Include = kept
+	v.Lenses = append(v.Lenses, model.Lens{ID: "alice-hidden", Subject: "alice", State: "target"})
+
+	spec, err := resolve.Lens(s, "platform", "alice-hidden")
+	require.NoError(t, err)
+
+	levels := map[string]string{}
+	for _, z := range spec.Zones {
+		levels[z.ID] = z.Level
+	}
+	assert.Equal(t, "write", levels["g-secrets"], "project-a/ is hidden, its zone carries the level")
+}

@@ -458,7 +458,9 @@ func clearOfEntries(sg *segment, y float64) bool {
 
 func accessNodeSize(e model.Element, badge string) (w, h float64) {
 	lines := []string{}
-	if e.Tech != "" {
+	if e.IsZone() {
+		lines = append(lines, "[zone "+e.Sub+"]")
+	} else if e.Tech != "" {
 		lines = append(lines, e.Tech)
 	}
 	if e.Desc != "" {
@@ -493,13 +495,19 @@ func (l *accessLayout) nodes(badges map[string][]string) []diagram.Node {
 			}
 			e := l.elements[it.id]
 			status, target := l.s.Status(e.ID)
+			kind, tech := e.Kind, e.Tech
+			if e.IsZone() {
+				// A grant may target a zone, such as a tenant namespace; in an access view
+				// it is a box like any resource, in the neutral palette.
+				kind, tech = "external", "["+strings.TrimSpace("zone "+e.Sub)+"]"
+			}
 			shape := e.Shape
 			if shape == "actor" {
 				// A box keeps every port on a border; an actor's label hangs below it.
 				shape = ""
 			}
 			out = append(out, diagram.Node{
-				ID: e.ID, Kind: e.Kind, Shape: shape, Icon: e.Icon, Title: e.Title, Tech: e.Tech, Desc: e.Desc,
+				ID: e.ID, Kind: kind, Shape: shape, Icon: e.Icon, Title: e.Title, Tech: tech, Desc: e.Desc,
 				Badge: strings.Join(badges[e.ID], " "), Status: status, Target: target,
 				X: l.x[k], Y: it.y, W: l.w[k], H: it.h,
 			})

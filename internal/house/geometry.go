@@ -245,6 +245,20 @@ func ZonePillRect(z diagram.Zone) (diagram.Rect, bool) {
 	return diagram.Rect{X: t.X + t.W + 6, Y: t.Y + (t.H-PortHeight)/2, W: PortWidth(text), H: PortHeight}, true
 }
 
+// ZoneLevelRect sits on a lit zone's title row, after the title and after the status
+// pill when there is one.
+func ZoneLevelRect(z diagram.Zone) (diagram.Rect, bool) {
+	if z.Level == "" {
+		return diagram.Rect{}, false
+	}
+	t := ZoneTitleBox(z)
+	x := t.X + t.W + 6
+	if pill, ok := ZonePillRect(z); ok {
+		x = pill.X + pill.W + 6
+	}
+	return diagram.Rect{X: x, Y: t.Y + (t.H-PortHeight)/2, W: PortWidth(LevelText(z.Level, false)), H: PortHeight}, true
+}
+
 // Wrap breaks text at spaces into lines no wider than width at fontSize. A word wider
 // than width stays whole on its own line; the lint then reports it.
 func Wrap(text string, fontSize, width float64) []string {

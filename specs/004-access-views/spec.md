@@ -58,7 +58,9 @@ light the infrastructure map per role and, later, answer "who can write X?" over
 - **FR-007** `lenses: [{id, subject, state}]` on a topology view. One output per lens, same
   layout. Reached elements keep their colour, get a level badge and a border by level;
   the others render out of focus. In `state: target`, an element the subject loses
-  shows a ghost outline marked "removed".
+  shows a ghost outline marked "removed". A reached element the view does not show
+  lights the nearest zone it does show, so a coarse map still says where the subject
+  reaches. The key goes in the subtitle: the legend card is sized by the layout.
 - **FR-008** `noodle render <system> -view <id> -lens <lens-id>` renders that lens;
   without `-lens` the view renders as before.
 - **FR-009** Out-of-focus style is distinct from `planned` and keeps text legible; the

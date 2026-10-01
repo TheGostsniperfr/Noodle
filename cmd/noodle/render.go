@@ -333,6 +333,9 @@ func (r *renderer) zone(z diagram.Zone) error {
 	if pill, ok := house.ZonePillRect(z); ok {
 		r.pill(z.ID+"__pill", house.PillText(z.Status, z.Target), pill)
 	}
+	if b, ok := house.ZoneLevelRect(z); ok {
+		r.badge(z.ID+"__level", house.LevelText(z.Level, false), r.levelColor(z.Level), b)
+	}
 	if z.Icon != "" {
 		iconStyle := ""
 		if z.Status == "planned" {
@@ -631,24 +634,6 @@ func (r *renderer) legendStatuses(x, y, w float64) {
 			"dashed=1", "dashPattern="+dotted, "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+2, 40, 18)
 		r.legendText("legend-deprecated-text", "deprecated", x+52, y, w)
 		y += 26
-	}
-	if r.spec.Lens != "" {
-		for _, l := range []struct{ id, stroke, dash, text string }{
-			{"reach", r.levelColor("write"), "", "in reach · badge: level, border width grows with it"},
-			{"dim", r.th.DimStroke, "", "out of reach"},
-			{"removed", r.levelColor("admin"), dotted, "reach the migration removes"},
-		} {
-			st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+r.th.DimFill, "strokeColor="+l.stroke, "strokeWidth=2")
-			if l.id == "reach" {
-				st = style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill, "strokeColor="+l.stroke, "strokeWidth=3")
-			}
-			if l.dash != "" {
-				st += style("dashed=1", "dashPattern="+l.dash)
-			}
-			r.vertex("legend-lens-"+l.id, "1", "", st, x, y+2, 40, 18)
-			r.legendText("legend-lens-"+l.id+"-text", l.text, x+52, y, w)
-			y += 26
-		}
 	}
 	shown := map[string]bool{}
 	for i, n := range r.spec.Nodes {

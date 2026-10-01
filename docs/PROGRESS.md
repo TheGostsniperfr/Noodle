@@ -49,6 +49,9 @@ decisions go in ADRs, acceptance in `features.json`.
   crowding when one subject holds many grants.
 - CNP access model (cnp-docs) found two resolver bugs: a nudged entry 13 px from its
   neighbour, node widths ignoring annotation badges. Fixed, with a regression fixture.
+- Lenses light the nearest shown zone of a hidden reached element; zones targeted by
+  a grant draw as neutral boxes in access views; the lens key moved to the subtitle
+  (it overflowed the CNP legend card). Fixture refreshed from the CNP model.
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 

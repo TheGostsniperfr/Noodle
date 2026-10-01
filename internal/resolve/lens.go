@@ -58,10 +58,39 @@ func Lens(s *model.System, viewID, lensID string) (*diagram.Spec, error) {
 			n.Dim = true
 		}
 	}
+	zoneAt := map[string]int{}
 	for i := range spec.Zones {
+		zoneAt[spec.Zones[i].ID] = i
 		if lv := levels[spec.Zones[i].ID]; lv != "" {
 			spec.Zones[i].Level = lv
 			reached++
+		}
+	}
+	// A reached element the view does not show lights the nearest zone it does show,
+	// so a coarse map still says where the subject reaches: SECRETS lit WRITE because
+	// a project mount is written, though the mount has no box here.
+	shown := map[string]bool{}
+	for _, n := range spec.Nodes {
+		shown[n.ID] = true
+	}
+	parents := map[string]string{}
+	for _, e := range s.Model.Elements {
+		parents[e.ID] = e.Parent
+	}
+	for _, id := range sortedKeys(levels) {
+		if shown[id] {
+			continue
+		}
+		if _, isZone := zoneAt[id]; isZone {
+			continue
+		}
+		for p := parents[id]; p != ""; p = parents[p] {
+			if i, ok := zoneAt[p]; ok {
+				if z := &spec.Zones[i]; z.Level == "" || z.Level == "breakglass" || access.Stronger(levels[id], z.Level) {
+					z.Level = levels[id]
+				}
+				break
+			}
 		}
 	}
 	for i := range spec.Edges {
@@ -75,7 +104,11 @@ func Lens(s *model.System, viewID, lensID string) (*diagram.Spec, error) {
 	}
 	spec.Lens = lens.Subject
 	spec.Title += " · lens " + title
-	spec.Subtitle = fmt.Sprintf("What **%s** reaches, %s state: %d of the elements shown, %d removed by the migration.", title, state, reached, len(removedShown(spec)))
+	// The key lives in the subtitle: a topology's legend card is sized by its layout,
+	// which knows nothing of lenses.
+	spec.Subtitle = fmt.Sprintf("What **%s** reaches, %s state: %d of the elements shown, %d removed by the migration. "+
+		"Badge and border: level · grey: out of reach · dotted: reach the migration removes · a lit zone: something inside it, not drawn here.",
+		title, state, reached, len(removedShown(spec)))
 	return spec, nil
 }
 
