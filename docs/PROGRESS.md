@@ -43,6 +43,9 @@ decisions go in ADRs, acceptance in `features.json`.
 - Spec 004 T05: `resolve.Lens` and `-lens`: same geometry, level badges and border
   widths, dim slate with 3:1 text (tested), removed reach dotted; `platform` view with
   five lenses in `examples/access` (P6b-05).
+- Spec 004 T06: `examples/access` in `init.sh` and CI, six PNGs, skill reference and
+  README updated (P6b-06). Phase 6b done; open: escalations under a lens, corridor
+  crowding when one subject holds many grants.
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 

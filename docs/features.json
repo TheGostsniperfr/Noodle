@@ -64,7 +64,7 @@
         {"id": "P6b-03", "description": "Access view resolves, lints and renders with no layout file", "verify": "noodle render examples/access --view cmp-current passes the lint and writes a drawio file", "passes": true},
         {"id": "P6b-04", "description": "Access view diff state shows removed and planned grants", "verify": "noodle render examples/access --view cmp-diff renders deprecated grants dotted and planned ones dashed with their target", "passes": true},
         {"id": "P6b-05", "description": "Lenses on a topology view: one output per lens, same layout, dim and level badges", "verify": "noodle render examples/access --view platform -lens cmp-target passes the lint, and go test ./internal/house/... keeps dim text at 3:1", "passes": true},
-        {"id": "P6b-06", "description": "examples/access renders dark and light in init.sh and CI", "verify": "./scripts/init.sh renders every view of examples/access", "passes": false}
+        {"id": "P6b-06", "description": "examples/access renders dark and light in init.sh and CI", "verify": "./scripts/init.sh renders every view of examples/access", "passes": true}
       ]
     }
   ],

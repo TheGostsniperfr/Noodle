@@ -29,6 +29,6 @@ example PNG and look at it.
 
 ## E · Example (P6b-06)
 
-- [ ] **T06** `examples/access`: two tenants, a provisioning service, a root account,
+- [x] **T06** `examples/access`: two tenants, a provisioning service, a root account,
   current and planned grants; access views in three states, a topology with lenses.
   Dark and light in `init.sh` and CI. Flip **P6b-06**.

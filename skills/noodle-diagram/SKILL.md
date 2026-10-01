@@ -167,6 +167,13 @@ official logo; tools that receive no traffic are `kind: tool`. `flow: true` on t
 delivery band reads as a pipeline. Items not deployed yet stay in their section as
 `status: planned` with a `target`. No layout to write: the grid is computed.
 
+**Access review** (`type: access` and `lenses`, "who can touch what, before and after?").
+Declare `memberships` and `grants` in the model, `deprecated` for what the migration
+removes and `planned` for what it adds. One access view per question, focused on one
+subject or one resource, in `current`, `target` or `diff`. For a non-technical reader,
+add `lenses` to the platform topology: same map, lit for one identity. A grant is never
+an arrow on a topology (ADR-0003).
+
 **Service catalogue** (`type: catalog`, "what can I get, and how?"). One `offering` per
 thing a team can ask for (a database, an app slot, SSO): a one-line summary, what it
 `provides`, the exact `request` (the value to set, the PR to open), and `backed_by`

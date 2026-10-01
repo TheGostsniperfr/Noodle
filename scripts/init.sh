@@ -13,6 +13,8 @@ go run ./cmd/noodle render examples/cnp-runtime --view oidc-login
 go run ./cmd/noodle render examples/sequence-basics
 go run ./cmd/noodle render examples/landscape --view stack
 go run ./cmd/noodle render examples/catalog --view catalog
+for v in cmp-current cmp-target cmp-diff alice-diff vault-a platform; do go run ./cmd/noodle render examples/access --view $v; done
+for l in cmp-current cmp-target alice-current alice-target root; do go run ./cmd/noodle render examples/access --view platform -lens $l; done
 for d in platform-overview app-runtime-view repo-map; do go run ./cmd/noodle render examples/platform-regression/$d -icons examples/platform-regression/icons; done
 go run ./cmd/noodle render docs/diagrams/contract-pipeline -icons docs/diagrams/icons
 

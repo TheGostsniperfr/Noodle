@@ -71,6 +71,28 @@ apply.
 `{id: G1, severity: high, title: …, text: …, targets: [element or edge ids]}`. Each
 target shows the id as a badge; list the gaps in a card.
 
+### Membership and grant: who may act on what (ADR-0019)
+
+Facts, so they live in the model. Neither is traffic: they never draw on a topology.
+
+```yaml
+memberships:
+  - {id: m-alice, subject: alice, group: grp-team-a, auth: {method: oidc, mfa: true}}
+grants:
+  - {id: g-team-a, subject: grp-team-a, resource: vault-a, level: write, scope: "project-a/*", via: [policy-a]}
+  - {id: g-cmp-root, subject: cmp, resource: vault-sys, level: admin, via: [root-token],
+     auth: {method: static-token}, status: deprecated}
+```
+
+| Field | Notes |
+|---|---|
+| `subject`, `group`, `resource` | element ids; identities, groups and mechanisms are ordinary elements |
+| `level` | `read` · `write` · `admin` · `breakglass` |
+| `scope` | free text, e.g. `project-*` |
+| `via` | the elements that give the grant (policy, RoleBinding, IAM role), checked like `enforced_by` |
+| `auth` | `{method, lifetime, mfa}`: `static-token` `access-key` `password` `oidc` `k8s-sa` `federated`; no `lifetime` on a static method draws a warning |
+| `status`, `target` | before and after a migration: `deprecated` is removed, `planned` is added with its `target` |
+
 ### Offering: what a platform provides (ADR-0013)
 
 `{id, title, icon, summary, provides: [..], request, backed_by: [element ids], owner,
@@ -78,7 +100,7 @@ status, target}`. Read by catalog views.
 
 ## View
 
-Common fields: `type` (`topology` · `sequence` · `landscape` · `catalog`), `title`
+Common fields: `type` (`topology` · `sequence` · `landscape` · `catalog` · `access`), `title`
 (`Project · Topic · Question`), `subtitle` (the one question), `meta` (scope, out of
 scope, version and source, one line each).
 
@@ -92,6 +114,7 @@ scope, version and source, one line each).
 | `labels` | `{edge-id: text}` to override a label in this view only |
 | `notes` | `[{id, text}]`: a response that changes the path, next to who sends it |
 | `cards` | `[{id, title, color, legend, lines}]`: `legend: true` generates the legend |
+| `lenses` | `[{id, subject, state}]`: `-lens <id>` renders the same drawing lit for one subject (ADR-0020) |
 
 ### Sequence (ADR-0004, ADR-0011)
 
@@ -130,6 +153,17 @@ Items are model elements, each shown once; `flow: true` draws arrows between sec
 type: catalog
 include: [dbaas, app-hosting, sso]   # offering ids
 columns: 2                           # 1 to 4
+```
+
+### Access: who reaches what (ADR-0019)
+
+Computed, no layout. Columns from identities to resources; legend, reach and
+escalation cards are generated.
+
+```yaml
+type: access
+focus: {subject: cmp}        # or {resource: vault-a}, walked backward; absent: everything
+state: diff                  # current (default) · target · diff
 ```
 
 ## Layout (topology views)
