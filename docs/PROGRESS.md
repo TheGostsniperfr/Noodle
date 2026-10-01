@@ -7,9 +7,12 @@ decisions go in ADRs, acceptance in `features.json`.
 ## Start here
 
 1. `./scripts/init.sh`: fix anything red before new work.
-2. Read the current spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-3. Next action: close phase 1: T13, T16, T17 of spec 001, T03 and T13 of spec 002.
-   Then spec 003, task T01 in [`tasks.md`](../specs/003-static-discovery/tasks.md).
+2. Read the current spec: [`specs/003-static-discovery/spec.md`](../specs/003-static-discovery/spec.md)
+   and ADR-0017, ADR-0018. Backlog: the [project board](https://github.com/users/TheGostsniperfr/projects/5), issue #42.
+3. Next action: spec 003 T05 (secrets and references, Argo CD Applications), then T06,
+   T12 and the T14 checkpoint before anything else ([`tasks.md`](../specs/003-static-discovery/tasks.md)).
+   Phase 1 still has spec 002 T03 (issue #43, in `dockair-docs`).
+   Measure on real repos with `scripts/discover-eval.sh`.
 
 ## Open threads outside this repo
 
@@ -20,6 +23,13 @@ decisions go in ADRs, acceptance in `features.json`.
 | `~/.dotfiles` | noodle plugin installed declaratively (commit `9bf7e57`) | pushed. `nixos-rebuild switch` still to run. |
 
 ## Log
+
+### 2026-10-01 · Spec 003 blind spots and checkpoint
+
+- ADR-0018 and spec 003 update from the PAE recall check: `secret-endpoint` (T15),
+  operator rules (T16), the fragment as a floor in the skill (T11), and a checkpoint
+  (T14, P6a-08) after T05, T06 and T12: discovery continues only if the fragment run
+  costs clearly less and finds as many edges as the agent alone.
 
 ### 2026-09-30 · Token cost of a diagram, fact-finder agent
 
