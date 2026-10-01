@@ -2,7 +2,10 @@
 // palettes, font metrics, and the boxes that text, labels and port badges occupy.
 package house
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 // Palettes are Tailwind CSS v3 (the one Cocoon-AI uses). Dark: 400 strokes on slate-950,
 // fills pre-composited so arrows never show through a box. Light: 600 strokes, 50 fills,
@@ -17,9 +20,12 @@ type Theme struct {
 	// Hatch fills planned boxes (ADR-0008): the same grey whatever the kind, so a
 	// planned box reads as absent before its colour is read.
 	Hatch string
-	Nodes map[string]NodeKind
-	Zones map[string]string
-	Edges map[string]EdgeKind
+	// Dim is what a lens puts out of focus (ADR-0019): neutral slate, text kept at 3:1
+	// on the background so the context stays readable.
+	DimFill, DimStroke, DimText string
+	Nodes                       map[string]NodeKind
+	Zones                       map[string]string
+	Edges                       map[string]EdgeKind
 }
 
 type NodeKind struct{ Stroke, Fill, Legend string }
@@ -137,6 +143,7 @@ var Themes = map[string]*Theme{
 		CardFill: "#0b1222", CardStroke: "#1e293b",
 		Title: "#f8fafc", Text: "#e2e8f0", Muted: "#94a3b8", Warn: "#fb923c", Accent: "#34d399",
 		StepFill: "#f8fafc", StepText: "#020617", PortText: "#020617", Hatch: "#64748b",
+		DimFill: "#0b1222", DimStroke: "#334155", DimText: "#64748b",
 		Nodes: nodes(
 			"frontend", "#22d3ee", "#0c2234",
 			"backend", "#34d399", "#0b2d31",
@@ -159,6 +166,7 @@ var Themes = map[string]*Theme{
 		CardFill: "#ffffff", CardStroke: "#e2e8f0",
 		Title: "#0f172a", Text: "#1e293b", Muted: "#475569", Warn: "#c2410c", Accent: "#059669",
 		StepFill: "#0f172a", StepText: "#ffffff", PortText: "#ffffff", Hatch: "#94a3b8",
+		DimFill: "#f1f5f9", DimStroke: "#cbd5e1", DimText: "#64748b",
 		Nodes: nodes(
 			"frontend", "#0891b2", "#ecfeff",
 			"backend", "#059669", "#ecfdf5",
@@ -188,4 +196,28 @@ func ThemeByName(name string) (*Theme, error) {
 
 func TextWidth(s string, fontSize float64) float64 {
 	return float64(len([]rune(s))) * fontSize * CharWidthEm
+}
+
+// Contrast is the WCAG 2 contrast ratio of two #rrggbb colours.
+func Contrast(a, b string) float64 {
+	la, lb := luminance(a), luminance(b)
+	if la < lb {
+		la, lb = lb, la
+	}
+	return (la + 0.05) / (lb + 0.05)
+}
+
+func luminance(hex string) float64 {
+	var rgb [3]float64
+	for i := range rgb {
+		var v int
+		fmt.Sscanf(hex[1+2*i:3+2*i], "%02x", &v)
+		c := float64(v) / 255
+		if c <= 0.03928 {
+			rgb[i] = c / 12.92
+		} else {
+			rgb[i] = math.Pow((c+0.055)/1.055, 2.4)
+		}
+	}
+	return 0.2126*rgb[0] + 0.7152*rgb[1] + 0.0722*rgb[2]
 }

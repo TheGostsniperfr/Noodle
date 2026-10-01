@@ -1,0 +1,15 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+title: Platform · Resources · Map
+subtitle: What the platform holds, lit for one identity at a time.
+meta: ["Scope: the resources grants reach; groups and mechanisms are in the access views", "v0.1 · source: examples/access"]
+include: [z-people/**, z-cluster, g-secrets, vault-sys, vault-a, vault-b, g-identity, realm-platform, g-delivery, apps-all, apps-a, g-tenants, ns-a, ns-b, cmp, z-aws, tfstate]
+cards:
+  - {id: card-legend, title: Legend, color: slate, legend: true}
+lenses:
+  - {id: cmp-current, subject: cmp, state: current}
+  - {id: cmp-target, subject: cmp, state: target}
+  - {id: alice-current, subject: alice, state: current}
+  - {id: alice-target, subject: alice, state: target}
+  - {id: root, subject: root, state: target}

@@ -24,7 +24,7 @@ example PNG and look at it.
 
 ## D · Lenses (P6b-05)
 
-- [ ] **T05** `resolve.Lens`, `-lens`, dim, level badge, removed outline; the 3:1 test.
+- [x] **T05** `resolve.Lens`, `-lens`, dim, level badge, removed outline; the 3:1 test.
   Flip **P6b-05**.
 
 ## E · Example (P6b-06)

@@ -38,6 +38,8 @@ type Spec struct {
 	Arrows []Arrow `yaml:"arrows"`
 	// Offerings are catalog cards (ADR-0013), laid out by the catalog resolver.
 	Offerings []Offering `yaml:"-"`
+	// Lens names the subject a topology is lit for (ADR-0020); empty without a lens.
+	Lens string `yaml:"-"`
 }
 
 // Offering is a resolved catalog card. Text is already wrapped to the card width; each
@@ -93,12 +95,14 @@ type Zone struct {
 	Color string `yaml:"color"`
 	Icon  string `yaml:"icon"`
 	// Status and Target follow ADR-0008 and ADR-0014; a zone's apply to its children.
-	Status string  `yaml:"status"`
-	Target string  `yaml:"target"`
-	X      float64 `yaml:"x"`
-	Y      float64 `yaml:"y"`
-	W      float64 `yaml:"w"`
-	H      float64 `yaml:"h"`
+	Status string `yaml:"status"`
+	Target string `yaml:"target"`
+	// Level is set under a lens when the zone itself is a resource the subject reaches.
+	Level string  `yaml:"-"`
+	X     float64 `yaml:"x"`
+	Y     float64 `yaml:"y"`
+	W     float64 `yaml:"w"`
+	H     float64 `yaml:"h"`
 }
 
 func (z Zone) Rect() Rect { return Rect{z.X, z.Y, z.W, z.H} }
@@ -118,11 +122,17 @@ type Node struct {
 	Target string `yaml:"target"`
 	// Multiplicity says what the box stands for many of (ADR-0008); it draws the box
 	// as a stack. Not part of the v0 file format.
-	Multiplicity string  `yaml:"-"`
-	X            float64 `yaml:"x"`
-	Y            float64 `yaml:"y"`
-	W            float64 `yaml:"w"`
-	H            float64 `yaml:"h"`
+	Multiplicity string `yaml:"-"`
+	// Under a lens (ADR-0019): Level is what the subject may do here, Dim marks what it
+	// cannot reach, Removed what the migration takes away, Focus the subject itself.
+	Level   string  `yaml:"-"`
+	Dim     bool    `yaml:"-"`
+	Removed bool    `yaml:"-"`
+	Focus   bool    `yaml:"-"`
+	X       float64 `yaml:"x"`
+	Y       float64 `yaml:"y"`
+	W       float64 `yaml:"w"`
+	H       float64 `yaml:"h"`
 }
 
 func (n Node) Rect() Rect { return Rect{n.X, n.Y, n.W, n.H} }
@@ -149,7 +159,9 @@ type Edge struct {
 	Port        string `yaml:"port"`
 	AgainstFlow bool   `yaml:"against_flow"` // outbound connection drawn against the reading direction, e.g. a tunnel
 	// Status is planned or deprecated on an access edge in a diff (ADR-0019).
-	Status      string  `yaml:"-"`
+	Status string `yaml:"-"`
+	// Dim draws a connection out of focus under a lens.
+	Dim         bool    `yaml:"-"`
 	Path        []Point `yaml:"path"`
 	LabelAt     *Point  `yaml:"label_at"`
 	LabelOffset Point   `yaml:"label_offset"`

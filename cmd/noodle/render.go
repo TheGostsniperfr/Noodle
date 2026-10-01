@@ -317,6 +317,9 @@ func (r *renderer) zone(z diagram.Zone) error {
 		v = strings.Replace(v, "<b>", "<b><s>", 1)
 		v = strings.Replace(v, "</b>", "</s></b>", 1)
 	}
+	if z.Level != "" {
+		color, width = r.levelColor(z.Level), levelWidth[z.Level]
+	}
 	st := style("rounded=1", "absoluteArcSize=1", fmt.Sprintf("arcSize=%d", arc), "html=1") + fill +
 		style("strokeColor="+color, fmt.Sprintf("strokeWidth=%g", width), "dashed=1", "dashPattern="+dash, "container=0", "collapsible=0")
 	r.vertex(z.ID, "1", "", st, z.X, z.Y, z.W, z.H)
@@ -340,20 +343,29 @@ func (r *renderer) zone(z diagram.Zone) error {
 	return nil
 }
 
+// textColors are a node's title, technology and description colours; a lens dims all three.
+func (r *renderer) textColors(n diagram.Node) (title, text, muted string) {
+	if n.Dim {
+		return r.th.DimText, r.th.DimText, r.th.DimText
+	}
+	return r.th.Title, r.th.Text, r.th.Muted
+}
+
 func (r *renderer) nodeLabel(n diagram.Node) string {
+	cTitle, cText, cMuted := r.textColors(n)
 	title := html.EscapeString(n.Title)
 	if n.Status == "deprecated" {
 		title = "<s>" + title + "</s>"
 	}
-	v := fmt.Sprintf(`<b><font color="%s" style="font-size:%gpx">%s</font></b>`, r.th.Title, house.TitleFontSize, title)
+	v := fmt.Sprintf(`<b><font color="%s" style="font-size:%gpx">%s</font></b>`, cTitle, house.TitleFontSize, title)
 	if n.Badge != "" {
 		v += fmt.Sprintf(` <b><font color="%s" style="font-size:%gpx">⚠ %s</font></b>`, r.th.Warn, house.SubFontSize, html.EscapeString(n.Badge))
 	}
 	if n.Tech != "" {
-		v += fmt.Sprintf(`<br><i><font color="%s" style="font-size:%gpx">%s</font></i>`, r.th.Text, house.SubFontSize, html.EscapeString(n.Tech))
+		v += fmt.Sprintf(`<br><i><font color="%s" style="font-size:%gpx">%s</font></i>`, cText, house.SubFontSize, html.EscapeString(n.Tech))
 	}
 	if n.Desc != "" {
-		v += fmt.Sprintf(`<br><font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, house.SubFontSize, r.markup(n.Desc))
+		v += fmt.Sprintf(`<br><font color="%s" style="font-size:%gpx">%s</font>`, cMuted, house.SubFontSize, r.markup(n.Desc))
 	}
 	return v
 }
@@ -365,12 +377,20 @@ func (r *renderer) node(n diagram.Node) error {
 		if err != nil {
 			return err
 		}
+		cTitle, _, cMuted := r.textColors(n)
 		v := fmt.Sprintf(`<b>%s</b>`, html.EscapeString(n.Title))
 		for _, l := range n.Lines() {
-			v += fmt.Sprintf(`<br><font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, house.SubFontSize, html.EscapeString(l))
+			v += fmt.Sprintf(`<br><font color="%s" style="font-size:%gpx">%s</font>`, cMuted, house.SubFontSize, html.EscapeString(l))
+		}
+		opacity := ""
+		if n.Dim {
+			opacity = "opacity=35"
+		}
+		if n.Focus {
+			v = fmt.Sprintf(`<font color="%s">◉</font> `, r.th.Accent) + v
 		}
 		st := style("shape=image", "image="+uri, "imageAspect=1", "html=1", "verticalLabelPosition=bottom", "verticalAlign=top",
-			"labelPosition=center", "align=center", fmt.Sprintf("spacingTop=%g", house.ActorLabelGap), font(house.TitleFontSize, r.th.Title))
+			"labelPosition=center", "align=center", fmt.Sprintf("spacingTop=%g", house.ActorLabelGap), font(house.TitleFontSize, cTitle), opacity)
 		r.vertex(n.ID, "1", v, st, n.X, n.Y, n.W, n.H)
 		return nil
 	}
@@ -384,7 +404,26 @@ func (r *renderer) node(n diagram.Node) error {
 	if n.Icon != "" {
 		pad = house.TextPadLeft
 	}
+	stroke, strokeWidth := k.Stroke, 1.5
+	switch {
+	case n.Removed:
+		k = house.NodeKind{Stroke: r.th.DimStroke, Fill: r.th.DimFill}
+		stroke, strokeWidth = r.levelColor("admin"), 2
+	case n.Dim:
+		k = house.NodeKind{Stroke: r.th.DimStroke, Fill: r.th.DimFill}
+		stroke = k.Stroke
+	case n.Level != "":
+		stroke, strokeWidth = r.levelColor(n.Level), levelWidth[n.Level]
+	case n.Focus:
+		strokeWidth = 3
+	}
 	fill, iconStyle := "fillColor="+k.Fill+";", ""
+	if n.Dim {
+		iconStyle = "opacity=35"
+	}
+	if n.Removed {
+		fill += style("dashed=1", "dashPattern="+dotted)
+	}
 	switch n.Status {
 	case "planned":
 		// Hatch at half strength and text at 75 %: at slide scale a full hatch drowns the title.
@@ -401,7 +440,7 @@ func (r *renderer) node(n diagram.Node) error {
 				"strokeWidth=1.5", "dashed=1", "dashPattern=4 3", "editable=0", "movable=0", "connectable=0"), n.X+d, n.Y-d, n.W, n.H)
 		}
 	}
-	st := style(shape...) + fill + style("html=1", "whiteSpace=wrap", "strokeColor="+k.Stroke, "strokeWidth=1.5",
+	st := style(shape...) + fill + style("html=1", "whiteSpace=wrap", "strokeColor="+stroke, fmt.Sprintf("strokeWidth=%g", strokeWidth),
 		"align=left", "verticalAlign=top", fmt.Sprintf("spacingLeft=%g", pad), fmt.Sprintf("spacingTop=%g", top-4), "spacingRight=8",
 		font(house.TitleFontSize, r.th.Text))
 	r.vertex(n.ID, "1", r.nodeLabel(n), st, n.X, n.Y, n.W, n.H)
@@ -418,7 +457,30 @@ func (r *renderer) node(n diagram.Node) error {
 	if pill, ok := house.NodePillRect(n); ok {
 		r.pill(n.ID+"__pill", house.PillText(n.Status, n.Target), pill)
 	}
+	if b, ok := house.LevelBadgeRect(n); ok {
+		color := r.levelColor(n.Level)
+		if n.Removed {
+			color = r.levelColor("admin")
+		}
+		r.badge(n.ID+"__level", house.LevelText(n.Level, n.Removed), color, b)
+	}
 	return nil
+}
+
+// levelWidth thickens a reached box's border with the level, so the level reads even
+// without its colour (ADR-0006).
+var levelWidth = map[string]float64{"read": 2, "write": 3, "admin": 4, "breakglass": 2}
+
+// levelColor is the stroke of the grant edge at that level, so a lens and an access
+// view use one colour per level.
+func (r *renderer) levelColor(level string) string {
+	return r.th.Edges["grant-"+level].Stroke
+}
+
+func (r *renderer) badge(id, text, color string, b diagram.Rect) {
+	st := style("rounded=1", "arcSize=50", "html=1", "fillColor="+color, "strokeColor=none", "align=center",
+		"verticalAlign=middle", "fontStyle=1", "movable=0", "connectable=0", font(house.PortFontSize, r.th.PortText))
+	r.vertex(id, "1", html.EscapeString(text), st, b.X, b.Y, b.W, b.H)
 }
 
 func (r *renderer) kindStrokeOf(id string) string {
@@ -454,6 +516,9 @@ var sideEntry = map[string][2]float64{"left": {0, 0.5}, "right": {1, 0.5}, "top"
 
 func (r *renderer) edge(e diagram.Edge) {
 	k := r.th.Edges[e.Kind]
+	if e.Dim {
+		k.Stroke, k.LabelColor = r.th.DimStroke, r.th.DimText
+	}
 	src, _ := r.spec.AnchorRect(e.From)
 	path := house.DrawnPath(e, r.ports)
 	p0 := path[0]
@@ -566,6 +631,24 @@ func (r *renderer) legendStatuses(x, y, w float64) {
 			"dashed=1", "dashPattern="+dotted, "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+2, 40, 18)
 		r.legendText("legend-deprecated-text", "deprecated", x+52, y, w)
 		y += 26
+	}
+	if r.spec.Lens != "" {
+		for _, l := range []struct{ id, stroke, dash, text string }{
+			{"reach", r.levelColor("write"), "", "in reach · badge: level, border width grows with it"},
+			{"dim", r.th.DimStroke, "", "out of reach"},
+			{"removed", r.levelColor("admin"), dotted, "reach the migration removes"},
+		} {
+			st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+r.th.DimFill, "strokeColor="+l.stroke, "strokeWidth=2")
+			if l.id == "reach" {
+				st = style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill, "strokeColor="+l.stroke, "strokeWidth=3")
+			}
+			if l.dash != "" {
+				st += style("dashed=1", "dashPattern="+l.dash)
+			}
+			r.vertex("legend-lens-"+l.id, "1", "", st, x, y+2, 40, 18)
+			r.legendText("legend-lens-"+l.id+"-text", l.text, x+52, y, w)
+			y += 26
+		}
 	}
 	shown := map[string]bool{}
 	for i, n := range r.spec.Nodes {

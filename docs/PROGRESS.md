@@ -40,6 +40,9 @@ decisions go in ADRs, acceptance in `features.json`.
   the theme, `examples/access` model and five access views, all lint-clean.
 - Spec 004 T04: render hollow diamonds and dots, diff dashes on access edges, and an
   access legend without steps or ports (P6b-03, P6b-04).
+- Spec 004 T05: `resolve.Lens` and `-lens`: same geometry, level badges and border
+  widths, dim slate with 3:1 text (tested), removed reach dotted; `platform` view with
+  five lenses in `examples/access` (P6b-05).
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 

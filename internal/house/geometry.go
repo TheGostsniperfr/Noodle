@@ -198,10 +198,37 @@ func NodeFootprint(n diagram.Node) diagram.Rect {
 }
 
 // NodePillRect straddles the top border of a planned node, flush with its right end,
-// like a tag clipped on the box.
+// like a tag clipped on the box. Under a lens the level badge takes the top border, so
+// the pill moves to the bottom one (ADR-0019).
 func NodePillRect(n diagram.Node) (diagram.Rect, bool) {
 	text := PillText(n.Status, n.Target)
 	if text == "" {
+		return diagram.Rect{}, false
+	}
+	w := PortWidth(text)
+	y := n.Y - PortHeight/2
+	if _, ok := LevelBadgeRect(n); ok {
+		y = n.Y + n.H - PortHeight/2
+	}
+	return diagram.Rect{X: n.X + n.W - w - 10, Y: y, W: w, H: PortHeight}, true
+}
+
+// LevelText is what a lens badge says: the level, or that the migration removes it.
+func LevelText(level string, removed bool) string {
+	switch {
+	case removed:
+		return "REMOVED"
+	case level == "breakglass":
+		return "BREAK-GLASS"
+	}
+	return strings.ToUpper(level)
+}
+
+// LevelBadgeRect straddles the top border of a node a lens reaches or removes, flush
+// with its right end, where a planned node's pill sits otherwise.
+func LevelBadgeRect(n diagram.Node) (diagram.Rect, bool) {
+	text := LevelText(n.Level, n.Removed)
+	if text == "" || n.Shape == "actor" {
 		return diagram.Rect{}, false
 	}
 	w := PortWidth(text)

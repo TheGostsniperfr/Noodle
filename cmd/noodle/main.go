@@ -17,7 +17,7 @@ import (
 
 const slideMargin = 24.0
 
-const usage = `usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]] [-slide]
+const usage = `usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]] [-slide] [-lens ID]
        noodle migrate SPEC.yaml DIR   (a v0 single file to a v1alpha1 system)
        noodle discover ADAPTER [PATH…|-] [-o fragment.yaml]
        noodle -list-icons [-icons DIR[,DIR]]`

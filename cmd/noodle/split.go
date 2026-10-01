@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/TheGostsniperfr/Noodle/internal/diagram"
 	"github.com/TheGostsniperfr/Noodle/internal/house"
 	"github.com/TheGostsniperfr/Noodle/internal/lint"
 	"github.com/TheGostsniperfr/Noodle/internal/model"
@@ -21,6 +22,7 @@ func renderCommand(args []string) error {
 	icons := fs.String("icons", "", "comma-separated directories of extra <name>.svg icons")
 	themeName := fs.String("theme", "dark", "dark or light")
 	slide := fs.Bool("slide", false, "drawing only, cropped to its content: no header, cards or notes")
+	lens := fs.String("lens", "", "lens id of a topology view: lit for one subject (ADR-0020)")
 	var dirs []string
 	for len(args) > 0 {
 		if err := fs.Parse(args); err != nil {
@@ -68,7 +70,12 @@ func renderCommand(args []string) error {
 	if v.Type == "sequence" {
 		return renderSequenceView(s, id, *out, th, set)
 	}
-	spec, err := resolve.View(s, id)
+	var spec *diagram.Spec
+	if *lens != "" {
+		spec, err = resolve.Lens(s, id, *lens)
+	} else {
+		spec, err = resolve.View(s, id)
+	}
 	if err != nil {
 		return err
 	}

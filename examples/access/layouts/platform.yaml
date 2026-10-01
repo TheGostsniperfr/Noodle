@@ -1,0 +1,26 @@
+apiVersion: noodle/v1alpha1
+kind: Layout
+canvas: {width: 1840, height: 1180}
+elements:
+  z-people: {x: 40, y: 200, w: 260, h: 600}
+  alice: {x: 102, y: 70, w: 56, h: 56}
+  ops: {x: 102, y: 250, w: 56, h: 56}
+  root: {x: 102, y: 430, w: 56, h: 56}
+  z-cluster: {x: 360, y: 200, w: 1060, h: 600}
+  g-secrets: {x: 30, y: 60, w: 300, h: 470}
+  vault-sys: {x: 20, y: 50, w: 260, h: 96}
+  vault-a: {x: 20, y: 190, w: 260, h: 96}
+  vault-b: {x: 20, y: 330, w: 260, h: 96}
+  g-identity: {x: 390, y: 60, w: 300, h: 160}
+  realm-platform: {x: 20, y: 50, w: 260, h: 80}
+  g-delivery: {x: 390, y: 280, w: 300, h: 250}
+  apps-all: {x: 20, y: 50, w: 260, h: 72}
+  apps-a: {x: 20, y: 150, w: 260, h: 72}
+  g-tenants: {x: 750, y: 60, w: 280, h: 260}
+  ns-a: {x: 20, y: 50, w: 240, h: 72}
+  ns-b: {x: 20, y: 160, w: 240, h: 72}
+  cmp: {x: 770, y: 400, w: 240, h: 80}
+  z-aws: {x: 1480, y: 200, w: 320, h: 260}
+  tfstate: {x: 30, y: 70, w: 260, h: 96}
+cards:
+  card-legend: {x: 40, y: 860, w: 1760, h: 280}

@@ -41,3 +41,16 @@ func TestNodePillRect_StraddlesTheTopBorderInsideTheBox(t *testing.T) {
 		pill.X+pill.W < n.X+n.W,
 	})
 }
+
+func TestDimText_KeepsThreeToOneOnTheBackground(t *testing.T) {
+	t.Parallel()
+	for _, th := range house.Themes {
+		t.Run(th.Name, func(t *testing.T) {
+			t.Parallel()
+
+			ratio := house.Contrast(th.DimText, th.Background)
+
+			assert.GreaterOrEqual(t, ratio, 3.0, "dim text %s on %s", th.DimText, th.Background)
+		})
+	}
+}
