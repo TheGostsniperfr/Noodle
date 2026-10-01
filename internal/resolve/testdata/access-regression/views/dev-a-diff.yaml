@@ -1,0 +1,8 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: access
+title: CNP · Access · dev-a (diff)
+subtitle: What does the plan change for a tenant developer?
+meta: ["Scope: identities and grants of the CNP platform; OpenStack is out of scope", "v0.1 · source: cnp-docs/architecture/cnp-access"]
+focus: {subject: dev-a}
+state: diff

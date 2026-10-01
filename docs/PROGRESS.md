@@ -47,6 +47,8 @@ decisions go in ADRs, acceptance in `features.json`.
   README updated (P6b-06). Features pass; the phase closes when the CNP segregation
   pictures render from a CNP model. Open: escalations under a lens, corridor
   crowding when one subject holds many grants.
+- CNP access model (cnp-docs) found two resolver bugs: a nudged entry 13 px from its
+  neighbour, node widths ignoring annotation badges. Fixed, with a regression fixture.
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 

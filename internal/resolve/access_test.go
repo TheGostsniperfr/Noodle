@@ -76,3 +76,21 @@ func TestAccess_DrawsEscalationsTheTargetOpens(t *testing.T) {
 
 	assert.ElementsMatch(t, []string{"vault-a", "vault-b"}, escalations)
 }
+
+func TestAccess_RegressionFixturePassesTheLint(t *testing.T) {
+	t.Parallel()
+	s, err := model.LoadSystem("testdata/access-regression")
+	require.NoError(t, err)
+	require.Empty(t, model.Check(s))
+	for _, view := range []string{"dev-a-diff", "cmp-current"} {
+		t.Run(view, func(t *testing.T) {
+			t.Parallel()
+			spec, err := resolve.View(s, view)
+			require.NoError(t, err)
+
+			findings := lint.Lint(spec)
+
+			assert.Empty(t, findings)
+		})
+	}
+}

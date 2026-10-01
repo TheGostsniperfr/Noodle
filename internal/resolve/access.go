@@ -65,14 +65,15 @@ func Access(s *model.System, viewID string) (*diagram.Spec, error) {
 	if len(hops) == 0 {
 		return nil, fmt.Errorf("resolve: access view %q has nothing to draw in state %s", viewID, state)
 	}
-	l := &accessLayout{s: s, elements: elements, hops: hops}
+	badges := badgesOf(s)
+	l := &accessLayout{s: s, elements: elements, hops: hops, badges: badges}
 	if err := l.layer(); err != nil {
 		return nil, fmt.Errorf("resolve: access view %q: %w", viewID, err)
 	}
 	l.order()
 	l.place()
 	out := &diagram.Spec{ID: v.ID, Type: "access", Title: v.Title, Subtitle: v.Subtitle, Meta: v.Meta}
-	out.Nodes = l.nodes(badgesOf(s))
+	out.Nodes = l.nodes(badges)
 	out.Edges = l.edges()
 	out.Width = math.Max(l.width, accessMinCanvasW)
 	out.Cards = accessCards(s, g, state, subject, resource, out, l.bottom+house.MinZoneGap)
@@ -119,6 +120,7 @@ type accessLayout struct {
 	s        *model.System
 	elements map[string]model.Element
 	hops     []access.Hop
+	badges   map[string][]string
 	layerOf  map[string]int
 	layers   [][]*item
 	byID     map[string]*item
@@ -273,7 +275,7 @@ func (l *accessLayout) place() {
 				it.h = accessSlotH
 				continue
 			}
-			w, h := accessNodeSize(l.elements[it.id])
+			w, h := accessNodeSize(l.elements[it.id], strings.Join(l.badges[it.id], " "))
 			it.h = math.Max(h, float64(max(len(it.in), len(it.out))+1)*accessPortGap)
 			l.w[k] = math.Max(l.w[k], w)
 		}
@@ -421,11 +423,18 @@ func collides(entry, ownExit float64, exits map[float64]bool) (float64, bool) {
 	return 0, false
 }
 
-// nudge moves an entry below the exit it would run on. A pass-through slot moves as a
-// whole, so the edge stays straight through its layer.
+// nudge moves an entry off the exit it would run on, below it or above it, whichever
+// keeps it clear of the item's other entries so their labels do not touch. A
+// pass-through slot moves as a whole, so the edge stays straight through its layer.
 func nudge(sg *segment, exit float64) {
 	y := exit + accessNudge
 	if sg.to.id != "" {
+		for _, cand := range []float64{exit + accessNudge, exit - accessNudge} {
+			if cand > sg.to.y+accessNudge && cand < sg.to.y+sg.to.h-accessNudge && clearOfEntries(sg, cand) {
+				y = cand
+				break
+			}
+		}
 		sg.to.inY[sg] = y
 		return
 	}
@@ -436,7 +445,18 @@ func nudge(sg *segment, exit float64) {
 	}
 }
 
-func accessNodeSize(e model.Element) (w, h float64) {
+// clearOfEntries is true when y keeps a label's height plus a margin from every other
+// entry of the same item.
+func clearOfEntries(sg *segment, y float64) bool {
+	for other, oy := range sg.to.inY {
+		if other != sg && math.Abs(oy-y) < accessPortGap-accessNudge+2 {
+			return false
+		}
+	}
+	return true
+}
+
+func accessNodeSize(e model.Element, badge string) (w, h float64) {
 	lines := []string{}
 	if e.Tech != "" {
 		lines = append(lines, e.Tech)
@@ -444,7 +464,11 @@ func accessNodeSize(e model.Element) (w, h float64) {
 	if e.Desc != "" {
 		lines = append(lines, e.Desc)
 	}
-	text := house.TextWidth(e.Title, house.TitleFontSize)
+	title := e.Title
+	if badge != "" {
+		title += " ⚠ " + badge
+	}
+	text := house.TextWidth(title, house.TitleFontSize)
 	for _, ln := range lines {
 		text = math.Max(text, house.TextWidth(house.PlainText(ln), house.SubFontSize))
 	}
