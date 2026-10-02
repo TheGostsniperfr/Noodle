@@ -230,7 +230,7 @@ annotations:
   - {id: G4, severity: medium, title: "Coupling", targets: [envoy-shared-gateway]}
   - {id: G5, severity: low, title: "Tunnels", targets: [cloudflared-app]}
   - {id: G6, severity: medium, title: "Token call", targets: [envoy-shared-gateway, e-oidc-token-hairpin]}
-  - {id: G7, severity: critical, title: "CMP API auth", targets: [cmp-backend, c-envoy-cmp-backend]}
+  - {id: G7, severity: high, title: "CMP API auth", targets: [cmp-backend, c-envoy-cmp-backend]}
   - {id: G8, severity: high, title: "Pod sandbox", targets: [app-pods]}
   - {id: G9, severity: medium, title: "Keycloak ReferenceGrant", targets: [security-policy]}
   - {id: G10, severity: medium, title: "Shared gateway label", targets: [httproute]}
