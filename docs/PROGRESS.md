@@ -36,6 +36,9 @@ decisions go in ADRs, acceptance in `features.json`.
   change (P6b-02).
 - T03: `resolve.Matrix`, `diagram.Matrix`, matrix text lint; cells carry level, change
   (added, changed, removed, rescoped), phase and counts (P6b-03).
+- T04: render cells, frames, tags, hatches, counts and legend; level and change
+  colours in both themes, AA contrast tested. On the CNP model: rescoped only when no
+  grant at the top level survives, a grant's own phase before its membership's (P6b-04).
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 

@@ -71,3 +71,12 @@ func TestMatrix_LegendExplainsChangesOnlyInADiff(t *testing.T) {
 	assert.Len(t, spec.Matrix.LegendTitles, 2)
 	assert.Len(t, spec.Matrix.Legend, 9)
 }
+
+func TestMatrix_CanvasHoldsTheLegend(t *testing.T) {
+	t.Parallel()
+	spec := smallMatrix(t)
+
+	for _, c := range spec.Matrix.Legend {
+		assert.LessOrEqual(t, c.X+c.W, spec.Width)
+	}
+}

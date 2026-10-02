@@ -2,7 +2,10 @@
 // palettes, font metrics, and the boxes that text, labels and port badges occupy.
 package house
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 // Palettes are Tailwind CSS v3 (the one Cocoon-AI uses). Dark: 400 strokes on slate-950,
 // fills pre-composited so arrows never show through a box. Light: 600 strokes, 50 fills,
@@ -17,12 +20,18 @@ type Theme struct {
 	// Hatch fills planned boxes (ADR-0008): the same grey whatever the kind, so a
 	// planned box reads as absent before its colour is read.
 	Hatch string
-	Nodes map[string]NodeKind
-	Zones map[string]string
-	Edges map[string]EdgeKind
+	// Levels fill matrix cells by access level, Changes frame them by what a plan
+	// changes (ADR-0019). The two never share a colour.
+	Levels  map[string]LevelStyle
+	Changes map[string]string
+	Nodes   map[string]NodeKind
+	Zones   map[string]string
+	Edges   map[string]EdgeKind
 }
 
 type NodeKind struct{ Stroke, Fill, Legend string }
+
+type LevelStyle struct{ Fill, Text string }
 
 type EdgeKind struct {
 	Stroke, LabelColor, Dash, EndArrow, Legend string
@@ -112,6 +121,9 @@ var Themes = map[string]*Theme{
 		CardFill: "#0b1222", CardStroke: "#1e293b",
 		Title: "#f8fafc", Text: "#e2e8f0", Muted: "#94a3b8", Warn: "#fb923c", Accent: "#34d399",
 		StepFill: "#f8fafc", StepText: "#020617", PortText: "#020617", Hatch: "#64748b",
+		Levels: map[string]LevelStyle{"admin": {"#4c0519", "#fda4af"}, "write": {"#2e1065", "#c4b5fd"}, "read": {"#082f49", "#7dd3fc"},
+			"breakglass": {"#4c0519", "#fda4af"}, "": {"#111827", "#94a3b8"}},
+		Changes: map[string]string{"added": "#34d399", "changed": "#fbbf24", "removed": "#94a3b8"},
 		Nodes: nodes(
 			"frontend", "#22d3ee", "#0c2234",
 			"backend", "#34d399", "#0b2d31",
@@ -134,6 +146,9 @@ var Themes = map[string]*Theme{
 		CardFill: "#ffffff", CardStroke: "#e2e8f0",
 		Title: "#0f172a", Text: "#1e293b", Muted: "#475569", Warn: "#c2410c", Accent: "#059669",
 		StepFill: "#0f172a", StepText: "#ffffff", PortText: "#ffffff", Hatch: "#94a3b8",
+		Levels: map[string]LevelStyle{"admin": {"#ffe4e6", "#be123c"}, "write": {"#ede9fe", "#6d28d9"}, "read": {"#e0f2fe", "#0369a1"},
+			"breakglass": {"#ffe4e6", "#be123c"}, "": {"#f1f5f9", "#475569"}},
+		Changes: map[string]string{"added": "#059669", "changed": "#d97706", "removed": "#475569"},
 		Nodes: nodes(
 			"frontend", "#0891b2", "#ecfeff",
 			"backend", "#059669", "#ecfdf5",
@@ -163,4 +178,28 @@ func ThemeByName(name string) (*Theme, error) {
 
 func TextWidth(s string, fontSize float64) float64 {
 	return float64(len([]rune(s))) * fontSize * CharWidthEm
+}
+
+// Contrast is the WCAG 2 contrast ratio of two #rrggbb colours.
+func Contrast(a, b string) float64 {
+	la, lb := luminance(a), luminance(b)
+	if la < lb {
+		la, lb = lb, la
+	}
+	return (la + 0.05) / (lb + 0.05)
+}
+
+func luminance(hex string) float64 {
+	var rgb [3]float64
+	for i := range rgb {
+		var v int
+		fmt.Sscanf(hex[1+2*i:3+2*i], "%02x", &v)
+		c := float64(v) / 255
+		if c <= 0.03928 {
+			rgb[i] = c / 12.92
+		} else {
+			rgb[i] = math.Pow((c+0.055)/1.055, 2.4)
+		}
+	}
+	return 0.2126*rgb[0] + 0.7152*rgb[1] + 0.0722*rgb[2]
 }

@@ -41,3 +41,18 @@ func TestNodePillRect_StraddlesTheTopBorderInsideTheBox(t *testing.T) {
 		pill.X+pill.W < n.X+n.W,
 	})
 }
+
+func TestMatrixLevels_TextMeetsAAOnItsFill(t *testing.T) {
+	t.Parallel()
+	for _, th := range house.Themes {
+		for level, st := range th.Levels {
+			t.Run(th.Name+"/"+level, func(t *testing.T) {
+				t.Parallel()
+
+				ratio := house.Contrast(st.Text, st.Fill)
+
+				assert.GreaterOrEqual(t, ratio, 4.5, "%s on %s", st.Text, st.Fill)
+			})
+		}
+	}
+}
