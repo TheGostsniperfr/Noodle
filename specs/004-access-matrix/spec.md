@@ -1,6 +1,6 @@
 # Spec 004 · Access matrix
 
-- Status: **Planned** (`plan.md`, `tasks.md`)
+- Status: **Done** (`plan.md`, `tasks.md`)
 - Phase: 6b, built now alongside 6a on its own traversal (ADR-0020)
 - Decisions it builds on: ADR-0006, ADR-0007, ADR-0008, ADR-0010, ADR-0014, ADR-0015,
   ADR-0019, ADR-0020

@@ -71,6 +71,28 @@ apply.
 `{id: G1, severity: high, title: …, text: …, targets: [element or edge ids]}`. Each
 target shows the id as a badge; list the gaps in a card.
 
+### Membership and grant: who may act on what (ADR-0019)
+
+Facts, so they live in the model. Neither is traffic: they never draw on a topology.
+
+```yaml
+memberships:
+  - {id: m-dev, subject: dev-a, group: grp-a-members, auth: {method: oidc, mfa: true}}
+grants:
+  - {id: g-a, subject: grp-a-members, resource: vault-a, level: read, via: [policy-a-read], status: planned, target: P3}
+  - {id: g-cmp-root, subject: cmp, resource: vault-sys, level: admin, via: [root-token],
+     auth: {method: static-token}, status: deprecated, target: P2}
+```
+
+| Field | Notes |
+|---|---|
+| `subject`, `group`, `resource` | element ids; identities, groups and mechanisms are ordinary elements |
+| `level` | `read` · `write` · `admin` · `breakglass` |
+| `scope` | free text, e.g. `project-*` |
+| `via` | the elements that give the grant (policy, RoleBinding, IAM role), checked like `enforced_by` |
+| `auth` | `{method, lifetime, mfa}`: `static-token` `access-key` `password` `oidc` `k8s-sa` `federated` |
+| `status`, `target` | a plan: `deprecated` is what it removes, `planned` what it adds; `target` is the phase, on both |
+
 ### Offering: what a platform provides (ADR-0013)
 
 `{id, title, icon, summary, provides: [..], request, backed_by: [element ids], owner,
@@ -78,7 +100,7 @@ status, target}`. Read by catalog views.
 
 ## View
 
-Common fields: `type` (`topology` · `sequence` · `landscape` · `catalog`), `title`
+Common fields: `type` (`topology` · `sequence` · `landscape` · `catalog` · `matrix`), `title`
 (`Project · Topic · Question`), `subtitle` (the one question), `meta` (scope, out of
 scope, version and source, one line each).
 
@@ -130,6 +152,21 @@ Items are model elements, each shown once; `flow: true` draws arrows between sec
 type: catalog
 include: [dbaas, app-hosting, sso]   # offering ids
 columns: 2                           # 1 to 4
+```
+
+### Matrix: who may act on what (ADR-0019)
+
+Computed, no layout. Rows are identities, columns resources, both in titled groups;
+`labels` set header text (`<br>` for a second line). In `diff`, a cell's fill is the
+level after the plan and its frame and tag the change and its phase. The legend is
+generated under the grid.
+
+```yaml
+type: matrix
+state: diff                  # current (default) · target · diff
+identities: [{title: People, sub: "OIDC + MFA", items: [admin, dev-a]}]
+resources: [{title: Control plane, color: indigo, items: [keycloak, vault-sys]}]
+labels: {vault-sys: "Vault<br>config"}
 ```
 
 ## Layout (topology views)

@@ -13,8 +13,8 @@ See [the vision](docs/VISION.md).
 
 **Contracts `v1alpha1`.** A system is a model (what exists), views (what each diagram
 shows) and layouts (where a topology is drawn), rendered to draw.io in a dark or light
-theme. Four view types: topology, sequence, landscape (tech stack) and catalog (service
-catalogue). noodle refuses to emit a diagram whose lines cross boxes, whose labels
+theme. Five view types: topology, sequence, landscape (tech stack), catalog (service
+catalogue) and matrix (who may act on what, before and after a plan). noodle refuses to emit a diagram whose lines cross boxes, whose labels
 collide, or whose arrows break the connection semantics. Next: static discovery from
 Kubernetes manifests ([roadmap](docs/ROADMAP.md)).
 
@@ -69,6 +69,7 @@ The format is in [the skill reference](skills/noodle-diagram/reference.md).
 | [`sequence-basics`](examples/sequence-basics) | every sequence step kind: messages, a relay against a tunnel, a note, replies |
 | [`landscape`](examples/landscape) | a tech stack: bands, a side column, a pipeline, planned items with a target |
 | [`catalog`](examples/catalog) | a service catalogue built from the model's offerings |
+| [`cnp-access`](examples/cnp-access) | an access matrix from memberships and grants: what a segregation plan changes, phase by phase |
 | [`platform-regression`](examples/platform-regression) | three large topologies from a real platform, kept as regression fixtures |
 
 ## Docs

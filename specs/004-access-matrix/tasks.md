@@ -12,5 +12,5 @@ example PNG and look at it.
   system resolves to the expected cells and changes. Flip **P6b-03**.
 - [x] **T04** Render cells, frames, tags, hatches, counts and legend in both themes.
   Flip **P6b-04**.
-- [ ] **T05** `examples/cnp-access` in `init.sh` and CI; skill reference and README.
+- [x] **T05** `examples/cnp-access` in `init.sh` and CI; skill reference and README.
   Flip **P6b-05**.
