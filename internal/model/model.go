@@ -20,6 +20,42 @@ type Model struct {
 	References  []Reference  `yaml:"references"`
 	Annotations []Annotation `yaml:"annotations"`
 	Offerings   []Offering   `yaml:"offerings"`
+	Memberships []Membership `yaml:"memberships"`
+	Grants      []Grant      `yaml:"grants"`
+}
+
+// Membership says Subject belongs to Group or assumes it: a user in a Keycloak group, a
+// ServiceAccount bound to a Vault auth role (ADR-0019).
+type Membership struct {
+	ID      string `yaml:"id"`
+	Subject string `yaml:"subject"`
+	Group   string `yaml:"group"`
+	Auth    *Auth  `yaml:"auth,omitempty"`
+	Status  string `yaml:"status,omitempty"`
+	Target  string `yaml:"target,omitempty"`
+}
+
+// Grant says Subject may act on Resource at Level, limited to Scope, through the
+// elements in Via (a policy, a RoleBinding, an IAM role), checked like enforced_by
+// (ADR-0010, ADR-0019).
+type Grant struct {
+	ID       string   `yaml:"id"`
+	Subject  string   `yaml:"subject"`
+	Resource string   `yaml:"resource"`
+	Level    string   `yaml:"level"`
+	Scope    string   `yaml:"scope,omitempty"`
+	Via      []string `yaml:"via,omitempty"`
+	Auth     *Auth    `yaml:"auth,omitempty"`
+	Status   string   `yaml:"status,omitempty"`
+	Target   string   `yaml:"target,omitempty"`
+}
+
+// Auth is how an identity proves itself on one hop. Lifetime is free text ("1h");
+// empty means the credential does not expire.
+type Auth struct {
+	Method   string `yaml:"method"`
+	Lifetime string `yaml:"lifetime,omitempty"`
+	MFA      bool   `yaml:"mfa,omitempty"`
 }
 
 // Offering is what a platform promises its users and how to get it (ADR-0013).
@@ -182,6 +218,11 @@ type View struct {
 	Width float64   `yaml:"width"`
 	// Catalog views (ADR-0013): cards per row; Include lists offering ids.
 	Columns int `yaml:"columns"`
+	// Matrix views (ADR-0019): identities as row groups, resources as column groups,
+	// and which grants count: current, target or diff.
+	Identities []Section `yaml:"identities"`
+	Resources  []Section `yaml:"resources"`
+	State      string    `yaml:"state"`
 }
 
 // Band is one row of a landscape. Flow draws an arrow between consecutive sections.
@@ -195,9 +236,10 @@ type Band struct {
 	Sections []Section `yaml:"sections"`
 }
 
-// Section groups landscape items; Items are element ids.
+// Section groups landscape items, or a matrix's rows or columns; Items are element ids.
 type Section struct {
 	Title string   `yaml:"title"`
+	Sub   string   `yaml:"sub"`
 	Color string   `yaml:"color"`
 	Items []string `yaml:"items"`
 }

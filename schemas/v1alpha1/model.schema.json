@@ -13,7 +13,9 @@
     "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
     "references": {"type": "array", "items": {"$ref": "#/$defs/reference"}},
     "annotations": {"type": "array", "items": {"$ref": "#/$defs/annotation"}},
-    "offerings": {"type": "array", "items": {"$ref": "#/$defs/offering"}, "description": "What the platform offers its users (ADR-0013)."}
+    "offerings": {"type": "array", "items": {"$ref": "#/$defs/offering"}, "description": "What the platform offers its users (ADR-0013)."},
+    "memberships": {"type": "array", "items": {"$ref": "#/$defs/membership"}, "description": "Who belongs to which group or assumes which role (ADR-0019)."},
+    "grants": {"type": "array", "items": {"$ref": "#/$defs/grant"}, "description": "Who may act on what, at which level, through which mechanism (ADR-0019)."}
   },
   "$defs": {
     "offering": {
@@ -31,6 +33,45 @@
         "owner": {"type": "string"},
         "status": {"enum": ["planned", "deprecated"]},
         "target": {"type": "string", "minLength": 1}
+      }
+    },
+    "membership": {
+      "type": "object",
+      "required": ["id", "subject", "group"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "subject": {"$ref": "#/$defs/id"},
+        "group": {"$ref": "#/$defs/id", "description": "A group the subject belongs to, or a role it assumes."},
+        "auth": {"$ref": "#/$defs/auth"},
+        "status": {"enum": ["planned", "deprecated"]},
+        "target": {"type": "string", "minLength": 1, "description": "The plan phase that adds (planned) or removes (deprecated) it."}
+      }
+    },
+    "grant": {
+      "type": "object",
+      "required": ["id", "subject", "resource", "level"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "subject": {"$ref": "#/$defs/id"},
+        "resource": {"$ref": "#/$defs/id"},
+        "level": {"enum": ["read", "write", "admin", "breakglass"]},
+        "scope": {"type": "string", "description": "Free text, e.g. project-*."},
+        "via": {"type": "array", "items": {"$ref": "#/$defs/id"}, "minItems": 1, "description": "Elements that give the grant: a policy, a RoleBinding, an IAM role (ADR-0019)."},
+        "auth": {"$ref": "#/$defs/auth"},
+        "status": {"enum": ["planned", "deprecated"]},
+        "target": {"type": "string", "minLength": 1, "description": "The plan phase that adds (planned) or removes (deprecated) it."}
+      }
+    },
+    "auth": {
+      "type": "object",
+      "required": ["method"],
+      "additionalProperties": false,
+      "properties": {
+        "method": {"enum": ["static-token", "access-key", "password", "oidc", "k8s-sa", "federated"]},
+        "lifetime": {"type": "string", "description": "Free text, e.g. 1h. Absent means the credential does not expire."},
+        "mfa": {"type": "boolean"}
       }
     },
     "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*$"},
