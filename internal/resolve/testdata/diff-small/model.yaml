@@ -1,0 +1,16 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: z, kind: region, title: Z}
+  - {id: obs, kind: group, parent: z, title: OBS, status: planned, target: SP3}
+  - {id: live, kind: backend, parent: z, title: Live}
+  - {id: db, kind: database, parent: z, title: DB}
+  - {id: new, kind: backend, parent: obs, title: New}
+  - {id: old, kind: backend, parent: z, title: Old, status: deprecated}
+connections:
+  - {id: c-live-db, from: live, to: db, kind: flow, verb: query}
+  - {id: c-new-live, from: new, to: live, kind: flow, verb: scrape}
+  - {id: c-live-old, from: live, to: old, kind: flow, verb: call}
+  - {id: c-db-live, from: db, to: live, kind: async, verb: notify, status: planned}
+references:
+  - {id: r-new-db, from: new, to: db, kind: reads}

@@ -65,6 +65,17 @@
         {"id": "P6b-04", "description": "Matrix renders cells, change frames and tags, counts and legend in both themes", "verify": "noodle render examples/cnp-access --view matrix -theme light -o x.drawio passes the lint and writes the file", "passes": true},
         {"id": "P6b-05", "description": "examples/cnp-access renders dark and light in init.sh and CI", "verify": "./scripts/init.sh renders examples/cnp-access", "passes": true}
       ]
+    },
+    {
+      "id": "5a",
+      "title": "Topology diff for proposals",
+      "spec": "specs/005-topology-diff/spec.md",
+      "features": [
+        {"id": "P5a-01", "description": "Connection and reference status and target, inherited from their ends; state diff allowed on topology views", "verify": "go test ./internal/model/... accepts state diff on a topology view, rejects current there, rejects a bad connection status and a target without planned", "passes": true},
+        {"id": "P5a-02", "description": "A diff view resolves every zone, node and edge to added, removed or unchanged, edge labels prefixed", "verify": "go test ./internal/resolve/... resolves a small diff view to the expected changes, inheritance included", "passes": true},
+        {"id": "P5a-03", "description": "Diff renders added and removed frames and pills, dims the unchanged, and explains it in the legend, in both themes", "verify": "go test ./cmd/noodle/... and noodle render examples/topology-diff -view proposal -theme light -o x.drawio passes the lint", "passes": true},
+        {"id": "P5a-04", "description": "examples/topology-diff renders dark and light in init.sh and CI", "verify": "./scripts/init.sh renders examples/topology-diff", "passes": true}
+      ]
     }
   ],
   "backlog": [

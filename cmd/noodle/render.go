@@ -202,15 +202,39 @@ func (r *renderer) offering(o diagram.Offering) error {
 		text(fmt.Sprintf("%s__logo%d-text", o.ID, i), html.EscapeString(l.Title), lx, l.Y, house.TextWidth(l.Title, 10)+4, house.OfferingLogoSize, 10, r.th.Text, "verticalAlign=middle")
 	}
 	if pill, ok := house.NodePillRect(diagram.Node{Status: o.Status, Target: o.Target, X: o.X, Y: o.Y, W: o.W, H: o.H}); ok {
-		r.pill(o.ID+"__pill", house.PillText(o.Status, o.Target), pill)
+		r.pill(o.ID+"__pill", house.PillText(o.Status, o.Target), pill, r.th.Muted)
 	}
 	return nil
 }
 
-func (r *renderer) pill(id, text string, b diagram.Rect) {
-	st := style("rounded=1", "arcSize=50", "html=1", "fillColor="+r.th.Muted, "strokeColor=none", "align=center",
+func (r *renderer) pill(id, text string, b diagram.Rect, fill string) {
+	st := style("rounded=1", "arcSize=50", "html=1", "fillColor="+fill, "strokeColor=none", "align=center",
 		"verticalAlign=middle", "fontStyle=1", "movable=0", "connectable=0", font(house.PortFontSize, r.th.PortText))
 	r.vertex(id, "1", html.EscapeString(text), st, b.X, b.Y, b.W, b.H)
+}
+
+// pillFill is the change colour in a diff, the muted grey of a planned pill otherwise.
+func (r *renderer) pillFill(change string) string {
+	if c, ok := r.th.Diff[change]; ok {
+		return c
+	}
+	return r.th.Muted
+}
+
+// dim fades what a diff leaves unchanged (ADR-0021).
+var dim = style(fmt.Sprintf("opacity=%d", house.DimOpacity), fmt.Sprintf("textOpacity=%d", house.DimOpacity))
+
+// byChange puts unchanged items first, so a diff draws what changes on top of them.
+func byChange[T any](items []T, change func(T) string) []T {
+	var first, last []T
+	for _, it := range items {
+		if change(it) == diagram.Unchanged {
+			first = append(first, it)
+		} else {
+			last = append(last, it)
+		}
+	}
+	return append(first, last...)
 }
 
 func (r *renderer) open() {
@@ -240,10 +264,10 @@ func (r *renderer) render() (string, error) {
 		}
 	}
 	// Edges before nodes so boxes and port badges sit on top of line ends.
-	for _, e := range s.Edges {
+	for _, e := range byChange(s.Edges, func(e diagram.Edge) string { return e.Change }) {
 		r.edge(e)
 	}
-	for _, n := range s.Nodes {
+	for _, n := range byChange(s.Nodes, func(n diagram.Node) string { return n.Change }) {
 		if err := r.node(n); err != nil {
 			return "", err
 		}
@@ -310,18 +334,30 @@ func (r *renderer) zone(z diagram.Zone) error {
 		v += fmt.Sprintf(`&nbsp;&nbsp;<font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, house.SubFontSize, html.EscapeString(z.Sub))
 	}
 	fill := style("fillColor="+color, fmt.Sprintf("fillOpacity=%d", opacity))
-	titleOpacity := ""
-	switch z.Status {
-	case "planned":
+	stroke, titleOpacity, iconStyle := color, "", ""
+	switch {
+	case z.Change == diagram.Unchanged:
+		fill += dim
+		titleOpacity = fmt.Sprintf("textOpacity=%d", house.DimOpacity)
+		iconStyle = fmt.Sprintf("opacity=%d", house.DimOpacity)
+	case z.Change != "":
+		stroke, width = r.th.Diff[z.Change], 2.5
+		if z.Change == diagram.Removed {
+			dash = dotted
+			v = strings.Replace(v, "<b>", "<b><s>", 1)
+			v = strings.Replace(v, "</b>", "</s></b>", 1)
+		}
+	case z.Status == "planned":
 		fill = style("fillColor="+r.th.Hatch, "fillOpacity=35") + hatch
 		titleOpacity = "textOpacity=60"
-	case "deprecated":
+		iconStyle = "opacity=40"
+	case z.Status == "deprecated":
 		dash = dotted
 		v = strings.Replace(v, "<b>", "<b><s>", 1)
 		v = strings.Replace(v, "</b>", "</s></b>", 1)
 	}
 	st := style("rounded=1", "absoluteArcSize=1", fmt.Sprintf("arcSize=%d", arc), "html=1") + fill +
-		style("strokeColor="+color, fmt.Sprintf("strokeWidth=%g", width), "dashed=1", "dashPattern="+dash, "container=0", "collapsible=0")
+		style("strokeColor="+stroke, fmt.Sprintf("strokeWidth=%g", width), "dashed=1", "dashPattern="+dash, "container=0", "collapsible=0")
 	r.vertex(z.ID, "1", "", st, z.X, z.Y, z.W, z.H)
 	// Title and icon share one row and are both centred on it; draw.io's own label
 	// padding would otherwise leave the icon a few pixels above the text.
@@ -331,13 +367,9 @@ func (r *renderer) zone(z diagram.Zone) error {
 		fmt.Sprintf("spacingLeft=%g", pad-12), font(house.ZoneFontSize, color), "movable=0", "resizable=0", "connectable=0", titleOpacity),
 		12, rowY, title.W, title.H)
 	if pill, ok := house.ZonePillRect(z); ok {
-		r.pill(z.ID+"__pill", house.PillText(z.Status, z.Target), pill)
+		r.pill(z.ID+"__pill", house.BoxPillText(z.Status, z.Target, z.Change), pill, r.pillFill(z.Change))
 	}
 	if z.Icon != "" {
-		iconStyle := ""
-		if z.Status == "planned" {
-			iconStyle = "opacity=40"
-		}
 		return r.imageStyled(z.ID+"__icon", z.ID, z.Icon, 12, rowY+(title.H-house.ZoneIconSize)/2, house.ZoneIconSize, iconStyle)
 	}
 	return nil
@@ -374,6 +406,9 @@ func (r *renderer) node(n diagram.Node) error {
 		}
 		st := style("shape=image", "image="+uri, "imageAspect=1", "html=1", "verticalLabelPosition=bottom", "verticalAlign=top",
 			"labelPosition=center", "align=center", fmt.Sprintf("spacingTop=%g", house.ActorLabelGap), font(house.TitleFontSize, r.th.Title))
+		if n.Change == diagram.Unchanged {
+			st += dim
+		}
 		r.vertex(n.ID, "1", v, st, n.X, n.Y, n.W, n.H)
 		return nil
 	}
@@ -387,13 +422,22 @@ func (r *renderer) node(n diagram.Node) error {
 	if n.Icon != "" {
 		pad = house.TextPadLeft
 	}
-	fill, iconStyle := "fillColor="+k.Fill+";", ""
-	switch n.Status {
-	case "planned":
+	fill, iconStyle, stroke, width, stack := "fillColor="+k.Fill+";", "", k.Stroke, 1.5, ""
+	switch {
+	case n.Change == diagram.Unchanged:
+		fill += dim
+		iconStyle = fmt.Sprintf("opacity=%d", house.DimOpacity)
+		stack = dim
+	case n.Change != "":
+		stroke, width = r.th.Diff[n.Change], 3
+		if n.Change == diagram.Removed {
+			fill += style("dashed=1", "dashPattern="+dotted)
+		}
+	case n.Status == "planned":
 		// Hatch at half strength and text at 75 %: at slide scale a full hatch drowns the title.
 		fill = style("fillColor="+r.th.Hatch, "fillOpacity=50") + hatch + style("dashed=1", "dashPattern=6 4", "textOpacity=75")
 		iconStyle = "opacity=40"
-	case "deprecated":
+	case n.Status == "deprecated":
 		fill += style("dashed=1", "dashPattern="+dotted)
 	}
 	// Drawn before the box so they sit behind it, the farthest first (ADR-0008).
@@ -401,10 +445,10 @@ func (r *renderer) node(n diagram.Node) error {
 		for _, depth := range []float64{2, 1} {
 			d := depth * house.StackOffset
 			r.vertex(fmt.Sprintf("%s__stack%g", n.ID, depth), "1", "", style(shape...)+style("fillColor="+k.Fill, "strokeColor="+k.Stroke,
-				"strokeWidth=1.5", "dashed=1", "dashPattern=4 3", "editable=0", "movable=0", "connectable=0"), n.X+d, n.Y-d, n.W, n.H)
+				"strokeWidth=1.5", "dashed=1", "dashPattern=4 3", "editable=0", "movable=0", "connectable=0")+stack, n.X+d, n.Y-d, n.W, n.H)
 		}
 	}
-	st := style(shape...) + fill + style("html=1", "whiteSpace=wrap", "strokeColor="+k.Stroke, "strokeWidth=1.5",
+	st := style(shape...) + fill + style("html=1", "whiteSpace=wrap", "strokeColor="+stroke, fmt.Sprintf("strokeWidth=%g", width),
 		"align=left", "verticalAlign=top", fmt.Sprintf("spacingLeft=%g", pad), fmt.Sprintf("spacingTop=%g", top-4), "spacingRight=8",
 		font(house.TitleFontSize, r.th.Text))
 	r.vertex(n.ID, "1", r.nodeLabel(n), st, n.X, n.Y, n.W, n.H)
@@ -419,7 +463,7 @@ func (r *renderer) node(n diagram.Node) error {
 		}
 	}
 	if pill, ok := house.NodePillRect(n); ok {
-		r.pill(n.ID+"__pill", house.PillText(n.Status, n.Target), pill)
+		r.pill(n.ID+"__pill", house.BoxPillText(n.Status, n.Target, n.Change), pill, r.pillFill(n.Change))
 	}
 	return nil
 }
@@ -439,6 +483,13 @@ func (r *renderer) kindStrokeOf(id string) string {
 }
 
 func (r *renderer) portBadges() {
+	// In a diff a badge is dimmed unless an edge that changes lands on it.
+	lit := map[string]bool{}
+	for _, e := range r.spec.Edges {
+		if b, ok := r.ports[e.ID]; ok && e.Change != diagram.Unchanged {
+			lit[b.ID] = true
+		}
+	}
 	seen := map[string]bool{}
 	for _, e := range r.spec.Edges {
 		b, ok := r.ports[e.ID]
@@ -449,6 +500,9 @@ func (r *renderer) portBadges() {
 		host, _ := r.spec.AnchorRect(b.Node)
 		st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "html=1", "fillColor="+r.kindStrokeOf(b.Node), "strokeColor="+r.th.Background,
 			"strokeWidth=1", "align=center", "verticalAlign=middle", "fontStyle=1", font(house.PortFontSize, r.th.PortText), "movable=0", "resizable=0")
+		if r.spec.Diff && !lit[b.ID] {
+			st += dim
+		}
 		r.vertex(b.ID, b.Node, html.EscapeString(b.Text), st, b.Rect.X-host.X, b.Rect.Y-host.Y, b.Rect.W, b.Rect.H)
 	}
 }
@@ -474,14 +528,24 @@ func (r *renderer) edge(e diagram.Edge) {
 	if k.EndArrow == "cross" || k.EndArrow == "open" {
 		endFill = "0"
 	}
+	stroke, width, labelColor, dash := k.Stroke, k.Width, k.LabelColor, k.Dash
+	switch e.Change {
+	case diagram.Added:
+		stroke, width, labelColor = r.th.Diff[e.Change], k.Width+1, r.th.Diff[e.Change]
+	case diagram.Removed:
+		stroke, width, labelColor, dash = r.th.Diff[e.Change], k.Width+1, r.th.Diff[e.Change], dotted
+	}
 	parts := []string{"edgeStyle=orthogonalEdgeStyle", "rounded=1", "orthogonalLoop=1", "html=1", "jumpStyle=arc", "jumpSize=10",
-		"strokeColor=" + k.Stroke, fmt.Sprintf("strokeWidth=%g", k.Width),
+		"strokeColor=" + stroke, fmt.Sprintf("strokeWidth=%g", width),
 		"endArrow=" + k.EndArrow, "endFill=" + endFill, "endSize=7",
 		fmt.Sprintf("exitX=%.4f", (p0.X()-src.X)/src.W), fmt.Sprintf("exitY=%.4f", (p0.Y()-src.Y)/src.H), "exitPerimeter=0",
 		fmt.Sprintf("entryX=%.4f", entry[0]), fmt.Sprintf("entryY=%.4f", entry[1]), "entryPerimeter=0",
-		"labelBackgroundColor=" + r.th.Background, font(house.EdgeFontSize, k.LabelColor)}
-	if k.Dash != "" {
-		parts = append(parts, "dashed=1", "dashPattern="+k.Dash)
+		"labelBackgroundColor=" + r.th.Background, font(house.EdgeFontSize, labelColor)}
+	if dash != "" {
+		parts = append(parts, "dashed=1", "dashPattern="+dash)
+	}
+	if e.Change == diagram.Unchanged {
+		parts = append(parts, fmt.Sprintf("opacity=%d", house.DimOpacity), fmt.Sprintf("textOpacity=%d", house.DimOpacity))
 	}
 	if k.EndArrow == "cross" {
 		parts = append(parts, "endSize=10")
@@ -546,6 +610,10 @@ func (r *renderer) legendStatuses(x, y, w float64) {
 		used[z.Status] = true
 	}
 	k := r.th.Nodes["external"]
+	if r.spec.Diff {
+		y = r.legendChanges(x, y, w)
+		used = nil
+	}
 	if used["planned"] {
 		r.vertex("legend-planned", "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+r.th.Hatch)+hatch+
 			style("dashed=1", "dashPattern=6 4", "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+2, 40, 18)
@@ -574,6 +642,21 @@ func (r *renderer) legendStatuses(x, y, w float64) {
 		r.legendText(fmt.Sprintf("legend-stack-%d-text", i), html.EscapeString(n.Multiplicity), x+52, y, w)
 		y += 26
 	}
+}
+
+// legendChanges explains a diff's code in place of planned and deprecated (ADR-0021).
+func (r *renderer) legendChanges(x, y, w float64) float64 {
+	k := r.th.Nodes["external"]
+	box := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill)
+	r.vertex("legend-added", "1", "", box+style("strokeColor="+r.th.Diff[diagram.Added], "strokeWidth=3"), x, y+2, 40, 18)
+	r.legendText("legend-added-text", "added by the proposal · pill: target", x+52, y, w)
+	y += 26
+	r.vertex("legend-removed", "1", "", box+style("strokeColor="+r.th.Diff[diagram.Removed], "strokeWidth=3", "dashed=1", "dashPattern="+dotted), x, y+2, 40, 18)
+	r.legendText("legend-removed-text", "removed by the proposal", x+52, y, w)
+	y += 26
+	r.vertex("legend-unchanged", "1", "", box+style("strokeColor="+k.Stroke, "strokeWidth=1.5")+dim, x, y+2, 40, 18)
+	r.legendText("legend-unchanged-text", "unchanged, dimmed", x+52, y, w)
+	return y + 26
 }
 
 func (r *renderer) legend(c diagram.Card) {

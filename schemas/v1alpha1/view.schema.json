@@ -128,7 +128,7 @@
         "target",
         "diff"
       ],
-      "description": "Matrix views only: which grants count. Default current."
+      "description": "Matrix views: which grants count, default current (ADR-0019). Topology views: diff only, draws planned as added and deprecated as removed over the dimmed rest (ADR-0021)."
     }
   },
   "$defs": {

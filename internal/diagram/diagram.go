@@ -40,7 +40,17 @@ type Spec struct {
 	Offerings []Offering `yaml:"-"`
 	// Matrix is an access matrix (ADR-0019), laid out by the matrix resolver.
 	Matrix *Matrix `yaml:"-"`
+	// Diff is set on a topology view in state diff (ADR-0021): every zone, node and edge
+	// then carries a Change.
+	Diff bool `yaml:"-"`
 }
+
+// Changes of a topology diff (ADR-0021).
+const (
+	Added     = "added"
+	Removed   = "removed"
+	Unchanged = "unchanged"
+)
 
 // Matrix is a resolved access matrix: group headers, column and row headers, one cell
 // per identity and resource, a count per row and the legend under the grid.
@@ -136,8 +146,10 @@ type Zone struct {
 	Color string `yaml:"color"`
 	Icon  string `yaml:"icon"`
 	// Status and Target follow ADR-0008 and ADR-0014; a zone's apply to its children.
-	Status string  `yaml:"status"`
-	Target string  `yaml:"target"`
+	Status string `yaml:"status"`
+	Target string `yaml:"target"`
+	// Change is Added, Removed or Unchanged in a diff view, empty otherwise.
+	Change string  `yaml:"-"`
 	X      float64 `yaml:"x"`
 	Y      float64 `yaml:"y"`
 	W      float64 `yaml:"w"`
@@ -161,11 +173,13 @@ type Node struct {
 	Target string `yaml:"target"`
 	// Multiplicity says what the box stands for many of (ADR-0008); it draws the box
 	// as a stack. Not part of the v0 file format.
-	Multiplicity string  `yaml:"-"`
-	X            float64 `yaml:"x"`
-	Y            float64 `yaml:"y"`
-	W            float64 `yaml:"w"`
-	H            float64 `yaml:"h"`
+	Multiplicity string `yaml:"-"`
+	// Change is Added, Removed or Unchanged in a diff view, empty otherwise.
+	Change string  `yaml:"-"`
+	X      float64 `yaml:"x"`
+	Y      float64 `yaml:"y"`
+	W      float64 `yaml:"w"`
+	H      float64 `yaml:"h"`
 }
 
 func (n Node) Rect() Rect { return Rect{n.X, n.Y, n.W, n.H} }
@@ -194,6 +208,8 @@ type Edge struct {
 	Path        []Point `yaml:"path"`
 	LabelAt     *Point  `yaml:"label_at"`
 	LabelOffset Point   `yaml:"label_offset"`
+	// Change is Added, Removed or Unchanged in a diff view, empty otherwise.
+	Change string `yaml:"-"`
 }
 
 type Note struct {
