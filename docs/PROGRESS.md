@@ -24,6 +24,13 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-10-02 · Access matrix (spec 004)
+
+- ADR-0019 and ADR-0020: grants in the model, one `matrix` view, built now on its own
+  traversal. The access graph and lenses of #53 are set aside on `feat/access-views`,
+  after the CNP owner found the graph unreadable and the matrix clear.
+- Spec, plan and tasks 004; features P6b-01 to P6b-05. Spec 003 stays the current work.
+
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 
 - ADR-0018 and spec 003 update from the PAE recall check: `secret-endpoint` (T15),
