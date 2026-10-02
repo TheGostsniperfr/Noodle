@@ -4,7 +4,7 @@ Plan: [`plan.md`](plan.md). One task per commit. Each ends with `go vet ./... &&
 and `./scripts/init.sh` green. Tick the box in the same commit. Rendering tasks render the
 example PNG and look at it.
 
-- [ ] **T01** Model, checks and schemas for memberships, grants, auth; view type
+- [x] **T01** Model, checks and schemas for memberships, grants, auth; view type
   `matrix`, `rows`, `columns`, `state`. Table-driven tests. Flip **P6b-01**.
 - [ ] **T02** `internal/access`: groups, grants, levels per state, grant ids per
   resource. Table-driven tests. Flip **P6b-02**.

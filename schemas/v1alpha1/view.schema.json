@@ -22,7 +22,8 @@
         "topology",
         "sequence",
         "landscape",
-        "catalog"
+        "catalog",
+        "matrix"
       ]
     },
     "title": {
@@ -106,6 +107,28 @@
       "minimum": 1,
       "maximum": 4,
       "description": "Catalog views only: cards per row (ADR-0013)."
+    },
+    "identities": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/section"
+      },
+      "description": "Matrix views only: row groups of identity ids (ADR-0019)."
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/section"
+      },
+      "description": "Matrix views only: column groups of resource ids."
+    },
+    "state": {
+      "enum": [
+        "current",
+        "target",
+        "diff"
+      ],
+      "description": "Matrix views only: which grants count. Default current."
     }
   },
   "$defs": {
@@ -263,6 +286,10 @@
       "properties": {
         "title": {
           "type": "string"
+        },
+        "sub": {
+          "type": "string",
+          "description": "Matrix views: a line under the group title."
         },
         "color": {
           "type": "string"
