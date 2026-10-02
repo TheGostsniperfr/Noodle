@@ -183,6 +183,27 @@ func PillText(status, target string) string {
 	return "planned"
 }
 
+// DimOpacity is the opacity, in percent, of what a topology diff leaves unchanged
+// (ADR-0021).
+const DimOpacity = 30
+
+// BoxPillText is the pill of a node or zone: in a diff its change, otherwise its target
+// when planned.
+func BoxPillText(status, target, change string) string {
+	switch change {
+	case diagram.Added:
+		if target == "" {
+			target = "added"
+		}
+		return "+ " + target
+	case diagram.Removed:
+		return "− removed"
+	case diagram.Unchanged:
+		return ""
+	}
+	return PillText(status, target)
+}
+
 // StackOffset is how far each of the two copies behind a stacked node sits up and to
 // the right (ADR-0008).
 const StackOffset = 10.0
@@ -200,7 +221,7 @@ func NodeFootprint(n diagram.Node) diagram.Rect {
 // NodePillRect straddles the top border of a planned node, flush with its right end,
 // like a tag clipped on the box.
 func NodePillRect(n diagram.Node) (diagram.Rect, bool) {
-	text := PillText(n.Status, n.Target)
+	text := BoxPillText(n.Status, n.Target, n.Change)
 	if text == "" {
 		return diagram.Rect{}, false
 	}
@@ -210,7 +231,7 @@ func NodePillRect(n diagram.Node) (diagram.Rect, bool) {
 
 // ZonePillRect sits on the zone's title row, after the title.
 func ZonePillRect(z diagram.Zone) (diagram.Rect, bool) {
-	text := PillText(z.Status, z.Target)
+	text := BoxPillText(z.Status, z.Target, z.Change)
 	if text == "" {
 		return diagram.Rect{}, false
 	}

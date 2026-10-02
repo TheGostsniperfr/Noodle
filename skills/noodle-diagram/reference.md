@@ -59,10 +59,11 @@ Opened by `from`, listened to by `to` (ADR-0003). Requests only, never responses
 | `protocol`, `verb` | the label reads `verb · protocol`, e.g. `proxy · HTTP` |
 | `denied` | `true`: this must not happen, drawn as a blocked edge |
 | `enforced_by` | with `denied`: the elements that block it, e.g. a NetworkPolicy (ADR-0010) |
+| `status`, `target` | as on elements; absent, inherited from the ends: `planned` if either end is, else `deprecated` (ADR-0021) |
 
 ### Reference: configuration, not traffic
 
-`{id, from, to, kind}` with `kind` the relation: `parentRef`, `targetRef`, `envFrom`,
+`{id, from, to, kind, status, target}` with `kind` the relation: `parentRef`, `targetRef`, `envFrom`,
 `secretKeyRef`. Drawn dotted with an open arrow; never numbered; the side rule does not
 apply.
 
@@ -114,6 +115,10 @@ scope, version and source, one line each).
 | `labels` | `{edge-id: text}` to override a label in this view only |
 | `notes` | `[{id, text}]`: a response that changes the path, next to who sends it |
 | `cards` | `[{id, title, color, legend, lines}]`: `legend: true` generates the legend |
+| `state` | `diff` draws a proposal (ADR-0021): `planned` as added (change-coloured frame, `+ target` pill, `+` label), `deprecated` as removed (red dotted frame, struck, `−`), the rest dimmed. Absent: ADR-0008 hatch and dots |
+
+A proposal is a copy of the reference view with `state: diff`, over the same model and a
+copy of its layout. When the plan ships, drop the statuses: both views show the new platform.
 
 ### Sequence (ADR-0004, ADR-0011)
 

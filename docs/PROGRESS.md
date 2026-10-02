@@ -24,6 +24,20 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-10-02 · Topology diff for proposals (spec 005)
+
+- ADR-0021: `state: diff` on topology views and `status`/`target` on connections and
+  references, inherited from their ends. Asked by Brian for the PAE observability
+  proposal: what a plan adds and removes must stand out over the dimmed platform.
+- Spec and tasks 005, phase 5a in the roadmap; features P5a-01 to P5a-04 pass.
+- Added: change-coloured frame (matrix green), `+ target` pill, `+` label. Removed: red
+  dotted frame, struck title, `−`. Unchanged: 30 % opacity, drawn first. Port badges
+  stay lit when a changed edge lands on them. Legend lists the three in place of
+  planned and deprecated.
+- Every existing example renders byte-identical to main in both themes.
+- `examples/topology-diff`: a proposal and its reference view over one model, in
+  init.sh and CI. Next: use it for the PAE observability proposal.
+
 ### 2026-10-02 · Access matrix (spec 004)
 
 - ADR-0019 and ADR-0020: grants in the model, one `matrix` view, built now on its own

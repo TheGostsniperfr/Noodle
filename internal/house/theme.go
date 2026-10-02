@@ -24,9 +24,12 @@ type Theme struct {
 	// changes (ADR-0019). The two never share a colour.
 	Levels  map[string]LevelStyle
 	Changes map[string]string
-	Nodes   map[string]NodeKind
-	Zones   map[string]string
-	Edges   map[string]EdgeKind
+	// Diff frames what a topology diff adds and removes (ADR-0021). Removed is red, not
+	// the matrix's grey: in a topology diff grey is what unchanged looks like.
+	Diff  map[string]string
+	Nodes map[string]NodeKind
+	Zones map[string]string
+	Edges map[string]EdgeKind
 }
 
 type NodeKind struct{ Stroke, Fill, Legend string }
@@ -124,6 +127,7 @@ var Themes = map[string]*Theme{
 		Levels: map[string]LevelStyle{"admin": {"#4c0519", "#fda4af"}, "write": {"#2e1065", "#c4b5fd"}, "read": {"#082f49", "#7dd3fc"},
 			"breakglass": {"#4c0519", "#fda4af"}, "": {"#111827", "#94a3b8"}},
 		Changes: map[string]string{"added": "#34d399", "changed": "#fbbf24", "removed": "#94a3b8"},
+		Diff:    map[string]string{"added": "#34d399", "removed": "#f87171"},
 		Nodes: nodes(
 			"frontend", "#22d3ee", "#0c2234",
 			"backend", "#34d399", "#0b2d31",
@@ -149,6 +153,7 @@ var Themes = map[string]*Theme{
 		Levels: map[string]LevelStyle{"admin": {"#ffe4e6", "#be123c"}, "write": {"#ede9fe", "#6d28d9"}, "read": {"#e0f2fe", "#0369a1"},
 			"breakglass": {"#ffe4e6", "#be123c"}, "": {"#e2e8f0", "#475569"}},
 		Changes: map[string]string{"added": "#059669", "changed": "#d97706", "removed": "#475569"},
+		Diff:    map[string]string{"added": "#059669", "removed": "#dc2626"},
 		Nodes: nodes(
 			"frontend", "#0891b2", "#ecfeff",
 			"backend", "#059669", "#ecfdf5",

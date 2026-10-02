@@ -69,3 +69,23 @@ func TestMatrixEmptyCell_StandsOutFromTheBackground(t *testing.T) {
 		})
 	}
 }
+
+func TestBoxPillText_ShowsTheChange_InADiff(t *testing.T) {
+	t.Parallel()
+	tests := []struct{ name, status, target, change, want string }{
+		{"added with target", "planned", "SP3", diagram.Added, "+ SP3"},
+		{"added without target", "planned", "", diagram.Added, "+ added"},
+		{"removed", "deprecated", "", diagram.Removed, "− removed"},
+		{"unchanged", "", "", diagram.Unchanged, ""},
+		{"outside a diff", "planned", "SP1", "", "SP1"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := house.BoxPillText(tt.status, tt.target, tt.change)
+
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
