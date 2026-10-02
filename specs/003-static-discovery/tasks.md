@@ -48,7 +48,8 @@ Order: T05, T06, T12, **T14**; then T15, T16 and T07 only if T14 passes.
 
 ## D · Merge and drift (P6a-05)
 
-- [ ] **T09** `internal/graph`: merge per ADR-0015, lookup, neighbours.
+- [ ] **T09** `internal/graph`: merge per ADR-0015, lookup, neighbours. `internal/access`
+  (spec 004) has its own traversal until then; reuse or replace it here (ADR-0020).
 - [ ] **T10** `Drift` and `noodle drift <system>`: unmatched, gone, planned-and-absent,
   unmodelled connections. Expected report in the example. Flip **P6a-05**.
 

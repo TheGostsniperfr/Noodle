@@ -23,5 +23,7 @@ that supersedes the old one.
 | [0016](0016-discovery-before-viewer.md) | Static Kubernetes discovery comes before the viewer | Accepted |
 | [0017](0017-unresolved-and-resolutions.md) | The k8s adapter decodes with yaml.v3 and reports what it cannot resolve | Accepted |
 | [0018](0018-credential-implied-connections-and-operator-rules.md) | Credential-implied connections and operator rules | Accepted |
+| [0019](0019-access-grants-and-matrix.md) | Access grants live in the model; a matrix view shows them | Accepted |
+| [0020](0020-access-matrix-before-graph.md) | The access matrix is built now, on its own traversal | Accepted |
 
 Template: Context · Decision · Consequences. Keep it under a page.
