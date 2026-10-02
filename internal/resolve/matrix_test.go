@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/TheGostsniperfr/Noodle/internal/diagram"
+	"github.com/TheGostsniperfr/Noodle/internal/house"
 	"github.com/TheGostsniperfr/Noodle/internal/lint"
 	"github.com/TheGostsniperfr/Noodle/internal/model"
 	"github.com/TheGostsniperfr/Noodle/internal/resolve"
@@ -92,4 +93,15 @@ func TestMatrix_FramesReachTheLastRowAndTheCardHoldsTheLegend(t *testing.T) {
 		assert.True(t, m.LegendCard.Contains(c.Rect()), "legend cell %v outside the card %v", c.Rect(), m.LegendCard)
 	}
 	assert.Greater(t, m.LegendCard.Y, m.GridBottom)
+}
+
+func TestMatrix_FramesStayClearOfRowHeadersAndCounts(t *testing.T) {
+	t.Parallel()
+	m := smallMatrix(t).Matrix
+	first, last := m.ColumnGroups[0], m.ColumnGroups[len(m.ColumnGroups)-1]
+
+	for _, h := range m.Rows {
+		assert.Less(t, h.X+h.W, first.X-house.MatrixFrameOut, "row header %q under the frame", h.Lines[0])
+	}
+	assert.Greater(t, m.CountHeader.X, last.X+last.W+house.MatrixFrameOut)
 }
