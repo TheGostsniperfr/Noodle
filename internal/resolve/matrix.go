@@ -40,7 +40,9 @@ func Matrix(s *model.System, viewID string) (*diagram.Spec, error) {
 	diff := access.New(s.Model, access.Diff)
 
 	m := &diagram.Matrix{State: state}
-	gridX := landscapeMargin + house.MatrixRowHeaderW + house.MatrixGap
+	// A group gap, not a cell gap, before the grid: the first column group's frame runs
+	// down that side and must stay clear of the row headers.
+	gridX := landscapeMargin + house.MatrixRowHeaderW + house.MatrixGroupGap
 	y := landscapeTop
 
 	// Column groups and headers, left to right with a gap between groups.
