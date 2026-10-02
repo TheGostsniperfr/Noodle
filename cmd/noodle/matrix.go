@@ -16,8 +16,10 @@ func (r *renderer) matrix(m *diagram.Matrix) {
 	// last row, like a zone on a topology.
 	for i, g := range m.ColumnGroups {
 		f := house.MatrixFrameOut
-		r.vertex(fmt.Sprintf("mx-frame%d", i), "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=10", "fillColor="+r.zoneColor(g.Color),
-			"fillOpacity=4", "strokeColor="+r.zoneColor(g.Color), "strokeWidth=1.2", "dashed=1", "dashPattern=4 4", "movable=0"),
+		// Border only: a tinted fill would sit behind the empty cells and wash out the
+		// grid they draw.
+		r.vertex(fmt.Sprintf("mx-frame%d", i), "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=10", "fillColor=none",
+			"strokeColor="+r.zoneColor(g.Color), "strokeWidth=1.2", "dashed=1", "dashPattern=4 4", "movable=0"),
 			g.X-f, g.Y-f, g.W+2*f, m.GridBottom-g.Y+2*f)
 	}
 	r.card(diagram.Card{ID: "mx-legend-card", Title: "Legend", Color: "slate",
