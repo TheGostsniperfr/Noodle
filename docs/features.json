@@ -61,7 +61,7 @@
       "features": [
         {"id": "P6b-01", "description": "Memberships, grants and auth in the model, matrix view fields, with checks and schemas", "verify": "go test ./internal/model/... rejects unknown ids, levels, target outside planned or deprecated, membership cycles and misplaced view fields", "passes": true},
         {"id": "P6b-02", "description": "Strongest level per subject and resource, through groups, per state", "verify": "go test ./internal/access/... covers groups, nesting, states and break-glass", "passes": true},
-        {"id": "P6b-03", "description": "Matrix view resolves and lints with no layout file, cells carry level and change", "verify": "go test ./internal/resolve/... resolves a small matrix to the expected cells, changes and counts", "passes": false},
+        {"id": "P6b-03", "description": "Matrix view resolves and lints with no layout file, cells carry level and change", "verify": "go test ./internal/resolve/... resolves a small matrix to the expected cells, changes and counts", "passes": true},
         {"id": "P6b-04", "description": "Matrix renders cells, change frames and tags, counts and legend in both themes", "verify": "noodle render examples/cnp-access --view matrix -theme light -o x.drawio passes the lint and writes the file", "passes": false},
         {"id": "P6b-05", "description": "examples/cnp-access renders dark and light in init.sh and CI", "verify": "./scripts/init.sh renders examples/cnp-access", "passes": false}
       ]

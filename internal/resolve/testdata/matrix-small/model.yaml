@@ -1,0 +1,21 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: dev, kind: frontend, shape: actor, icon: user, title: Developer, desc: tenant A}
+  - {id: svc, kind: backend, title: Provisioner, desc: service account}
+  - {id: team-a, kind: security, title: team-a}
+  - {id: everyone, kind: security, title: everyone}
+  - {id: vault-a, kind: database, title: Secrets A}
+  - {id: apps, kind: backend, title: All apps}
+  - {id: dns, kind: cloud, title: DNS}
+memberships:
+  - {id: m-dev-a, subject: dev, group: team-a}
+  - {id: m-dev-all, subject: dev, group: everyone, status: deprecated, target: P3}
+grants:
+  - {id: g-a-write, subject: team-a, resource: vault-a, level: write, status: deprecated, target: P3}
+  - {id: g-a-read, subject: team-a, resource: vault-a, level: read, status: planned, target: P3}
+  - {id: g-all, subject: everyone, resource: apps, level: read}
+  - {id: g-svc-root, subject: svc, resource: vault-a, level: admin, status: deprecated, target: P2}
+  - {id: g-svc-dns-old, subject: svc, resource: dns, level: write, status: deprecated, target: P2}
+  - {id: g-svc-dns-new, subject: svc, resource: dns, level: write, scope: zone only, status: planned, target: P2}
+  - {id: g-svc-apps, subject: svc, resource: apps, level: write, status: planned, target: P2}
