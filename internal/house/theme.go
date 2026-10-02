@@ -147,7 +147,7 @@ var Themes = map[string]*Theme{
 		Title: "#0f172a", Text: "#1e293b", Muted: "#475569", Warn: "#c2410c", Accent: "#059669",
 		StepFill: "#0f172a", StepText: "#ffffff", PortText: "#ffffff", Hatch: "#94a3b8",
 		Levels: map[string]LevelStyle{"admin": {"#ffe4e6", "#be123c"}, "write": {"#ede9fe", "#6d28d9"}, "read": {"#e0f2fe", "#0369a1"},
-			"breakglass": {"#ffe4e6", "#be123c"}, "": {"#f1f5f9", "#475569"}},
+			"breakglass": {"#ffe4e6", "#be123c"}, "": {"#e2e8f0", "#475569"}},
 		Changes: map[string]string{"added": "#059669", "changed": "#d97706", "removed": "#475569"},
 		Nodes: nodes(
 			"frontend", "#0891b2", "#ecfeff",

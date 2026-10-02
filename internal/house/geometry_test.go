@@ -56,3 +56,16 @@ func TestMatrixLevels_TextMeetsAAOnItsFill(t *testing.T) {
 		}
 	}
 }
+
+func TestMatrixEmptyCell_StandsOutFromTheBackground(t *testing.T) {
+	t.Parallel()
+	for _, th := range house.Themes {
+		t.Run(th.Name, func(t *testing.T) {
+			t.Parallel()
+
+			ratio := house.Contrast(th.Levels[""].Fill, th.Background)
+
+			assert.GreaterOrEqual(t, ratio, 1.12, "empty cell %s on %s", th.Levels[""].Fill, th.Background)
+		})
+	}
+}
