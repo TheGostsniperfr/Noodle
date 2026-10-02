@@ -38,7 +38,46 @@ type Spec struct {
 	Arrows []Arrow `yaml:"arrows"`
 	// Offerings are catalog cards (ADR-0013), laid out by the catalog resolver.
 	Offerings []Offering `yaml:"-"`
+	// Matrix is an access matrix (ADR-0019), laid out by the matrix resolver.
+	Matrix *Matrix `yaml:"-"`
 }
+
+// Matrix is a resolved access matrix: group headers, column and row headers, one cell
+// per identity and resource, a count per row and the legend under the grid.
+type Matrix struct {
+	State        string
+	ColumnGroups []MatrixGroup
+	Columns      []MatrixHeader
+	RowGroups    []MatrixGroup
+	Rows         []MatrixHeader
+	Cells        []MatrixCell
+	CountHeader  MatrixHeader
+	Counts       []MatrixHeader
+	LegendTitles []MatrixHeader
+	Legend       []MatrixCell
+}
+
+type MatrixGroup struct {
+	Title, Sub, Color string
+	X, Y, W, H        float64
+}
+
+// MatrixHeader is a block of text lines; Sub lines render smaller.
+type MatrixHeader struct {
+	Lines      []string
+	Sub        []string
+	X, Y, W, H float64
+}
+
+// MatrixCell is a level after the plan, and in a diff what changed to get there:
+// Change is "", "added", "changed" or "removed"; Before is the former level; Note is a
+// short second line. Caption is set on legend cells only.
+type MatrixCell struct {
+	Level, Before, Change, Phase, Note, Caption string
+	X, Y, W, H                                  float64
+}
+
+func (c MatrixCell) Rect() Rect { return Rect{c.X, c.Y, c.W, c.H} }
 
 // Offering is a resolved catalog card. Text is already wrapped to the card width; each
 // block's Y is absolute, so the renderer and the lint agree on where text sits.

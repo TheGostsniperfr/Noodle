@@ -34,6 +34,8 @@ decisions go in ADRs, acceptance in `features.json`.
   `state`; `target` allowed on deprecated items (the phase that removes them) (P6b-01).
 - T02: `internal/access`: groups, grants, levels per state, grant ids, phase of a
   change (P6b-02).
+- T03: `resolve.Matrix`, `diagram.Matrix`, matrix text lint; cells carry level, change
+  (added, changed, removed, rescoped), phase and counts (P6b-03).
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 

@@ -1,0 +1,11 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: matrix
+title: Small · Access · Diff
+state: diff
+identities:
+  - {title: People, items: [dev]}
+  - {title: Service accounts, items: [svc]}
+resources:
+  - {title: Data, color: violet, items: [vault-a]}
+  - {title: Delivery, color: cyan, items: [apps, dns]}

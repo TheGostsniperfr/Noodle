@@ -8,7 +8,7 @@ example PNG and look at it.
   `matrix`, `rows`, `columns`, `state`. Table-driven tests. Flip **P6b-01**.
 - [x] **T02** `internal/access`: groups, grants, levels per state, grant ids per
   resource. Table-driven tests. Flip **P6b-02**.
-- [ ] **T03** `resolve.Matrix` and `diagram.Matrix`; the matrix text lint. Test: a small
+- [x] **T03** `resolve.Matrix` and `diagram.Matrix`; the matrix text lint. Test: a small
   system resolves to the expected cells and changes. Flip **P6b-03**.
 - [ ] **T04** Render cells, frames, tags, hatches, counts and legend in both themes.
   Flip **P6b-04**.
