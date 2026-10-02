@@ -90,7 +90,7 @@ func Matrix(s *model.System, viewID string) (*diagram.Spec, error) {
 				Lines: []string{titleOrLabel(v, e)}, Sub: sub, X: landscapeMargin, Y: y, W: house.MatrixRowHeaderW, H: house.MatrixCellH,
 			})
 			lb, la := before.Levels(id), after.Levels(id)
-			gb, ga := before.GrantIDs(id), after.GrantIDs(id)
+			gb, ga := before.TopGrants(id), after.TopGrants(id)
 			changeable := [2]int{}
 			for _, c := range cols {
 				cell := diagram.MatrixCell{Level: la[c.id], X: c.x, Y: y, W: house.MatrixCellW, H: house.MatrixCellH}
@@ -117,17 +117,20 @@ func Matrix(s *model.System, viewID string) (*diagram.Spec, error) {
 		}
 	}
 	y = matrixLegend(m, state, y+house.MatrixLegendGap)
+	for _, c := range m.Legend {
+		width = max(width, c.X+c.W+house.MatrixLegendCaptionW+landscapeMargin)
+	}
 	return &diagram.Spec{
 		ID: v.ID, Type: "matrix", Title: v.Title, Subtitle: v.Subtitle, Meta: v.Meta,
 		Width: width, Height: y + landscapeMargin, Matrix: m,
 	}, nil
 }
 
-// change compares a cell's level before and after the plan. Same level through other
-// grants is a change too: the scope moved.
-func change(before, after, grantsBefore, grantsAfter string) (was, kind, note string) {
+// change compares a cell's level before and after the plan. The same level given only
+// by new grants is a change too: the scope moved.
+func change(before, after string, grantsBefore, grantsAfter map[string]bool) (was, kind, note string) {
 	switch {
-	case before == after && grantsBefore == grantsAfter:
+	case before == after && (before == "" || shareAny(grantsBefore, grantsAfter)):
 		return "", "", ""
 	case before == after:
 		return before, "changed", "rescoped"
@@ -187,4 +190,13 @@ func matrixLegend(m *diagram.Matrix, state string, y float64) float64 {
 		})
 	}
 	return y
+}
+
+func shareAny(a, b map[string]bool) bool {
+	for id := range a {
+		if b[id] {
+			return true
+		}
+	}
+	return false
 }

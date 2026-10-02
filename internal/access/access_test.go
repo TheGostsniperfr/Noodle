@@ -72,17 +72,15 @@ func TestLevels(t *testing.T) {
 	}
 }
 
-func TestGrantIDs_TellsTwoGrantsAtTheSameLevelApart(t *testing.T) {
+func TestTopGrants_KeepsOnlyTheGrantsAtTheStrongestLevel(t *testing.T) {
 	t.Parallel()
 	m := load(t)
-	m.Grants = append(m.Grants,
-		model.Grant{ID: "g-cf-old", Subject: "cmp", Resource: "cloudflare", Level: "write", Status: "deprecated"},
-		model.Grant{ID: "g-cf-new", Subject: "cmp", Resource: "cloudflare", Level: "write", Status: "planned"})
+	m.Grants = append(m.Grants, model.Grant{ID: "g-alice-admin", Subject: "alice", Resource: "apps", Level: "admin"})
+	g := access.New(m, access.Current)
 
-	before := access.New(m, access.Current).GrantIDs("cmp")["cloudflare"]
-	after := access.New(m, access.Target).GrantIDs("cmp")["cloudflare"]
+	top := g.TopGrants("alice")["apps"]
 
-	assert.NotEqual(t, before, after)
+	assert.Equal(t, map[string]bool{"g-alice-admin": true}, top)
 }
 
 func TestPhase(t *testing.T) {
@@ -93,6 +91,7 @@ func TestPhase(t *testing.T) {
 		{"from the grants that change", "cmp", "vault", "P2"},
 		{"from a membership that changes", "alice", "apps", "P3"},
 		{"several phases on one cell", "root", "vault", "P1"},
+		{"a grant's own phase wins over its membership's", "cmp", "vault", "P2"},
 		{"nothing changes", "alice", "vault-a", ""},
 	}
 	for _, tt := range tests {

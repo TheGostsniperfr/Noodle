@@ -10,7 +10,7 @@ example PNG and look at it.
   resource. Table-driven tests. Flip **P6b-02**.
 - [x] **T03** `resolve.Matrix` and `diagram.Matrix`; the matrix text lint. Test: a small
   system resolves to the expected cells and changes. Flip **P6b-03**.
-- [ ] **T04** Render cells, frames, tags, hatches, counts and legend in both themes.
+- [x] **T04** Render cells, frames, tags, hatches, counts and legend in both themes.
   Flip **P6b-04**.
 - [ ] **T05** `examples/cnp-access` in `init.sh` and CI; skill reference and README.
   Flip **P6b-05**.

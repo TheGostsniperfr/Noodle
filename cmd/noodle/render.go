@@ -263,6 +263,9 @@ func (r *renderer) render() (string, error) {
 			return "", err
 		}
 	}
+	if s.Matrix != nil {
+		r.matrix(s.Matrix)
+	}
 	return r.close(), nil
 }
 

@@ -120,25 +120,28 @@ func (g *Graph) Levels(subject string) map[string]string {
 	return out
 }
 
-// GrantIDs maps each resource subject reaches to the sorted ids of the grants that give
-// it, so two states with the same level but different grants can be told apart.
-func (g *Graph) GrantIDs(subject string) map[string]string {
-	ids := map[string][]string{}
+// TopGrants maps each resource subject reaches to the ids of the grants that give its
+// strongest level there. A weaker grant lost under a stronger one changes nothing a
+// reader cares about, so it is left out.
+func (g *Graph) TopGrants(subject string) map[string]map[string]bool {
+	levels := g.Levels(subject)
+	out := map[string]map[string]bool{}
 	for _, gr := range g.Grants(subject) {
-		ids[gr.Resource] = append(ids[gr.Resource], gr.ID)
-	}
-	out := map[string]string{}
-	for res, list := range ids {
-		sort.Strings(list)
-		out[res] = strings.Join(list, ",")
+		if gr.Level != levels[gr.Resource] {
+			continue
+		}
+		if out[gr.Resource] == nil {
+			out[gr.Resource] = map[string]bool{}
+		}
+		out[gr.Resource][gr.ID] = true
 	}
 	return out
 }
 
-// Phase returns the targets of the planned or deprecated items that change subject's
-// access to resource: the grants on it and the memberships leading to their holders.
-// Unique, sorted, joined with "+"; empty when nothing names a phase. The graph should
-// be built in the diff state.
+// Phase returns the targets of the planned or deprecated grants on resource that
+// subject holds, or, when none names a phase, those of the memberships leading to their
+// holders. Unique, sorted, joined with "+"; empty when nothing names a phase. The graph
+// should be built in the diff state.
 func (g *Graph) Phase(subject, resource string) string {
 	seen := map[string]bool{}
 	holders := map[string]bool{subject: true}
@@ -150,6 +153,9 @@ func (g *Graph) Phase(subject, resource string) string {
 			seen[gr.Target] = true
 		}
 	}
+	if len(seen) > 0 {
+		return joinSorted(seen)
+	}
 	for id := range holders {
 		for _, ms := range g.groups[id] {
 			if ms.Status != "" && ms.Target != "" && g.reaches(ms.Group, resource) {
@@ -157,8 +163,12 @@ func (g *Graph) Phase(subject, resource string) string {
 			}
 		}
 	}
-	out := make([]string, 0, len(seen))
-	for t := range seen {
+	return joinSorted(seen)
+}
+
+func joinSorted(set map[string]bool) string {
+	out := make([]string, 0, len(set))
+	for t := range set {
 		out = append(out, t)
 	}
 	sort.Strings(out)
