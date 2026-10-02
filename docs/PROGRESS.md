@@ -32,6 +32,8 @@ decisions go in ADRs, acceptance in `features.json`.
 - Spec, plan and tasks 004; features P6b-01 to P6b-05. Spec 003 stays the current work.
 - T01: memberships, grants, auth; view type `matrix` with `identities`, `resources`,
   `state`; `target` allowed on deprecated items (the phase that removes them) (P6b-01).
+- T02: `internal/access`: groups, grants, levels per state, grant ids, phase of a
+  change (P6b-02).
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 
