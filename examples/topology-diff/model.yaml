@@ -1,0 +1,31 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: z-internet, kind: region, color: slate, icon: globe, title: INTERNET}
+  - {id: z-cluster, kind: region, color: cyan, icon: kubernetes, title: CLUSTER}
+  - {id: g-app, kind: group, parent: z-cluster, color: sky, icon: k8s-ns, title: APPLICATION, sub: ns prod}
+  - {id: g-obs, kind: group, parent: z-cluster, color: amber, icon: prometheus, title: OBSERVABILITY, sub: ns monitoring}
+  - {id: z-saas, kind: region, color: slate, icon: globe, title: THIRD-PARTY SAAS}
+  - {id: user, kind: frontend, parent: z-internet, shape: actor, icon: user, title: User, desc: browser}
+  - {id: envoy, kind: backend, parent: g-app, icon: envoy, title: Gateway, tech: '[Envoy Gateway]', desc: TLS and host routing, ports: [{name: https, protocol: TCP, port: 443}]}
+  - {id: api, kind: backend, parent: g-app, icon: k8s-deploy, title: api, tech: '[Quarkus]', desc: Business API, ports: [{name: http, protocol: TCP, port: 8080}]}
+  - {id: grafana, kind: frontend, parent: g-obs, icon: grafana, title: Grafana, tech: '[kube-prometheus-stack]', desc: Dashboards and Explore}
+  - {id: prometheus, kind: backend, parent: g-obs, icon: prometheus, title: Prometheus, tech: '[Prometheus Operator]', desc: 'Metrics, 30 days', ports: [{name: web, protocol: TCP, port: 9090}]}
+  - {id: alertmanager, kind: backend, parent: g-obs, icon: prometheus, title: Alertmanager, tech: '[kube-prometheus-stack]', desc: Routes alerts, ports: [{name: web, protocol: TCP, port: 9093}]}
+  - {id: loki, kind: database, parent: g-obs, icon: loki, title: Loki, tech: '[monolithic · PVC]', desc: 'Logs, 14 days', status: planned, target: SP3, ports: [{name: http, protocol: TCP, port: 3100}]}
+  - {id: alloy, kind: backend, parent: g-obs, icon: grafana-alloy, title: Alloy, tech: '[DaemonSet]', desc: Tails pod logs, status: planned, target: SP3, multiplicity: one per node}
+  - {id: fluentbit, kind: backend, parent: g-obs, icon: k8s-pod, title: Fluent Bit, tech: '[DaemonSet]', desc: Ships pod logs, status: deprecated}
+  - {id: elastic, kind: database, parent: g-obs, icon: k8s-deploy, title: Elasticsearch, tech: '[single node]', desc: Log index, status: deprecated, ports: [{name: http, protocol: TCP, port: 9200}]}
+  - {id: discord, kind: external, parent: z-saas, icon: discord, title: Discord, tech: '[webhook]', desc: '#alerts channel', ports: [{name: https, protocol: TCP, port: 443}]}
+connections:
+  - {id: c-user-envoy, from: user, to: envoy, port: https, protocol: HTTPS, verb: GET, kind: flow}
+  - {id: c-envoy-api, from: envoy, to: api, port: http, protocol: HTTP, verb: proxy, kind: flow}
+  - {id: c-grafana-prometheus, from: grafana, to: prometheus, port: web, protocol: HTTP, verb: PromQL, kind: flow}
+  - {id: c-grafana-loki, from: grafana, to: loki, port: http, protocol: HTTP, verb: LogQL, kind: flow}
+  - {id: c-prometheus-api, from: prometheus, to: api, port: http, protocol: HTTP, verb: scrape, kind: async, status: planned, target: SP2}
+  - {id: c-prometheus-alertmanager, from: prometheus, to: alertmanager, port: web, protocol: HTTP, verb: alerts, kind: flow}
+  - {id: c-alertmanager-discord, from: alertmanager, to: discord, port: https, protocol: HTTPS, verb: webhook, kind: flow, status: planned, target: SP2}
+  - {id: c-alloy-loki, from: alloy, to: loki, port: http, protocol: HTTP, verb: push, kind: async}
+  - {id: c-fluentbit-elastic, from: fluentbit, to: elastic, port: http, protocol: HTTP, verb: bulk, kind: async}
+references:
+  - {id: r-alloy-api, from: alloy, to: api, kind: tails logs}

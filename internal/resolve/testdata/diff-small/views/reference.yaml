@@ -1,0 +1,5 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+
+steps: [c-live-db, c-new-live]

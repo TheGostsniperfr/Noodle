@@ -121,7 +121,9 @@
         "verb": {"type": "string"},
         "kind": {"enum": ["flow", "auth", "tunnel", "async"]},
         "denied": {"type": "boolean", "description": "Intent: this connection must not happen (ADR-0010)."},
-        "enforced_by": {"type": "array", "items": {"$ref": "#/$defs/id"}, "minItems": 1, "description": "Elements that enforce the refusal (NetworkPolicy, security group). Absent means intent only."}
+        "enforced_by": {"type": "array", "items": {"$ref": "#/$defs/id"}, "minItems": 1, "description": "Elements that enforce the refusal (NetworkPolicy, security group). Absent means intent only."},
+        "status": {"enum": ["planned", "deprecated"], "description": "ADR-0021. Absent: inherited from the ends."},
+        "target": {"type": "string", "minLength": 1, "description": "ADR-0014. When a planned connection is expected."}
       },
       "dependentSchemas": {"enforced_by": {"required": ["denied"], "properties": {"denied": {"const": true}}}}
     },
@@ -133,7 +135,9 @@
         "id": {"$ref": "#/$defs/id"},
         "from": {"$ref": "#/$defs/id"},
         "to": {"$ref": "#/$defs/id"},
-        "kind": {"type": "string", "description": "parentRef, targetRef, envFrom, …"}
+        "kind": {"type": "string", "description": "parentRef, targetRef, envFrom, …"},
+        "status": {"enum": ["planned", "deprecated"], "description": "ADR-0021. Absent: inherited from the ends."},
+        "target": {"type": "string", "minLength": 1, "description": "ADR-0014. When a planned connection is expected."}
       }
     },
     "annotation": {

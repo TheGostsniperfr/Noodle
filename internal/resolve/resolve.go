@@ -50,7 +50,7 @@ func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
 	}
 	out := &diagram.Spec{
 		ID: v.ID, Title: v.Title, Subtitle: v.Subtitle, Meta: v.Meta,
-		Width: l.Canvas.Width, Height: l.Canvas.Height,
+		Width: l.Canvas.Width, Height: l.Canvas.Height, Diff: v.State == "diff",
 	}
 	shown := map[string]bool{}
 	for _, id := range s.Included(v) {
@@ -69,7 +69,7 @@ func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
 		if e.IsZone() {
 			out.Zones = append(out.Zones, diagram.Zone{
 				ID: e.ID, Kind: e.Kind, Label: e.Title, Sub: e.Sub, Color: e.Color, Icon: e.Icon,
-				Status: status, Target: target,
+				Status: status, Target: target, Change: diffChange(out.Diff, status),
 				X: box.X, Y: box.Y, W: box.W, H: box.H,
 			})
 			continue
@@ -77,11 +77,11 @@ func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
 		out.Nodes = append(out.Nodes, diagram.Node{
 			ID: e.ID, Kind: e.Kind, Shape: e.Shape, Icon: e.Icon, Title: e.Title, Tech: e.Tech,
 			Desc: e.Desc, Badge: strings.Join(badges[e.ID], " "),
-			Status: status, Target: target, Multiplicity: e.Multiplicity,
+			Status: status, Target: target, Multiplicity: e.Multiplicity, Change: diffChange(out.Diff, status),
 			X: box.X, Y: box.Y, W: box.W, H: box.H,
 		})
 	}
-	edges, err := r.edges(shown, badges)
+	edges, err := r.edges(shown, badges, out.Diff)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +141,25 @@ func (r *resolver) badges() map[string][]string {
 	return out
 }
 
-func (r *resolver) edges(shown map[string]bool, badges map[string][]string) ([]diagram.Edge, error) {
+// diffChange is what a diff view says of an element or edge with this status (ADR-0021).
+func diffChange(diff bool, status string) string {
+	switch {
+	case !diff:
+		return ""
+	case status == "planned":
+		return diagram.Added
+	case status == "deprecated":
+		return diagram.Removed
+	default:
+		return diagram.Unchanged
+	}
+}
+
+// changePrefix starts the label of an added or removed edge, so the change does not rest
+// on colour alone (ADR-0006).
+var changePrefix = map[string]string{diagram.Added: "+ ", diagram.Removed: "− "}
+
+func (r *resolver) edges(shown map[string]bool, badges map[string][]string, diff bool) ([]diagram.Edge, error) {
 	steps := map[string]string{}
 	for i, st := range r.v.Steps {
 		steps[st.Connection] = strconv.Itoa(i + 1)
@@ -150,7 +168,7 @@ func (r *resolver) edges(shown map[string]bool, badges map[string][]string) ([]d
 		steps[id] = string(rune('A' + i))
 	}
 	var out []diagram.Edge
-	add := func(id, from, to, kind, label, port string) error {
+	add := func(id, from, to, kind, label, port, status, target string) error {
 		if !shown[from] || !shown[to] {
 			return nil
 		}
@@ -162,6 +180,9 @@ func (r *resolver) edges(shown map[string]bool, badges map[string][]string) ([]d
 		if override, ok := r.v.Labels[id]; ok {
 			label = override
 		}
+		st, _ := r.s.EdgeStatus(from, to, status, target)
+		ch := diffChange(diff, st)
+		label = changePrefix[ch] + label
 		if step, ok := steps[id]; ok {
 			label = "[" + step + "] " + label
 		}
@@ -170,7 +191,7 @@ func (r *resolver) edges(shown map[string]bool, badges map[string][]string) ([]d
 		}
 		e := diagram.Edge{
 			ID: id, From: from, To: to, Kind: kind, Label: label, Port: port,
-			AgainstFlow: route.AgainstFlow, Path: path, LabelOffset: diagram.Point(route.LabelOffset),
+			AgainstFlow: route.AgainstFlow, Path: path, LabelOffset: diagram.Point(route.LabelOffset), Change: ch,
 		}
 		if route.LabelAt != nil {
 			p := diagram.Point(*route.LabelAt)
@@ -184,12 +205,12 @@ func (r *resolver) edges(shown map[string]bool, badges map[string][]string) ([]d
 		if c.Denied {
 			kind = "blocked"
 		}
-		if err := add(c.ID, c.From, c.To, kind, joinNonEmpty(" · ", c.Verb, c.Protocol), r.portText(c)); err != nil {
+		if err := add(c.ID, c.From, c.To, kind, joinNonEmpty(" · ", c.Verb, c.Protocol), r.portText(c), c.Status, c.Target); err != nil {
 			return nil, err
 		}
 	}
 	for _, ref := range r.s.Model.References {
-		if err := add(ref.ID, ref.From, ref.To, "link", ref.Kind, ""); err != nil {
+		if err := add(ref.ID, ref.From, ref.To, "link", ref.Kind, "", ref.Status, ref.Target); err != nil {
 			return nil, err
 		}
 	}

@@ -116,13 +116,19 @@ type Connection struct {
 	// elements that make it so (ADR-0010). Denied without EnforcedBy is intent only.
 	Denied     bool     `yaml:"denied,omitempty"`
 	EnforcedBy []string `yaml:"enforced_by,omitempty"`
+	// Status and Target follow ADR-0008 and ADR-0014; absent, they come from the ends
+	// (ADR-0021).
+	Status string `yaml:"status,omitempty"`
+	Target string `yaml:"target,omitempty"`
 }
 
 type Reference struct {
-	ID   string `yaml:"id"`
-	From string `yaml:"from,omitempty"`
-	To   string `yaml:"to,omitempty"`
-	Kind string `yaml:"kind,omitempty"`
+	ID     string `yaml:"id"`
+	From   string `yaml:"from,omitempty"`
+	To     string `yaml:"to,omitempty"`
+	Kind   string `yaml:"kind,omitempty"`
+	Status string `yaml:"status,omitempty"`
+	Target string `yaml:"target,omitempty"`
 }
 
 type Annotation struct {
@@ -219,7 +225,8 @@ type View struct {
 	// Catalog views (ADR-0013): cards per row; Include lists offering ids.
 	Columns int `yaml:"columns"`
 	// Matrix views (ADR-0019): identities as row groups, resources as column groups,
-	// and which grants count: current, target or diff.
+	// and which grants count: current, target or diff. Topology views take diff only
+	// (ADR-0021).
 	Identities []Section `yaml:"identities"`
 	Resources  []Section `yaml:"resources"`
 	State      string    `yaml:"state"`

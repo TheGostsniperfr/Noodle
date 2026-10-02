@@ -115,6 +115,7 @@ func (c *checker) checkModel() {
 		if !connectionKinds[cn.Kind] {
 			c.errf(file, cn.ID, "unknown connection kind %q", cn.Kind)
 		}
+		c.checkEdgeStatus(file, cn.ID, cn.From, cn.To, cn.Status, cn.Target)
 		if len(cn.EnforcedBy) > 0 && !cn.Denied {
 			c.errf(file, cn.ID, "enforced_by is for denied connections only")
 		}
@@ -130,6 +131,7 @@ func (c *checker) checkModel() {
 		unique(r.ID)
 		c.edgeIDs[r.ID] = true
 		c.ends[r.ID] = [2]string{r.From, r.To}
+		c.checkEdgeStatus(file, r.ID, r.From, r.To, r.Status, r.Target)
 		c.mustElement(file, r.ID, "from", r.From)
 		c.mustElement(file, r.ID, "to", r.To)
 	}
@@ -491,6 +493,25 @@ func (s *System) Status(id string) (status, target string) {
 	return status, target
 }
 
+// EdgeStatus returns a connection's or a reference's status and target: its own, else
+// planned when either end is planned, else deprecated when either end is (ADR-0021).
+func (s *System) EdgeStatus(from, to, status, target string) (string, string) {
+	if status != "" {
+		return status, target
+	}
+	fs, ft := s.Status(from)
+	ts, tt := s.Status(to)
+	for _, want := range []string{"planned", "deprecated"} {
+		if fs == want {
+			return fs, ft
+		}
+		if ts == want {
+			return ts, tt
+		}
+	}
+	return "", ""
+}
+
 // Included returns the element ids a view shows, sorted. No include means all.
 func (s *System) Included(v *View) []string {
 	elements := map[string]bool{}
@@ -598,12 +619,30 @@ func (c *checker) checkAccess(file string) {
 	}
 }
 
+// checkEdgeStatus applies the element rules of ADR-0008 and ADR-0014 to a connection or
+// a reference, with the status it inherits from its ends (ADR-0021).
+func (c *checker) checkEdgeStatus(file, id, from, to, status, target string) {
+	if !statuses[status] {
+		c.errf(file, id, "unknown status %q, want planned or deprecated", status)
+	}
+	if st, _ := c.s.EdgeStatus(from, to, status, target); target != "" && st != "planned" {
+		c.errf(file, id, "target is for planned connections only (ADR-0014)")
+	}
+}
+
 // checkMatrix keeps identities, resources and state on matrix views, every item an
-// element of the model, shown once (ADR-0019).
+// element of the model, shown once (ADR-0019). A topology view may be a diff (ADR-0021).
 func (c *checker) checkMatrix(file string, v *View) {
 	if v.Type != "matrix" {
-		if len(v.Identities) > 0 || len(v.Resources) > 0 || v.State != "" {
-			c.errf(file, v.ID, "identities, resources and state are for matrix views only")
+		if len(v.Identities) > 0 || len(v.Resources) > 0 {
+			c.errf(file, v.ID, "identities and resources are for matrix views only")
+		}
+		switch {
+		case v.State == "" || (v.Type == "topology" && v.State == "diff"):
+		case v.Type == "topology":
+			c.errf(file, v.ID, "state %q, a topology view takes diff only (ADR-0021)", v.State)
+		default:
+			c.errf(file, v.ID, "state is for matrix and topology views only")
 		}
 		return
 	}

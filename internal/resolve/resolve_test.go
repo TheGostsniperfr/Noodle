@@ -139,3 +139,54 @@ func TestCatalog_LaysCardsInRowsOfEqualHeight(t *testing.T) {
 		len(first.Logos) == 2 && first.Request.Y > first.LabelsY[1],
 	})
 }
+
+func TestTopology_MarksWhatAPlanAddsAndRemoves_InADiffView(t *testing.T) {
+	t.Parallel()
+	s, err := model.LoadSystem("testdata/diff-small")
+	require.NoError(t, err)
+	require.Empty(t, model.Check(s))
+
+	got, err := resolve.Topology(s, "proposal")
+
+	require.NoError(t, err)
+	changes := map[string]string{}
+	labels := map[string]string{}
+	for _, z := range got.Zones {
+		changes[z.ID] = z.Change
+	}
+	for _, n := range got.Nodes {
+		changes[n.ID] = n.Change
+	}
+	for _, e := range got.Edges {
+		changes[e.ID] = e.Change
+		labels[e.ID] = e.Label
+	}
+	assert.True(t, got.Diff)
+	assert.Equal(t, map[string]string{
+		"z": diagram.Unchanged, "obs": diagram.Added, "live": diagram.Unchanged, "db": diagram.Unchanged,
+		"new": diagram.Added, "old": diagram.Removed,
+		"c-live-db": diagram.Unchanged, "c-new-live": diagram.Added, "c-live-old": diagram.Removed,
+		"c-db-live": diagram.Added, "r-new-db": diagram.Added,
+	}, changes)
+	assert.Equal(t, map[string]string{
+		"c-live-db": "[1] query", "c-new-live": "[2] + scrape", "c-live-old": "− call", "c-db-live": "+ notify", "r-new-db": "+ reads",
+	}, labels)
+}
+
+func TestTopology_LeavesChangesEmpty_OutsideADiffView(t *testing.T) {
+	t.Parallel()
+	s, err := model.LoadSystem("testdata/diff-small")
+	require.NoError(t, err)
+
+	got, err := resolve.Topology(s, "reference")
+
+	require.NoError(t, err)
+	assert.False(t, got.Diff)
+	for _, e := range got.Edges {
+		assert.Empty(t, e.Change, e.ID)
+		assert.NotContains(t, e.Label, "+", e.ID)
+	}
+	for _, n := range got.Nodes {
+		assert.Empty(t, n.Change, n.ID)
+	}
+}

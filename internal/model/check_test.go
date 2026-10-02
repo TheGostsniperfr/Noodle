@@ -162,8 +162,22 @@ func TestCheck_ReportsFileIDAndReason(t *testing.T) {
 			filepath.Join("views", "v.yaml"), "a", "shown twice in the same axis"},
 		{"matrix state unknown", baseModel, viewHead + "type: matrix\nidentities: [{items: [a]}]\nresources: [{items: [b]}]\nstate: later\n", "",
 			filepath.Join("views", "v.yaml"), "v", `state "later", want current, target or diff`},
-		{"state on a topology view", baseModel, baseView + "state: diff\n", baseLayout,
-			filepath.Join("views", "v.yaml"), "v", "identities, resources and state are for matrix views only"},
+		{"diff state on a topology view", baseModel, baseView + "state: diff\n", baseLayout,
+			"", "", ""},
+		{"current state on a topology view", baseModel, baseView + "state: current\n", baseLayout,
+			filepath.Join("views", "v.yaml"), "v", `state "current", a topology view takes diff only (ADR-0021)`},
+		{"state on a catalog view", baseModel, viewHead + "type: catalog\nstate: diff\n", "",
+			filepath.Join("views", "v.yaml"), "v", "state is for matrix and topology views only"},
+		{"identities on a topology view", baseModel, baseView + "identities: [{items: [a]}]\n", baseLayout,
+			filepath.Join("views", "v.yaml"), "v", "identities and resources are for matrix views only"},
+		{"unknown connection status", strings.Replace(baseModel, "kind: flow}", "kind: flow, status: soon}", 1), baseView, baseLayout,
+			"model.yaml", "c-ab", `unknown status "soon", want planned or deprecated`},
+		{"connection target without planned", strings.Replace(baseModel, "kind: flow}", "kind: flow, target: SP1}", 1), baseView, baseLayout,
+			"model.yaml", "c-ab", "target is for planned connections only"},
+		{"connection target inherits planned from an end", strings.Replace(strings.Replace(baseModel, "title: A}", "title: A, status: planned}", 1), "kind: flow}", "kind: flow, target: SP1}", 1), baseView, baseLayout,
+			"", "", ""},
+		{"unknown reference status", baseModel + "references: [{id: r-ab, from: a, to: b, kind: uses, status: gone}]\n", baseView, baseLayout,
+			"model.yaml", "r-ab", `unknown status "gone", want planned or deprecated`},
 		{"a valid access model and matrix", baseModel + "memberships: [{id: m1, subject: a, group: z, auth: {method: oidc, mfa: true}}]\n" +
 			"grants: [{id: g1, subject: z, resource: b, level: write, scope: \"project-*\", via: [a], status: planned, target: P2}]\n",
 			viewHead + "type: matrix\nstate: diff\nidentities: [{title: People, items: [a]}]\nresources: [{title: Data, sub: plane, color: violet, items: [b]}]\nlabels: {b: B}\n", "",
@@ -272,6 +286,35 @@ func TestStatus_InheritsFromTheNearestZoneThatSetsIt(t *testing.T) {
 			t.Parallel()
 
 			status, target := s.Status(tt.id)
+
+			assert.Equal(t, [2]string{tt.wantStatus, tt.wantTarget}, [2]string{status, target})
+		})
+	}
+}
+
+func TestEdgeStatus_InheritsFromItsEnds_WhenItHasNone(t *testing.T) {
+	t.Parallel()
+	s := &model.System{Model: &model.Model{Elements: []model.Element{
+		{ID: "z", Kind: "region", Status: "planned", Target: "SP3"},
+		{ID: "new", Kind: "backend", Parent: "z"},
+		{ID: "live", Kind: "backend"},
+		{ID: "old", Kind: "backend", Status: "deprecated"},
+	}}}
+	tests := []struct {
+		name, from, to, status, target string
+		wantStatus, wantTarget         string
+	}{
+		{"own status wins", "live", "new", "deprecated", "", "deprecated", ""},
+		{"planned end, target from its zone", "live", "new", "", "", "planned", "SP3"},
+		{"deprecated end", "old", "live", "", "", "deprecated", ""},
+		{"planned beats deprecated", "old", "new", "", "", "planned", "SP3"},
+		{"live ends", "live", "live", "", "", "", ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			status, target := s.EdgeStatus(tt.from, tt.to, tt.status, tt.target)
 
 			assert.Equal(t, [2]string{tt.wantStatus, tt.wantTarget}, [2]string{status, target})
 		})
