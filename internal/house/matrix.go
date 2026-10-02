@@ -23,6 +23,11 @@ const (
 	MatrixRowFontSize    = 12.0
 	MatrixTagFontSize    = 9.0
 	MatrixTagH           = 15.0
+	// A column group's frame sits this far outside its cells; under half the group gap,
+	// so two frames never touch.
+	MatrixFrameOut  = 7.0
+	MatrixCardHeadH = 52.0
+	MatrixCardPad   = 20.0
 )
 
 // LevelWord is what a cell says for a level.

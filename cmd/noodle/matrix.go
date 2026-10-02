@@ -12,12 +12,23 @@ import (
 // matrix draws an access matrix (ADR-0019): the fill of a cell is the level, its frame
 // and tag are the change, so the two codes never share a colour.
 func (r *renderer) matrix(m *diagram.Matrix) {
+	// Frames first, behind everything: a column group reads as one block down to the
+	// last row, like a zone on a topology.
+	for i, g := range m.ColumnGroups {
+		f := house.MatrixFrameOut
+		r.vertex(fmt.Sprintf("mx-frame%d", i), "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=10", "fillColor="+r.zoneColor(g.Color),
+			"fillOpacity=4", "strokeColor="+r.zoneColor(g.Color), "strokeWidth=1.2", "dashed=1", "dashPattern=4 4", "movable=0"),
+			g.X-f, g.Y-f, g.W+2*f, m.GridBottom-g.Y+2*f)
+	}
+	r.card(diagram.Card{ID: "mx-legend-card", Title: "Legend", Color: "slate",
+		X: m.LegendCard.X, Y: m.LegendCard.Y, W: m.LegendCard.W, H: m.LegendCard.H})
 	for i, g := range m.ColumnGroups {
 		color := r.zoneColor(g.Color)
 		id := fmt.Sprintf("mx-group%d", i)
 		r.vertex(id, "1", "", style("rounded=0", "fillColor="+color, "fillOpacity=8", "strokeColor=none", "movable=0"), g.X, g.Y, g.W, g.H)
 		r.vertex(id+"-bar", "1", "", style("rounded=0", "fillColor="+color, "strokeColor=none", "movable=0"), g.X, g.Y, g.W, 4)
-		v := fmt.Sprintf(`<b>%s</b>`, html.EscapeString(g.Title))
+		// Uppercase and bold, as a zone title on a topology (ADR-0006).
+		v := fmt.Sprintf(`<b>%s</b>`, html.EscapeString(strings.ToUpper(g.Title)))
 		if g.Sub != "" {
 			v += fmt.Sprintf(`<br><font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, house.SubFontSize, html.EscapeString(g.Sub))
 		}

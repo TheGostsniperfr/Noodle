@@ -116,10 +116,12 @@ func Matrix(s *model.System, viewID string) (*diagram.Spec, error) {
 			y += house.MatrixCellH + house.MatrixGap
 		}
 	}
+	m.GridBottom = y - house.MatrixGap
 	y = matrixLegend(m, state, y+house.MatrixLegendGap)
 	for _, c := range m.Legend {
-		width = max(width, c.X+c.W+house.MatrixLegendCaptionW+landscapeMargin)
+		width = max(width, c.X+c.W+house.MatrixLegendCaptionW+house.MatrixCardPad+landscapeMargin)
 	}
+	m.LegendCard.W = width - 2*landscapeMargin
 	return &diagram.Spec{
 		ID: v.ID, Type: "matrix", Title: v.Title, Subtitle: v.Subtitle, Meta: v.Meta,
 		Width: width, Height: y + landscapeMargin, Matrix: m,
@@ -165,10 +167,13 @@ func headerLines(v *model.View, e model.Element) []string {
 	return house.Wrap(e.Title, house.MatrixHeaderFontSize, house.MatrixCellW-2*house.MatrixPad)
 }
 
-// matrixLegend lays out the two legend rows under the grid and returns the y below them.
-func matrixLegend(m *diagram.Matrix, state string, y float64) float64 {
+// matrixLegend lays out the legend card under the grid, its title row then one row of
+// sample cells per code, and returns the y below the card.
+func matrixLegend(m *diagram.Matrix, state string, top float64) float64 {
+	y := top + house.MatrixCardHeadH
+	left := landscapeMargin + house.MatrixCardPad
 	row := func(title, sub string, items []diagram.MatrixCell) {
-		m.LegendTitles = append(m.LegendTitles, diagram.MatrixHeader{Lines: []string{title}, Sub: []string{sub}, X: landscapeMargin, Y: y, W: house.MatrixRowHeaderW, H: house.MatrixCellH})
+		m.LegendTitles = append(m.LegendTitles, diagram.MatrixHeader{Lines: []string{title}, Sub: []string{sub}, X: left, Y: y, W: house.MatrixRowHeaderW - house.MatrixCardPad, H: house.MatrixCellH})
 		x := landscapeMargin + house.MatrixRowHeaderW + house.MatrixGap
 		for _, it := range items {
 			it.X, it.Y, it.W, it.H = x, y, house.MatrixCellW, house.MatrixCellH
@@ -189,7 +194,9 @@ func matrixLegend(m *diagram.Matrix, state string, y float64) float64 {
 			{Before: "read", Change: "removed", Phase: "P1", Note: "removed", Caption: "removed"},
 		})
 	}
-	return y
+	bottom := y - house.MatrixLegendGap/2 + house.MatrixCardPad
+	m.LegendCard = diagram.Rect{X: landscapeMargin, Y: top, H: bottom - top}
+	return bottom
 }
 
 func shareAny(a, b map[string]bool) bool {
