@@ -42,8 +42,9 @@ ISO 27001 review asks for (A.5.15, A.5.18), today, after a plan, or both in one 
   level is unchanged but whose grants changed is marked changed, `rescoped`.
 - **FR-005** A last column counts, per row, the resources it can change (write or admin),
   before and after in `diff`.
-- **FR-006** The legend sits under the matrix: one line for levels, one for changes,
-  with sample cells and one word each.
+- **FR-006** The legend sits under the matrix in a card titled Legend: one line for
+  levels, one for changes, with sample cells and one word each. Each column group is
+  framed like a zone, from its header down to the last row.
 - **FR-007** Colours come from the theme in both themes; level and change never share
   a colour; the lint checks that every header and cell text fits.
 - **FR-008** JSON Schemas cover every new field; every example validates in `go test`.

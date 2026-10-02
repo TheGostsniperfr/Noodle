@@ -80,3 +80,16 @@ func TestMatrix_CanvasHoldsTheLegend(t *testing.T) {
 		assert.LessOrEqual(t, c.X+c.W, spec.Width)
 	}
 }
+
+func TestMatrix_FramesReachTheLastRowAndTheCardHoldsTheLegend(t *testing.T) {
+	t.Parallel()
+	spec := smallMatrix(t)
+	m := spec.Matrix
+
+	last := m.Cells[len(m.Cells)-1]
+	assert.Equal(t, last.Y+last.H, m.GridBottom)
+	for _, c := range m.Legend {
+		assert.True(t, m.LegendCard.Contains(c.Rect()), "legend cell %v outside the card %v", c.Rect(), m.LegendCard)
+	}
+	assert.Greater(t, m.LegendCard.Y, m.GridBottom)
+}

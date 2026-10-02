@@ -55,6 +55,10 @@ type Matrix struct {
 	Counts       []MatrixHeader
 	LegendTitles []MatrixHeader
 	Legend       []MatrixCell
+	// GridBottom is where the last row ends: a column group's frame runs down to it.
+	GridBottom float64
+	// LegendCard holds the legend, drawn as a card like a topology's.
+	LegendCard Rect
 }
 
 type MatrixGroup struct {

@@ -1,6 +1,8 @@
 package lint
 
 import (
+	"strings"
+
 	"github.com/TheGostsniperfr/Noodle/internal/diagram"
 	"github.com/TheGostsniperfr/Noodle/internal/house"
 )
@@ -30,7 +32,7 @@ func checkMatrixText(l *linter) {
 		}
 	}
 	for _, g := range m.ColumnGroups {
-		fits("matrix group "+g.Title, g.Title, house.ZoneFontSize, g.W-2*house.MatrixPad)
+		fits("matrix group "+g.Title, strings.ToUpper(g.Title), house.ZoneFontSize, g.W-2*house.MatrixPad)
 		fits("matrix group "+g.Title, g.Sub, house.SubFontSize, g.W-2*house.MatrixPad)
 	}
 	for _, h := range m.Columns {

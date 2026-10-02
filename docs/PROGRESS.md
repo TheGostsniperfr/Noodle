@@ -42,6 +42,8 @@ decisions go in ADRs, acceptance in `features.json`.
 - T05: `examples/cnp-access` (the CNP model) in init.sh and CI; skill reference, SKILL
   recipe and README (P6b-05). Phase 6b features pass; it closes when cnp-docs publishes
   the matrix.
+- Review: column groups framed down to the last row like zones, uppercase group titles,
+  legend in a card like a topology's.
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 
