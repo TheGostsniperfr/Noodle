@@ -18,7 +18,7 @@ jobs:
       - name: vet and test
         run: go vet ./... && go test ./...
       - name: lint reference example
-        run: go run ./cmd/noodle render examples/cnp-runtime --view runtime && go run ./cmd/noodle render examples/cnp-runtime --view oidc-login && go run ./cmd/noodle render examples/sequence-basics && go run ./cmd/noodle render examples/landscape --view stack && go run ./cmd/noodle render examples/catalog --view catalog
+        run: go run ./cmd/noodle render examples/cnp-runtime --view runtime && go run ./cmd/noodle render examples/cnp-runtime --view oidc-login && go run ./cmd/noodle render examples/sequence-basics && go run ./cmd/noodle render examples/landscape --view stack && go run ./cmd/noodle render examples/catalog --view catalog && go run ./cmd/noodle render examples/cnp-access --view matrix
       - name: lint regression fixtures
         run: for d in platform-overview app-runtime-view repo-map; do go run ./cmd/noodle render examples/platform-regression/$d -icons examples/platform-regression/icons; done
       - name: lint docs diagrams

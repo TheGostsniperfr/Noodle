@@ -39,6 +39,9 @@ decisions go in ADRs, acceptance in `features.json`.
 - T04: render cells, frames, tags, hatches, counts and legend; level and change
   colours in both themes, AA contrast tested. On the CNP model: rescoped only when no
   grant at the top level survives, a grant's own phase before its membership's (P6b-04).
+- T05: `examples/cnp-access` (the CNP model) in init.sh and CI; skill reference, SKILL
+  recipe and README (P6b-05). Phase 6b features pass; it closes when cnp-docs publishes
+  the matrix.
 
 ### 2026-10-01 · Spec 003 blind spots and checkpoint
 

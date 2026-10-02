@@ -167,6 +167,12 @@ official logo; tools that receive no traffic are `kind: tool`. `flow: true` on t
 delivery band reads as a pipeline. Items not deployed yet stay in their section as
 `status: planned` with a `target`. No layout to write: the grid is computed.
 
+**Access matrix** (`type: matrix`, "who can touch what, before and after?"). Declare
+`memberships` and `grants` in the model; mark what a plan removes `deprecated` and what
+it adds `planned`, both with the phase as `target`. Rows by identity type (break-glass,
+people, service accounts), columns by access plane (control, management, workloads).
+A grant is never an arrow on a topology (ADR-0003).
+
 **Service catalogue** (`type: catalog`, "what can I get, and how?"). One `offering` per
 thing a team can ask for (a database, an app slot, SSO): a one-line summary, what it
 `provides`, the exact `request` (the value to set, the PR to open), and `backed_by`
