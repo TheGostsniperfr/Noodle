@@ -37,6 +37,11 @@ decisions go in ADRs, acceptance in `features.json`.
 - Every existing example renders byte-identical to main in both themes.
 - `examples/topology-diff`: a proposal and its reference view over one model, in
   init.sh and CI. Next: use it for the PAE observability proposal.
+- ADR-0022: `highlight: [ids]` on topology views, with include's patterns. Highlighted
+  elements and every edge touching them stay in full, the rest is dimmed; a diff keeps
+  its added and removed frames. Asked by Brian to show the whole observability domain of
+  the PAE platform, existing and proposed. `examples/topology-diff` view `focus`, P5a-05
+  passes; existing examples still byte-identical to main. Not committed yet.
 
 ### 2026-10-02 · Access matrix (spec 004)
 

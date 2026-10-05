@@ -43,6 +43,9 @@ type Spec struct {
 	// Diff is set on a topology view in state diff (ADR-0021): every zone, node and edge
 	// then carries a Change.
 	Diff bool `yaml:"-"`
+	// Highlight is set when the view highlights some elements (ADR-0022): what lies
+	// outside carries Unchanged and is dimmed, in a diff or not.
+	Highlight bool `yaml:"-"`
 }
 
 // Changes of a topology diff (ADR-0021).

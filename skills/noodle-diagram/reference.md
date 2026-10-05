@@ -117,6 +117,8 @@ scope, version and source, one line each).
 | `cards` | `[{id, title, color, legend, lines}]`: `legend: true` generates the legend |
 | `state` | `diff` draws a proposal (ADR-0021): `planned` as added (change-coloured frame, `+ target` pill, `+` label), `deprecated` as removed (red dotted frame, struck, `−`), the rest dimmed. Absent: ADR-0008 hatch and dots |
 
+| `highlight` | element ids or `zone/**` (ADR-0022): they and every edge touching them stay in full, the rest is dimmed. With `state: diff`, added and removed keep their frames wherever they are |
+
 A proposal is a copy of the reference view with `state: diff`, over the same model and a
 copy of its layout. When the plan ships, drop the statuses: both views show the new platform.
 

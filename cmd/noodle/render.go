@@ -500,7 +500,7 @@ func (r *renderer) portBadges() {
 		host, _ := r.spec.AnchorRect(b.Node)
 		st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "html=1", "fillColor="+r.kindStrokeOf(b.Node), "strokeColor="+r.th.Background,
 			"strokeWidth=1", "align=center", "verticalAlign=middle", "fontStyle=1", font(house.PortFontSize, r.th.PortText), "movable=0", "resizable=0")
-		if r.spec.Diff && !lit[b.ID] {
+		if (r.spec.Diff || r.spec.Highlight) && !lit[b.ID] {
 			st += dim
 		}
 		r.vertex(b.ID, b.Node, html.EscapeString(b.Text), st, b.Rect.X-host.X, b.Rect.Y-host.Y, b.Rect.W, b.Rect.H)
@@ -610,9 +610,12 @@ func (r *renderer) legendStatuses(x, y, w float64) {
 		used[z.Status] = true
 	}
 	k := r.th.Nodes["external"]
-	if r.spec.Diff {
+	switch {
+	case r.spec.Diff:
 		y = r.legendChanges(x, y, w)
 		used = nil
+	case r.spec.Highlight:
+		y = r.legendDimmed(x, y, w)
 	}
 	if used["planned"] {
 		r.vertex("legend-planned", "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+r.th.Hatch)+hatch+
@@ -654,8 +657,19 @@ func (r *renderer) legendChanges(x, y, w float64) float64 {
 	r.vertex("legend-removed", "1", "", box+style("strokeColor="+r.th.Diff[diagram.Removed], "strokeWidth=3", "dashed=1", "dashPattern="+dotted), x, y+2, 40, 18)
 	r.legendText("legend-removed-text", "removed by the proposal", x+52, y, w)
 	y += 26
-	r.vertex("legend-unchanged", "1", "", box+style("strokeColor="+k.Stroke, "strokeWidth=1.5")+dim, x, y+2, 40, 18)
-	r.legendText("legend-unchanged-text", "unchanged, dimmed", x+52, y, w)
+	return r.legendDimmed(x, y, w)
+}
+
+// legendDimmed explains the faded boxes: unchanged in a diff, outside the highlight
+// otherwise (ADR-0021, ADR-0022).
+func (r *renderer) legendDimmed(x, y, w float64) float64 {
+	k := r.th.Nodes["external"]
+	text := "unchanged, dimmed"
+	if r.spec.Highlight {
+		text = "outside the highlight, dimmed"
+	}
+	r.vertex("legend-unchanged", "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5")+dim, x, y+2, 40, 18)
+	r.legendText("legend-unchanged-text", text, x+52, y, w)
 	return y + 26
 }
 

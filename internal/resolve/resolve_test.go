@@ -190,3 +190,51 @@ func TestTopology_LeavesChangesEmpty_OutsideADiffView(t *testing.T) {
 		assert.Empty(t, n.Change, n.ID)
 	}
 }
+
+func changesOf(spec *diagram.Spec) map[string]string {
+	out := map[string]string{}
+	for _, z := range spec.Zones {
+		out[z.ID] = z.Change
+	}
+	for _, n := range spec.Nodes {
+		out[n.ID] = n.Change
+	}
+	for _, e := range spec.Edges {
+		out[e.ID] = e.Change
+	}
+	return out
+}
+
+func TestTopology_ShowsTheHighlightInFull_AndDimsTheRest(t *testing.T) {
+	t.Parallel()
+	s, err := model.LoadSystem("testdata/diff-small")
+	require.NoError(t, err)
+	require.Empty(t, model.Check(s))
+
+	got, err := resolve.Topology(s, "highlight")
+
+	require.NoError(t, err)
+	assert.Equal(t, [2]bool{false, true}, [2]bool{got.Diff, got.Highlight})
+	assert.Equal(t, map[string]string{
+		"z": diagram.Unchanged, "obs": "", "live": diagram.Unchanged, "db": diagram.Unchanged,
+		"new": "", "old": diagram.Unchanged,
+		"c-live-db": diagram.Unchanged, "c-new-live": "", "c-live-old": diagram.Unchanged,
+		"c-db-live": diagram.Unchanged, "r-new-db": "",
+	}, changesOf(got))
+}
+
+func TestTopology_KeepsAddedAndRemoved_WhenADiffHasAHighlight(t *testing.T) {
+	t.Parallel()
+	s, err := model.LoadSystem("testdata/diff-small")
+	require.NoError(t, err)
+
+	got, err := resolve.Topology(s, "diff-highlight")
+
+	require.NoError(t, err)
+	assert.Equal(t, map[string]string{
+		"z": diagram.Unchanged, "obs": diagram.Added, "live": "", "db": diagram.Unchanged,
+		"new": diagram.Added, "old": diagram.Removed,
+		"c-live-db": "", "c-new-live": diagram.Added, "c-live-old": diagram.Removed,
+		"c-db-live": diagram.Added, "r-new-db": diagram.Added,
+	}, changesOf(got))
+}

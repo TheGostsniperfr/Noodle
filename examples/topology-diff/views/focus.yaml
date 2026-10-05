@@ -1,0 +1,27 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+state: diff
+highlight: [g-obs/**]
+title: Observability focus · the whole log and metrics domain
+subtitle: 'Which parts of the cluster make up observability once the proposal ships?'
+meta:
+  - 'Example of a topology diff (ADR-0021): planned elements and connections are added, deprecated ones removed, the rest is dimmed.'
+  - 'source: examples/topology-diff'
+steps: [c-user-envoy, c-envoy-api]
+background: [c-prometheus-api, c-alloy-loki]
+cards:
+  - id: card-legend
+    title: Legend
+    color: slate
+    legend: true
+    lines: []
+  - id: card-proposal
+    title: The proposal
+    color: emerald
+    lines:
+      - '[A] Prometheus scrapes the API metrics, from SP2.'
+      - '[B] Alloy tails the pod logs on every node and pushes them to Loki, from SP3.'
+      - Grafana queries Loki next to Prometheus, so one UI covers metrics and logs.
+      - Alertmanager gets a Discord receiver, from SP2.
+      - Fluent Bit and Elasticsearch go once Loki holds 14 days of logs.
