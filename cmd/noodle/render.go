@@ -748,6 +748,34 @@ func (r *renderer) legend(c diagram.Card) {
 		y += 26
 	}
 	r.legendStatuses(x, y, c.W/2-72)
-	notes := fmt.Sprintf(`Large dashed frame: infra perimeter · small: functional group<br><font color="%s"><b>⚠ Gx</b></font>: docs and code disagree, see "Gaps"`, r.th.Warn)
-	r.vertex(c.ID+"-notes", "1", notes, style("text", "html=1", "align=left", "verticalAlign=top", "whiteSpace=wrap", font(10.5, r.th.Muted)), c.X+20, c.Y+c.H-50, c.W-40, 40)
+	if notes := r.legendNotes(); notes != "" {
+		r.vertex(c.ID+"-notes", "1", notes, style("text", "html=1", "align=left", "verticalAlign=top", "whiteSpace=wrap", font(10.5, r.th.Muted)), c.X+20, c.Y+c.H-50, c.W-40, 40)
+	}
+}
+
+// legendNotes explains the zone frames and the gap badges, each only when the diagram
+// draws one: a legend line for something absent sends the reader looking for it.
+func (r *renderer) legendNotes() string {
+	var lines []string
+	if len(r.spec.Zones) > 0 {
+		lines = append(lines, "Large dashed frame: infra perimeter · small: functional group")
+	}
+	if r.hasGaps() {
+		lines = append(lines, fmt.Sprintf(`<font color="%s"><b>⚠ Gx</b></font>: docs and code disagree, see "Gaps"`, r.th.Warn))
+	}
+	return strings.Join(lines, "<br>")
+}
+
+func (r *renderer) hasGaps() bool {
+	for _, n := range r.spec.Nodes {
+		if n.Badge != "" {
+			return true
+		}
+	}
+	for _, e := range r.spec.Edges {
+		if strings.Contains(e.Label, "⚠") {
+			return true
+		}
+	}
+	return false
 }

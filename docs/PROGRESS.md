@@ -24,6 +24,13 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-10-05 · Legend notes follow the diagram
+
+- B-27: the legend's "⚠ Gx: docs and code disagree" line only shows when a gap badge is
+  drawn, the zone-frame line only when there are zones. Seen on the DockAir messaging
+  diagrams, which have neither gaps nor annotations. topology-diff, messaging and
+  contract-pipeline PNGs regenerated; every other example renders byte-identical.
+
 ### 2026-10-05 · Messaging primitives (spec 006)
 
 - ADR-0023: `shape: pipe` for queues, topics and streams, and `routes` in the model for
