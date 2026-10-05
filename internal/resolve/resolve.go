@@ -202,7 +202,7 @@ func (r *resolver) edges(shown map[string]bool, badges map[string][]string, diff
 		ch := highlightChange(len(lit) > 0, lit[from] || lit[to], diffChange(diff, st))
 		label = changePrefix[ch] + label
 		if step, ok := steps[id]; ok {
-			label = "[" + step + "] " + label
+			label = strings.TrimSpace("[" + step + "] " + label)
 		}
 		if gaps := badges[id]; len(gaps) > 0 {
 			label += " · !!⚠ " + strings.Join(gaps, " ") + "!!"

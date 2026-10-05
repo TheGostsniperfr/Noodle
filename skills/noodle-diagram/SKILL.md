@@ -126,6 +126,8 @@ project belongs upstream in noodle's `assets/icons/`.
   named `lanes` 15–20 px apart in the same corridor and turn them together, like a PCB
   bus or cable management in a rack. Fan out only at the last bend before each target.
   A lane moved once moves every edge on it.
+- In a corridor too dense for full labels, set the label to `""` in the view: a
+  numbered edge keeps its `[n]` badge alone and the steps card carries the text.
 - Put a label on the longest straight segment, or set `label_at` on the drawn path in a
   clear spot. Never on a bend, a box, a zone title, a port badge or another line.
 - A perpendicular crossing is fine: draw.io draws a bridge. Two edges running on top of

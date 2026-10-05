@@ -24,6 +24,12 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-10-05 · Badge-only step labels
+
+- B-28: `labels: {id: ""}` already left a numbered edge with its badge; now without a
+  trailing space, locked by a test and documented in the skill. Used on the DockAir
+  messaging topology, where fifteen edges share one corridor.
+
 ### 2026-10-05 · Messaging primitives (spec 006)
 
 - ADR-0023: `shape: pipe` for queues, topics and streams, and `routes` in the model for

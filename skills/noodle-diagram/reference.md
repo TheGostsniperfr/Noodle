@@ -120,7 +120,7 @@ scope, version and source, one line each).
 | `include` | element ids to show; `z-cluster/**` includes a zone and all it holds; empty shows everything |
 | `steps` | connection ids of the nominal path, in time order: they become `[1]…[n]`, each used once |
 | `background` | control-plane connection ids: `[A]`, `[B]`… |
-| `labels` | `{edge-id: text}` to override a label in this view only |
+| `labels` | `{edge-id: text}` to override a label in this view only; `""` keeps only the step badge, for a dense corridor where the steps card tells the rest |
 | `notes` | `[{id, text}]`: a response that changes the path, next to who sends it |
 | `cards` | `[{id, title, color, legend, lines}]`: `legend: true` generates the legend |
 | `state` | `diff` draws a proposal (ADR-0021): `planned` as added (change-coloured frame, `+ target` pill, `+` label), `deprecated` as removed (red dotted frame, struck, `−`), the rest dimmed. Absent: ADR-0008 hatch and dots |

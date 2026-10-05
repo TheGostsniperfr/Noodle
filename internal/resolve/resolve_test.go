@@ -279,3 +279,46 @@ edges:
 	require.Len(t, got.Edges, 1)
 	assert.Equal(t, [2]string{"route", "binding · orders.#"}, [2]string{got.Edges[0].Kind, got.Edges[0].Label})
 }
+
+func TestTopology_KeepsTheStepBadgeAlone_WhenTheLabelIsEmptied(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	files := map[string]string{
+		"model.yaml": `apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: z, kind: region, title: Z}
+  - {id: a, kind: backend, parent: z, title: A}
+  - {id: b, kind: backend, parent: z, title: B}
+connections:
+  - {id: c-ab, from: a, to: b, kind: flow, protocol: HTTP, verb: GET}
+  - {id: c-ba, from: b, to: a, kind: flow, protocol: HTTP, verb: GET}
+`,
+		"views/v.yaml": "apiVersion: noodle/v1alpha1\nkind: View\ntype: topology\nsteps: [c-ab]\nlabels: {c-ab: \"\", c-ba: \"\"}\n",
+		"layouts/v.yaml": `apiVersion: noodle/v1alpha1
+kind: Layout
+canvas: {width: 700, height: 300}
+elements:
+  z: {x: 0, y: 0, w: 600, h: 200}
+  a: {x: 40, y: 60, w: 200, h: 80}
+  b: {x: 340, y: 60, w: 200, h: 80}
+edges:
+  c-ab: {from: a.right@20px, to: b.left@20px}
+  c-ba: {from: b.bottom, to: a.bottom, waypoints: [[440, 180], [140, 180]]}
+`,
+	}
+	for rel, content := range files {
+		p := filepath.Join(dir, rel)
+		require.NoError(t, os.MkdirAll(filepath.Dir(p), 0o755))
+		require.NoError(t, os.WriteFile(p, []byte(content), 0o644))
+	}
+	s, err := model.LoadSystem(dir)
+	require.NoError(t, err)
+	require.Empty(t, model.Check(s))
+
+	got, err := resolve.Topology(s, "v")
+
+	require.NoError(t, err)
+	edges := byID(got.Edges)
+	assert.Equal(t, [2]string{"", "[1]"}, [2]string{edges[1].Label, edges[0].Label})
+}
