@@ -74,7 +74,8 @@
         {"id": "P5a-01", "description": "Connection and reference status and target, inherited from their ends; state diff allowed on topology views", "verify": "go test ./internal/model/... accepts state diff on a topology view, rejects current there, rejects a bad connection status and a target without planned", "passes": true},
         {"id": "P5a-02", "description": "A diff view resolves every zone, node and edge to added, removed or unchanged, edge labels prefixed", "verify": "go test ./internal/resolve/... resolves a small diff view to the expected changes, inheritance included", "passes": true},
         {"id": "P5a-03", "description": "Diff renders added and removed frames and pills, dims the unchanged, and explains it in the legend, in both themes", "verify": "go test ./cmd/noodle/... and noodle render examples/topology-diff -view proposal -theme light -o x.drawio passes the lint", "passes": true},
-        {"id": "P5a-04", "description": "examples/topology-diff renders dark and light in init.sh and CI", "verify": "./scripts/init.sh renders examples/topology-diff", "passes": true}
+        {"id": "P5a-04", "description": "examples/topology-diff renders dark and light in init.sh and CI", "verify": "./scripts/init.sh renders examples/topology-diff", "passes": true},
+        {"id": "P5a-05", "description": "A topology view highlights a set of elements and the edges that touch them, dims the rest, with or without a diff", "verify": "go test ./internal/model/... ./internal/resolve/... and noodle render examples/topology-diff -view focus passes the lint", "passes": true}
       ]
     }
   ],

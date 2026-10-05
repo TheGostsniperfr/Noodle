@@ -46,6 +46,15 @@
       },
       "description": "Element ids, or zone/** for a subtree; offering ids in catalog views. Absent means everything."
     },
+    "highlight": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]*(/\\*\\*)?$"
+      },
+      "minItems": 1,
+      "description": "Topology views only (ADR-0022): these elements and the edges that touch them stay in full, the rest is dimmed. Same patterns as include."
+    },
     "steps": {
       "type": "array",
       "description": "Topology: connection ids of the request path, numbered [1]..[n] (ADR-0004). Sequence: messages, replies and notes (ADR-0011)."

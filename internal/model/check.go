@@ -216,6 +216,12 @@ func (c *checker) checkView(v *View) {
 		}
 		c.mustElement(file, v.ID, "include", strings.TrimSuffix(inc, "/**"))
 	}
+	if len(v.Highlight) > 0 && v.Type != "topology" {
+		c.errf(file, v.ID, "highlight is for topology views only (ADR-0022)")
+	}
+	for _, h := range v.Highlight {
+		c.mustElement(file, v.ID, "highlight", strings.TrimSuffix(h, "/**"))
+	}
 	if v.Columns != 0 && (v.Type != "catalog" || v.Columns < 1 || v.Columns > 4) {
 		c.errf(file, v.ID, "columns is for catalog views, from 1 to 4")
 	}
@@ -514,6 +520,24 @@ func (s *System) EdgeStatus(from, to, status, target string) (string, string) {
 
 // Included returns the element ids a view shows, sorted. No include means all.
 func (s *System) Included(v *View) []string {
+	if len(v.Include) == 0 {
+		ids := make([]string, 0, len(s.Model.Elements))
+		for _, e := range s.Model.Elements {
+			ids = append(ids, e.ID)
+		}
+		sort.Strings(ids)
+		return ids
+	}
+	return s.expand(v.Include)
+}
+
+// Highlighted returns the element ids a view highlights, sorted; none without highlight.
+func (s *System) Highlighted(v *View) []string {
+	return s.expand(v.Highlight)
+}
+
+// expand resolves ids and zone/** patterns to element ids, sorted.
+func (s *System) expand(patterns []string) []string {
 	elements := map[string]bool{}
 	children := map[string][]string{}
 	for _, e := range s.Model.Elements {
@@ -521,9 +545,6 @@ func (s *System) Included(v *View) []string {
 		if e.Parent != "" {
 			children[e.Parent] = append(children[e.Parent], e.ID)
 		}
-	}
-	if len(v.Include) == 0 {
-		return sortedKeys(elements)
 	}
 	out := map[string]bool{}
 	var walk func(string)
@@ -536,7 +557,7 @@ func (s *System) Included(v *View) []string {
 			walk(ch)
 		}
 	}
-	for _, inc := range v.Include {
+	for _, inc := range patterns {
 		if root, ok := strings.CutSuffix(inc, "/**"); ok {
 			walk(root)
 		} else if elements[inc] {

@@ -52,6 +52,11 @@ func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
 		ID: v.ID, Title: v.Title, Subtitle: v.Subtitle, Meta: v.Meta,
 		Width: l.Canvas.Width, Height: l.Canvas.Height, Diff: v.State == "diff",
 	}
+	lit := map[string]bool{}
+	for _, id := range s.Highlighted(v) {
+		lit[id] = true
+	}
+	out.Highlight = len(lit) > 0
 	shown := map[string]bool{}
 	for _, id := range s.Included(v) {
 		shown[id] = true
@@ -69,7 +74,7 @@ func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
 		if e.IsZone() {
 			out.Zones = append(out.Zones, diagram.Zone{
 				ID: e.ID, Kind: e.Kind, Label: e.Title, Sub: e.Sub, Color: e.Color, Icon: e.Icon,
-				Status: status, Target: target, Change: diffChange(out.Diff, status),
+				Status: status, Target: target, Change: highlightChange(out.Highlight, lit[e.ID], diffChange(out.Diff, status)),
 				X: box.X, Y: box.Y, W: box.W, H: box.H,
 			})
 			continue
@@ -77,11 +82,11 @@ func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
 		out.Nodes = append(out.Nodes, diagram.Node{
 			ID: e.ID, Kind: e.Kind, Shape: e.Shape, Icon: e.Icon, Title: e.Title, Tech: e.Tech,
 			Desc: e.Desc, Badge: strings.Join(badges[e.ID], " "),
-			Status: status, Target: target, Multiplicity: e.Multiplicity, Change: diffChange(out.Diff, status),
+			Status: status, Target: target, Multiplicity: e.Multiplicity, Change: highlightChange(out.Highlight, lit[e.ID], diffChange(out.Diff, status)),
 			X: box.X, Y: box.Y, W: box.W, H: box.H,
 		})
 	}
-	edges, err := r.edges(shown, badges, out.Diff)
+	edges, err := r.edges(shown, badges, out.Diff, lit)
 	if err != nil {
 		return nil, err
 	}
@@ -155,11 +160,24 @@ func diffChange(diff bool, status string) string {
 	}
 }
 
+// highlightChange dims what lies outside a highlight and shows in full what lies inside,
+// unless a diff marks it added or removed (ADR-0022).
+func highlightChange(highlight, inside bool, change string) string {
+	switch {
+	case !highlight || change == diagram.Added || change == diagram.Removed:
+		return change
+	case inside:
+		return ""
+	default:
+		return diagram.Unchanged
+	}
+}
+
 // changePrefix starts the label of an added or removed edge, so the change does not rest
 // on colour alone (ADR-0006).
 var changePrefix = map[string]string{diagram.Added: "+ ", diagram.Removed: "− "}
 
-func (r *resolver) edges(shown map[string]bool, badges map[string][]string, diff bool) ([]diagram.Edge, error) {
+func (r *resolver) edges(shown map[string]bool, badges map[string][]string, diff bool, lit map[string]bool) ([]diagram.Edge, error) {
 	steps := map[string]string{}
 	for i, st := range r.v.Steps {
 		steps[st.Connection] = strconv.Itoa(i + 1)
@@ -181,7 +199,7 @@ func (r *resolver) edges(shown map[string]bool, badges map[string][]string, diff
 			label = override
 		}
 		st, _ := r.s.EdgeStatus(from, to, status, target)
-		ch := diffChange(diff, st)
+		ch := highlightChange(len(lit) > 0, lit[from] || lit[to], diffChange(diff, st))
 		label = changePrefix[ch] + label
 		if step, ok := steps[id]; ok {
 			label = "[" + step + "] " + label

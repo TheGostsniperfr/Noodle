@@ -205,12 +205,15 @@ type View struct {
 	APIVersion string `yaml:"apiVersion"`
 	Kind       string `yaml:"kind"`
 	// ID is the file stem, not a field: renaming the file renames the view.
-	ID           string            `yaml:"-"`
-	Type         string            `yaml:"type"`
-	Title        string            `yaml:"title"`
-	Subtitle     string            `yaml:"subtitle"`
-	Meta         []string          `yaml:"meta"`
-	Include      []string          `yaml:"include"`
+	ID       string   `yaml:"-"`
+	Type     string   `yaml:"type"`
+	Title    string   `yaml:"title"`
+	Subtitle string   `yaml:"subtitle"`
+	Meta     []string `yaml:"meta"`
+	Include  []string `yaml:"include"`
+	// Highlight keeps these elements, and the edges that touch them, in full; the rest of
+	// a topology view is dimmed (ADR-0022). Same patterns as Include.
+	Highlight    []string          `yaml:"highlight"`
 	Steps        []Step            `yaml:"steps"`
 	Background   []string          `yaml:"background"`
 	Labels       map[string]string `yaml:"labels"`
