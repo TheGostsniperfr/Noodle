@@ -12,6 +12,9 @@ func checkNodeText(l *linter) {
 		if n.Icon != "" {
 			avail = n.W - house.TextPadLeft - 8
 		}
+		if n.Shape == "pipe" {
+			avail -= house.PipeCap + house.PipeEndRatio*n.W
+		}
 		title := n.Title
 		if n.Badge != "" {
 			title += " ⚠ " + n.Badge

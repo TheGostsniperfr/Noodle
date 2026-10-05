@@ -38,7 +38,7 @@ Components and zones are both elements. A zone has kind `region` or `group`.
 | `desc` | one line: the responsibility |
 | `sub` | zones only: small grey text after the title, e.g. the namespace |
 | `icon` | see `noodle -list-icons`; project icons via `-icons DIR` |
-| `shape` | `box` (default) · `cylinder` for a datastore · `actor` for a human |
+| `shape` | `box` (default) · `cylinder` for a datastore · `pipe` for a queue, topic or stream (ADR-0023) · `actor` for a human |
 | `color` | zones: `cyan` `emerald` `violet` `amber` `rose` `orange` `slate` `indigo` `sky`; siblings differ |
 | `ports` | `[{name: https, protocol: TCP, port: 443}]`: listening ports, drawn as badges where connections land |
 | `status` | `planned` (hatched) or `deprecated` (dotted, struck title); a zone's applies to its children |
@@ -66,6 +66,14 @@ Opened by `from`, listened to by `to` (ADR-0003). Requests only, never responses
 `{id, from, to, kind, status, target}` with `kind` the relation: `parentRef`, `targetRef`, `envFrom`,
 `secretKeyRef`. Drawn dotted with an open arrow; never numbered; the side rule does not
 apply.
+
+### Route: what a broker forwards (ADR-0023)
+
+`{id, from, to, kind, match, status, target}`: an exchange or topic to a queue, a queue
+to its dead-letter exchange. `kind` names the mechanism (`binding`, `subscription`,
+`dead-letter`), `match` what selects the messages (`orders.#`, `after 3 deliveries`);
+the label reads `kind · match`. Drawn in the bus colour, dash-dot, never numbered; the
+side rule does not apply. Ends are components, not zones.
 
 ### Annotation: a gap between docs and code
 
@@ -269,5 +277,5 @@ cards:
 ```
 
 The noodle repository has one example per view type in `examples/`: `cnp-runtime`
-(topology and sequence at scale), `sequence-basics`, `landscape`, `catalog`, and
-`platform-regression` for large topologies.
+(topology and sequence at scale), `sequence-basics`, `landscape`, `catalog`, `messaging`
+(queues as pipes, broker routes), and `platform-regression` for large topologies.

@@ -24,6 +24,17 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-10-05 · Messaging primitives (spec 006)
+
+- ADR-0023: `shape: pipe` for queues, topics and streams, and `routes` in the model for
+  what a broker forwards (bindings, subscriptions, dead-letter links), drawn as their own
+  edge kind. Asked by the DockAir RabbitMQ and Clock diagrams.
+- The pipe is draw.io's horizontal cylinder (`direct_data`): `cylinder3` with a
+  `direction` rotates entry and exit points, so edges landed on the wrong side.
+- Spec and tasks 006, phase 1c in the roadmap; P1c-01 to P1c-04 pass. Every existing
+  example renders byte-identical to main in both themes.
+- `examples/messaging` in init.sh and CI. Spec 003 stays the next action.
+
 ### 2026-10-02 · Topology diff for proposals (spec 005)
 
 - ADR-0021: `state: diff` on topology views and `status`/`target` on connections and

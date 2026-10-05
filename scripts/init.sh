@@ -14,6 +14,7 @@ go run ./cmd/noodle render examples/sequence-basics
 go run ./cmd/noodle render examples/landscape --view stack
 go run ./cmd/noodle render examples/catalog --view catalog
 go run ./cmd/noodle render examples/cnp-access --view matrix
+go run ./cmd/noodle render examples/messaging --view broker
 for v in proposal reference focus; do go run ./cmd/noodle render examples/topology-diff --view $v -icons examples/platform-regression/icons; done
 for d in platform-overview app-runtime-view repo-map; do go run ./cmd/noodle render examples/platform-regression/$d -icons examples/platform-regression/icons; done
 go run ./cmd/noodle render docs/diagrams/contract-pipeline -icons docs/diagrams/icons

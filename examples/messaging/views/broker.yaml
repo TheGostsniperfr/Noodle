@@ -1,0 +1,21 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+title: Example · Message broker · Routes and queues
+subtitle: How one published event reaches each subscribed application, and where a failing message ends up.
+meta:
+  - "Scope: one topic exchange, two subscribers, one dead-letter path"
+  - "Out of scope: broker deployment, network policies"
+  - "v0.1 · source: examples/messaging"
+steps: [e-1-orders-events, e-2-billing-q, e-3-mailer-q]
+cards:
+  - id: card-steps
+    title: Request path · data plane
+    color: emerald
+    lines:
+      - "[1] orders publishes orders.order.placed. It does not know who listens"
+      - "The exchange copies it into every queue whose binding matches the key"
+      - "[2] The billing pods share their queue: each message goes to one of them"
+      - "[3] mailer gets its own copy in its own queue"
+      - "After 3 failed deliveries, billing's message goes to its own dead-letter queue"
+  - {id: card-legend, title: Legend, color: slate, legend: true}
