@@ -232,6 +232,11 @@ func (r *resolver) edges(shown map[string]bool, badges map[string][]string, diff
 			return nil, err
 		}
 	}
+	for _, rt := range r.s.Model.Routes {
+		if err := add(rt.ID, rt.From, rt.To, "route", joinNonEmpty(" · ", rt.Kind, rt.Match), "", rt.Status, rt.Target); err != nil {
+			return nil, err
+		}
+	}
 	return out, nil
 }
 

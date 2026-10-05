@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/TheGostsniperfr/Noodle/schemas/v1alpha1/model.schema.json",
   "title": "noodle Model",
-  "description": "What exists: elements (zones included), connections, references and annotations. No coordinates, no step numbers (ADR-0002, ADR-0007).",
+  "description": "What exists: elements (zones included), connections, references, routes and annotations. No coordinates, no step numbers (ADR-0002, ADR-0007).",
   "type": "object",
   "required": ["apiVersion", "kind"],
   "additionalProperties": false,
@@ -12,6 +12,7 @@
     "elements": {"type": "array", "items": {"$ref": "#/$defs/element"}},
     "connections": {"type": "array", "items": {"$ref": "#/$defs/connection"}},
     "references": {"type": "array", "items": {"$ref": "#/$defs/reference"}},
+    "routes": {"type": "array", "items": {"$ref": "#/$defs/route"}, "description": "Paths a broker forwards messages along: bindings, subscriptions, dead-letter links (ADR-0023)."},
     "annotations": {"type": "array", "items": {"$ref": "#/$defs/annotation"}},
     "offerings": {"type": "array", "items": {"$ref": "#/$defs/offering"}, "description": "What the platform offers its users (ADR-0013)."},
     "memberships": {"type": "array", "items": {"$ref": "#/$defs/membership"}, "description": "Who belongs to which group or assumes which role (ADR-0019)."},
@@ -87,7 +88,7 @@
         "tech": {"type": "string"},
         "desc": {"type": "string"},
         "icon": {"type": "string"},
-        "shape": {"enum": ["box", "cylinder", "actor"]},
+        "shape": {"enum": ["box", "cylinder", "pipe", "actor"], "description": "cylinder: a datastore. pipe: a queue, topic or stream, messages in transit (ADR-0023). actor: a human."},
         "color": {"type": "string", "description": "Zones only."},
         "sub": {"type": "string", "description": "Zones only."},
         "ports": {"type": "array", "items": {"$ref": "#/$defs/port"}},
@@ -138,6 +139,20 @@
         "kind": {"type": "string", "description": "parentRef, targetRef, envFrom, …"},
         "status": {"enum": ["planned", "deprecated"], "description": "ADR-0021. Absent: inherited from the ends."},
         "target": {"type": "string", "minLength": 1, "description": "ADR-0014. When a planned connection is expected."}
+      }
+    },
+    "route": {
+      "type": "object",
+      "required": ["id", "from", "to"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"$ref": "#/$defs/id"},
+        "from": {"$ref": "#/$defs/id", "description": "Where messages come from: an exchange, a topic, a queue that dead-letters."},
+        "to": {"$ref": "#/$defs/id", "description": "Where the broker puts them: a queue or another exchange."},
+        "kind": {"type": "string", "description": "binding, subscription, dead-letter, …"},
+        "match": {"type": "string", "description": "What selects the messages: a binding key, a filter, a condition."},
+        "status": {"enum": ["planned", "deprecated"], "description": "ADR-0021. Absent: inherited from the ends."},
+        "target": {"type": "string", "minLength": 1, "description": "ADR-0014. When a planned route is expected."}
       }
     },
     "annotation": {

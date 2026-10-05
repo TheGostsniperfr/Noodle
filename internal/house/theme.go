@@ -51,9 +51,13 @@ const (
 	CharWidthEm   = 0.6
 	LineHeightEm  = 1.25
 
-	IconSize      = 28.0
-	IconInset     = 12.0
-	TextPadLeft   = IconInset + IconSize + 10
+	IconSize    = 28.0
+	IconInset   = 12.0
+	TextPadLeft = IconInset + IconSize + 10
+	// A pipe (ADR-0023) is draw.io's horizontal cylinder: its open end takes PipeEndRatio
+	// of the width on the right, and text and icon start PipeCap after its rounded back.
+	PipeCap       = 10.0
+	PipeEndRatio  = 0.2
 	ZoneIconSize  = 18.0
 	ActorLabelGap = 6.0
 	LabelPadX     = 4.0
@@ -67,7 +71,7 @@ const (
 )
 
 var NodeKindOrder = []string{"frontend", "backend", "database", "cloud", "security", "bus", "external", "tool"}
-var EdgeKindOrder = []string{"flow", "auth", "tunnel", "async", "blocked", "link"}
+var EdgeKindOrder = []string{"flow", "auth", "tunnel", "async", "route", "blocked", "link"}
 
 var LegendNodes = map[string]string{
 	"frontend": "client / frontend",
@@ -85,6 +89,7 @@ var LegendEdges = map[string]string{
 	"auth":    "authentication connection",
 	"tunnel":  "outbound tunnel, opened in advance",
 	"async":   "background sync",
+	"route":   "broker routing, not a connection",
 	"blocked": "must not happen",
 	"link":    "object reference, not traffic",
 }
@@ -98,7 +103,7 @@ func nodes(pairs ...string) map[string]NodeKind {
 }
 
 func edges(pairs map[string][2]string, blockedEnd string) map[string]EdgeKind {
-	dash := map[string]string{"auth": "6 4", "tunnel": "3 3", "async": "6 4", "blocked": "6 4", "link": "2 3"}
+	dash := map[string]string{"auth": "6 4", "tunnel": "3 3", "async": "6 4", "route": "8 3 2 3", "blocked": "6 4", "link": "2 3"}
 	width := map[string]float64{"blocked": 1.8, "link": 1.2}
 	m := map[string]EdgeKind{}
 	for k, c := range pairs {
@@ -142,7 +147,7 @@ var Themes = map[string]*Theme{
 			"rose": "#fb7185", "orange": "#fb923c", "slate": "#94a3b8", "indigo": "#818cf8", "sky": "#38bdf8"},
 		Edges: edges(map[string][2]string{
 			"flow": {"#94a3b8", "#e2e8f0"}, "auth": {"#fb7185", "#fda4af"}, "tunnel": {"#fbbf24", "#fcd34d"},
-			"async": {"#a78bfa", "#c4b5fd"}, "blocked": {"#f87171", "#fca5a5"}, "link": {"#64748b", "#94a3b8"},
+			"async": {"#a78bfa", "#c4b5fd"}, "route": {"#fb923c", "#fdba74"}, "blocked": {"#f87171", "#fca5a5"}, "link": {"#64748b", "#94a3b8"},
 		}, "cross"),
 	},
 	"light": {
@@ -168,7 +173,7 @@ var Themes = map[string]*Theme{
 			"rose": "#e11d48", "orange": "#ea580c", "slate": "#64748b", "indigo": "#4f46e5", "sky": "#0284c7"},
 		Edges: edges(map[string][2]string{
 			"flow": {"#64748b", "#1e293b"}, "auth": {"#e11d48", "#be123c"}, "tunnel": {"#d97706", "#b45309"},
-			"async": {"#7c3aed", "#6d28d9"}, "blocked": {"#dc2626", "#b91c1c"}, "link": {"#94a3b8", "#475569"},
+			"async": {"#7c3aed", "#6d28d9"}, "route": {"#ea580c", "#c2410c"}, "blocked": {"#dc2626", "#b91c1c"}, "link": {"#94a3b8", "#475569"},
 		}, "cross"),
 	},
 }

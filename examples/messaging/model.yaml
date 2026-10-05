@@ -1,0 +1,22 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: g-apps, kind: group, color: indigo, icon: k8s-ns, title: APPLICATIONS, sub: AMQP clients}
+  - {id: g-broker, kind: group, color: orange, icon: k8s-ns, title: MESSAGE BROKER, sub: 'vhost /shop · AMQP TCP 5672'}
+  - {id: orders, kind: backend, parent: g-apps, icon: k8s-deploy, title: orders, tech: '[producer]', desc: Publishes order events}
+  - {id: billing, kind: backend, parent: g-apps, icon: k8s-deploy, title: billing, tech: '[consumer]', desc: '2 pods, one shared queue', multiplicity: replicas of one app}
+  - {id: mailer, kind: backend, parent: g-apps, icon: k8s-deploy, title: mailer, tech: '[consumer]', desc: Sends confirmations}
+  - {id: x-events, kind: bus, parent: g-broker, icon: k8s-crd, title: shop.events, tech: '[exchange · topic]', desc: 'Routes by key, stores nothing'}
+  - {id: x-dlx, kind: bus, parent: g-broker, icon: k8s-crd, title: shop.dlx, tech: '[exchange · topic]', desc: Dead letters by queue name}
+  - {id: q-billing, kind: bus, parent: g-broker, shape: pipe, icon: k8s-crd, title: q.billing.orders, tech: '[queue · quorum]', desc: Owned by billing}
+  - {id: q-mailer, kind: bus, parent: g-broker, shape: pipe, icon: k8s-crd, title: q.mailer.orders, tech: '[queue · quorum]', desc: Owned by mailer}
+  - {id: q-billing-dlq, kind: bus, parent: g-broker, shape: pipe, icon: k8s-crd, title: q.billing.dlq, tech: '[queue · quorum · no TTL]', desc: Billing dead letters}
+connections:
+  - {id: e-1-orders-events, from: orders, to: x-events, kind: flow, protocol: AMQP, verb: publish}
+  - {id: e-2-billing-q, from: billing, to: q-billing, kind: flow, protocol: AMQP, verb: consume}
+  - {id: e-3-mailer-q, from: mailer, to: q-mailer, kind: flow, protocol: AMQP, verb: consume}
+routes:
+  - {id: rt-events-billing, from: x-events, to: q-billing, kind: binding, match: 'orders.order.*'}
+  - {id: rt-events-mailer, from: x-events, to: q-mailer, kind: binding, match: orders.order.placed}
+  - {id: rt-billing-dlx, from: q-billing, to: x-dlx, kind: dead-letter, match: after 3 deliveries}
+  - {id: rt-dlx-billing-dlq, from: x-dlx, to: q-billing-dlq, kind: binding, match: 'q.billing.#'}

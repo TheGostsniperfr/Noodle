@@ -18,7 +18,7 @@ var (
 	elementKinds    = set("frontend", "backend", "database", "cloud", "security", "bus", "external", "tool", "region", "group")
 	connectionKinds = set("flow", "auth", "tunnel", "async")
 	statuses        = set("", "planned", "deprecated")
-	shapes          = set("", "box", "cylinder", "actor")
+	shapes          = set("", "box", "cylinder", "pipe", "actor")
 	viewTypes       = set("topology", "sequence", "landscape", "catalog", "matrix")
 	// computedViews take no layout file: their geometry follows from the view alone.
 	computedViews = set("sequence", "landscape", "catalog", "matrix")
@@ -134,6 +134,17 @@ func (c *checker) checkModel() {
 		c.checkEdgeStatus(file, r.ID, r.From, r.To, r.Status, r.Target)
 		c.mustElement(file, r.ID, "from", r.From)
 		c.mustElement(file, r.ID, "to", r.To)
+	}
+	for _, r := range c.s.Model.Routes {
+		unique(r.ID)
+		c.edgeIDs[r.ID] = true
+		c.ends[r.ID] = [2]string{r.From, r.To}
+		c.checkEdgeStatus(file, r.ID, r.From, r.To, r.Status, r.Target)
+		for _, end := range [][2]string{{"from", r.From}, {"to", r.To}} {
+			if e, ok := c.mustElement(file, r.ID, end[0], end[1]); ok && e.IsZone() {
+				c.errf(file, r.ID, "%s %q is a zone; a route joins two components (ADR-0023)", end[0], end[1])
+			}
+		}
 	}
 	for _, o := range c.s.Model.Offerings {
 		unique(o.ID)

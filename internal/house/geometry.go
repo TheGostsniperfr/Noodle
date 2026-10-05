@@ -156,7 +156,11 @@ func ActorLabelBox(n diagram.Node) diagram.Rect {
 }
 
 func NodeIconRect(n diagram.Node) diagram.Rect {
-	return diagram.Rect{X: n.X + IconInset, Y: n.Y + IconInset, W: IconSize, H: IconSize}
+	x := n.X + IconInset
+	if n.Shape == "pipe" {
+		x += PipeCap
+	}
+	return diagram.Rect{X: x, Y: n.Y + IconInset, W: IconSize, H: IconSize}
 }
 
 func ZoneTitleBox(z diagram.Zone) diagram.Rect {

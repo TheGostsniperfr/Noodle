@@ -18,6 +18,7 @@ type Model struct {
 	Elements    []Element    `yaml:"elements"`
 	Connections []Connection `yaml:"connections"`
 	References  []Reference  `yaml:"references"`
+	Routes      []Route      `yaml:"routes"`
 	Annotations []Annotation `yaml:"annotations"`
 	Offerings   []Offering   `yaml:"offerings"`
 	Memberships []Membership `yaml:"memberships"`
@@ -127,6 +128,19 @@ type Reference struct {
 	From   string `yaml:"from,omitempty"`
 	To     string `yaml:"to,omitempty"`
 	Kind   string `yaml:"kind,omitempty"`
+	Status string `yaml:"status,omitempty"`
+	Target string `yaml:"target,omitempty"`
+}
+
+// Route is a path a broker forwards messages along, from an exchange or topic to a queue
+// or another exchange: a binding, a subscription, a dead-letter link. It is neither
+// traffic between processes nor a plain object reference (ADR-0023).
+type Route struct {
+	ID     string `yaml:"id"`
+	From   string `yaml:"from,omitempty"`
+	To     string `yaml:"to,omitempty"`
+	Kind   string `yaml:"kind,omitempty"`
+	Match  string `yaml:"match,omitempty"`
 	Status string `yaml:"status,omitempty"`
 	Target string `yaml:"target,omitempty"`
 }

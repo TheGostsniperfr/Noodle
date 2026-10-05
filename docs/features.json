@@ -77,6 +77,17 @@
         {"id": "P5a-04", "description": "examples/topology-diff renders dark and light in init.sh and CI", "verify": "./scripts/init.sh renders examples/topology-diff", "passes": true},
         {"id": "P5a-05", "description": "A topology view highlights a set of elements and the edges that touch them, dims the rest, with or without a diff", "verify": "go test ./internal/model/... ./internal/resolve/... and noodle render examples/topology-diff -view focus passes the lint", "passes": true}
       ]
+    },
+    {
+      "id": "1c",
+      "title": "Messaging primitives",
+      "spec": "specs/006-messaging-primitives/spec.md",
+      "features": [
+        {"id": "P1c-01", "description": "shape pipe and routes in the model, with checks and schemas", "verify": "go test ./internal/model/... accepts a pipe and a valid route, rejects a route to a missing element, from a zone, with a duplicate id, a target without planned, or used as a step", "passes": true},
+        {"id": "P1c-02", "description": "A route resolves to a route edge labelled kind · match", "verify": "go test ./internal/resolve/... resolves a binding route to the expected kind and label", "passes": true},
+        {"id": "P1c-03", "description": "Pipe and route render in both themes, explained in the legend, pipe text linted against its open end; existing examples unchanged", "verify": "go test ./internal/lint/... flags a pipe title that a box would fit, and every example renders byte-identical to main", "passes": true},
+        {"id": "P1c-04", "description": "examples/messaging renders dark and light in init.sh and CI", "verify": "./scripts/init.sh renders examples/messaging", "passes": true}
+      ]
     }
   ],
   "backlog": [

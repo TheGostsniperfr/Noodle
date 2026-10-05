@@ -414,13 +414,20 @@ func (r *renderer) node(n diagram.Node) error {
 	}
 	shape := []string{"rounded=1", "absoluteArcSize=1", "arcSize=12"}
 	top := 10.0
-	if n.Shape == "cylinder" {
+	left, right := 0.0, 0.0
+	switch n.Shape {
+	case "cylinder":
 		shape = []string{"shape=cylinder3", "size=8", "boundedLbl=1", "backgroundOutline=1"}
 		top = 18
+	case "pipe":
+		// A cylinder lying down, open end on the right (ADR-0023). Not cylinder3 with a
+		// direction: draw.io rotates entry and exit points with it.
+		shape = []string{"shape=mxgraph.flowchart.direct_data"}
+		left, right = house.PipeCap, house.PipeEndRatio*n.W
 	}
-	pad := 10.0
+	pad := 10.0 + left
 	if n.Icon != "" {
-		pad = house.TextPadLeft
+		pad = house.TextPadLeft + left
 	}
 	fill, iconStyle, stroke, width, stack := "fillColor="+k.Fill+";", "", k.Stroke, 1.5, ""
 	switch {
@@ -449,7 +456,7 @@ func (r *renderer) node(n diagram.Node) error {
 		}
 	}
 	st := style(shape...) + fill + style("html=1", "whiteSpace=wrap", "strokeColor="+stroke, fmt.Sprintf("strokeWidth=%g", width),
-		"align=left", "verticalAlign=top", fmt.Sprintf("spacingLeft=%g", pad), fmt.Sprintf("spacingTop=%g", top-4), "spacingRight=8",
+		"align=left", "verticalAlign=top", fmt.Sprintf("spacingLeft=%g", pad), fmt.Sprintf("spacingTop=%g", top-4), fmt.Sprintf("spacingRight=%g", 8+right),
 		font(house.TitleFontSize, r.th.Text))
 	r.vertex(n.ID, "1", r.nodeLabel(n), st, n.X, n.Y, n.W, n.H)
 	if n.Icon != "" {
@@ -458,7 +465,7 @@ func (r *renderer) node(n diagram.Node) error {
 			iconY += 8
 		}
 		// Child of the node so it moves with it when edited by hand in draw.io.
-		if err := r.imageStyled(n.ID+"__icon", n.ID, n.Icon, house.IconInset, iconY, house.IconSize, iconStyle); err != nil {
+		if err := r.imageStyled(n.ID+"__icon", n.ID, n.Icon, house.IconInset+left, iconY, house.IconSize, iconStyle); err != nil {
 			return err
 		}
 	}
@@ -673,6 +680,15 @@ func (r *renderer) legendDimmed(x, y, w float64) float64 {
 	return y + 26
 }
 
+func (r *renderer) usesPipe() bool {
+	for _, n := range r.spec.Nodes {
+		if n.Shape == "pipe" {
+			return true
+		}
+	}
+	return false
+}
+
 func (r *renderer) legend(c diagram.Card) {
 	usedNodes, usedEdges := map[string]bool{}, map[string]bool{}
 	for _, n := range r.spec.Nodes {
@@ -691,6 +707,12 @@ func (r *renderer) legend(c diagram.Card) {
 		k := r.th.Nodes[kind]
 		r.vertex("legend-node-"+kind, "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+4, 22, 14)
 		r.legendText("legend-node-"+kind+"-text", k.Legend, x+32, y, c.W/2-60)
+		y += 26
+	}
+	if r.usesPipe() {
+		k := r.th.Nodes["bus"]
+		r.vertex("legend-pipe", "1", "", style("shape=mxgraph.flowchart.direct_data", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+4, 22, 14)
+		r.legendText("legend-pipe-text", "queue · messages in transit", x+32, y, c.W/2-60)
 		y += 26
 	}
 	y += 8

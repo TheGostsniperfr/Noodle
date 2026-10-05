@@ -70,6 +70,7 @@ The format is in [the skill reference](skills/noodle-diagram/reference.md).
 | [`landscape`](examples/landscape) | a tech stack: bands, a side column, a pipeline, planned items with a target |
 | [`catalog`](examples/catalog) | a service catalogue built from the model's offerings |
 | [`topology-diff`](examples/topology-diff) | a proposal drawn as a diff: what it adds and removes over the dimmed platform, next to the reference view of the same model |
+| [`messaging`](examples/messaging) | a message broker: queues drawn as pipes, bindings and a dead-letter link drawn as broker routes |
 | [`cnp-access`](examples/cnp-access) | an access matrix from memberships and grants: what a segregation plan changes, phase by phase |
 | [`platform-regression`](examples/platform-regression) | three large topologies from a real platform, kept as regression fixtures |
 

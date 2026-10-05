@@ -61,6 +61,14 @@ func TestLint_EveryRuleFlagsItsCase(t *testing.T) {
 			s.Edges[0].Port = ""
 			s.Edges[0].Path = []diagram.Point{{180, 200}, {180, 240}, {560, 240}, {560, 200}}
 		}, "e", "ingress enters b from the bottom side, want left or top"},
+		{"edge crossings", "route through a box", func(s *diagram.Spec) {
+			s.Nodes = append(s.Nodes, diagram.Node{ID: "m", Kind: "external", Title: "M", X: 330, Y: 210, W: 60, H: 60})
+			s.Edges[0].Path = []diagram.Point{{180, 200}, {180, 240}, {560, 240}, {560, 200}}
+			s.Edges[0].Port, s.Edges[0].Kind = "", "route"
+		}, "e", "segment 1 crosses node m"},
+		{"node text", "pipe title wider than the box once its curved ends are taken", func(s *diagram.Spec) {
+			s.Nodes[0].Shape, s.Nodes[0].Title = "pipe", "q.ticketing.booking-evts"
+		}, "a", "title overflows: 173px text in 132px"},
 		{"label_at", "pinned label off the path", func(s *diagram.Spec) { s.Edges[0].LabelAt = &diagram.Point{300, 100} },
 			"e", "label_at [300 100] is not on the drawn path"},
 		{"edge crossings", "diagonal segment", func(s *diagram.Spec) { s.Edges[0].Path = []diagram.Point{{280, 160}, {460, 170}} },

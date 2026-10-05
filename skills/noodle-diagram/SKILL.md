@@ -81,6 +81,12 @@ anything different.
 - **A reference is an object reference, not traffic** (parentRef, targetRef, envFrom,
   secret name): `references:` in the model. It is dotted, has an open arrow, carries no
   step and ignores the side rule.
+- **Inside a message broker, a route is not a connection** (ADR-0023). Producers and
+  consumers open connections to the broker: publish to an exchange or topic, consume
+  from their queue. What the broker does between them (a binding, a subscription, a
+  dead-letter link) is a `route` in the model, with the binding key in `match`. Queues
+  are `shape: pipe`, owned by their consumer; exchanges stay boxes. The broker's port
+  goes in its zone `sub` once, not on every exchange.
 - **A connection that must not happen** is `denied: true`, with `enforced_by` naming
   what blocks it (a NetworkPolicy, a firewall). Without it, it is intent only: say so.
 - **Node text is the C4 triptych:** `title` in bold, `tech` in brackets and italics,
@@ -93,11 +99,11 @@ anything different.
 |---|---|
 | Node `kind` | `frontend` cyan · `backend` emerald (services, routing) · `database` violet (data and secrets) · `cloud` amber (edge, tunnels, providers) · `security` rose (identity, policies) · `bus` orange · `external` slate · `tool` slate (IaC, scanners, bots: no traffic) |
 | Node `icon` | Official logo when the box is a product (`cloudflare`, `envoy`, `keycloak`, `vault`, `cnpg`, `argo`, `cilium`, `kubernetes`). Kubernetes resource icon (`k8s-svc`, `k8s-deploy`, `k8s-pod`, `k8s-secret`, `k8s-ns`, `k8s-sa`, `k8s-crd`) when the box is a K8s object. CRDs without an official icon use `k8s-crd`, as Argo CD does. |
-| Node `shape` | `box` default · `cylinder` for a datastore · `actor` for a human |
+| Node `shape` | `box` default · `cylinder` for a datastore · `pipe` for a queue, topic or stream (messages in transit; an exchange stays a box) · `actor` for a human |
 | Zone `kind` | `region` = infra or trust perimeter. `group` = functional category, named by role first ("GATEWAY API", "IDENTITY", "SECRETS"), namespace in `sub`. |
 | Zone `icon` | Always set. Environment on regions (`globe` internet, `cloudflare` SaaS, `rack` on-prem, a provider logo for a cloud), product or `k8s-ns` on groups. |
 | Zone `color` | Sibling zones get different colours so boundaries read at a glance. |
-| Edge `kind` | `flow` connection · `auth` authentication · `tunnel` outbound tunnel set up in advance · `async` background sync; `denied: true` draws it blocked; references draw as links |
+| Edge `kind` | `flow` connection · `auth` authentication · `tunnel` outbound tunnel set up in advance · `async` background sync; `denied: true` draws it blocked; references draw as links; routes draw as broker routing |
 | `status` | `planned` hatched, with `target` as a pill ("SP2"); `deprecated` dotted and struck. Set it on a zone to apply it to everything inside. |
 
 Palettes are Tailwind v3: 400 strokes on slate-950 for dark, 600 strokes on 50 fills for

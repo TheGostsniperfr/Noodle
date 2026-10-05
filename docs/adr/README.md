@@ -27,5 +27,6 @@ that supersedes the old one.
 | [0020](0020-access-matrix-before-graph.md) | The access matrix is built now, on its own traversal | Accepted |
 | [0021](0021-topology-diff-state.md) | A topology view can show a proposal as a diff | Accepted |
 | [0022](0022-view-highlight.md) | A topology view can highlight one domain | Accepted |
+| [0023](0023-messaging-pipe-and-routes.md) | Queues are pipes, broker routing is a route | Accepted |
 
 Template: Context · Decision · Consequences. Keep it under a page.
