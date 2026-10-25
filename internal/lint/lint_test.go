@@ -129,6 +129,28 @@ func stackedPathEdge() diagram.Edge {
 		Path: []diagram.Point{{180, 120}, {180, 106}, {600, 106}, {600, 120}}}
 }
 
+func TestLint_NodeText_MeasuresEachBrSeparatedDescLineOnItsOwn(t *testing.T) {
+	t.Parallel()
+	s := clean()
+	s.Nodes[0].Desc = "first line, 28 characters.<br>second line, 28 characters"
+	s.Nodes[0].H = 120
+
+	findings := lint.Lint(s)
+
+	assert.Empty(t, findings)
+}
+
+func TestLint_NodeText_CountsOneLineOfHeightPerBrSeparatedDescLine(t *testing.T) {
+	t.Parallel()
+	s := clean()
+	s.Nodes[0].Desc = "one<br>two<br>three<br>four"
+	s.Nodes[0].H = 60
+
+	findings := lint.Lint(s)
+
+	assert.Contains(t, findings[0].Msg, "text needs")
+}
+
 func TestLint_PlainBoxIgnoresAnEdgeThatWouldCrossItsStack(t *testing.T) {
 	t.Parallel()
 	s := clean()

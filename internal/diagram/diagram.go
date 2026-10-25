@@ -2,6 +2,8 @@
 // positions and paths, as the v0 single-file spec expressed them.
 package diagram
 
+import "strings"
+
 type Point [2]float64
 
 func (p Point) X() float64 { return p[0] }
@@ -193,7 +195,7 @@ func (n Node) Lines() []string {
 		l = append(l, n.Tech)
 	}
 	if n.Desc != "" {
-		l = append(l, n.Desc)
+		l = append(l, strings.Split(n.Desc, "<br>")...)
 	}
 	return l
 }
