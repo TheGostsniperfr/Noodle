@@ -24,6 +24,12 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-10-25 · Multi-line node desc
+
+- The lint measured `desc` as one line, so the CNP AI views (`desc` with `<br>`, drawn as
+  several lines by draw.io) failed on width and height. `Node.Lines()` now splits `desc` on
+  `<br>`; two lint tests lock it. Not a roadmap item: found while updating `cnp-docs`.
+
 ### 2026-10-05 · Badge-only step labels
 
 - B-28: `labels: {id: ""}` already left a numbered edge with its badge; now without a

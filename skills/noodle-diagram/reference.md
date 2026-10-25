@@ -35,7 +35,7 @@ Components and zones are both elements. A zone has kind `region` or `group`.
 | `parent` | the zone it sits in; its layout box is relative to that zone |
 | `title` | bold name; zones: uppercase, role first (`GATEWAY API`) |
 | `tech` | `[Technology · variant]`, shown in italics |
-| `desc` | one line: the responsibility |
+| `desc` | the responsibility, one line; `<br>` starts a new line, each measured on its own |
 | `sub` | zones only: small grey text after the title, e.g. the namespace |
 | `icon` | see `noodle -list-icons`; project icons via `-icons DIR` |
 | `shape` | `box` (default) · `cylinder` for a datastore · `pipe` for a queue, topic or stream (ADR-0023) · `actor` for a human |
