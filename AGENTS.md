@@ -32,6 +32,15 @@ Planning lives on the [GitHub project board](https://github.com/users/TheGostsni
 both: put it in the issue body. Close the issue in the PR that flips its `passes`
 (`Closes #NN`), and open an issue for any new backlog item or spec.
 
+**Issues requested by another project.** When work on another project (Arffornia, for example)
+finds a Noodle bug or need, the issue carries the label `from: <project>` (lower case, e.g.
+`from: arffornia`; create it once, colour `#c5def5`, if it is missing) so the backlog shows who
+asked for what. The body states the reproduction with versions, expected vs actual, the impact on
+that project in one line, and a link back to the source (report, issue or PR) when it is public.
+Search for duplicates first; add evidence to an existing issue instead of opening a second one.
+The generic procedure is the `cross-repo-issue` skill in
+https://github.com/TheGostsniperfr/agent-playbook .
+
 ## Model guidance
 
 The main session model is Brian's choice (`/model`). Subagents pin theirs.
