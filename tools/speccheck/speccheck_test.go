@@ -312,6 +312,8 @@ func TestFeatures_GatesNewPassesOnEvidence(t *testing.T) {
 			"docs/features.json: D-01 passes without evidence: specs/001-demo/evidence/D-01.md must come from the evaluator agent: the spec is in full mode"},
 		{"full mode without an Evaluator line", map[string]string{"docs/features.json": flipped, "specs/001-demo/evidence/D-01.md": "# Evidence · D-01\n\n- Verdict: **PASS**\n"},
 			"docs/features.json: D-01 passes without evidence: specs/001-demo/evidence/D-01.md must come from the evaluator agent: the spec is in full mode"},
+		{"unfilled template verdict", map[string]string{"docs/features.json": flipped, "specs/001-demo/evidence/D-01.md": "- Verdict: **PASS** | **NEEDS_WORK**\n- Evaluator: evaluator (opus)\n"},
+			"docs/features.json: D-01 passes without evidence: specs/001-demo/evidence/D-01.md has no '- Verdict: PASS' line"},
 		{"self pass in quick mode", map[string]string{"docs/features.json": flipped, "specs/001-demo/spec.md": quickSpec, "specs/001-demo/evidence/D-01.md": evidence("PASS", "self")}, ""},
 	}
 	for _, tt := range tests {
@@ -468,4 +470,49 @@ func TestRun_FeaturesAllowsEditsWithALLOW_FEATURE_EDIT(t *testing.T) {
 
 	assert.ErrorIs(t, refused, errFindings)
 	assert.NoError(t, allowed)
+}
+
+func TestFeatures_GatesBacklogFlipsOnDocsEvidence(t *testing.T) {
+	t.Parallel()
+	withBacklog := strings.Replace(featuresJSON, `"backlog": []`, `"backlog": [{"id": "B-01", "description": "b", "verify": "v", "passes": false}]`, 1)
+	flipped := strings.Replace(withBacklog, `"verify": "v", "passes": false`, `"verify": "v", "passes": true`, 1)
+	tests := []struct {
+		name    string
+		changes map[string]string
+		want    []string
+	}{
+		{"no evidence", map[string]string{"docs/features.json": flipped},
+			[]string{"docs/features.json: B-01 passes without evidence: no docs/evidence/B-01.md (make evaluate FEATURE=B-01)"}},
+		{"self evidence", map[string]string{"docs/features.json": flipped, "docs/evidence/B-01.md": "- Verdict: **PASS**\n- Evaluator: self\n"}, nil},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			repo := gitFixture(t, map[string]string{"docs/features.json": withBacklog}, tt.changes)
+
+			findings, err := repo.CheckFeatures("HEAD", false)
+
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, messages(findings))
+		})
+	}
+}
+
+func TestFeatures_RejectsAnUnknownBaseRef(t *testing.T) {
+	t.Parallel()
+	repo := gitFixture(t, nil, nil)
+
+	_, err := repo.CheckFeatures("no-such-ref", false)
+
+	assert.ErrorContains(t, err, `base ref "no-such-ref" is not a commit`)
+}
+
+func TestFeatures_TreatsGitHubsNullBeforeAsNoBase(t *testing.T) {
+	t.Parallel()
+	repo := gitFixture(t, nil, nil)
+
+	findings, err := repo.CheckFeatures(strings.Repeat("0", 40), false)
+
+	require.NoError(t, err)
+	assert.Empty(t, messages(findings))
 }

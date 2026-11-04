@@ -36,3 +36,6 @@ Plan: [`plan.md`](plan.md). Each task ends with `make check` green.
 - [x] **T10** Contract criteria ignore fenced examples (DEV-02 re-evaluation, finding 3).
 - [x] **T11** Considered options are the numbered items only, so a bullet note no longer
   counts as a second option (DEV-03, finding 1).
+- [x] **T12** The gate reads only a filled verdict line; backlog evidence lives in
+  `docs/evidence/`; an unknown `BASE` is an error, not a skipped history check, except
+  GitHub's forty-zero "before" of a first push (DEV-04 first run, findings 3 to 5).

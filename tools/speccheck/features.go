@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	verdictRe   = regexp.MustCompile(`(?m)^- Verdict: \**([A-Z_]+)\**`)
+	verdictRe   = regexp.MustCompile(`(?m)^- Verdict: \*\*(PASS|NEEDS_WORK)\*\*\s*$`)
 	evaluatorRe = regexp.MustCompile(`(?m)^- Evaluator: (.+)$`)
 )
 
@@ -89,11 +89,20 @@ func (r *Repo) evidenceProblem(feats *Features, id string) string {
 }
 
 func (r *Repo) baseFeatures(base string) (*Features, error) {
+	// GitHub sends forty zeros as the "before" of a branch's first push.
+	if strings.Trim(base, "0") == "" && len(base) == 40 {
+		return nil, nil
+	}
+	verify := exec.Command("git", "rev-parse", "--verify", "--quiet", base+"^{commit}")
+	verify.Dir = r.Root
+	if err := verify.Run(); err != nil {
+		return nil, fmt.Errorf("base ref %q is not a commit: %w", base, err)
+	}
 	cmd := exec.Command("git", "show", base+":docs/features.json")
 	cmd.Dir = r.Root
 	b, err := cmd.Output()
 	if err != nil {
-		// No such ref or no file at that ref: nothing to compare against, as before.
+		// The ref exists but has no features.json yet: nothing to compare against.
 		return nil, nil
 	}
 	f, err := parseFeatures(b)

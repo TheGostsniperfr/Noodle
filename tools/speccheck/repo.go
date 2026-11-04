@@ -75,10 +75,11 @@ func (f *Features) phaseOf(id string) *Phase {
 	return nil
 }
 
-// specDirOf maps a phase to the directory of its spec, docs/evidence when it has none.
+// specDirOf maps a phase to the directory of its spec. Backlog entries and phases with no
+// spec use docs/, so their evidence lives in docs/evidence/ and is in quick mode.
 func specDirOf(p *Phase) string {
 	if p == nil || p.Spec == "" {
-		return filepath.Join("docs", "evidence")
+		return "docs"
 	}
 	return filepath.Dir(filepath.FromSlash(p.Spec))
 }
