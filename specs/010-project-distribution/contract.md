@@ -9,8 +9,10 @@ subtest passes, each one asserting the failure it provokes.
 
 - Agreed: 2026-11-04 after three rounds, the cap of PROCESS.md. Round 3 points that made
   a criterion pass or fail whatever the code does were applied; the others are listed
-  under "Follow-ups" and are not graded. Implementation waits for clarification 1 and
-  its ADR (T01).
+  under "Follow-ups" and are not graded.
+- Clarifications answered 2026-11-04 with the recommended answer each time (ADR-0030 for
+  the license and the DCO), so every criterion below stands as written; the fallback
+  table of other answers is removed.
 - Round 1 (2026-11-04): CHANGES, 31 points, all applied. Clarifications are still open:
   the criteria below assume the recommended answer of each, and the last section lists
   what changes if Brian answers otherwise.
@@ -132,13 +134,3 @@ grep -E '^[|] .* [|] (#[0-9]+|declined: .+) [|]$' specs/010-project-distribution
 - PRJ-06 #1: `explanation.md` has headings for model, view, layout, fragment and
   connection semantics.
 - PRJ-03 #1: `claude_name_outside_heading` is table-driven over the six literals of #4.
-
-## If Brian answers otherwise
-
-| Clarification | Other answer | Criteria that change |
-|---|---|---|
-| 1 | MIT | PRJ-01 #1 and #3 read `MIT` and `lib.licenses.mit`; #2 becomes `grep -c '^MIT License' LICENSE` = `1`; #4 is dropped (no NOTICE); PRJ-02 #3 reads `MIT` |
-| 2 | Code review only, nothing run | PRJ-02 #1 becomes `grep -n -e '^## Files read' -e 'not run' specs/010-project-distribution/fork-triage.md`: both found, and no exit-code line is required |
-| 3 | release-please with goreleaser | PRJ-07 #3 reads `release-please-action` and `body_path` in the workflow; #6 reads `release-please-config.json` and `.release-please-manifest.json` instead of `cliff.toml`, and `make changelog` is dropped; #4 and #5 are unchanged (goreleaser still builds) |
-| 4 | `.claude/skills/` only | PRJ-08 #1 to #5 read `.claude/skills/<name>/SKILL.md`, the symlink check is dropped, and `process_skill_broken` writes `<t.TempDir()>/.claude/skills/broken/SKILL.md` |
-| 5 | DCO required | PRJ-05 #8: `grep -n -i 'signed-off-by' CONTRIBUTING.md` finds a match, and a CI check of sign-offs joins PRJ-05 |

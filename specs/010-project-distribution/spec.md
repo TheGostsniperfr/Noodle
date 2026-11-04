@@ -1,10 +1,10 @@
 # Spec 010 · Project and distribution: license, contribution, hosts, docs, releases
 
-- Status: **Draft**
+- Status: **Clarified**
 - Mode: **full**
 - Phase: proj, batch E of wave 1, pulled forward by ADR-0025 (C11)
 - Issues: #93 (B-42), #94 (B-58), #100 (B-50), #106 (B-56), #107 (B-57), #88 (B-39)
-- Decisions it builds on: ADR-0024, ADR-0025
+- Decisions it builds on: ADR-0024, ADR-0025, ADR-0030
 - Invariants it touches: C05, C08, C09, C12, C14, C15
 
 ## Why
@@ -193,14 +193,11 @@ which downloads and verifies the matching binary.
 
 | # | Question | Answer | ADR |
 |---|---|---|---|
-| 1 | License: Apache-2.0 with NOTICE, or MIT? | pending; contract assumes Apache-2.0 | |
-| 2 | How is the fork's code built and tested? | pending; contract assumes a container with `--network none` | |
-| 3 | Changelog and release tooling? | pending; contract assumes goreleaser and git-cliff | |
-| 4 | Where do the process skills live? | pending; contract assumes `.agents/skills/` with `.claude/skills/` symlinks | |
-| 5 | Do contributions need a DCO sign-off? | pending; contract assumes no | |
-
-The contract is written for the recommended answer of each question; its "If Brian
-answers otherwise" section lists the criteria each other answer changes.
+| 1 | License: Apache-2.0 with NOTICE, or MIT? | Apache-2.0 with a NOTICE naming Noodle and Brian Perret (2026-11-04) | ADR-0030 |
+| 2 | How is the fork's code built and tested? | In a container with no network, `podman run --network none`, vendored dependencies (2026-11-04) | |
+| 3 | Changelog and release tooling? | goreleaser for builds, git-cliff for the changelog (2026-11-04) | |
+| 4 | Where do the process skills live? | `.agents/skills/<name>/`, with symlinks in `.claude/skills/` (2026-11-04) | |
+| 5 | Do contributions need a DCO sign-off? | No (2026-11-04) | ADR-0030 |
 
 ## Success criteria
 

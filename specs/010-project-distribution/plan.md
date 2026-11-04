@@ -1,6 +1,6 @@
 # Plan 010 · Project and distribution
 
-Spec: [`spec.md`](spec.md). Decisions: ADR-0024, ADR-0025; clarifications 1 to 5 of the spec.
+Spec: [`spec.md`](spec.md). Decisions: ADR-0024, ADR-0025, ADR-0030; clarifications 1 to 5 of the spec.
 
 ## Approach
 
@@ -88,7 +88,7 @@ Unverified, to confirm at implementation and record in `fork-triage.md` or PROGR
   publishing). `make release-snapshot` joins the evaluator allowlist as an exact entry;
   it writes only `dist/`, which is git-ignored. This extends the set DEV-05 reviewed and
   is recorded in ADR-0024's accepted risks by T13.
-- Fork build (clarification 2, recommended answer): the fork is cloned into a temporary
+- Fork build (clarification 2): the fork is cloned into a temporary
   directory and tested with `podman run --rm --network none -v <dir>:/src:ro -w /src
   golang:1.26 go test -mod=vendor ./...`; the fork vendors its dependencies, so no
   network is needed.
