@@ -87,10 +87,11 @@ to jump from a node back to the YAML document that defines it.
   *Scenario:* WHEN discovery reads a rendered temp file for `-kustomize apps/shop` THEN
   every `src.file` of the fragment starts with `apps/shop/` or names the Kustomization,
   and none starts with `/`.
-- **FR-008** THE SYSTEM SHALL give every discovered item an `object` identity
-  `{apiVersion, kind, namespace, name}` beside its `src`, and every reference the field
-  path that created it (`spec.template.spec.volumes[2].secret.secretName`). (Option of
-  question 3.)
+- **FR-008** THE SYSTEM SHALL give every discovered item a top-level `object` identity
+  `{apiVersion, kind, namespace, name}`, required `apiVersion`, `kind` and `name`, beside
+  its `src`, whose existing string `src.object` stays valid and unchanged; and every
+  reference the field path that created it, `field`
+  (`spec.template.spec.volumes[2].secret.secretName`). (Option of question 3.)
   *Scenario:* WHEN the Deployment `api` mounts Secret `db` through its third volume THEN
   its `mounts` reference has `field: spec.template.spec.volumes[2].secret.secretName` and
   the element `k8s:prod/deployment/api` has `object: {apiVersion: apps/v1, kind:
@@ -145,7 +146,7 @@ to jump from a node back to the YAML document that defines it.
 
 - **FR-015** WHILE the checkpoint has not recorded `Decision: go`, THE SYSTEM SHALL keep
   FR-016 to FR-020 unimplemented; WHEN it records `stop`, THE SYSTEM SHALL revise this
-  spec instead (ADR-0018).
+  spec instead, under a `## Revision` heading (ADR-0018).
   *Scenario:* WHEN `docs/benchmarks/discovery-checkpoint.md` says `Decision: stop` THEN
   no commit after it touches the files of FR-016 to FR-020, and the spec gains a revision
   note.
@@ -170,7 +171,8 @@ to jump from a node back to the YAML document that defines it.
   *Scenario:* WHEN a `Cluster` named `shop-db` is discovered THEN the fragment holds a
   database element `shop-db` and Services `shop-db-rw`, `shop-db-ro`, `shop-db-r`
   referencing it.
-- **FR-019** WHERE the system holds a discovery rules file (question 4), THE SYSTEM SHALL
+- **FR-019** WHERE the system holds a discovery rules file, `<system>/discovery.yaml`
+  (option of question 4), THE SYSTEM SHALL
   map a kind to an element and to references with templated fields (`{ns}`,
   `{metadata.name}`, `{spec.targetRefs[*].name}`), apply it on every discovery, and stop
   counting that kind as `unknown-kind`.
@@ -191,7 +193,7 @@ to jump from a node back to the YAML document that defines it.
 - **FR-021** WHEN `noodle query DIR neighbours ID [-kind K]` or `noodle query DIR path A
   B` runs, THE SYSTEM SHALL answer from the merged graph, with no model in the loop:
   every node one edge from `ID` (of kind `K`), or one shortest path from `A` to `B`, each
-  edge with its kind and `src`.
+  edge with its kind and `src`; IF no path exists THEN it SHALL print `no path` and exit 1.
   *Scenario:* WHEN `noodle query examples/discovery-k8s neighbours
   k8s:data/secret/postgres -kind secret-key` runs THEN it lists exactly the workloads that
   read a key of that Secret.

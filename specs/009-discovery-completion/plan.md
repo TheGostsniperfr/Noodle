@@ -25,12 +25,12 @@ kubectl   ─┘     rules: refs, addresses, operators,   ├─ graph.Merge(mod
 | Path | Change |
 |---|---|
 | `internal/model` | items gain `object`, references gain `field` (Q3); `fragment.schema.json` updated |
-| `internal/adapter/k8s` | one rule per file: `refs.go` (FR-001, FR-020), `externalsecrets.go` and `argocd.go` (FR-002), `addresses.go` (FR-003, FR-004), `namespace.go` (FR-005), `kustomize.go` (FR-006), `netpol.go` (FR-016), `secretendpoint.go` (FR-017), `operators.go` (FR-018), `rules.go` (FR-019); `src` paths relative (FR-007) |
+| `internal/adapter/k8s` | one rule per file: `refs.go` (FR-001), `refkinds.go` (FR-020), `externalsecrets.go` and `argocd.go` (FR-002), `addresses.go` (FR-003, FR-004), `namespace.go` (FR-005), `kustomize.go` (FR-006), `netpol.go` (FR-016), `secretendpoint.go` (FR-017), `operators.go` (FR-018), `rules.go` (FR-019); `src` paths relative (FR-007) |
 | `internal/graph` | new: `Merge`, `Lookup`, `Neighbours`, `Path`, `Drift`; cross-fragment index (FR-012) |
 | `cmd/noodle` | `discover` flags `-argocd-app`, `-kustomize`, `-enable-helm`; new `drift` and `query` subcommands |
 | `tools/tokencost` | new: transcript reader (FR-013) |
 | `examples/discovery-k8s` | manifests, `list.yaml`, `model.yaml`, golden `discovered/k8s-manifests.yaml`, `drift.txt` |
-| `docs/benchmarks/` | `discovery-checkpoint.md`, `discovery-tokens.md` |
+| `docs/benchmarks/` | `discovery-checkpoint.md`, `discovery-tokens.md`, and `transcripts/*.jsonl` of every arm and of the skill run |
 | `skills/noodle-diagram` | step 1 runs discovery first; `reference.md` documents `matches` and the rules file |
 | `Makefile`, `docs/COMMANDS.md` | `make examples` reruns discovery on the example and diffs the golden file |
 
@@ -43,6 +43,9 @@ not replace it in this spec.
   every string leaf of a custom resource `spec`. A match must name a Service of the input
   (FR-003) or a route hostname of the input (FR-004); anything else stays out, as in
   spec 003.
+- **Ports of an address.** A value's port picks the Service port with that number; a
+  value with no port uses the Service's only port, or, with several, the port named
+  `http`, else the first in spec order.
 - **Namespace.** Fallback order: the object's namespace, `-namespace`, `-argocd-app`'s
   destination, then `default` with the FR-005 warning.
 - **Field paths.** Recorded while decoding, as the path to the scalar that named the

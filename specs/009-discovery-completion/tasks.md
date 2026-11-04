@@ -2,8 +2,9 @@
 
 Plan: [`plan.md`](plan.md). One task per commit; each ends with `make check` green. Tick
 the box in the same commit. Tasks in one wave do not depend on each other, except where
-a task names another. Before any task: questions 2, 3 and 4 answered, and their ADRs
-accepted where the answer needs one.
+a task names another. Before any task: the five questions answered, `contract.md`
+revised where an answer differs from its stated assumption, and the ADRs of questions
+2, 3 and 4 accepted.
 
 ## Wave 1 · References, addresses, inputs
 
@@ -21,9 +22,10 @@ accepted where the answer needs one.
 ## Wave 1 · Merge, drift, example, cost
 
 - [ ] **T05** `tools/tokencost` with a trimmed transcript fixture (FR-013). Spec 003 T12.
-- [ ] **T06** `examples/discovery-k8s`, its golden fragment and `list.yaml`; `make
-  examples` reruns discovery and diffs the golden file (FR-009). Spec 003 T08. Flip
-  **DSC-05**, then **P6a-03** and **P6a-04** after their own `make evaluate`.
+- [ ] **T06** `examples/discovery-k8s`, its golden fragment and `list.yaml`, with an
+  unmatched Deployment `worker`; `make examples` reruns discovery and diffs the golden
+  file; `TestExample_ManifestsEqualList` in the adapter package (FR-009). Spec 003 T08.
+  Flip **DSC-05**, then **P6a-03** and **P6a-04** after their own `make evaluate`.
 - [ ] **T07** `internal/graph`: merge per ADR-0015, `src` and `object` kept on merged
   elements, lookup, neighbours (FR-010). Spec 003 T09. Flip **DSC-06**.
 - [ ] **T08** `noodle drift` with `drift.txt` in the example; references resolved across
@@ -53,7 +55,8 @@ accepted where the answer needs one.
 - [ ] **T15** `noodle query neighbours | path` over the merged graph (FR-021). Flip
   **DSC-11**.
 - [ ] **T16** Skill step 1 runs discovery first; `matches` and the rules file in
-  `reference.md` (FR-022). Spec 003 T11. Flip **P6a-06**.
+  `reference.md`; the skill's run on the example committed as a transcript (FR-022).
+  Spec 003 T11. Flip **P6a-06**.
 - [ ] **T17** Benchmark of arms A, B and C, two runs each, committed and on Notion
   (FR-023). Spec 003 T13. Flip **P6a-07**. With T16, flip **DSC-12**.
 
