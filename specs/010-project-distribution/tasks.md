@@ -40,7 +40,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
 - [x] **T13** Release configuration, release workflow, changelog config, `make changelog`,
   `make release-snapshot` (in the evaluator allowlist, risk noted in ADR-0024), the
   `version` field of `plugin.json`, and the first `CHANGELOG.md` (FR-013).
-- [ ] **T14** `bin/noodle` download fallback with checksum verification, and its Go test
+- [x] **T14** `bin/noodle` download fallback with checksum verification, and its Go test
   with a stub `curl` (FR-014). Flip **PRJ-07** with T06 and T13.
 - [ ] **T15** The three process skills `issue-writer`, `release-notes`, `contrib-check`
   where clarification 4 says (FR-015). Flip **PRJ-08**.
