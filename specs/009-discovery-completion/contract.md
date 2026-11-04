@@ -6,16 +6,14 @@ criterion fails the feature. Every "Verified by" runs inside the evaluator's all
 run it as a plain `|`, which inside a `grep -E` pattern is alternation. A literal pipe
 character to match is written `[\|]`, that is `[|]` once unescaped.
 
-- **Assumes the recommended options of the five open questions**: Q1 a (Claude runs the
-  arms as fresh `claude -p` processes, transcripts committed without tool results, "costs
-  clearly less" = C at most 70 % of A's cost), Q2 a (`-kustomize` shells out to
-  `kustomize`), Q3 a (additive `object` and `field` in `v1alpha1`), Q4 a (rules in
-  `<system>/discovery.yaml`), Q5 a (sources kept by the merge, card in batch F). A
-  different answer reopens the criteria it touches before implementation: Q1 DSC-08 and
-  DSC-12, Q2 DSC-03 #3, Q3 DSC-04, Q4 DSC-10, Q5 DSC-06 #2.
-- **ADRs of the answers**: written at the start of wave 1. Each lists `"009"` in its
-  frontmatter `specs` and names its question ("Question 2 of spec 009") in its context.
-  "The ADR of Qn" below means `grep -l 'Question n of spec 009' docs/adr/0*.md`.
+- **Answers of 2026-11-04** (spec Clarifications): Q1 a, ADR-0029 (fresh `claude -p`
+  arms, transcripts without tool results, go when C costs at most 70 % of A with no
+  recall loss); Q2 a made explicit, ADR-0027 (with `-kustomize` and no `kustomize`,
+  discovery fails naming the tool; without the flag, a kustomization is `unrendered`
+  with the rerun command); Q3 c, ADR-0028 (`object` only; field paths and origins out of
+  scope); Q4 a (`<system>/discovery.yaml`, its format ADR written in T13); Q5 a. The
+  rows they reopened, DSC-03 #3 and #5, DSC-04, DSC-08 #4, DSC-10 #3 and #5, were
+  rewritten for them.
 - Agreed: pending `make review-contract SPEC=009` (three rounds at most, PROCESS.md).
 - Round 1 (2026-11-04): CHANGES, 33 points, all applied.
 - Round 2: CHANGES, 21 points, all applied; phase `6a` now points at this spec, so the
@@ -56,19 +54,21 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 |---|---|---|---|
 | 1 | The namespace warning | `go test ./cmd/noodle/ -run TestNamespace -v` | exit 0: subtest `mixed` prints exactly `3 objects name no namespace; pass -namespace` on stderr; `all-named` prints no such line; `namespace-flag` with `-namespace web` prints no such line and gives the 3 objects ids under `k8s:web/` |
 | 2 | `-argocd-app` sets the default namespace, silently | same, subtest `argocd-app` | the 3 objects get ids under `k8s:web/`, and stderr has no `name no namespace` line |
-| 3 | `-kustomize` renders read-only, passes `-enable-helm` only when asked, names the fragment | `go test ./internal/adapter/k8s/ ./cmd/noodle/ -run TestKustomize -v` | exit 0, with a fake `kustomize` on PATH that records its argv: `render` discovers its output, asserts argv is exactly `build <DIR>`, and the input directory's file hashes are unchanged; `enable-helm` asserts argv exactly `build <DIR> --enable-helm`; `fragment-name` asserts the file written is `discovered/k8s-shop.yaml`; `absent` (no `kustomize` on PATH) yields one `unrendered` entry with hint `kustomize` |
+| 3 | `-kustomize` renders read-only, passes `-enable-helm` only when asked, names the fragment | `go test ./internal/adapter/k8s/ ./cmd/noodle/ -run TestKustomize -v` | exit 0, with a fake `kustomize` on PATH that records its argv: `render` discovers its output, asserts argv is exactly `build <DIR>`, and the input directory's file hashes are unchanged; `enable-helm` asserts argv exactly `build <DIR> --enable-helm`; `fragment-name` asserts the file written is `discovered/k8s-shop.yaml`; `missing-tool` runs `-kustomize` with no `kustomize` on PATH and asserts a non-nil error whose message contains `kustomize` and `nix shell nixpkgs#kustomize`, and that no fragment is written; `hint-without-flag` walks a directory holding `kustomization.yaml` without the flag and asserts with `Equal` one `unrendered` entry whose hint is `noodle discover k8s -kustomize <DIR>` |
+| 3b | The tool is in the dev shell | `grep -c 'kustomize' flake.nix` | ≥ `1`, inside the `devShells` package list |
 | 4 | `src` paths are relative | `go test ./internal/adapter/k8s/ -run TestSrcPaths -v`; `grep -rcE '(^\|[ {,-])file: */' examples/discovery-k8s/discovered/` | exit 0, subtests `manifests` and `kustomize` assert that every `src.file` starts with the input directory relative to the working directory, none starts with `/`, none contains `os.TempDir()`; grep gives `0` for every file |
-| 5 | The decision of Q2 is recorded | the ADR of Q2; `make spec-check` | the file exists, its frontmatter says `status: accepted`; exit 0 |
+| 5 | The decision is recorded | `grep -c '^status: accepted' docs/adr/0027-discovery-may-call-kustomize.md`; `make spec-check` | `1`; exit 0 |
 
-## DSC-04 · Identity and field paths
+## DSC-04 · Object identity
 
 | # | Criterion | Verified by | Threshold |
 |---|---|---|---|
-| 1 | The contract: top-level `object`, `field` on references, `src.object` kept | `go test ./internal/model/ -run TestIdentity -v` | exit 0: `schema-accepts` (an item with `object {apiVersion, kind, namespace, name}`, a reference with `field`); `schema-rejects` with three cases, no `apiVersion`, no `kind`, no `name`, each refused; `src-object-unchanged` (a fragment using only the string `src.object` validates); `legacy-fragment` loads `internal/model/testdata/minimal/discovered/k8s-manifests.yaml` and marshals it back byte-identical |
+| 1 | The contract: optional top-level `object`, `src.object` kept | `go test ./internal/model/ -run TestIdentity -v` | exit 0: `schema-accepts` (an item with `object {apiVersion, kind, namespace, name}`, and an item without `object`); `schema-rejects` with three cases, no `apiVersion`, no `kind`, no `name`, each refused; `src-object-unchanged` (a fragment using only the string `src.object` validates); `legacy-fragment` loads `internal/model/testdata/minimal/discovered/k8s-manifests.yaml` and marshals it back byte-identical |
 | 2 | The legacy fixture predates this spec | `git log --format=%h origin/main -- internal/model/testdata/minimal/discovered/k8s-manifests.yaml` | non-empty |
-| 3 | The adapter fills them where an object stands behind the item | `go test ./internal/adapter/k8s/ -run TestIdentity -v` | exit 0: `scenario` asserts FR-008's scenario exactly; `every-item`, on the fragment of `examples/discovery-k8s/manifests`, asserts 0 object-derived items without `object`, 0 references without `field`, and with `Equal` the full list of ids that carry no `object` (the synthesized elements only); `connection-object` asserts an inferred connection carries the `object` of the ConfigMap whose value created it |
+| 3 | The adapter fills them where an object stands behind the item | `go test ./internal/adapter/k8s/ -run TestIdentity -v` | exit 0: `scenario` asserts FR-008's scenario exactly; `every-item`, on the fragment of `examples/discovery-k8s/manifests`, asserts 0 object-derived items without `object`, and with `Equal` the full list of ids that carry no `object` (the synthesized elements only); no item or reference has a `field` key (out of scope, ADR-0028); `connection-object` asserts an inferred connection carries the `object` of the ConfigMap whose value created it |
 | 4 | Existing fixtures are not rewritten | `git diff --name-only --diff-filter=MD origin/main...HEAD -- internal/adapter/k8s/testdata cmd/noodle/testdata internal/model/testdata` | no output |
-| 5 | The decision of Q3 is recorded (C06) | the ADR of Q3; `make spec-check` | the file exists, its frontmatter says `status: accepted`; exit 0 |
+| 5 | The decision is recorded (C06) | `grep -c '^status: accepted' docs/adr/0028-fragments-carry-object-identity.md`; `make spec-check` | `1`; exit 0 |
+| 6 | No version bump | `grep -c 'noodle/v1alpha2' schemas/v1alpha1/fragment.schema.json` | `0` |
 
 ## DSC-05 · The example
 
@@ -104,7 +104,7 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 | 1 | The transcript reader prints all four measures | `go test ./tools/tokencost/ -v`; `grep -cE '^(category\|model\|turns\|wall)' tools/tokencost/testdata/expected.txt` | exit 0, the test asserting with `Equal` the full stdout on the fixture against `expected.txt`; each of the four prefixes at least once |
 | 2 | The checkpoint rows and transcripts | `grep -cE '^[\|] [AC] [\|] \$[0-9]+\.[0-9]{2} [\|] [0-9]+/25 [\|] docs/benchmarks/transcripts/[^ ]+\.jsonl [\|]$' docs/benchmarks/discovery-checkpoint.md`; `ls` of each transcript path | `2`; each path exists |
 | 3 | Transcripts hold no tool results (C09) | `grep -c '"type":"tool_result"' docs/benchmarks/transcripts/*.jsonl` | `0` for every file |
-| 4 | The decision follows the recorded rule | `cat docs/benchmarks/discovery-checkpoint.md`; `grep -c '70 %' <the ADR of Q1>` | the file states the rule of the ADR of Q1 and exactly one line `Decision: go` or `Decision: stop` that agrees with the two rows; ≥ `1` |
+| 4 | The decision follows ADR-0029 | `cat docs/benchmarks/discovery-checkpoint.md`; `grep -c '^status: accepted' docs/adr/0029-discovery-checkpoint-threshold.md` | the file cites ADR-0029 and has exactly one line `Decision: go` or `Decision: stop`, `go` exactly when C's cost is at most 70 % of A's and C's edges are at least A's, given the two rows; `1` |
 | 5 | PROGRESS records cost and recall of both arms on platform-overview (P6a-08) | `grep -cE 'checkpoint.*platform-overview.*A.*\$[0-9.]+.*[0-9]+/25.*C.*\$[0-9.]+.*[0-9]+/25.*(go\|stop)' docs/PROGRESS.md` | `1` |
 
 ## DSC-09 · Rules after the checkpoint
@@ -122,9 +122,9 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 |---|---|---|---|
 | 1 | A rule in `<system>/discovery.yaml` maps a kind to references and to elements | `go test ./internal/adapter/k8s/ -run TestRules -v` | exit 0: `vaultsecret` asserts FR-019's scenario (14 references, no `unknown-kind` for `VaultSecret`); `element` asserts one element per object, with `Equal` on `{id, kind, object, src}`; `template-ns`, `template-name` and `template-fanout` (N references for N `targetRefs`) assert with `Equal` |
 | 2 | A malformed rule is refused | same, subtest `bad-template` | discovery fails with an error matching `^.*discovery\.yaml:[0-9]+: ` followed by the template, asserted with `Regexp` |
-| 3 | The six reference kinds of FR-020 | `go test ./internal/adapter/k8s/ -run TestReferenceKinds -v` | exit 0, subtests `owner`, `selects`, `runs-as`, `bound-by`, `scales`, `issues`, each asserting `{from, to, kind, field, src.line}` with `Equal` |
+| 3 | The six reference kinds of FR-020 | `go test ./internal/adapter/k8s/ -run TestReferenceKinds -v` | exit 0, subtests `owner`, `selects`, `runs-as`, `bound-by`, `scales`, `issues`, each asserting `{from, to, kind, src.line}` with `Equal` (no `field`, ADR-0028) |
 | 4 | Started only after `Decision: go` | DSC-09 #4, which covers `rules.go` and `refkinds.go` | same threshold |
-| 5 | The decision of Q4 is recorded | the ADR of Q4; `make spec-check` | the file exists, its frontmatter says `status: accepted`; exit 0 |
+| 5 | The rules file format is decided | `grep -l 'discovery.yaml' docs/adr/0*.md`; for that file, `grep -c '^status: accepted'`; `make spec-check` | one ADR, written in T13 and listing `"009"` in its `specs`; `1`; exit 0 |
 
 ## DSC-11 · Query
 
@@ -171,7 +171,7 @@ from that commit on, they replace the criterion they name.
 | DSC-12 | #4 | also catch indirect reads: `grep '"type":"tool_use"' … \| grep -E 'manifests\|list\.yaml\|"name":"(Grep\|Glob)".*discovery-k8s' \| grep -vc 'noodle discover'` = `0` |
 | DSC-08, DSC-12 | DSC-08 #3, DSC-12 #5 | `grep -cE '"type": *"tool_result"\|"toolUseResult"' docs/benchmarks/transcripts/*.jsonl` = `0` for every file |
 | DSC-12 | #5 | for each X in A, B, C and N in 1, 2: `grep -cE '^[\|] X [\|] N [\|]' docs/benchmarks/discovery-tokens.md` = `1`; add `cat` of the file so the C ≥ A means can be read |
-| DSC-08 | #4 | the ADR of Q1 has `status: accepted`; `tasks.md` already requires it before any task |
+| DSC-08 | #4 | done: #4 now checks ADR-0029's `status: accepted` |
 | DSC-09 | #3 | the three `secret-endpoint-env`, `-envfrom` and `-externalsecret` subtests each assert no Secret value and no base64 form of it in the fragment |
 | DSC-08 | #1 | four counts, `^category`, `^model`, `^turns`, `^wall` on `expected.txt`, each ≥ `1` |
 | DSC-11 | #2 | plan 009 decides whether `path` crosses `denied` connections (proposed: it skips them), and subtest `path-denied` asserts it |

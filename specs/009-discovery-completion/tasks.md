@@ -2,15 +2,14 @@
 
 Plan: [`plan.md`](plan.md). One task per commit; each ends with `make check` green. Tick
 the box in the same commit. Tasks in one wave do not depend on each other, except where
-a task names another. Before any task: the five questions answered, `contract.md`
-revised where an answer differs from its stated assumption, and the ADRs of questions
-1, 2, 3 and 4 accepted. Each task's first commit applies the contract's round 3
+a task names another. The five questions are answered (2026-11-04) and ADR-0027,
+ADR-0028 and ADR-0029 accepted. Each task's first commit applies the contract's
 follow-ups for its features.
 
 ## Wave 1 · References, addresses, inputs
 
-- [ ] **T01** Contract: `object` on discovered items and `field` on references, schema
-  and loader, additive (FR-008). Flip **DSC-04** after `make evaluate FEATURE=DSC-04`.
+- [ ] **T01** Contract: optional `object` on discovered items, schema and loader,
+  additive (FR-008, ADR-0028). Flip **DSC-04** after `make evaluate FEATURE=DSC-04`.
 - [ ] **T02** Configuration references: `envFrom`, `secretKeyRef`, `configMapKeyRef`,
   Secret, ConfigMap and PVC volumes, no Secret value (FR-001); ExternalSecret, stores,
   providers, Argo CD Applications (FR-002). Spec 003 T05. Flip **DSC-01**.
@@ -18,7 +17,9 @@ follow-ups for its features.
   (FR-003); public URL hosts to the Gateway or Ingress serving them (FR-004). Spec 003
   T06. Flip **DSC-02**.
 - [ ] **T04** Inputs: namespace warning and `-argocd-app` (FR-005), `-kustomize` and
-  `-enable-helm` (FR-006), relative `src` paths (FR-007). Flip **DSC-03**.
+  `-enable-helm`, the failure when `kustomize` is missing and the rerun hint without the
+  flag, `kustomize` in the flake dev shell (FR-006, ADR-0027), relative `src` paths
+  (FR-007). Flip **DSC-03**.
 
 ## Wave 1 · Merge, drift, example, cost
 
@@ -47,7 +48,8 @@ follow-ups for its features.
 - [ ] **T12** Operator rules with one fixture each, ServiceMonitor and PodMonitor
   included (FR-018). Spec 003 T16. Flip **P6a-10**. With T10 and T11, and FR-015
   respected, flip **DSC-09**.
-- [ ] **T13** Discovery rules file and templated fields (FR-019).
+- [ ] **T13** Discovery rules file `<system>/discovery.yaml` and templated fields, with
+  an ADR fixing the file format, rules and remembered resolutions (FR-019).
 - [ ] **T14** Reference kinds `owner`, `selects`, `runs-as`, `bound-by`, `scales`,
   `issues` (FR-020). With T13, flip **DSC-10**.
 

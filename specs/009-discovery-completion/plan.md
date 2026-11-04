@@ -2,8 +2,8 @@
 
 Spec: [`spec.md`](spec.md). Decisions: ADR-0015 (fragments, `matches`, storage), ADR-0016,
 ADR-0017 (decoding, `unresolved`, remembered resolutions), ADR-0018 (checkpoint, operator
-rules), ADR-0025 (batches). New ADRs follow the answers to questions 1 to 4; each lists
-`"009"` in its frontmatter `specs` and names its question in its context.
+rules), ADR-0025 (batches), ADR-0027 (kustomize), ADR-0028 (object identity), ADR-0029
+(checkpoint threshold). The rules file format of question 4 gets its ADR in T13.
 
 Phase `6a` in `docs/features.json` now points at this spec, so `make evaluate
 FEATURE=P6a-0N` reads this contract and its evidence lands in
@@ -17,10 +17,10 @@ spec 003 left open, adds what the Arffornia field report found missing, and puts
 ADR-0018 checkpoint between the cheap rules (wave 1) and the costly ones (wave 3).
 
 ```
-manifests ─┐  -kustomize DIR ─▶ kustomize build (read-only, Q2)
+manifests ─┐  -kustomize DIR ─▶ kustomize build (read-only, ADR-0027)
 helm tpl  ─┼─▶ adapter/k8s ─▶ discovered/k8s-*.yaml ─┐
 kubectl   ─┘     rules: refs, addresses, operators,   ├─ graph.Merge(model, fragments)
-                 <system>/discovery.yaml (Q4)          │     ├─ noodle drift
+                 <system>/discovery.yaml               │     ├─ noodle drift
                                                        │     ├─ noodle query neighbours | path
                                                        │     └─ skill, MCP later
 ```
@@ -29,8 +29,9 @@ kubectl   ─┘     rules: refs, addresses, operators,   ├─ graph.Merge(mod
 
 | Path | Change |
 |---|---|
-| `internal/model` | items gain `object`, references gain `field` (Q3) |
-| `schemas/v1alpha1/` | `fragment.schema.json`: optional `object` and `field` (Q3) |
+| `internal/model` | discovered items gain an optional `object` (ADR-0028) |
+| `schemas/v1alpha1/` | `fragment.schema.json`: optional `object` (ADR-0028) |
+| `flake.nix` | `kustomize` in the dev shell (ADR-0027) |
 | `internal/adapter/k8s` | one rule per file: `refs.go` (FR-001), `refkinds.go` (FR-020), `externalsecrets.go` and `argocd.go` (FR-002), `addresses.go` (FR-003, FR-004), `namespace.go` (FR-005), `kustomize.go` (FR-006), `netpol.go` (FR-016), `secretendpoint.go` (FR-017), `operators.go` (FR-018), `rules.go` (FR-019); `src` paths relative (FR-007) |
 | `internal/graph` | new: `Merge`, `Lookup`, `Neighbours`, `Path`, `Drift`; cross-fragment index (FR-012) |
 | `cmd/noodle` | `discover` flags `-argocd-app`, `-kustomize`, `-enable-helm`; new `drift` and `query` subcommands |
@@ -54,8 +55,10 @@ not replace it in this spec.
   `http`, else the first in spec order.
 - **Namespace.** Fallback order: the object's namespace, `-namespace`, `-argocd-app`'s
   destination, then `default` with the FR-005 warning.
-- **Field paths.** Recorded while decoding, as the path to the scalar that named the
-  target, in the form of FR-008's scenario.
+- **Kustomize.** `-kustomize DIR` looks `kustomize` up on PATH first and fails before
+  any work when it is absent, with `kustomize not found: nix shell nixpkgs#kustomize, or
+  nix develop in this repository`. Without the flag, a walked directory holding
+  `kustomization.yaml` gets the `unrendered` hint `noodle discover k8s -kustomize <DIR>`.
 - **Paths.** `noodle query path` is a breadth-first search; among equal-length paths it
   takes, at each step, the next id first in lexicographic order, so the answer is stable.
 - **Transcripts.** Committed transcripts keep usage records and `tool_use` inputs and
@@ -75,4 +78,4 @@ becomes slow. A typed Kubernetes client: ADR-0017 keeps yaml.v3 decoding.
 | Address scanning finds false connections | limited to Services and route hosts of the input, marked `inferred`, sourced to the line; drift and the reviewer can reject them |
 | The checkpoint says stop after wave 1 | FR-015: wave 3 is not started; the spec is revised, wave 1 and the merge still ship |
 | `kustomize` output differs from Argo CD's | the flag passes Argo CD's build options; the hint names the version found |
-| The Fragment contract change breaks existing fragments | additive optional fields only (Q3, option a); existing golden fragments regenerate identically when the fields are empty |
+| The Fragment contract change breaks existing fragments | one additive optional field (ADR-0028); existing golden fragments regenerate identically |

@@ -1,12 +1,12 @@
 # Spec 009 · Discovery, phase 6a completion
 
-- Status: **Draft**, five questions open (Clarifications)
+- Status: **Clarified** (answers of 2026-11-04 in Clarifications)
 - Mode: **full**
 - Phase: 6a, the current phase (ADR-0016), batch B of wave 1 (ADR-0025). Takes over the
   open tasks T05 to T16 of spec 003, which stays as written (C10).
 - Issue: #42 · Batch items: #75, #76, #79, #80, #81, #16, #25
 - Decisions it builds on: ADR-0003, ADR-0005, ADR-0010, ADR-0015, ADR-0016, ADR-0017,
-  ADR-0018, ADR-0024, ADR-0025
+  ADR-0018, ADR-0024, ADR-0025, ADR-0027, ADR-0028, ADR-0029
 - Invariants it touches: C02, C06, C07, C08, C09, C12
 
 ## Why
@@ -75,13 +75,17 @@ to jump from a node back to the YAML document that defines it.
   discovery prints `3 objects name no namespace; pass -namespace`; WHEN rerun with
   `-argocd-app app.yaml` naming `web` THEN the 3 objects get ids under `k8s:web/`.
 - **FR-006** WHERE `-kustomize DIR` is given and `kustomize` is on PATH, THE SYSTEM SHALL
-  run `kustomize build DIR` (with `--enable-helm` when `-enable-helm` is given) without
-  writing to `DIR`, discover its output, and name the fragment after the directory; IF
-  `kustomize` is absent THEN THE SYSTEM SHALL keep reporting the directory as
-  `unrendered` with its hint. (Option of question 2.)
+  run `kustomize build DIR` (with `--enable-helm` only when `-enable-helm` is given)
+  without writing to `DIR`, discover its output, and name the fragment after the
+  directory; IF `-kustomize` is given and `kustomize` is not on PATH THEN discovery SHALL
+  fail with a message naming the tool and how to get it (`nix shell nixpkgs#kustomize`,
+  or `nix develop` in this repository); and WHEN, without the flag, a walked directory
+  holds a `kustomization.yaml`, THE SYSTEM SHALL report it `unrendered` with the exact
+  command to rerun with `-kustomize` (ADR-0027).
   *Scenario:* WHEN `noodle discover k8s -kustomize apps/shop` runs with kustomize on PATH
   THEN the fragment `k8s-shop.yaml` holds the rendered objects and `git status` of
-  `apps/shop` is unchanged.
+  `apps/shop` is unchanged; WHEN it runs with no kustomize on PATH THEN it exits non-zero
+  and stderr names `kustomize` and `nix shell nixpkgs#kustomize`.
 - **FR-007** THE SYSTEM SHALL write every `src.file` relative to the directory discovery
   was run from, and never an absolute or temporary path.
   *Scenario:* WHEN discovery reads a rendered temp file for `-kustomize apps/shop` THEN
@@ -93,13 +97,11 @@ to jump from a node back to the YAML document that defines it.
   stays valid and unchanged; an element synthesized without an object behind it (an
   implied namespace, an Ingress controller, an external provider) SHALL carry no
   `object`; a connection SHALL carry the `object` of the object whose value created it
-  (the ConfigMap, the workload's env); and every reference SHALL carry the field path
-  that created it, `field` (`spec.template.spec.volumes[2].secret.secretName`). (Option
-  of question 3.)
-  *Scenario:* WHEN the Deployment `api` mounts Secret `db` through its third volume THEN
-  its `mounts` reference has `field: spec.template.spec.volumes[2].secret.secretName` and
-  the element `k8s:prod/deployment/api` has `object: {apiVersion: apps/v1, kind:
-  Deployment, namespace: prod, name: api}`.
+  (the ConfigMap, the workload's env). The field is optional and additive in `v1alpha1`,
+  with no version bump (ADR-0028).
+  *Scenario:* WHEN Deployment `api` is discovered THEN the element
+  `k8s:prod/deployment/api` has `object: {apiVersion: apps/v1, kind: Deployment,
+  namespace: prod, name: api}`, and an implied namespace element has no `object`.
 
 ### Wave 1 · Merge, drift, example, cost
 
@@ -142,9 +144,13 @@ to jump from a node back to the YAML document that defines it.
   the PAE `platform-overview` in two fresh sessions, agent alone (arm A) and agent given
   the fragment (arm C), and the cost, the recall against the 25 in-cluster edges and the
   go or stop decision SHALL be recorded in `docs/PROGRESS.md` and
-  `docs/benchmarks/discovery-checkpoint.md` (ADR-0018). (Who runs it: question 1.)
+  `docs/benchmarks/discovery-checkpoint.md`. Each arm SHALL be one fresh `claude -p`
+  process, its transcript committed without tool results, and the decision SHALL be `go`
+  exactly when C's cost is at most 70 % of A's and C finds at least as many edges as A
+  (ADR-0018, ADR-0029).
   *Scenario:* WHEN both arms have run THEN the benchmark file lists, per arm, cost in
-  dollars, edges found out of 25, and one line `Decision: go` or `Decision: stop`.
+  dollars, edges found out of 25, and one line `Decision: go` or `Decision: stop` that
+  follows ADR-0029's rule.
 
 ### Wave 3 · Only after a recorded "go"
 
@@ -186,11 +192,10 @@ to jump from a node back to the YAML document that defines it.
 - **FR-020** WHEN the input holds ownerReferences, PodDisruptionBudgets,
   ServiceAccounts with RoleBindings, HorizontalPodAutoscalers or KEDA ScaledObjects, or
   cert-manager Certificates, THE SYSTEM SHALL emit the references `owner`, `selects`,
-  `runs-as` and `bound-by`, `scales`, and `issues`, each with `src` and field path
-  (issue #16).
+  `runs-as` and `bound-by`, `scales`, and `issues`, each with its `src` (issue #16).
   *Scenario:* WHEN HPA `api` targets Deployment `api` THEN the fragment holds a `scales`
-  reference `k8s:prod/horizontalpodautoscaler/api → k8s:prod/deployment/api` with
-  `field: spec.scaleTargetRef.name`.
+  reference `k8s:prod/horizontalpodautoscaler/api → k8s:prod/deployment/api` whose `src`
+  is the line of `scaleTargetRef`.
 
 ### Wave 4 · Consumers
 
@@ -227,16 +232,18 @@ to jump from a node back to the YAML document that defines it.
 - Live `kubectl` discovery through client-go, Terraform, Hubble flows (roadmap phase 6).
 - CI failing on drift (ADR-0015: a team decides later).
 - `noodle check` rules built on these facts (#95, #96, #97): batch C, wave 2.
+- Field paths on references and git or API origins of objects (#16, parts 1 and 2):
+  a follow-up spec, after `object` is in use (ADR-0028).
 
 ## Clarifications
 
 | # | Question | Options (recommended first) | Answer | ADR |
 |---|---|---|---|---|
-| 1 | Who runs the checkpoint (FR-014) and the benchmark (FR-023) sessions on PAE, and what does ADR-0018's "costs clearly less" mean in numbers? | a) Claude runs each arm as a fresh `claude -p` process on a local PAE checkout, transcripts committed without tool results; "clearly less" is C at most 70 % of A's cost, in a new ADR; b) Brian runs them by hand, same threshold; c) replace PAE by `examples/discovery-k8s`, same threshold | open | |
-| 2 | Kustomize (#81) means running an external tool, which ADR-0016 and ADR-0017 kept out. | a) shell out to `kustomize build` behind `-kustomize`, read-only, `unrendered` when absent, in a new ADR; b) keep no external tool: stay `unrendered`, the skill documents the loop; c) vendor the kustomize Go API | open | |
-| 3 | `object` and field paths (FR-008) change the Fragment contract (C06). | a) additive optional fields in `v1alpha1`, with an ADR, no version bump; b) wait for the `v1alpha2` bump of #104; c) `object` now, field paths and git origins later | open | |
-| 4 | Where do discovery rules (#80) and remembered resolutions (ADR-0017) live? `discovered/` is regenerated and uncommitted (ADR-0015). | a) one committed `<system>/discovery.yaml` holding both; b) `discovered/rules.yaml` as the issue says, committed by exception; c) two committed files, `rules.yaml` and `resolutions.yaml` | open | |
-| 5 | #25 asks for a `ref` field and a sources card on the diagram. | a) this spec keeps every `src` through the merge (FR-010); the card moves to batch F; b) the card is built here too; c) drop the card, `noodle query` is enough | open | |
+| 1 | Who runs the checkpoint (FR-014) and the benchmark (FR-023) sessions on PAE, and what does ADR-0018's "costs clearly less" mean in numbers? | a) Claude runs each arm as a fresh `claude -p` process on a local PAE checkout, transcripts committed without tool results; "clearly less" is C at most 70 % of A's cost, in a new ADR; b) Brian runs them by hand, same threshold; c) replace PAE by `examples/discovery-k8s`, same threshold | a (2026-11-04) | ADR-0029 |
+| 2 | Kustomize (#81) means running an external tool, which ADR-0016 and ADR-0017 kept out. | a) shell out to `kustomize build` behind `-kustomize`, read-only, `unrendered` when absent, in a new ADR; b) keep no external tool: stay `unrendered`, the skill documents the loop; c) vendor the kustomize Go API | a, made explicit: with `-kustomize` and no `kustomize`, discovery fails naming the tool and `nix shell nixpkgs#kustomize`; without the flag, a kustomization is `unrendered` with the exact rerun command; `kustomize` in the dev shell (2026-11-04) | ADR-0027 |
+| 3 | `object` and field paths (FR-008) change the Fragment contract (C06). | a) additive optional fields in `v1alpha1`, with an ADR, no version bump; b) wait for the `v1alpha2` bump of #104; c) `object` now, field paths and git origins later | c: `object` now, optional and additive in `v1alpha1`; field paths and origins out of scope, with #16 (2026-11-04) | ADR-0028 |
+| 4 | Where do discovery rules (#80) and remembered resolutions (ADR-0017) live? `discovered/` is regenerated and uncommitted (ADR-0015). | a) one committed `<system>/discovery.yaml` holding both; b) `discovered/rules.yaml` as the issue says, committed by exception; c) two committed files, `rules.yaml` and `resolutions.yaml` | a (2026-11-04) | none yet: the file format gets an ADR in T13 |
+| 5 | #25 asks for a `ref` field and a sources card on the diagram. | a) this spec keeps every `src` through the merge (FR-010); the card moves to batch F; b) the card is built here too; c) drop the card, `noodle query` is enough | a (2026-11-04) | none: scope only |
 
 ## Success criteria
 
