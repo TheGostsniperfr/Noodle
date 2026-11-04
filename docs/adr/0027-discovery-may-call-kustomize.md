@@ -42,8 +42,9 @@ optional tool, and keeps the default path free of it.
 - With `-kustomize` and no `kustomize` on PATH, discovery **fails** with a message that
   names the tool and how to get it: `nix shell nixpkgs#kustomize`, or `nix develop` in
   this repository.
-- Without the flag, a directory holding a `kustomization.yaml` stays `unrendered`, and
-  its hint is the exact command to rerun with `-kustomize`.
+- Without the flag, a directory holding a `kustomization.yaml` stays `unrendered` with
+  the hint code `kustomize` (ADR-0017 keeps hints short codes), and `noodle discover`
+  prints on stderr the exact command to rerun with `-kustomize` and how to get the tool.
 - `kustomize` joins the flake's dev shell.
 - This extends ADR-0016 and ADR-0017: their "no external tool" holds for decoding; an
   explicitly requested renderer is the one exception.
@@ -51,8 +52,7 @@ optional tool, and keeps the default path free of it.
 ### Consequences
 
 - Good: Kustomize repositories discover in one command.
-- Bad: output depends on the `kustomize` version; the error and the hint name the
-  version found.
+- Bad: output depends on the `kustomize` version, which the fragment does not record.
 
 ### Confirmation
 
