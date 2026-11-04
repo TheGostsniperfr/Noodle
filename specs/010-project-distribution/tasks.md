@@ -23,7 +23,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
 - [ ] **T07** Fork triage record: commits, build and test result per clarification 2,
   one disposition per row, draft reply (FR-003). Only once T01 is on `main`. Brian
   posts the reply. Flip **PRJ-02**.
-- [ ] **T08** Read the Codex subagents page and write the agent TOML keys into
+- [x] **T08** Read the Codex subagents page and write the agent TOML keys into
   `plan.md`; `content.go` embeds `skills` and `agents` (FR-005, FR-006).
 - [ ] **T09** `noodle setup opencode` and `noodle setup codex`, `-project` and `-user`,
   idempotent, with golden-file tests in temporary directories (FR-005, FR-006).

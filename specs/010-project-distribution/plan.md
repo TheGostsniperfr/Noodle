@@ -31,10 +31,12 @@ Unverified, to confirm at implementation and record in `fork-triage.md` or PROGR
 - OpenCode's v2 docs (v2.opencode.ai) use a different permission syntax (`permissions`
   as an ordered array); the generator targets the current `/docs/agents` format and
   states the version it targets in the marker line.
-- Codex agent files: the subagents page requires `name`, `description` and
-  `developer_instructions` (checked 2026-11-04). The page and its `llms-full` copy
-  disagree on whether `sandbox_mode` may be set per agent, so setup does not write it.
-  T08 rereads the page before coding and updates this line if it changed.
+- Codex agent files (page reread 2026-11-04 by T08): a standalone TOML file must define
+  `name`, `description` and `developer_instructions`; `model`, `model_reasoning_effort`
+  and others are optional. `sandbox_mode`, `approval_policy` and `mcp_servers` set in an
+  agent file do not override the parent session, so setup writes none of them and a
+  read-only agent relies on its instructions ("you never edit files"). Codex identifies
+  the agent by its `name` field; setup uses the agent's name as the file name.
 - The Codex plugin manifest (`.codex-plugin/plugin.json`) has no official page found:
   not used. `.agents/skills/` is enough for Codex to find the skill.
 
