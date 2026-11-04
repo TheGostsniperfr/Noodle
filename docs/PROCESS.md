@@ -22,7 +22,7 @@ have no mode and keep their old shape.
 | 2 | **Clarify** | answers in `spec.md` → "Clarifications" | Brian | at most five questions per pass; a direction-setting answer becomes an ADR |
 | 3 | **Decide** | `docs/adr/NNNN-*.md` from [`_template`](adr/_template.md) | Opus, Brian accepts | two options or more, a Confirmation section |
 | 4 | **Plan and tasks** | `plan.md`, `tasks.md`, new entries in `features.json` with `covers` | Opus | tasks in waves; `make spec-check` green |
-| 5 | **Contract** | `contract.md`: per feature, criteria, how each is verified, its threshold | implementer drafts, `make review-contract` | the evaluator answers APPROVED; CHANGES are applied first |
+| 5 | **Contract** | `contract.md`: per feature, criteria, how each is verified, its threshold | implementer drafts, `make review-contract` | APPROVED, or three rounds done (see below) |
 | 6 | **Implement** | code, tests, one commit per task | Sonnet when the tasks are clear | `make check` green |
 | 7 | **Evaluate** | `evidence/<feature>.md` | `make evaluate FEATURE=…`, a fresh read-only agent | `- Verdict: PASS`; anything else goes to step 8 |
 | 8 | **Converge** | gap tasks under "Convergence" in `tasks.md` | implementer | back to 6 until the evaluator passes |
@@ -55,6 +55,15 @@ FR-NNN in spec.md ── named by a task ── covered by a feature (covers) �
 
 It also checks that every cited ADR and `Cnn` exists, that the ADR index is current,
 and that `COMMANDS.md` lists exactly the Makefile targets.
+
+### Contract rounds
+
+At most **three** review rounds per contract. Each round's CHANGES are applied before the
+next. After the third, only two kinds of point are still applied: one that lets the
+evaluator write, and one that makes a criterion pass or fail whatever the code does.
+Others are recorded in the contract as follow-ups, and implementation starts. The
+evaluation of each feature reruns every command anyway, so a weak criterion still meets
+a skeptical reader.
 
 ### The evaluator
 

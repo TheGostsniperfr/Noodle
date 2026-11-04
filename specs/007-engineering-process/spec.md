@@ -88,6 +88,7 @@ output and the evaluator's grading. The ADR index is current without anyone edit
 |---|---|---|---|
 | 1 | Scripts or Makefile as the entry point? | Makefile, plus one Markdown reference for agents (2026-11-04) | ADR-0024 |
 | 2 | Adopt Spec Kit or OpenSpec wholesale? | No: keep our shape, add the best pieces, enforce with code (2026-11-04) | ADR-0024 |
+| 4 | How many contract review rounds? | Three at most; after that only write-capability and always-pass or always-fail criteria are fixed (2026-11-04). Spec 007 ran five, before the cap existed | ADR-0024 |
 | 3 | Must hooks call `make` too? (raised by the contract review) | Hooks that run a check do; hook-only scripts stay as hook implementations and are listed in COMMANDS.md, since a `make` target per hook would only add noise (2026-11-04) | ADR-0024 |
 
 ## Success criteria

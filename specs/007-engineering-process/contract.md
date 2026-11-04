@@ -5,8 +5,10 @@ One failed criterion fails the feature. Every "Verified by" runs inside the eval
 allowlist (`EVALUATOR` in the Makefile); a command outside it is refused, and fails.
 In a table cell, `\|` is the Markdown escape of a pipe: run every command with a plain `|`.
 
-- Agreed: pending `make review-contract SPEC=007`. Bootstrap exception: this contract is
-  reviewed after implementation, since the review command is part of what it grades.
+- Agreed: 2026-11-04, after five rounds (the three-round cap of PROCESS.md came after
+  them); every point of every round applied, none pending. Bootstrap exception: this
+  contract was reviewed after implementation, since the review command is part of what
+  it grades.
 - Round 1 (2026-11-04): CHANGES, 17 points, all applied; FR-007 amended (clarification 3).
 - Round 2: CHANGES, 13 points, all applied; FR-002 declares the flip rule; tests assert
   exact finding lists.
