@@ -1,0 +1,9 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+title: "Regression 78 · Annotation without a label"
+subtitle: "The label of c1 is empty, so only its gap badge is drawn."
+meta:
+  - "v0.1 · source: examples/regression-78"
+labels:
+  c1: ""

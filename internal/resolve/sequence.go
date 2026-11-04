@@ -43,13 +43,7 @@ func Sequence(s *model.System, viewID string) (*diagram.Sequence, error) {
 	for _, c := range s.Model.Connections {
 		conns[c.ID] = c
 	}
-	annotations := (&resolver{s: s}).badges()
-	warn := func(over string) string {
-		if g := annotations[over]; len(g) > 0 {
-			return " · !!⚠ " + strings.Join(g, " ") + "!!"
-		}
-		return ""
-	}
+	annotations := (&resolver{s: s, v: v}).badges()
 
 	order := append([]string(nil), v.Participants...)
 	col := map[string]int{}
@@ -98,7 +92,7 @@ func Sequence(s *model.System, viewID string) (*diagram.Sequence, error) {
 				text = joinNonEmpty(" · ", c.Verb, c.Protocol)
 			}
 			n++
-			rows = append(rows, msg{step: st, from: st.From, to: st.To, kind: c.Kind, label: "[" + strconv.Itoa(n) + "] " + text + warn(st.Over)})
+			rows = append(rows, msg{step: st, from: st.From, to: st.To, kind: c.Kind, label: "[" + strconv.Itoa(n) + "] " + joinBadges(text, annotations[st.Over])})
 		}
 	}
 

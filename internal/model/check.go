@@ -263,6 +263,7 @@ func (c *checker) checkView(v *View) {
 	}
 	c.checkLandscape(file, v)
 	c.checkMatrix(file, v)
+	c.checkAnnotations(file, v)
 	if len(v.Participants) > 0 && v.Type != "sequence" {
 		c.errf(file, v.ID, "participants are for sequence views only")
 	}
@@ -693,6 +694,90 @@ func (c *checker) checkMatrix(file string, v *View) {
 				}
 				seen[id] = true
 				c.mustElement(file, id, "item", id)
+			}
+		}
+	}
+}
+
+// Drawn returns the ids a topology or sequence view draws: elements, and the connections,
+// references and routes between them, as the resolvers place them. Other view types
+// draw no annotation, so they return nothing.
+func (s *System) Drawn(v *View) map[string]bool {
+	drawn := map[string]bool{}
+	switch v.Type {
+	case "topology":
+		for _, id := range s.Included(v) {
+			drawn[id] = true
+		}
+		edge := func(id, from, to string) {
+			if drawn[from] && drawn[to] {
+				drawn[id] = true
+			}
+		}
+		for _, c := range s.Model.Connections {
+			edge(c.ID, c.From, c.To)
+		}
+		for _, r := range s.Model.References {
+			edge(r.ID, r.From, r.To)
+		}
+		for _, r := range s.Model.Routes {
+			edge(r.ID, r.From, r.To)
+		}
+	case "sequence":
+		for _, p := range v.Participants {
+			drawn[p] = true
+		}
+		for _, st := range v.Steps {
+			switch {
+			case st.IsMessage():
+				drawn[st.From], drawn[st.To], drawn[st.Over] = true, true, true
+			case st.Note != "":
+				drawn[st.Note] = true
+			}
+		}
+	}
+	return drawn
+}
+
+// checkAnnotations enforces ADR-0026: an annotation with no drawn target is acknowledged
+// in hidden_annotations with a reason, and only such an annotation is acknowledged.
+func (c *checker) checkAnnotations(file string, v *View) {
+	if v.Type != "topology" && v.Type != "sequence" {
+		if len(v.HiddenAnnotations) > 0 || v.HideAnnotations {
+			c.errf(file, v.ID, "hidden_annotations and hide_annotations are for topology and sequence views")
+		}
+		return
+	}
+	drawn := c.s.Drawn(v)
+	annotations := map[string]Annotation{}
+	for _, a := range c.s.Model.Annotations {
+		annotations[a.ID] = a
+	}
+	for _, a := range c.s.Model.Annotations {
+		if len(a.Targets) == 0 {
+			continue
+		}
+		var shown bool
+		for _, t := range a.Targets {
+			shown = shown || drawn[t]
+		}
+		if _, listed := v.HiddenAnnotations[a.ID]; !shown && !listed {
+			c.errf(file, a.ID, "annotation targets nothing drawn in this view (%s): draw a target or list it in hidden_annotations with a reason", strings.Join(a.Targets, ", "))
+		}
+	}
+	for _, id := range sortedKeys(v.HiddenAnnotations) {
+		a, ok := annotations[id]
+		switch {
+		case !ok:
+			c.errf(file, id, "hidden_annotations names %s, which is not an annotation", id)
+			continue
+		case v.HiddenAnnotations[id] == "":
+			c.errf(file, id, "hidden_annotations needs a reason")
+		}
+		for _, t := range a.Targets {
+			if drawn[t] {
+				c.errf(file, id, "hidden_annotations hides %s, which this view draws", id)
+				break
 			}
 		}
 	}

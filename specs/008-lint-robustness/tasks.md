@@ -18,7 +18,7 @@ Clarifications 1 to 5 of the spec are answered (2026-11-04).
 - [x] **T03** `header_overlap.go` (FR-003). Flip **LNT-02**; flip backlog **B-25**.
 - [x] **T04** Pairwise port badge overlap in `ports.go`, the report's repro as a fixture
   (FR-005). Flip **LNT-04**.
-- [ ] **T05** Badge join on empty labels, `hide_annotations`, and the ADR-0026 checks of
+- [x] **T05** Badge join on empty labels, `hide_annotations`, and the ADR-0026 checks of
   undrawn annotations and `hidden_annotations` (FR-006, FR-007, FR-011, FR-012). Flip
   **LNT-05**.
 - [ ] **T06** `canvas_bounds.go` and the landscape side column (FR-009). Flip **LNT-07**.

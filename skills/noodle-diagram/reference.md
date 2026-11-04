@@ -78,7 +78,9 @@ side rule does not apply. Ends are components, not zones.
 ### Annotation: a gap between docs and code
 
 `{id: G1, severity: high, title: …, text: …, targets: [element or edge ids]}`. Each
-target shows the id as a badge; list the gaps in a card.
+target shows the id as a badge; list the gaps in a card. A topology or sequence view
+that draws none of an annotation's targets fails the check unless it lists the id in
+`hidden_annotations` with a reason (ADR-0026).
 
 ### Membership and grant: who may act on what (ADR-0019)
 
@@ -121,6 +123,8 @@ scope, version and source, one line each).
 | `steps` | connection ids of the nominal path, in time order: they become `[1]…[n]`, each used once |
 | `background` | control-plane connection ids: `[A]`, `[B]`… |
 | `labels` | `{edge-id: text}` to override a label in this view only; `""` keeps only the step badge, for a dense corridor where the steps card tells the rest |
+| `hidden_annotations` | `{annotation-id: reason}`: this view draws none of that annotation's targets, on purpose. An error for an id that is not an annotation, one the view draws, or an empty reason (ADR-0026) |
+| `hide_annotations` | `true` draws no annotation badge on this view's boxes and edges; `labels: {id: ""}` hides the label text only (ADR-0026) |
 | `notes` | `[{id, text}]`: a response that changes the path, next to who sends it |
 | `cards` | `[{id, title, color, legend, lines}]`: `legend: true` generates the legend |
 | `state` | `diff` draws a proposal (ADR-0021): `planned` as added (change-coloured frame, `+ target` pill, `+` label), `deprecated` as removed (red dotted frame, struck, `−`), the rest dimmed. Absent: ADR-0008 hatch and dots |

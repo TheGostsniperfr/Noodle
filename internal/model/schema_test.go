@@ -155,3 +155,28 @@ const (
 	fragmentHead       = "apiVersion: noodle/v1alpha1\nkind: Fragment\n"
 	fragmentProvenance = `provenance: {adapter: k8s, source: manifests, observedAt: "2026-09-30T12:00:00Z"}` + "\n"
 )
+
+func TestSchemas_View_TakesHiddenAndHideAnnotations(t *testing.T) {
+	t.Parallel()
+	view := compileSchemas(t)["View"]
+	head := "apiVersion: noodle/v1alpha1\nkind: View\ntype: topology\n"
+	tests := []struct {
+		name, body string
+		valid      bool
+	}{
+		{"a reason per annotation id", "hidden_annotations: {G1: background job}\n", true},
+		{"hide_annotations as a boolean", "hide_annotations: true\n", true},
+		{"an empty reason", "hidden_annotations: {G1: \"\"}\n", false},
+		{"a list instead of a map", "hidden_annotations: [G1]\n", false},
+		{"hide_annotations as a string", "hide_annotations: yes please\n", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			err := view.Validate(yamlToJSONValue(t, []byte(head+tt.body)))
+
+			assert.Equal(t, tt.valid, err == nil, "%v", err)
+		})
+	}
+}
