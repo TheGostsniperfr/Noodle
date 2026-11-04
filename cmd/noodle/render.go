@@ -303,20 +303,21 @@ func (r *renderer) background() {
 
 func (r *renderer) header() {
 	s := r.spec
-	if s.Title == "" && s.Subtitle == "" && len(s.Meta) == 0 {
+	h := house.Header(s)
+	if h.Box == (diagram.Rect{}) {
 		return
 	}
-	r.vertex("header-dot", "1", "", style("ellipse", "fillColor="+r.th.Accent, "strokeColor=none"), 40, 44, 12, 12)
+	r.vertex("header-dot", "1", "", style("ellipse", "fillColor="+r.th.Accent, "strokeColor=none"), h.Dot.X, h.Dot.Y, h.Dot.W, h.Dot.H)
 	title := fmt.Sprintf(`<b>%s</b>`, html.EscapeString(s.Title))
-	r.vertex("header-title", "1", title, style("text", "html=1", "align=left", "verticalAlign=middle", font(24, r.th.Title)), 64, 30, s.Width-400, 40)
+	r.vertex("header-title", "1", title, style("text", "html=1", "align=left", "verticalAlign=middle", font(house.HeaderTitleSize, r.th.Title)), h.Title.X, h.Title.Y, h.Title.W, h.Title.H)
 	var sub []string
 	if s.Subtitle != "" {
-		sub = append(sub, fmt.Sprintf(`<font color="%s" style="font-size:13px">%s</font>`, r.th.Text, r.markup(s.Subtitle)))
+		sub = append(sub, fmt.Sprintf(`<font color="%s" style="font-size:%gpx">%s</font>`, r.th.Text, house.HeaderSubtitleSize, r.markup(s.Subtitle)))
 	}
 	for _, m := range s.Meta {
 		sub = append(sub, r.markup(m))
 	}
-	r.vertex("header-sub", "1", strings.Join(sub, "<br>"), style("text", "html=1", "align=left", "verticalAlign=top", font(11, r.th.Muted)), 64, 74, s.Width-400, 80)
+	r.vertex("header-sub", "1", strings.Join(sub, "<br>"), style("text", "html=1", "align=left", "verticalAlign=top", font(house.HeaderMetaSize, r.th.Muted)), h.Sub.X, h.Sub.Y, h.Sub.W, h.Sub.H)
 }
 
 func (r *renderer) zone(z diagram.Zone) error {
@@ -575,20 +576,23 @@ func (r *renderer) edge(e diagram.Edge) {
 }
 
 func (r *renderer) card(c diagram.Card) {
+	layout := house.CardLayout(r.spec, c)
 	color := r.th.Zones[c.Color]
 	if color == "" {
 		color = r.th.Muted
 	}
 	st := style("rounded=1", "absoluteArcSize=1", "arcSize=16", "html=1", "whiteSpace=wrap", "fillColor="+r.th.CardFill,
-		"strokeColor="+r.th.CardStroke, "align=left", "verticalAlign=top", "spacingLeft=20", "spacingTop=14", "spacingRight=16",
-		font(11, r.th.Text))
-	head := fmt.Sprintf(`<font color="%s">●</font>&nbsp;<b><font color="%s" style="font-size:13px">%s</font></b><br><br>`, color, r.th.Title, html.EscapeString(c.Title))
+		"strokeColor="+r.th.CardStroke, "align=left", "verticalAlign=top", fmt.Sprintf("spacingLeft=%g", house.CardPadLeft), fmt.Sprintf("spacingTop=%g", house.CardPadTop), fmt.Sprintf("spacingRight=%g", house.CardPadRight),
+		font(house.CardTextSize, r.th.Text))
+	head := fmt.Sprintf(`<font color="%s">●</font>&nbsp;<b><font color="%s" style="font-size:%gpx">%s</font></b><br><br>`, color, r.th.Title, house.CardTitleSize, html.EscapeString(layout.Rows[0].Text))
 	var lines []string
-	for _, l := range c.Lines {
-		if strings.HasPrefix(l, "[") || strings.HasPrefix(l, "!!") {
-			lines = append(lines, r.markup(l))
-		} else {
-			lines = append(lines, "• "+r.markup(l))
+	for _, row := range layout.Rows {
+		switch {
+		case row.Kind != house.RowLine:
+		case row.Bullet:
+			lines = append(lines, "• "+r.markup(row.Text))
+		default:
+			lines = append(lines, r.markup(row.Text))
 		}
 	}
 	body := ""
@@ -597,157 +601,84 @@ func (r *renderer) card(c diagram.Card) {
 	}
 	r.vertex(c.ID, "1", head+body, st, c.X, c.Y, c.W, c.H)
 	if c.Legend {
-		r.legend(c)
+		r.legend(layout)
 	}
 }
 
-func (r *renderer) legendText(id, text string, x, y, w float64) {
-	r.vertex(id, "1", text, style("text", "html=1", "align=left", "verticalAlign=middle", font(10.5, r.th.Text)), x, y, w, 22)
+func (r *renderer) legendText(id, text string, b diagram.Rect) {
+	r.vertex(id, "1", text, style("text", "html=1", "align=left", "verticalAlign=middle", font(house.LegendTextSize, r.th.Text)), b.X, b.Y, b.W, b.H)
 }
 
-// legendStatuses explains the planned and deprecated styles and each stacked box used in
-// the diagram, so the hatch, the dots and the stacks never carry meaning alone (ADR-0006,
-// ADR-0008).
-func (r *renderer) legendStatuses(x, y, w float64) {
-	used := map[string]bool{}
-	for _, n := range r.spec.Nodes {
-		used[n.Status] = true
-	}
-	for _, z := range r.spec.Zones {
-		used[z.Status] = true
-	}
-	k := r.th.Nodes["external"]
-	switch {
-	case r.spec.Diff:
-		y = r.legendChanges(x, y, w)
-		used = nil
-	case r.spec.Highlight:
-		y = r.legendDimmed(x, y, w)
-	}
-	if used["planned"] {
-		r.vertex("legend-planned", "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+r.th.Hatch)+hatch+
-			style("dashed=1", "dashPattern=6 4", "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+2, 40, 18)
-		r.legendText("legend-planned-text", "planned · pill: target", x+52, y, w)
-		y += 26
-	}
-	if used["deprecated"] {
-		r.vertex("legend-deprecated", "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill,
-			"dashed=1", "dashPattern="+dotted, "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+2, 40, 18)
-		r.legendText("legend-deprecated-text", "deprecated", x+52, y, w)
-		y += 26
-	}
-	shown := map[string]bool{}
-	for i, n := range r.spec.Nodes {
-		if n.Multiplicity == "" || n.Shape == "actor" || shown[n.Multiplicity] {
-			continue
-		}
-		shown[n.Multiplicity] = true
-		for depth := 2.0; depth >= 0; depth-- {
-			st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5")
-			if depth > 0 {
-				st += style("dashed=1", "dashPattern=4 3")
-			}
-			r.vertex(fmt.Sprintf("legend-stack-%d-%g", i, depth), "1", "", st, x+3*depth, y+4-3*depth, 34, 14)
-		}
-		r.legendText(fmt.Sprintf("legend-stack-%d-text", i), html.EscapeString(n.Multiplicity), x+52, y, w)
-		y += 26
-	}
-}
-
-// legendChanges explains a diff's code in place of planned and deprecated (ADR-0021).
-func (r *renderer) legendChanges(x, y, w float64) float64 {
+// legend draws the rows of a legend card's layout (ADR-0006, ADR-0008, ADR-0021, ADR-0022).
+func (r *renderer) legend(layout house.Layout) {
 	k := r.th.Nodes["external"]
 	box := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill)
-	r.vertex("legend-added", "1", "", box+style("strokeColor="+r.th.Diff[diagram.Added], "strokeWidth=3"), x, y+2, 40, 18)
-	r.legendText("legend-added-text", "added by the proposal · pill: target", x+52, y, w)
-	y += 26
-	r.vertex("legend-removed", "1", "", box+style("strokeColor="+r.th.Diff[diagram.Removed], "strokeWidth=3", "dashed=1", "dashPattern="+dotted), x, y+2, 40, 18)
-	r.legendText("legend-removed-text", "removed by the proposal", x+52, y, w)
-	y += 26
-	return r.legendDimmed(x, y, w)
-}
-
-// legendDimmed explains the faded boxes: unchanged in a diff, outside the highlight
-// otherwise (ADR-0021, ADR-0022).
-func (r *renderer) legendDimmed(x, y, w float64) float64 {
-	k := r.th.Nodes["external"]
-	text := "unchanged, dimmed"
-	if r.spec.Highlight {
-		text = "outside the highlight, dimmed"
-	}
-	r.vertex("legend-unchanged", "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5")+dim, x, y+2, 40, 18)
-	r.legendText("legend-unchanged-text", text, x+52, y, w)
-	return y + 26
-}
-
-func (r *renderer) usesPipe() bool {
-	for _, n := range r.spec.Nodes {
-		if n.Shape == "pipe" {
-			return true
-		}
-	}
-	return false
-}
-
-func (r *renderer) legend(c diagram.Card) {
-	usedNodes, usedEdges := map[string]bool{}, map[string]bool{}
-	for _, n := range r.spec.Nodes {
-		if n.Shape != "actor" {
-			usedNodes[n.Kind] = true
-		}
-	}
-	for _, e := range r.spec.Edges {
-		usedEdges[e.Kind] = true
-	}
-	x, y := c.X+20, c.Y+52
-	for _, kind := range house.NodeKindOrder {
-		if !usedNodes[kind] {
-			continue
-		}
-		k := r.th.Nodes[kind]
-		r.vertex("legend-node-"+kind, "1", "", style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+4, 22, 14)
-		r.legendText("legend-node-"+kind+"-text", k.Legend, x+32, y, c.W/2-60)
-		y += 26
-	}
-	if r.usesPipe() {
-		k := r.th.Nodes["bus"]
-		r.vertex("legend-pipe", "1", "", style("shape=mxgraph.flowchart.direct_data", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5"), x, y+4, 22, 14)
-		r.legendText("legend-pipe-text", "queue · messages in transit", x+32, y, c.W/2-60)
-		y += 26
-	}
-	y += 8
-	r.legendText("legend-steps", r.markup("[1] request step · [A] background step"), x, y, c.W/2-20)
-	y += 26
-	st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "html=1", "fillColor="+r.th.Nodes["backend"].Stroke, "strokeColor=none",
-		"align=center", "verticalAlign=middle", "fontStyle=1", font(house.PortFontSize, r.th.PortText))
-	r.vertex("legend-port", "1", "TCP 80", st, x, y+3, house.PortWidth("TCP 80"), house.PortHeight)
-	r.legendText("legend-port-text", "listening port on the server", x+52, y, c.W/2-70)
-
-	x, y = c.X+c.W/2+10, c.Y+52
-	for _, kind := range house.EdgeKindOrder {
-		if !usedEdges[kind] {
-			continue
-		}
-		k := r.th.Edges[kind]
-		endFill := "1"
-		if k.EndArrow == "cross" || k.EndArrow == "open" {
-			endFill = "0"
-		}
-		st := style("edgeStyle=none", "html=1", "strokeColor="+k.Stroke, fmt.Sprintf("strokeWidth=%g", k.Width), "endArrow="+k.EndArrow, "endFill="+endFill, "endSize=6")
-		if k.Dash != "" {
-			st += "dashed=1;dashPattern=" + k.Dash + ";"
-		}
-		fmt.Fprintf(&r.b, `        <mxCell id="legend-edge-%s" value="" style="%s" edge="1" parent="1">
+	sample := func(id string, b diagram.Rect, st string) { r.vertex(id, "1", "", st, b.X, b.Y, b.W, b.H) }
+	for _, row := range layout.Rows {
+		text := func(value string) { r.legendText(row.ID+"-text", value, row.Rect) }
+		switch row.Kind {
+		case house.RowLegendNode:
+			nk := r.th.Nodes[row.Key]
+			sample(row.ID, row.Swatch, style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+nk.Fill, "strokeColor="+nk.Stroke, "strokeWidth=1.5"))
+			text(nk.Legend)
+		case house.RowLegendPipe:
+			nk := r.th.Nodes[row.Key]
+			sample(row.ID, row.Swatch, style("shape=mxgraph.flowchart.direct_data", "fillColor="+nk.Fill, "strokeColor="+nk.Stroke, "strokeWidth=1.5"))
+			text(row.Text)
+		case house.RowLegendSteps:
+			r.legendText(row.ID, r.markup(row.Text), row.Rect)
+		case house.RowLegendPort:
+			st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "html=1", "fillColor="+r.th.Nodes["backend"].Stroke, "strokeColor=none",
+				"align=center", "verticalAlign=middle", "fontStyle=1", font(house.PortFontSize, r.th.PortText))
+			r.vertex(row.ID, "1", "TCP 80", st, row.Swatch.X, row.Swatch.Y, row.Swatch.W, row.Swatch.H)
+			text(row.Text)
+		case house.RowLegendEdge:
+			ek := r.th.Edges[row.Key]
+			endFill := "1"
+			if ek.EndArrow == "cross" || ek.EndArrow == "open" {
+				endFill = "0"
+			}
+			st := style("edgeStyle=none", "html=1", "strokeColor="+ek.Stroke, fmt.Sprintf("strokeWidth=%g", ek.Width), "endArrow="+ek.EndArrow, "endFill="+endFill, "endSize=6")
+			if ek.Dash != "" {
+				st += "dashed=1;dashPattern=" + ek.Dash + ";"
+			}
+			fmt.Fprintf(&r.b, `        <mxCell id="legend-edge-%s" value="" style="%s" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="%g" y="%g" as="sourcePoint" />
             <mxPoint x="%g" y="%g" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-`, kind, xmlAttr(st), x, y+11, x+40, y+11)
-		r.legendText("legend-edge-"+kind+"-text", k.Legend, x+52, y, c.W/2-72)
-		y += 26
+`, row.Key, xmlAttr(st), row.Swatch.X, row.Swatch.Y+11, row.Swatch.X+row.Swatch.W, row.Swatch.Y+11)
+			text(ek.Legend)
+		case house.RowLegendAdded:
+			sample(row.ID, row.Swatch, box+style("strokeColor="+r.th.Diff[diagram.Added], "strokeWidth=3"))
+			text(row.Text)
+		case house.RowLegendRemoved:
+			sample(row.ID, row.Swatch, box+style("strokeColor="+r.th.Diff[diagram.Removed], "strokeWidth=3", "dashed=1", "dashPattern="+dotted))
+			text(row.Text)
+		case house.RowLegendUnchanged:
+			sample(row.ID, row.Swatch, style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5")+dim)
+			text(row.Text)
+		case house.RowLegendPlanned:
+			sample(row.ID, row.Swatch, style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+r.th.Hatch)+hatch+
+				style("dashed=1", "dashPattern=6 4", "strokeColor="+k.Stroke, "strokeWidth=1.5"))
+			text(row.Text)
+		case house.RowLegendDeprecated:
+			sample(row.ID, row.Swatch, style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill,
+				"dashed=1", "dashPattern="+dotted, "strokeColor="+k.Stroke, "strokeWidth=1.5"))
+			text(row.Text)
+		case house.RowLegendStack:
+			for depth := 2.0; depth >= 0; depth-- {
+				st := style("rounded=1", "absoluteArcSize=1", "arcSize=6", "fillColor="+k.Fill, "strokeColor="+k.Stroke, "strokeWidth=1.5")
+				if depth > 0 {
+					st += style("dashed=1", "dashPattern=4 3")
+				}
+				r.vertex(fmt.Sprintf("%s-%g", row.ID, depth), "1", "", st, row.Swatch.X+3*depth, row.Rect.Y+4-3*depth, 34, 14)
+			}
+			text(html.EscapeString(row.Text))
+		case house.RowLegendNotes:
+			notes := fmt.Sprintf(`Large dashed frame: infra perimeter · small: functional group<br><font color="%s"><b>⚠ Gx</b></font>: docs and code disagree, see "Gaps"`, r.th.Warn)
+			r.vertex(row.ID, "1", notes, style("text", "html=1", "align=left", "verticalAlign=top", "whiteSpace=wrap", font(house.LegendTextSize, r.th.Muted)), row.Rect.X, row.Rect.Y, row.Rect.W, row.Rect.H)
+		}
 	}
-	r.legendStatuses(x, y, c.W/2-72)
-	notes := fmt.Sprintf(`Large dashed frame: infra perimeter · small: functional group<br><font color="%s"><b>⚠ Gx</b></font>: docs and code disagree, see "Gaps"`, r.th.Warn)
-	r.vertex(c.ID+"-notes", "1", notes, style("text", "html=1", "align=left", "verticalAlign=top", "whiteSpace=wrap", font(10.5, r.th.Muted)), c.X+20, c.Y+c.H-50, c.W-40, 40)
 }

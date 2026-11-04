@@ -26,6 +26,10 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-11-04 · Lint robustness (spec 008)
+
+- T01: `house.Header` and `house.CardLayout` own the header, card and legend geometry; `render.go` draws from them, byte-equal on the frozen specs of `cmd/noodle/testdata/cardlayout`. Every example's `.drawio` is now committed and `TestExamples_DrawioCurrent` keeps it current.
+
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 
 - Backlog: 15 issues created (#93 to #107), #16 and #18 rewritten, #95 and #96 sub-issues

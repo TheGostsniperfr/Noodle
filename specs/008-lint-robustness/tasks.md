@@ -6,7 +6,7 @@ Clarifications 1 to 5 of the spec are answered (2026-11-04).
 
 ## Wave 1
 
-- [ ] **T01** `house.HeaderBox` and `house.CardLayout`; `render.go` draws header, cards and
+- [x] **T01** `house.HeaderBox` and `house.CardLayout`; `render.go` draws header, cards and
   legend from them; no behaviour change, every example's `.drawio` byte-identical to `main`
   (groundwork for FR-001, FR-002, FR-003).
 
