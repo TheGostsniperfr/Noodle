@@ -36,7 +36,7 @@ decisions go in ADRs, acceptance in `features.json`.
   documented in `docs/COMMANDS.md`. `check-features.sh` ported to Go and removed;
   `scripts/init.sh` is now `exec make init` because old verify steps cite it.
 - Contract reviewed in five rounds, all applied; reviews now capped at three (PROCESS.md).
-- In progress: `make evaluate` DEV-01, then DEV-02, DEV-03, DEV-04, DEV-05, DEV-04. Next: commit the review, `make evaluate` DEV-01, DEV-02, DEV-03,
+- DEV-01 passes (evaluator, 7/7 criteria). In progress: DEV-02, DEV-03, DEV-04, DEV-05, DEV-04. Next: commit the review, `make evaluate` DEV-01, DEV-02, DEV-03,
   DEV-05, then DEV-04, each evidence committed alone before its flip; then the PR.
 
 ### 2026-10-25 · Multi-line node desc
