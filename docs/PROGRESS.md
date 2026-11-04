@@ -55,6 +55,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 - T01: optional `object {apiVersion, kind, namespace, name}` on discovered elements, connections and references (ADR-0028), schema and loader; the adapter fills it. Flip of DSC-04 waits for `make evaluate`.
 - T02: references `env-from`, `secret-key`, `config-key`, `mounts` from workloads (one per workload, target and kind), ExternalSecret to target and store, stores to `k8s:_external/<provider>` elements (1Password, Vault, AWS; others `unknown-provider`), Argo CD `syncs`; no Secret value read. DSC-01 flip waits for `make evaluate`.
+- T03: inferred connections from `<svc>.<ns>[.svc[.cluster.local]][:port]` in env values, ConfigMaps read by a workload (per key for `configMapKeyRef`) and custom resource specs, only to Services of the input; public URL hosts of HTTPRoutes and Ingresses to their Gateway or controller. Secrets are never scanned. DSC-02 flip waits for `make evaluate`.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

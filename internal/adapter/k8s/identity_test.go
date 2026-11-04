@@ -1,6 +1,7 @@
 package k8s_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -91,5 +92,19 @@ spec:
 			objects = append(objects, c.Object)
 		}
 		assert.Equal(t, []*model.Object{{APIVersion: "v1", Kind: "Service", Namespace: "prod", Name: "web"}}, objects)
+	})
+
+	t.Run("connection-object", func(t *testing.T) {
+		h := holders["configmap"]
+
+		f, _ := discover(t, strings.ReplaceAll(h.manifests, "VALUE", "postgres.data.svc:5432")+postgresService)
+
+		var objects []*model.Object
+		for _, c := range f.Connections {
+			if c.Inferred {
+				objects = append(objects, c.Object)
+			}
+		}
+		assert.Equal(t, []*model.Object{{APIVersion: "v1", Kind: "ConfigMap", Namespace: "prod", Name: "settings"}}, objects)
 	})
 }

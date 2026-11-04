@@ -17,21 +17,25 @@ func gateways(idx *index) []model.DiscoveredElement {
 		if class := str(gw.Body, "spec", "gatewayClassName"); class != "" {
 			tech += " · " + class
 		}
-		var ports []model.Port
-		for _, l := range slice(gw.Body, "spec", "listeners") {
-			lm, _ := l.(map[string]any)
-			if n, ok := num(lm, "port"); ok {
-				protocol := "TCP"
-				if str(lm, "protocol") == "UDP" {
-					protocol = "UDP"
-				}
-				ports = append(ports, port(str(lm, "name"), protocol, n))
-			}
-		}
 		out = append(out, model.DiscoveredElement{Element: model.Element{ID: gw.id(), Kind: "backend",
-			Parent: id(gw.Namespace, "Namespace", gw.Namespace), Tech: tech, Ports: uniquePorts(ports)}, Src: gw.Src, Object: gw.identity()})
+			Parent: id(gw.Namespace, "Namespace", gw.Namespace), Tech: tech, Ports: gatewayPorts(gw)}, Src: gw.Src, Object: gw.identity()})
 	}
 	return out
+}
+
+func gatewayPorts(gw *object) []model.Port {
+	var ports []model.Port
+	for _, l := range slice(gw.Body, "spec", "listeners") {
+		lm, _ := l.(map[string]any)
+		if n, ok := num(lm, "port"); ok {
+			protocol := "TCP"
+			if str(lm, "protocol") == "UDP" {
+				protocol = "UDP"
+			}
+			ports = append(ports, port(str(lm, "name"), protocol, n))
+		}
+	}
+	return uniquePorts(ports)
 }
 
 // routes are elements, as a reader looks for the host a route serves, with a

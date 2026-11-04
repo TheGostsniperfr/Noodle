@@ -13,7 +13,7 @@ follow-ups for its features.
 - [x] **T02** Configuration references: `envFrom`, `secretKeyRef`, `configMapKeyRef`,
   Secret, ConfigMap and PVC volumes, no Secret value (FR-001); ExternalSecret, stores,
   providers, Argo CD Applications (FR-002). Spec 003 T05. Flip **DSC-01**.
-- [ ] **T03** Addresses in ConfigMaps, env and CR specs to known Services, inferred
+- [x] **T03** Addresses in ConfigMaps, env and CR specs to known Services, inferred
   (FR-003); public URL hosts to the Gateway or Ingress serving them (FR-004). Spec 003
   T06. Flip **DSC-02**.
 - [ ] **T04** Inputs: namespace warning and `-argocd-app` (FR-005), `-kustomize` and

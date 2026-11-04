@@ -26,6 +26,15 @@ func edgeID(prefix, from, to, port string) string {
 }
 
 func (g *graph) connect(from, to, port, protocol string, o *object, src model.Src) {
+	g.add(from, to, port, protocol, false, o, src)
+}
+
+// infer is connect for a connection found by a heuristic rather than declared.
+func (g *graph) infer(from, to, port string, o *object, src model.Src) {
+	g.add(from, to, port, "", true, o, src)
+}
+
+func (g *graph) add(from, to, port, protocol string, inferred bool, o *object, src model.Src) {
 	cid := edgeID("c", from, to, port)
 	if g.seen == nil {
 		g.seen = map[string]bool{}
@@ -35,7 +44,7 @@ func (g *graph) connect(from, to, port, protocol string, o *object, src model.Sr
 	}
 	g.seen[cid] = true
 	g.conns = append(g.conns, model.DiscoveredConnection{Connection: model.Connection{
-		ID: cid, From: from, To: to, Port: port, Protocol: protocol, Kind: "flow"}, Src: src, Object: o.identity()})
+		ID: cid, From: from, To: to, Port: port, Protocol: protocol, Kind: "flow"}, Inferred: inferred, Src: src, Object: o.identity()})
 }
 
 func (g *graph) refer(from, to, kind string, o *object, src model.Src) {
