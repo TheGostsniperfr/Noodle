@@ -86,6 +86,15 @@ The format is in [the skill reference](skills/noodle-diagram/reference.md).
 - [Inspirations](docs/INSPIRATIONS.md): IcePanel, Ilograph, LikeC4 and others, and what we borrow
 - [Diagram skill](skills/noodle-diagram/SKILL.md): the conventions an AI agent follows to write diagrams
 
+## Contributing
+
+- [Contributing](CONTRIBUTING.md): the workflow, the checks and how a pull request is read
+- [Security policy](SECURITY.md): report a vulnerability privately; an architecture map is sensitive
+- [Code of conduct](CODE_OF_CONDUCT.md): Contributor Covenant 2.1
+
+Noodle is licensed under Apache-2.0 (see [LICENSE](LICENSE) and [NOTICE](NOTICE)); the logos
+in `assets/icons/` stay trademarks of their owners ([attribution](assets/icons/ATTRIBUTION.md)).
+
 ## Development
 
 ```bash

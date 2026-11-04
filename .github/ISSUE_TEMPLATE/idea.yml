@@ -1,0 +1,37 @@
+name: Idea
+description: A feature, an improvement or a piece of work to put on the backlog
+body:
+  - type: textarea
+    attributes:
+      label: Context
+      description: What is hard or missing today, and who feels it.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposal
+      description: What you would do, in a few sentences.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Scope
+      description: What is in, as a short list.
+  - type: textarea
+    attributes:
+      label: Out of scope
+      description: What this does not cover, so the issue stays small.
+  - type: textarea
+    attributes:
+      label: Acceptance
+      description: How we know it is done. One checkable statement per line.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Related
+      description: Issues, ADRs, specs or pull requests this touches.
+  - type: input
+    attributes:
+      label: Backlog id
+      description: The next free B-NN, if you know it. Leave empty otherwise; a maintainer assigns it.

@@ -1,0 +1,27 @@
+name: Bug
+description: Something noodle does wrong
+body:
+  - type: textarea
+    attributes:
+      label: What happens
+      description: The wrong output, the error message or the diagram that looks broken. Paste text, attach the PNG.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproduce
+      description: The smallest system directory and the exact command that show it.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected
+      description: What you expected to happen instead.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Version
+      description: The output of `noodle version`, or the commit of the plugin.
+    validations:
+      required: true

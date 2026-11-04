@@ -13,7 +13,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
 - [x] **T03** `speccheck skills`, run by `all`; table-driven tests per rule (FR-004).
 - [x] **T04** Skill wording: Claude Code-only names moved under "In Claude Code" (FR-004).
   Flip **PRJ-03** with T03.
-- [ ] **T05** `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, issue templates,
+- [x] **T05** `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, issue templates,
   README links (FR-008). Flip **PRJ-05**.
 - [ ] **T06** `noodle version` with the ldflags variable; the flake passes its revision
   (FR-012).
