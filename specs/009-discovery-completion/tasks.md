@@ -69,7 +69,7 @@ Tasks the evaluator found missing, appended here; never edit the waves above.
 
 - [x] **T18** DSC-06 #1: `TestMerge/takes-list-whole` asserts `Equal` on the whole merged
   element slice, `Tech` included.
-- [ ] **T19** DSC-06 #4: the "set by both sides" counter of the property test counts only
+- [x] **T19** DSC-06 #4: the "set by both sides" counter of the property test counts only
   fields that can differ, so `assert.Positive` can fail.
 - [ ] **T20** DSC-06 #2: `TestMerge/keeps-sources` asserts through `Lookup("api")`
   (`Node.Sources`), the way commands read it.

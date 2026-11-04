@@ -63,6 +63,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T08: `noodle drift DIR` (unmatched, gone, planned, unmodelled; sorted; exit 0; error without fragments), cross-fragment resolution of `missing-backend` for a Gateway or Service another fragment defines, `examples/discovery-k8s/drift.txt` diffed by `make examples`. Namespace zones are not reported as unmatched. DSC-07 and P6a-05 flips wait for `make evaluate`. Wave 1 ends here: T09 is the paid checkpoint, not started.
 - T04 follow-up: the `unrendered` hint stays `kustomize`; `noodle discover` prints `<DIR>: kustomization found, rerun: noodle discover k8s -kustomize <DIR> (needs kustomize: nix shell nixpkgs#kustomize)` on stderr (subtest `hint-without-flag`, per the coordinator decision in ffa8c40).
 - Convergence T18: `takes-list-whole` asserts the whole merged element (DSC-06 NEEDS_WORK #1).
+- Convergence T19: the property test counts only fields set on both sides with different values, excluding ID, Kind and Matches, so its guard can fail (DSC-06 #4).
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

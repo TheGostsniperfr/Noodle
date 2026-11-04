@@ -194,7 +194,9 @@ func TestMerge_Property_NeverOverridesACuratedField(t *testing.T) {
 				if !reflect.DeepEqual(was.Field(n).Interface(), now.Field(n).Interface()) {
 					return false
 				}
-				if !found.Field(n).IsZero() && n != 0 {
+				name := was.Type().Field(n).Name
+				if name != "ID" && name != "Kind" && name != "Matches" && !found.Field(n).IsZero() &&
+					!reflect.DeepEqual(was.Field(n).Interface(), found.Field(n).Interface()) {
 					setByBoth++
 				}
 			}
