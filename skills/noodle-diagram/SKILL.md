@@ -9,9 +9,8 @@ license: Apache-2.0
 Diagrams are generated, not drawn. The source of truth is a system directory: one
 `model.yaml` (what exists), one file per view in `views/` (what a diagram shows) and, for
 topology views, one layout in `layouts/` (where it is drawn). The format is in
-[reference.md](reference.md): read it before writing one. The `noodle` command, on PATH
-while this plugin is enabled, turns a view into a `.drawio` file and refuses to emit it
-while the lint finds a collision. Hand edits in draw.io are for throwaway variants only;
+[reference.md](reference.md): read it before writing one. The `noodle` command, on PATH,
+turns a view into a `.drawio` file and refuses to emit it while the lint finds a collision. Hand edits in draw.io are for throwaway variants only;
 a canonical change goes through the files so the palette, the IDs and the PR diff stay
 consistent. A project still on the old single-file format converts each file once with
 `noodle migrate <old>.yaml <system-dir>`, which refuses to write a system that would draw
@@ -20,7 +19,7 @@ anything different.
 ## Workflow
 
 1. **Facts first, in a subagent.** Hand the question and the code paths to the
-   `noodle:fact-finder` agent. It reads the code that implements what the diagram shows
+   `fact-finder` subagent. It reads the code that implements what the diagram shows
    (Helm templates, Terraform, K8s manifests), not only `docs/`, and returns one YAML
    inventory with a source on every fact. Work from that inventory: reading the raw
    files yourself fills this session with YAML that every later turn pays for again.
@@ -51,6 +50,13 @@ anything different.
 6. For docs, export the editable SVG:
    `drawio -x -f svg --embed-diagram -o $B.$t.drawio.svg $B.$t.drawio`.
    The PNG is the one to paste in chats.
+
+## In Claude Code
+
+The plugin puts `noodle` on PATH while it is enabled, and ships three subagents under
+the `noodle:` prefix. Start the facts step with the Agent tool and the subagent type
+`noodle:fact-finder`. After rendering, `noodle:diagram-reviewer` reviews the PNG and
+its YAML as a tech lead would, and `noodle:icon-curator` fetches a missing logo.
 
 ## Semantics
 
