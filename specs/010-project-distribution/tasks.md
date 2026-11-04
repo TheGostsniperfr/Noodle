@@ -48,3 +48,10 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
 ## Convergence
 
 Tasks the evaluator found missing, appended here; never edit the waves above.
+
+- [x] **T16** PRJ-06 #5: `docs/VISION.md` names "architecture as code" and "living
+  documentation" in lowercase in "Where it sits" (evidence/PRJ-06.md).
+- [ ] **T17** The tutorial view has no gaps, so drop its legend card, whose generated
+  "Gx" line would be false; re-render and look at the PNG (evidence/PRJ-06.md).
+- [ ] **T18** A test keeps the YAML blocks of `docs/guide/tutorial.md` equal to
+  `examples/tutorial/*` (evidence/PRJ-06.md).

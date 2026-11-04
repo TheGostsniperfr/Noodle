@@ -30,7 +30,7 @@ drafts, live overlays, and the context an AI needs.
 
 ## Where it sits
 
-Two established terms say what noodle is for.
+Two established terms say what noodle is for: architecture as code and living documentation.
 
 - **Architecture as code.** The architecture is text in a repository: reviewed in pull
   requests, diffed, versioned with the code it describes, and rendered by a tool instead of

@@ -65,6 +65,11 @@ decisions go in ADRs, acceptance in `features.json`.
 - Convergence T18: `takes-list-whole` asserts the whole merged element (DSC-06 NEEDS_WORK #1).
 - Convergence T19: the property test counts only fields set on both sides with different values, excluding ID, Kind and Matches, so its guard can fail (DSC-06 #4).
 - Convergence T20: `keeps-sources` asserts through `Lookup("api")` (`Node.Sources`). DSC-06 ready for a new `make evaluate`.
+### 2026-11-05 · Spec 010 convergence (PRJ-06)
+
+- Evaluator NEEDS_WORK on PRJ-06: tasks T16 to T18 below.
+- T16: VISION names architecture as code and living documentation in lowercase.
+
 ### 2026-11-04 · Spec 010 implementation (project and distribution)
 
 - T01: Apache-2.0 `LICENSE`, `NOTICE`, and `license` in plugin.json, flake.nix and SKILL.md.
