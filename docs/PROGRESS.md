@@ -71,7 +71,14 @@ decisions go in ADRs, acceptance in `features.json`.
 - ADR-0025: the backlog is worked in thematic batches and waves, all in full mode, on
   `plan/wave-1`. Wave 1 specs being written in parallel worktrees: 008 lint robustness,
   009 discovery 6a completion (takes over spec 003's open tasks and #79), 010 project and
-  distribution. Next: one questionnaire to Brian with their open questions.
+  distribution. Questionnaire answered; specs 008 to 010 agreed (ADR-0026 to ADR-0030).
+- Stopped on the usage limit. Spec 010 (worktree agent-ab81ef575d825ffd7): implemented
+  except T07; PRJ-01, 03, 04, 07, 08 PASS (evidence committed, not flipped yet), PRJ-05
+  NEEDS_WORK (SECURITY private channel check) and PRJ-06 NEEDS_WORK (VISION terms in
+  lower case). Spec 009 (agent-a555890757e8a7270): wave 1 T01 to T08 done; its 10
+  evaluations were stopped mid-run, rerun them. Spec 008 (agent-ad00c897fbfc7dbf9): the
+  Sonnet implementer was stopped mid-run, check its last commit before resuming.
+  Note: drop Co-Authored-By from commits (Brian's git rule wins over the harness).
 
 ### 2026-10-25 · Multi-line node desc
 
