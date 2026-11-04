@@ -16,7 +16,7 @@ func TestLint_AnnotationOnlyLabel(t *testing.T) {
 	badgeOnly := func() (*diagram.Spec, diagram.Rect) {
 		s := clean()
 		s.Edges[0].Label = "!!⚠ G1!!"
-		s.Edges[0].LabelOffset = diagram.Point{0, -30}
+		s.Edges[0].LabelOffset = diagram.Point{0, -90}
 		path := house.DrawnPath(s.Edges[0], house.PortBadges(s))
 		box, ok := house.LabelBox(s.Edges[0], path)
 		require.True(t, ok)
@@ -48,7 +48,7 @@ func TestLint_AnnotationOnlyLabel(t *testing.T) {
 			t.Parallel()
 			s, box := badgeOnly()
 			right := tt.nodeEdge(box)
-			s.Nodes = append(s.Nodes, diagram.Node{ID: "m", Kind: "backend", Title: "M", X: right - 30, Y: 98, W: 30, H: 40})
+			s.Nodes = append(s.Nodes, diagram.Node{ID: "m", Kind: "backend", Title: "M", X: right - 44, Y: 50, W: 44, H: 40})
 
 			findings := lint.Lint(s)
 

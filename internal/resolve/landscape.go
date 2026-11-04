@@ -113,8 +113,10 @@ func (g *grid) tileWidth() float64 {
 	each := func(secs []model.Section) {
 		for _, sec := range secs {
 			for _, id := range sec.Items {
-				text := math.Max(house.TextWidth(g.title(id), house.TitleFontSize), house.TextWidth(g.elements[id].Tech, house.SubFontSize))
-				w = math.Max(w, math.Ceil(house.TextPadLeft+text+8+2))
+				text := math.Max(
+					house.MinAvailable(house.ExportTextWidth(g.title(id), house.TitleFontSize), house.TitleFontSize),
+					house.MinAvailable(house.ExportTextWidth(g.elements[id].Tech, house.SubFontSize), house.SubFontSize))
+				w = math.Max(w, math.Ceil(house.TextPadLeft+text+8))
 			}
 		}
 	}

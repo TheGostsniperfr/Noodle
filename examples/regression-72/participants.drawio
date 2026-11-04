@@ -1,0 +1,54 @@
+<mxfile host="archgen">
+  <diagram id="participants-dark" name="Regression 72 · Participant labels on one line (dark)">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="900" pageHeight="444" background="#020617" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bg" value="" style="shape=image;image=data:image/svg+xml,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MDAiIGhlaWdodD0iNDQ0Ij48ZGVmcz48cGF0dGVybiBpZD0iZyIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWUyOTNiIiBzdHJva2Utd2lkdGg9IjAuNSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzAyMDYxNyIvPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZykiLz48L3N2Zz4=;imageAspect=0;locked=1;editable=0;movable=0;resizable=0;deletable=0;" vertex="1" parent="1">
+          <mxGeometry x="0" y="0" width="900" height="444" as="geometry" />
+        </mxCell>
+        <mxCell id="header-dot" value="" style="ellipse;fillColor=#34d399;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="44" width="12" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="header-title" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;Regression 72 · Participant labels on one line&lt;/b&gt;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=24;fontColor=#f8fafc;" vertex="1" parent="1">
+          <mxGeometry x="64" y="30" width="500" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="header-sub" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#e2e8f0&quot; style=&quot;font-size:13px&quot;&gt;Both participants carry a title and a tech line that must stay on one line each.&lt;/font&gt;&lt;br&gt;v0.1 · source: examples/regression-72&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#94a3b8;" vertex="1" parent="1">
+          <mxGeometry x="64" y="74" width="500" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="life-velocity" value="" style="html=1;endArrow=none;strokeColor=#94a3b8;strokeWidth=1;dashed=1;dashPattern=4 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="256" as="sourcePoint" />
+            <mxPoint x="140" y="404" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="life-website" value="" style="html=1;endArrow=none;strokeColor=#94a3b8;strokeWidth=1;dashed=1;dashPattern=4 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="256" as="sourcePoint" />
+            <mxPoint x="400" y="404" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg-req" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;1&lt;/span&gt; GET /&lt;/span&gt;" style="html=1;strokeColor=#94a3b8;strokeWidth=1.5;endArrow=block;endFill=1;endSize=7;labelBackgroundColor=#020617;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10;fontColor=#e2e8f0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="316" as="sourcePoint" />
+            <mxPoint x="400" y="316" as="targetPoint" />
+            <mxPoint x="0" y="-12" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="msg-reply-req-2" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;2&lt;/span&gt; 200&lt;/span&gt;" style="html=1;strokeColor=#94a3b8;strokeWidth=1.5;endArrow=block;endFill=1;endSize=7;labelBackgroundColor=#020617;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10;fontColor=#e2e8f0;dashed=1;dashPattern=6 4;endArrow=open;endFill=0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="364" as="sourcePoint" />
+            <mxPoint x="140" y="364" as="targetPoint" />
+            <mxPoint x="0" y="-12" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="velocity" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:12px&quot;&gt;Velocity proxy&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;&lt;font color=&quot;#e2e8f0&quot; style=&quot;font-size:10px&quot;&gt;3.4.0-SNAPSHOT · LB Services&lt;/font&gt;&lt;/i&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=12;fillColor=#0b2d31;html=1;whiteSpace=wrap;strokeColor=#34d399;strokeWidth=1.5;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;spacingRight=8;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=12;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="200" width="200" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="website" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:12px&quot;&gt;Website + API&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;&lt;font color=&quot;#e2e8f0&quot; style=&quot;font-size:10px&quot;&gt;Laravel 12 · nginx + php-fpm&lt;/font&gt;&lt;/i&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=12;fillColor=#0c2234;html=1;whiteSpace=wrap;strokeColor=#22d3ee;strokeWidth=1.5;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;spacingRight=8;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=12;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="300" y="200" width="200" height="56" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

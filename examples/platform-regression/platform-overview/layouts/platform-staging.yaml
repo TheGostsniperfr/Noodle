@@ -37,12 +37,12 @@ elements:
   rabbitmq: {x: 340, y: 80, w: 280, h: 90}
   clock: {x: 660, y: 80, w: 270, h: 90}
   kube-apiserver: {x: 20, y: 50, w: 250, h: 80}
-  cilium: {x: 20, y: 170, w: 250, h: 80}
+  cilium: {x: 20, y: 170, w: 260, h: 80}
   argocd: {x: 30, y: 60, w: 260, h: 100}
   image-updater: {x: 320, y: 60, w: 250, h: 100}
-  vso: {x: 20, y: 60, w: 260, h: 100}
+  vso: {x: 10, y: 60, w: 270, h: 100}
   vault: {x: 370, y: 60, w: 210, h: 100}
-  prometheus: {x: 30, y: 70, w: 200, h: 90}
+  prometheus: {x: 20, y: 70, w: 210, h: 90}
   loki: {x: 260, y: 70, w: 200, h: 90}
   grafana: {x: 490, y: 70, w: 200, h: 90}
   boundary: {x: 60, y: 70, w: 280, h: 100}

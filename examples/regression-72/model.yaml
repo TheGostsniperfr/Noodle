@@ -1,0 +1,12 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+
+# Regression fixture for issue #72: participant labels that fit by the lint's count still
+# wrapped in draw.io, because the export font is a few percent wider than the lint's.
+
+elements:
+  - {id: velocity, kind: backend, title: "Velocity proxy", tech: "3.4.0-SNAPSHOT · LB Services"}
+  - {id: website, kind: frontend, title: "Website + API", tech: "Laravel 12 · nginx + php-fpm"}
+
+connections:
+  - {id: c-forward, from: velocity, to: website, kind: flow, protocol: HTTP, verb: forward}

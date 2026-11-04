@@ -172,7 +172,7 @@ func Sequence(s *model.System, viewID string) (*diagram.Sequence, error) {
 }
 
 // boxWidth fits a participant's title, gap badge and tech on one line each, icon
-// included, measured as the node text lint measures them.
+// included, with the margin the node text lint requires, measured before rounding up.
 func boxWidth(e model.Element, badges []string) float64 {
 	pad := 10.0 + 8
 	if e.Icon != "" {
@@ -182,8 +182,10 @@ func boxWidth(e model.Element, badges []string) float64 {
 	if len(badges) > 0 {
 		title += " ⚠ " + strings.Join(badges, " ")
 	}
-	w := math.Max(house.TextWidth(title, house.TitleFontSize), house.TextWidth(e.Tech, house.SubFontSize)) + pad
-	return math.Max(seqMinBoxW, math.Ceil(w/10)*10)
+	avail := math.Max(
+		house.MinAvailable(house.ExportTextWidth(title, house.TitleFontSize), house.TitleFontSize),
+		house.MinAvailable(house.ExportTextWidth(e.Tech, house.SubFontSize), house.SubFontSize))
+	return math.Max(seqMinBoxW, math.Ceil((avail+pad)/10)*10)
 }
 
 func labelWidth(label string) float64 {

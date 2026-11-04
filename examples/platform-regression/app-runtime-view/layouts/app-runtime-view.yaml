@@ -14,7 +14,7 @@ elements:
   envoy-eg: {x: 30, y: 90, w: 280, h: 110}
   envoy-eg-internal: {x: 30, y: 270, w: 280, h: 110}
   app-frontend: {x: 40, y: 60, w: 260, h: 90}
-  app-backend: {x: 40, y: 210, w: 260, h: 130}
+  app-backend: {x: 40, y: 210, w: 270, h: 130}
   app-db: {x: 460, y: 180, w: 240, h: 130}
   app-secrets: {x: 420, y: 400, w: 240, h: 90}
   app-migration: {x: 40, y: 550, w: 260, h: 80}
