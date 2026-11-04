@@ -25,7 +25,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
   posts the reply. Flip **PRJ-02**.
 - [x] **T08** Read the Codex subagents page and write the agent TOML keys into
   `plan.md`; `content.go` embeds `skills` and `agents` (FR-005, FR-006).
-- [ ] **T09** `noodle setup opencode` and `noodle setup codex`, `-project` and `-user`,
+- [x] **T09** `noodle setup opencode` and `noodle setup codex`, `-project` and `-user`,
   idempotent, with golden-file tests in temporary directories (FR-005, FR-006).
 - [ ] **T10** The marker line, refusal to overwrite foreign files, and the README
   install section per host (FR-007). Flip **PRJ-04** with T08 and T09.

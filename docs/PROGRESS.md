@@ -74,6 +74,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T05: CONTRIBUTING, SECURITY, CODE_OF_CONDUCT (Contributor Covenant 2.1), idea and bug issue templates, README links.
 - T06: `noodle version` prints `main.version`; the flake sets it from the flake revision.
 - T08: Codex subagents page reread (required keys name, description, developer_instructions; sandbox_mode is ignored in agent files), recorded in plan.md; `content.go` embeds `skills` and `agents`; the wrapper hash covers them.
+- T09: `noodle setup opencode|codex -project|-user` writes the skill to `.agents/skills/` and one agent file per host, idempotent, golden-file tests.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

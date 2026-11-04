@@ -21,6 +21,7 @@ const usage = `usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|
        noodle migrate SPEC.yaml DIR   (a v0 single file to a v1alpha1 system)
        noodle discover ADAPTER [PATH…|-] [-o fragment.yaml]
        noodle drift DIR   (the curated model against DIR/discovered)
+       noodle setup opencode|codex (-project [DIR] | -user)
        noodle version
        noodle -list-icons [-icons DIR[,DIR]]`
 
@@ -30,7 +31,7 @@ var version = "dev"
 func main() {
 	if len(os.Args) > 1 {
 		commands := map[string]func([]string) error{"render": renderCommand, "migrate": migrateCommand,
-			"version": versionCommand, "drift": func(args []string) error { return driftCommand(args, os.Stdout) }, "discover": func(args []string) error {
+			"version": versionCommand, "setup": func(args []string) error { return setupCommand(args, os.Stdout, os.Stderr) }, "drift": func(args []string) error { return driftCommand(args, os.Stdout) }, "discover": func(args []string) error {
 				reg, err := adapters()
 				if err != nil {
 					return err

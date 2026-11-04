@@ -100,6 +100,13 @@ func Check(folder, content string) []Violation {
 	return append(out, claudeOnlyNames(body, bodyStart)...)
 }
 
+// SplitFrontmatter separates the YAML between the leading --- lines from the text that
+// follows the closing line. ok is false when the content has no frontmatter.
+func SplitFrontmatter(content string) (front, body string, ok bool) {
+	front, body, _, ok = splitFrontmatter(content)
+	return front, body, ok
+}
+
 func splitFrontmatter(content string) (front, body string, bodyStartLine int, ok bool) {
 	content = strings.ReplaceAll(content, "\r\n", "\n")
 	rest, found := strings.CutPrefix(content, "---\n")
