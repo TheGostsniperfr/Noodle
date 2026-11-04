@@ -6,7 +6,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
 
 ## Wave 1
 
-- [ ] **T01** `LICENSE`, `NOTICE` and the `license` fields of `plugin.json`, `flake.nix`
+- [x] **T01** `LICENSE`, `NOTICE` and the `license` fields of `plugin.json`, `flake.nix`
   and `SKILL.md` (FR-001).
 - [ ] **T02** `assets/icons/ATTRIBUTION.md` and `assets/attribution_test.go` (FR-002).
   Flip **PRJ-01** with T01.

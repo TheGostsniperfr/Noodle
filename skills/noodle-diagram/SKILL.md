@@ -1,6 +1,7 @@
 ---
 name: noodle-diagram
 description: Create or update an architecture diagram with noodle, in the house style (Tailwind dark/light palettes, official logos, port badges, lint-enforced readability, draw.io + PNG output). Use when asked for an architecture, flow, deployment or security diagram of a system, or when a change to a system should be reflected in an existing diagram.
+license: Apache-2.0
 ---
 
 # Architecture diagrams with noodle

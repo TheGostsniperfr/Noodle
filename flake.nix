@@ -17,7 +17,10 @@
           # Dependencies are vendored so the plugin wrapper can build offline too.
           vendorHash = null;
           env.CGO_ENABLED = 0;
-          meta.mainProgram = "noodle";
+          meta = {
+            mainProgram = "noodle";
+            license = pkgs.lib.licenses.asl20;
+          };
         };
         default = noodle;
       });

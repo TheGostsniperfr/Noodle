@@ -3,6 +3,7 @@
   "displayName": "Noodle 🍜",
   "description": "Architecture diagrams as code: house style, official logos, port badges, lint-enforced readability, draw.io and PNG output.",
   "author": { "name": "Brian Perret" },
+  "license": "Apache-2.0",
   "homepage": "https://github.com/TheGostsniperfr/Noodle",
   "repository": "https://github.com/TheGostsniperfr/Noodle",
   "keywords": ["architecture", "diagram", "c4", "kubernetes", "drawio"]
