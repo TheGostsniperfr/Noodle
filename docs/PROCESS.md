@@ -73,6 +73,25 @@ diff for scope creep and tests that assert nothing, looks at PNGs for visual fea
 and answers PASS or NEEDS_WORK. One failed criterion fails the feature. It is told to
 be skeptical: the agent that wrote the code is the one most likely to be generous.
 
+## Delegating a batch to an implementer
+
+A batch (ADR-0025) is implemented by one fresh Sonnet agent in its own worktree, never
+by a fork of the main session: a fork copies the whole conversation and costs about
+600k tokens per run. The agent gets a short, self-contained prompt with:
+
+1. **A closed scope**: the worktree path, the branch, the tasks to do and the ones to
+   leave (anything that needs a human answer or publishes).
+2. **A read order**: AGENTS.md, PROCESS.md, COMMANDS.md, CONSTITUTION.md, then the
+   spec, plan, tasks and contract, follow-ups included, and the batch's ADRs.
+3. **A done that can be measured**: one task per commit, `make check` green before each.
+4. **Explicit don'ts**: no relaxed lint rule (C04), no edit of an existing
+   `features.json` entry, no `ALLOW_FEATURE_EDIT`, no flip, no evaluation, no push.
+5. **Stop, don't decide**: an ambiguity is reported, and independent tasks go on.
+6. **No self-grading**: the main session runs `make evaluate` for every feature in
+   parallel, and sends NEEDS_WORK findings back to the same agent for convergence.
+
+The agent reports commits per task, tasks left and why, and ambiguities found.
+
 ## Quick mode
 
 Spec of a few lines with its mode, `tasks.md`, implement, then write
