@@ -26,3 +26,7 @@ Plan: [`plan.md`](plan.md). Each task ends with `make check` green.
 
 - [x] **T06** Drop the `target without description` case of `TestCommands_ReportsBothDirections`:
   same input as `same targets`, so it tested nothing (DEV-01 evidence, finding 1).
+- [x] **T07** Contract criteria are the `| n |` rows under a `## <id>` section, not any
+  mention of the id; tests for an empty section and for an id only in prose (DEV-02, 1-2).
+- [x] **T08** Citations inside fenced code blocks are quotations too; a requirement is
+  named by a task line, not by prose in `tasks.md` (DEV-02, findings 3 and 4).

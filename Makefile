@@ -72,10 +72,10 @@ adr-index: ## Regenerate the ADR index in docs/adr/README.md
 
 evaluate: ## Grade one feature with the read-only evaluator; writes <spec>/evidence/<id>.md (FEATURE=<id>)
 	@test -n "$(FEATURE)" || { echo "usage: make evaluate FEATURE=<id>" >&2; exit 2; }
-	@dir="$$($(SPECCHECK) locate $(FEATURE))"; mkdir -p "$$dir/evidence"; out="$$dir/evidence/$(FEATURE).md"; \
-	echo "Evaluate feature $(FEATURE). Its spec, contract and tasks are in $$dir (spec.md, contract.md, tasks.md). Follow your instructions and print only the evidence file." | $(EVALUATOR) > "$$out.tmp"; \
-	if grep -q '^- Verdict:' "$$out.tmp"; then mv "$$out.tmp" "$$out"; grep -m1 '^- Verdict:' "$$out"; \
-	else echo "evaluator output has no Verdict line, kept in $$out.tmp" >&2; exit 1; fi
+	@dir="$$($(SPECCHECK) locate $(FEATURE))"; mkdir -p "$$dir/evidence"; out="$$dir/evidence/$(FEATURE).md"; tmp="$$(mktemp)"; \
+	echo "Evaluate feature $(FEATURE). Its spec, contract and tasks are in $$dir (spec.md, contract.md, tasks.md). Follow your instructions and print only the evidence file." | $(EVALUATOR) > "$$tmp"; \
+	if grep -q '^- Verdict:' "$$tmp"; then mv "$$tmp" "$$out"; grep -m1 '^- Verdict:' "$$out"; \
+	else echo "evaluator output has no Verdict line, kept in $$tmp" >&2; exit 1; fi
 
 review-contract: ## Review a spec's contract before implementation; writes <spec>/contract-review.md (SPEC=<NNN>)
 	@test -n "$(SPEC)" || { echo "usage: make review-contract SPEC=<NNN>" >&2; exit 2; }

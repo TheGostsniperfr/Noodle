@@ -15,6 +15,10 @@ var (
 	featureRefRe = regexp.MustCompile(`\*\*([A-Z][A-Za-z0-9]*-\d{2,})\*\*`)
 	cDefRe       = regexp.MustCompile(`(?m)^\| \*\*(C\d{2})\*\*`)
 	codeSpanRe   = regexp.MustCompile("`[^`\n]*`")
+	fenceRe      = regexp.MustCompile("(?s)```.*?```")
+	taskLineRe   = regexp.MustCompile(`(?m)^- \[[ x]\] \*\*T\d+\*\*.*(?:\n  .*)*`)
+	sectionRe    = regexp.MustCompile(`(?m)^## (\S+)`)
+	criterionRe  = regexp.MustCompile(`(?m)^\| \d+ \|`)
 )
 
 // CheckSpecs checks every spec, or only dirs. Rules for all specs: cited ADRs, Cnn
@@ -88,7 +92,7 @@ func (r *Repo) checkSpec(dir string, feats *Features, known, invariants map[stri
 	for name, text := range docs {
 		file := filepath.ToSlash(filepath.Join(dir, name))
 		// Inline code quotes a message or an example; only prose cites.
-		prose := codeSpanRe.ReplaceAllString(text, "")
+		prose := codeSpanRe.ReplaceAllString(fenceRe.ReplaceAllString(text, ""), "")
 		for _, num := range uniqueSorted(submatches(adrRefRe, prose)) {
 			if !r.adrExists(num) {
 				out = append(out, Finding{file, "cites ADR-" + num + ", which does not exist"})
@@ -101,6 +105,7 @@ func (r *Repo) checkSpec(dir string, feats *Features, known, invariants map[stri
 		}
 	}
 	tasks := docs["tasks.md"]
+	taskLines := strings.Join(taskLineRe.FindAllString(tasks, -1), "\n")
 	tasksFile := filepath.ToSlash(filepath.Join(dir, "tasks.md"))
 	for _, id := range uniqueSorted(submatches(featureRefRe, tasks)) {
 		if !strings.HasPrefix(id, "FR-") && !known[id] {
@@ -142,7 +147,7 @@ func (r *Repo) checkSpec(dir string, feats *Features, known, invariants map[stri
 		if !strings.Contains(scenario, "WHEN") || !strings.Contains(scenario, "THEN") {
 			out = append(out, Finding{specFile, req.id + " has no Scenario with WHEN and THEN"})
 		}
-		if !strings.Contains(tasks, req.id) {
+		if !strings.Contains(taskLines, req.id) {
 			out = append(out, Finding{tasksFile, req.id + " is named by no task"})
 		}
 		if !covered[req.id] {
@@ -168,12 +173,29 @@ func (r *Repo) checkSpec(dir string, feats *Features, known, invariants map[stri
 	if !hasContract {
 		return append(out, Finding{contractFile, "a full-mode spec needs a contract"}), nil
 	}
+	criteria := contractCriteria(contract)
 	for _, f := range phase.Features {
-		if !strings.Contains(contract, f.ID) {
+		if criteria[f.ID] == 0 {
 			out = append(out, Finding{contractFile, "no criteria for " + f.ID})
 		}
 	}
 	return out, nil
+}
+
+// contractCriteria counts the criterion rows ("| 1 | …") under each "## <id> …"
+// section, so an id mentioned in prose elsewhere does not count as criteria.
+func contractCriteria(contract string) map[string]int {
+	out := map[string]int{}
+	locs := sectionRe.FindAllStringSubmatchIndex(contract, -1)
+	for i, loc := range locs {
+		end := len(contract)
+		if i+1 < len(locs) {
+			end = locs[i+1][0]
+		}
+		id := contract[loc[2]:loc[3]]
+		out[id] += len(criterionRe.FindAllString(contract[loc[1]:end], -1))
+	}
+	return out
 }
 
 type requirement struct{ id, text string }
