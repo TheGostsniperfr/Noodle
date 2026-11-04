@@ -31,9 +31,10 @@ Unverified, to confirm at implementation and record in `fork-triage.md` or PROGR
 - OpenCode's v2 docs (v2.opencode.ai) use a different permission syntax (`permissions`
   as an ordered array); the generator targets the current `/docs/agents` format and
   states the version it targets in the marker line.
-- The exact TOML keys of a Codex agent file (instructions field name) were read from a
-  search summary, not the page itself. T08 reads the page and writes them into
-  this plan before coding.
+- Codex agent files: the subagents page requires `name`, `description` and
+  `developer_instructions` (checked 2026-11-04). The page and its `llms-full` copy
+  disagree on whether `sandbox_mode` may be set per agent, so setup does not write it.
+  T08 rereads the page before coding and updates this line if it changed.
 - The Codex plugin manifest (`.codex-plugin/plugin.json`) has no official page found:
   not used. `.agents/skills/` is enough for Codex to find the skill.
 
@@ -75,6 +76,11 @@ Unverified, to confirm at implementation and record in `fork-triage.md` or PROGR
 - `noodle setup` prints one `wrote <path>` line per file written, nothing for files left
   as they were.
 - Golden files: `cmd/noodle/testdata/setup/opencode/` and `cmd/noodle/testdata/setup/codex/`.
+- CLI reference: the usage text compared with `docs/guide/cli.md` is the top-level
+  usage followed by each subcommand's flag set (`render`, `discover`, `migrate`,
+  `setup`, `version`), as `noodle help` prints it.
+- `make release-snapshot` runs `goreleaser` through `nix develop -c` when it is not on
+  PATH, so the evaluator's environment finds it.
 - Plugin version: a `version` field in `.claude-plugin/plugin.json`, set at each release;
   `bin/noodle` downloads that version.
 - New Makefile targets, listed in COMMANDS.md: `make cli-doc` (writes `docs/guide/cli.md`),
@@ -89,7 +95,9 @@ Unverified, to confirm at implementation and record in `fork-triage.md` or PROGR
 
 ## Rules of `speccheck skills`
 
-Skills checked: `skills/*/SKILL.md` and the process skills of FR-015. Claude Code-only
+Findings read `<file>: <rule>: <detail>`, with rule ids `name-folder`, `name-format`,
+`name-length`, `description-empty`, `description-length`, `frontmatter-key`,
+`claude-only-name`. Skills checked: `skills/*/SKILL.md` and the process skills of FR-015. Claude Code-only
 names: `noodle:fact-finder`, `noodle:diagram-reviewer`, `noodle:icon-curator`,
 `the Agent tool`, `Task tool`, `/plugin`. They are allowed under a heading that starts
 with "In Claude Code".
