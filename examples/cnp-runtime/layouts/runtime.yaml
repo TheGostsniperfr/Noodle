@@ -1,6 +1,6 @@
 apiVersion: noodle/v1alpha1
 kind: Layout
-canvas: {width: 2340, height: 1800}
+canvas: {width: 2380, height: 1800}
 
 # Corridors shared by edges. Moving a lane moves every edge on it.
 lanes:
@@ -70,7 +70,7 @@ notes:
   n-302: {x: 52, y: 590, w: 196, h: 90}
 
 cards:
-  card-legend: {x: 40, y: 1340, w: 540, h: 420}
-  card-data-plane: {x: 610, y: 1340, w: 620, h: 420}
-  card-control-plane: {x: 1260, y: 1340, w: 460, h: 420}
-  card-gaps: {x: 1750, y: 1340, w: 550, h: 420}
+  card-legend: {x: 40, y: 1340, w: 580, h: 420}
+  card-data-plane: {x: 650, y: 1340, w: 620, h: 420}
+  card-control-plane: {x: 1300, y: 1340, w: 460, h: 420}
+  card-gaps: {x: 1790, y: 1340, w: 550, h: 420}

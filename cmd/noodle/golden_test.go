@@ -5,6 +5,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -55,5 +56,36 @@ func TestRender_CardLayoutGolden(t *testing.T) {
 				assert.Equal(t, string(want), got)
 			})
 		}
+	}
+}
+
+func TestRender_EveryDrawnLegendCellIsALayoutRow(t *testing.T) {
+	specs, err := filepath.Glob("testdata/cardlayout/*.spec.json")
+	require.NoError(t, err)
+	idRe := regexp.MustCompile(`<mxCell id="(legend-[^"]*)"`)
+	for _, path := range specs {
+		t.Run(filepath.Base(path), func(t *testing.T) {
+			raw, err := os.ReadFile(path)
+			require.NoError(t, err)
+			var spec diagram.Spec
+			require.NoError(t, json.Unmarshal(raw, &spec))
+			allowed := map[string]bool{}
+			for _, c := range spec.Cards {
+				for _, row := range house.CardLayout(&spec, c).Rows {
+					if row.ID == "" {
+						continue
+					}
+					for _, id := range []string{row.ID, row.ID + "-text", row.ID + "-0", row.ID + "-1", row.ID + "-2"} {
+						allowed[id] = true
+					}
+				}
+			}
+
+			drawn := idRe.FindAllStringSubmatch(cardFragment(t, &spec, "dark"), -1)
+
+			for _, m := range drawn {
+				assert.True(t, allowed[m[1]], "%s is drawn but is not a CardLayout row", m[1])
+			}
+		})
 	}
 }

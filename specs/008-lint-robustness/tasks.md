@@ -12,7 +12,7 @@ Clarifications 1 to 5 of the spec are answered (2026-11-04).
 
 ## Wave 2
 
-- [ ] **T02** `card_text.go`: width of every card, note and legend row, and card height
+- [x] **T02** `card_text.go`: width of every card, note and legend row, and card height
   (FR-001, FR-002). Flip **LNT-01** after `make evaluate FEATURE=LNT-01`; flip backlog
   **B-07** and **B-26** with `docs/evidence/` pointing at that evidence.
 - [ ] **T03** `header_overlap.go` (FR-003). Flip **LNT-02**; flip backlog **B-25**.

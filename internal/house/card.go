@@ -26,6 +26,7 @@ const (
 	RowLegendRemoved    = "legend-removed"
 	RowLegendUnchanged  = "legend-unchanged"
 	RowLegendNotes      = "legend-notes"
+	RowNote             = "note"
 )
 
 const (
@@ -253,4 +254,14 @@ func statusRows(l *Layout, s *diagram.Spec, x, y, w float64) float64 {
 		row(RowLegendStack, "legend-stack-"+strconv.Itoa(i), n.Multiplicity, n.Multiplicity)
 	}
 	return y
+}
+
+// NoteRow is the text of a note: one source line per <br>, wrapped by the cell at the
+// note's width.
+func NoteRow(n diagram.Note) CardRow {
+	row := CardRow{Kind: RowNote, ID: n.ID, Text: n.Text, Rect: n.Rect(), FontSize: SubFontSize, LineH: SubFontSize * LineHeightEm, Wraps: true}
+	for _, line := range strings.Split(n.Text, "<br>") {
+		row.Plain = append(row.Plain, PlainText(line))
+	}
+	return row
 }

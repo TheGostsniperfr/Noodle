@@ -37,6 +37,7 @@ var rules = []rule{
 	checkNodeIcon,
 	checkOfferingText,
 	checkMatrixText,
+	checkCardText,
 }
 
 type linter struct {

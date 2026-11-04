@@ -15,7 +15,7 @@ import (
 // and a card below. It passes every rule, so each case below breaks one thing.
 func clean() *diagram.Spec {
 	return &diagram.Spec{
-		ID: "t", Width: 800, Height: 480,
+		ID: "t", Width: 800, Height: 560,
 		Zones: []diagram.Zone{{ID: "z", Kind: "region", Label: "Z", Color: "slate", X: 40, Y: 40, W: 700, H: 260}},
 		Nodes: []diagram.Node{
 			{ID: "a", Kind: "backend", Title: "A", X: 80, Y: 120, W: 200, H: 80},
@@ -24,7 +24,7 @@ func clean() *diagram.Spec {
 		Edges: []diagram.Edge{
 			{ID: "e", From: "a", To: "b", Kind: "flow", Label: "[1] GET · HTTP", Port: "TCP 80", Path: []diagram.Point{{280, 160}, {460, 160}}},
 		},
-		Cards: []diagram.Card{{ID: "c", Title: "Legend", Legend: true, Color: "slate", X: 40, Y: 340, W: 700, H: 100}},
+		Cards: []diagram.Card{{ID: "c", Title: "Legend", Legend: true, Color: "slate", X: 40, Y: 340, W: 700, H: 190}},
 	}
 }
 

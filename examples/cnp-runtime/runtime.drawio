@@ -1,20 +1,20 @@
 <mxfile host="archgen">
   <diagram id="runtime-dark" name="CNP · Runtime · Request path &amp; tenant isolation (dark)">
-    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="2340" pageHeight="1800" background="#020617" math="0" shadow="0">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="2380" pageHeight="1800" background="#020617" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="bg" value="" style="shape=image;image=data:image/svg+xml,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMzQwIiBoZWlnaHQ9IjE4MDAiPjxkZWZzPjxwYXR0ZXJuIGlkPSJnIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0gNDAgMCBMIDAgMCAwIDQwIiBmaWxsPSJub25lIiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMC41Ii8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDIwNjE3Ii8+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjwvc3ZnPg==;imageAspect=0;locked=1;editable=0;movable=0;resizable=0;deletable=0;" vertex="1" parent="1">
-          <mxGeometry x="0" y="0" width="2340" height="1800" as="geometry" />
+        <mxCell id="bg" value="" style="shape=image;image=data:image/svg+xml,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMzgwIiBoZWlnaHQ9IjE4MDAiPjxkZWZzPjxwYXR0ZXJuIGlkPSJnIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiPjxwYXRoIGQ9Ik0gNDAgMCBMIDAgMCAwIDQwIiBmaWxsPSJub25lIiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMC41Ii8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMDIwNjE3Ii8+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjwvc3ZnPg==;imageAspect=0;locked=1;editable=0;movable=0;resizable=0;deletable=0;" vertex="1" parent="1">
+          <mxGeometry x="0" y="0" width="2380" height="1800" as="geometry" />
         </mxCell>
         <mxCell id="header-dot" value="" style="ellipse;fillColor=#34d399;strokeColor=none;" vertex="1" parent="1">
           <mxGeometry x="40" y="44" width="12" height="12" as="geometry" />
         </mxCell>
         <mxCell id="header-title" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;CNP · Runtime · Request path &amp;amp; tenant isolation&lt;/b&gt;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=24;fontColor=#f8fafc;" vertex="1" parent="1">
-          <mxGeometry x="64" y="30" width="1940" height="40" as="geometry" />
+          <mxGeometry x="64" y="30" width="1980" height="40" as="geometry" />
         </mxCell>
         <mxCell id="header-sub" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#e2e8f0&quot; style=&quot;font-size:13px&quot;&gt;How a user request reaches a tenant app, where it is authenticated, and what keeps tenants apart.&lt;/font&gt;&lt;br&gt;Scope: on-prem K3s cluster · main as of 2026-09-26 · derived from code (infra-templates, K3s, CMP templates)&lt;br&gt;Out of scope: AWS/GCP clusters · observability · deployment pipeline · admin SSH access&lt;br&gt;v0.4 · source: architecture/specs/runtime-request-path.yaml&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#94a3b8;" vertex="1" parent="1">
-          <mxGeometry x="64" y="74" width="1940" height="80" as="geometry" />
+          <mxGeometry x="64" y="74" width="1980" height="80" as="geometry" />
         </mxCell>
         <mxCell id="z-internet" value="" style="rounded=1;absoluteArcSize=1;arcSize=12;html=1;fillColor=#94a3b8;fillOpacity=3;strokeColor=#94a3b8;strokeWidth=1.2;dashed=1;dashPattern=8 4;container=0;collapsible=0;" vertex="1" parent="1">
           <mxGeometry x="40" y="200" width="220" height="760" as="geometry" />
@@ -329,112 +329,112 @@
           <mxGeometry x="52" y="590" width="196" height="90" as="geometry" />
         </mxCell>
         <mxCell id="card-legend" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#94a3b8&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:13px&quot;&gt;Legend&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#0b1222;strokeColor=#1e293b;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1340" width="540" height="420" as="geometry" />
+          <mxGeometry x="40" y="1340" width="580" height="420" as="geometry" />
         </mxCell>
         <mxCell id="legend-node-backend" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#0b2d31;strokeColor=#34d399;strokeWidth=1.5;" vertex="1" parent="1">
           <mxGeometry x="60" y="1396" width="22" height="14" as="geometry" />
         </mxCell>
         <mxCell id="legend-node-backend-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;service / routing&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="92" y="1392" width="210" height="22" as="geometry" />
+          <mxGeometry x="92" y="1392" width="230" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-node-database" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#271955;strokeColor=#a78bfa;strokeWidth=1.5;" vertex="1" parent="1">
           <mxGeometry x="60" y="1422" width="22" height="14" as="geometry" />
         </mxCell>
         <mxCell id="legend-node-database-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;data / secrets&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="92" y="1418" width="210" height="22" as="geometry" />
+          <mxGeometry x="92" y="1418" width="230" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-node-cloud" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#2f2022;strokeColor=#fbbf24;strokeWidth=1.5;" vertex="1" parent="1">
           <mxGeometry x="60" y="1448" width="22" height="14" as="geometry" />
         </mxCell>
         <mxCell id="legend-node-cloud-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;edge / tunnel / cloud&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="92" y="1444" width="210" height="22" as="geometry" />
+          <mxGeometry x="92" y="1444" width="230" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-node-security" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#3f152f;strokeColor=#fb7185;strokeWidth=1.5;" vertex="1" parent="1">
           <mxGeometry x="60" y="1474" width="22" height="14" as="geometry" />
         </mxCell>
         <mxCell id="legend-node-security-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;security / identity&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="92" y="1470" width="210" height="22" as="geometry" />
+          <mxGeometry x="92" y="1470" width="230" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-node-external" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#172033;strokeColor=#94a3b8;strokeWidth=1.5;" vertex="1" parent="1">
           <mxGeometry x="60" y="1500" width="22" height="14" as="geometry" />
         </mxCell>
         <mxCell id="legend-node-external-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;external / out of scope&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="92" y="1496" width="210" height="22" as="geometry" />
+          <mxGeometry x="92" y="1496" width="230" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-steps" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;1&lt;/span&gt; request step · &lt;span style=&quot;border:1px solid #f8fafc;color:#f8fafc;border-radius:3px;padding:0px 3px;font-weight:bold;&quot;&gt;A&lt;/span&gt; background step&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="60" y="1530" width="250" height="22" as="geometry" />
+          <mxGeometry x="60" y="1530" width="270" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-port" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;TCP 80&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;html=1;fillColor=#34d399;strokeColor=none;align=center;verticalAlign=middle;fontStyle=1;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=9;fontColor=#020617;" vertex="1" parent="1">
           <mxGeometry x="60" y="1559" width="40.4" height="16" as="geometry" />
         </mxCell>
         <mxCell id="legend-port-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;listening port on the server&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="112" y="1556" width="200" height="22" as="geometry" />
+          <mxGeometry x="112" y="1556" width="220" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-edge-flow" value="" style="edgeStyle=none;html=1;strokeColor=#94a3b8;strokeWidth=1.5;endArrow=blockThin;endFill=1;endSize=6;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="320" y="1403" as="sourcePoint" />
-            <mxPoint x="360" y="1403" as="targetPoint" />
+            <mxPoint x="340" y="1403" as="sourcePoint" />
+            <mxPoint x="380" y="1403" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="legend-edge-flow-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;connection, client → server&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="372" y="1392" width="198" height="22" as="geometry" />
+          <mxGeometry x="392" y="1392" width="218" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-edge-auth" value="" style="edgeStyle=none;html=1;strokeColor=#fb7185;strokeWidth=1.5;endArrow=blockThin;endFill=1;endSize=6;dashed=1;dashPattern=6 4;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="320" y="1429" as="sourcePoint" />
-            <mxPoint x="360" y="1429" as="targetPoint" />
+            <mxPoint x="340" y="1429" as="sourcePoint" />
+            <mxPoint x="380" y="1429" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="legend-edge-auth-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;authentication connection&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="372" y="1418" width="198" height="22" as="geometry" />
+          <mxGeometry x="392" y="1418" width="218" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-edge-tunnel" value="" style="edgeStyle=none;html=1;strokeColor=#fbbf24;strokeWidth=1.5;endArrow=blockThin;endFill=1;endSize=6;dashed=1;dashPattern=3 3;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="320" y="1455" as="sourcePoint" />
-            <mxPoint x="360" y="1455" as="targetPoint" />
+            <mxPoint x="340" y="1455" as="sourcePoint" />
+            <mxPoint x="380" y="1455" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="legend-edge-tunnel-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;outbound tunnel, opened in advance&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="372" y="1444" width="198" height="22" as="geometry" />
+          <mxGeometry x="392" y="1444" width="218" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-edge-async" value="" style="edgeStyle=none;html=1;strokeColor=#a78bfa;strokeWidth=1.5;endArrow=blockThin;endFill=1;endSize=6;dashed=1;dashPattern=6 4;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="320" y="1481" as="sourcePoint" />
-            <mxPoint x="360" y="1481" as="targetPoint" />
+            <mxPoint x="340" y="1481" as="sourcePoint" />
+            <mxPoint x="380" y="1481" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="legend-edge-async-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;background sync&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="372" y="1470" width="198" height="22" as="geometry" />
+          <mxGeometry x="392" y="1470" width="218" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-edge-blocked" value="" style="edgeStyle=none;html=1;strokeColor=#f87171;strokeWidth=1.8;endArrow=cross;endFill=0;endSize=6;dashed=1;dashPattern=6 4;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="320" y="1507" as="sourcePoint" />
-            <mxPoint x="360" y="1507" as="targetPoint" />
+            <mxPoint x="340" y="1507" as="sourcePoint" />
+            <mxPoint x="380" y="1507" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="legend-edge-blocked-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;must not happen&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="372" y="1496" width="198" height="22" as="geometry" />
+          <mxGeometry x="392" y="1496" width="218" height="22" as="geometry" />
         </mxCell>
         <mxCell id="legend-edge-link" value="" style="edgeStyle=none;html=1;strokeColor=#64748b;strokeWidth=1.2;endArrow=open;endFill=0;endSize=6;dashed=1;dashPattern=2 3;" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="320" y="1533" as="sourcePoint" />
-            <mxPoint x="360" y="1533" as="targetPoint" />
+            <mxPoint x="340" y="1533" as="sourcePoint" />
+            <mxPoint x="380" y="1533" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="legend-edge-link-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;object reference, not traffic&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="372" y="1522" width="198" height="22" as="geometry" />
+          <mxGeometry x="392" y="1522" width="218" height="22" as="geometry" />
         </mxCell>
         <mxCell id="card-legend-notes" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;Large dashed frame: infra perimeter · small: functional group&lt;br&gt;&lt;font color=&quot;#fb923c&quot;&gt;&lt;b&gt;⚠ Gx&lt;/b&gt;&lt;/font&gt;: docs and code disagree, see &quot;Gaps&quot;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#94a3b8;" vertex="1" parent="1">
-          <mxGeometry x="60" y="1710" width="500" height="40" as="geometry" />
+          <mxGeometry x="60" y="1710" width="540" height="40" as="geometry" />
         </mxCell>
         <mxCell id="card-data-plane" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#22d3ee&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:13px&quot;&gt;Request path · data plane&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;div style=&quot;line-height:1.6&quot;&gt;• Nominal path of a user who already has a session.&lt;br&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;1&lt;/span&gt; Browser sends GET https://&amp;lt;app&amp;gt;-&amp;lt;project&amp;gt;.3istor.com. Cloudflare terminates TLS.&lt;br&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;2&lt;/span&gt; The edge relays the request back through the app tunnel, which cloudflared opened outbound at startup. No inbound port on-prem.&lt;br&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;3&lt;/span&gt; cloudflared forwards it to Envoy over plain HTTP. Envoy matches the HTTPRoute and checks the OIDC session cookie.&lt;br&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;4&lt;/span&gt; Envoy proxies to the Service.&lt;br&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;5&lt;/span&gt; Cilium DNATs the Service VIP to an app pod.&lt;br&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;6&lt;/span&gt; The app queries its CloudNativePG cluster.&lt;br&gt;• Pink connections carry the OIDC login. Their order is in the OIDC sequence diagram.&lt;/div&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#0b1222;strokeColor=#1e293b;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="610" y="1340" width="620" height="420" as="geometry" />
+          <mxGeometry x="650" y="1340" width="620" height="420" as="geometry" />
         </mxCell>
         <mxCell id="card-control-plane" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#a78bfa&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:13px&quot;&gt;Background · control plane&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;div style=&quot;line-height:1.6&quot;&gt;&lt;span style=&quot;border:1px solid #f8fafc;color:#f8fafc;border-radius:3px;padding:0px 3px;font-weight:bold;&quot;&gt;A&lt;/span&gt; VSO logs in with a namespace-bound role and reads kvv2.&lt;br&gt;&lt;span style=&quot;border:1px solid #f8fafc;color:#f8fafc;border-radius:3px;padding:0px 3px;font-weight:bold;&quot;&gt;B&lt;/span&gt; VSO writes the K8s Secret through the API server.&lt;br&gt;• Both cloudflared connectors open their tunnels outbound at startup.&lt;br&gt;• Dotted lines are object references (parentRef, targetRef, envFrom, clientSecret), not traffic.&lt;/div&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#0b1222;strokeColor=#1e293b;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="1260" y="1340" width="460" height="420" as="geometry" />
+          <mxGeometry x="1300" y="1340" width="460" height="420" as="geometry" />
         </mxCell>
         <mxCell id="card-gaps" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#fb923c&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:13px&quot;&gt;Gaps between docs and code&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;div style=&quot;line-height:1.6&quot;&gt;&lt;b&gt;&lt;font color=&quot;#fb923c&quot;&gt;G1&lt;/font&gt;&lt;/b&gt; &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Network isolation.&lt;/font&gt;&lt;/b&gt; Docs describe a default-deny CCNP per project. None in code: Cilium runs without tenant policy.&lt;br&gt;&lt;b&gt;&lt;font color=&quot;#fb923c&quot;&gt;G2&lt;/font&gt;&lt;/b&gt; &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Authorization.&lt;/font&gt;&lt;/b&gt; No groups-claim check: any account in realm 3istor opens any SSO app.&lt;br&gt;&lt;b&gt;&lt;font color=&quot;#fb923c&quot;&gt;G3&lt;/font&gt;&lt;/b&gt; &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Transport.&lt;/font&gt;&lt;/b&gt; TLS ends at Cloudflare. In-cluster hops are plain HTTP, Vault included (tls_disable).&lt;br&gt;&lt;b&gt;&lt;font color=&quot;#fb923c&quot;&gt;G4&lt;/font&gt;&lt;/b&gt; &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Coupling.&lt;/font&gt;&lt;/b&gt; Tunnels target Envoy&amp;#39;s hashed Service (ac1e5388). Blocks AWS/GCP. Covered by D-05.&lt;br&gt;&lt;b&gt;&lt;font color=&quot;#fb923c&quot;&gt;G5&lt;/font&gt;&lt;/b&gt; &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Tunnels.&lt;/font&gt;&lt;/b&gt; One per app, cloudflared on :latest. D-06 moves to one per project.&lt;br&gt;&lt;b&gt;&lt;font color=&quot;#fb923c&quot;&gt;G6&lt;/font&gt;&lt;/b&gt; &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Token call.&lt;/font&gt;&lt;/b&gt; The template expects a cluster-local path to auth.3istor.com. None found in code: likely hairpins via Cloudflare. To verify.&lt;/div&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#0b1222;strokeColor=#1e293b;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#e2e8f0;" vertex="1" parent="1">
-          <mxGeometry x="1750" y="1340" width="550" height="420" as="geometry" />
+          <mxGeometry x="1790" y="1340" width="550" height="420" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

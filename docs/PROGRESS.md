@@ -29,6 +29,7 @@ decisions go in ADRs, acceptance in `features.json`.
 ### 2026-11-04 · Lint robustness (spec 008)
 
 - T01: `house.Header` and `house.CardLayout` own the header, card and legend geometry; `render.go` draws from them, byte-equal on the frozen specs of `cmd/noodle/testdata/cardlayout`. Every example's `.drawio` is now committed and `TestExamples_DrawioCurrent` keeps it current.
+- T02: `card_text.go` measures every card row, legend row and note against the cell the renderer gives it, and card height. Four example legends were too narrow (cnp-runtime, platform-overview, app-runtime-view, repo-map): widened, neighbours shifted. Flips of LNT-01, B-07, B-26 wait for the evaluator.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

@@ -5,7 +5,7 @@ meta:
   - "Scope: on-prem K3s cluster · main as of 2026-09-26 · derived from code (infra-templates, K3s, CMP templates)"
   - "Out of scope: AWS/GCP clusters · observability · deployment pipeline · admin SSH access"
   - "v0.4 · source: architecture/specs/runtime-request-path.yaml"
-width: 2340
+width: 2380
 height: 1800
 
 zones:
@@ -76,11 +76,11 @@ notes:
   - {id: n-302, text: "Without a session, Envoy replies **302** to auth.3istor.com at [3]. The login that follows is in the OIDC sequence diagram.", x: 52, y: 590, w: 196, h: 90}
 
 cards:
-  - {id: card-legend, title: "Legend", color: slate, legend: true, x: 40, y: 1340, w: 540, h: 420}
+  - {id: card-legend, title: "Legend", color: slate, legend: true, x: 40, y: 1340, w: 580, h: 420}
   - id: card-data-plane
     title: "Request path · data plane"
     color: cyan
-    x: 610
+    x: 650
     y: 1340
     w: 620
     h: 420
@@ -96,7 +96,7 @@ cards:
   - id: card-control-plane
     title: "Background · control plane"
     color: violet
-    x: 1260
+    x: 1300
     y: 1340
     w: 460
     h: 420
@@ -108,7 +108,7 @@ cards:
   - id: card-gaps
     title: "Gaps between docs and code"
     color: orange
-    x: 1750
+    x: 1790
     y: 1340
     w: 550
     h: 420
