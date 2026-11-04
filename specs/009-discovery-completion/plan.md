@@ -2,7 +2,12 @@
 
 Spec: [`spec.md`](spec.md). Decisions: ADR-0015 (fragments, `matches`, storage), ADR-0016,
 ADR-0017 (decoding, `unresolved`, remembered resolutions), ADR-0018 (checkpoint, operator
-rules), ADR-0025 (batches). New ADRs depend on the answers to questions 2, 3 and 4.
+rules), ADR-0025 (batches). New ADRs follow the answers to questions 1 to 4; each lists
+`"009"` in its frontmatter `specs` and names its question in its context.
+
+Phase `6a` in `docs/features.json` now points at this spec, so `make evaluate
+FEATURE=P6a-0N` reads this contract and its evidence lands in
+`specs/009-discovery-completion/evidence/`, in full mode.
 
 ## Approach
 
@@ -50,6 +55,10 @@ not replace it in this spec.
   destination, then `default` with the FR-005 warning.
 - **Field paths.** Recorded while decoding, as the path to the scalar that named the
   target, in the form of FR-008's scenario.
+- **Paths.** `noodle query path` is a breadth-first search; among equal-length paths it
+  takes, at each step, the next id first in lexicographic order, so the answer is stable.
+- **Transcripts.** Committed transcripts keep usage records and `tool_use` inputs and
+  drop every `tool_result`, which may hold a manifest's Secret values (C09).
 - **Merge.** Curated fields win; a list field the curated element leaves empty is taken
   whole from the fragment, never merged item by item.
 

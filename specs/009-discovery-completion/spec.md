@@ -67,7 +67,7 @@ to jump from a node back to the YAML document that defines it.
   on Gateway `shared` lists `shop.example.com` THEN an inferred connection `api → shared`
   is emitted, which shows the hairpin through the edge.
 - **FR-005** IF an input mixes objects that name a namespace with objects that name
-  none, and `-namespace` is not given, THEN THE SYSTEM SHALL print to stderr
+  none, and neither `-namespace` nor `-argocd-app` is given, THEN THE SYSTEM SHALL print to stderr
   `N objects name no namespace; pass -namespace`; and WHERE `-argocd-app FILE` is given,
   THE SYSTEM SHALL take the default namespace from that Application's
   `spec.destination.namespace`.
@@ -194,9 +194,9 @@ to jump from a node back to the YAML document that defines it.
   B` runs, THE SYSTEM SHALL answer from the merged graph, with no model in the loop:
   every node one edge from `ID` (of kind `K`), or one shortest path from `A` to `B`, each
   edge with its kind and `src`; IF no path exists THEN it SHALL print `no path` and exit 1.
-  *Scenario:* WHEN `noodle query examples/discovery-k8s neighbours
-  k8s:data/secret/postgres -kind secret-key` runs THEN it lists exactly the workloads that
-  read a key of that Secret.
+  *Scenario:* WHEN `noodle query examples/discovery-k8s neighbours k8s:prod/secret/db
+  -kind secret-key` runs THEN it lists exactly `k8s:prod/deployment/api` and
+  `k8s:prod/deployment/worker`, the workloads that read a key of that Secret.
 - **FR-022** WHEN manifests exist for a system, THE SYSTEM SHALL make the skill run
   discovery first, give `fact-finder` only the `unresolved` entries and non-Kubernetes
   sources, document `matches` and the rules file in `reference.md`, and name the edge
@@ -228,7 +228,7 @@ to jump from a node back to the YAML document that defines it.
 
 | # | Question | Options (recommended first) | Answer | ADR |
 |---|---|---|---|---|
-| 1 | Who runs the checkpoint (FR-014) and the benchmark (FR-023) sessions on PAE? | a) Claude runs each arm as a fresh `claude -p` process on a local PAE checkout, transcripts kept for `tokencost`; b) Brian runs them by hand in fresh sessions; c) replace PAE by `examples/discovery-k8s` | open | |
+| 1 | Who runs the checkpoint (FR-014) and the benchmark (FR-023) sessions on PAE, and what does ADR-0018's "costs clearly less" mean in numbers? | a) Claude runs each arm as a fresh `claude -p` process on a local PAE checkout, transcripts committed without tool results; "clearly less" is C at most 70 % of A's cost, in a new ADR; b) Brian runs them by hand, same threshold; c) replace PAE by `examples/discovery-k8s`, same threshold | open | |
 | 2 | Kustomize (#81) means running an external tool, which ADR-0016 and ADR-0017 kept out. | a) shell out to `kustomize build` behind `-kustomize`, read-only, `unrendered` when absent, in a new ADR; b) keep no external tool: stay `unrendered`, the skill documents the loop; c) vendor the kustomize Go API | open | |
 | 3 | `object` and field paths (FR-008) change the Fragment contract (C06). | a) additive optional fields in `v1alpha1`, with an ADR, no version bump; b) wait for the `v1alpha2` bump of #104; c) `object` now, field paths and git origins later | open | |
 | 4 | Where do discovery rules (#80) and remembered resolutions (ADR-0017) live? `discovered/` is regenerated and uncommitted (ADR-0015). | a) one committed `<system>/discovery.yaml` holding both; b) `discovered/rules.yaml` as the issue says, committed by exception; c) two committed files, `rules.yaml` and `resolutions.yaml` | open | |
