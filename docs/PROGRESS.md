@@ -39,7 +39,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - DEV-01 passes (evaluator, 7/7 criteria). DEV-02 came back NEEDS_WORK: the contract
   criteria rule matched any mention of an id, so a deleted section went unnoticed. Fixed
   (T07, T08); DEV-02 passes on re-evaluation, DEV-03 passes. DEV-04 first run NEEDS_WORK as planned,
-  plus three gate bugs fixed (T12). Next: DEV-05, then DEV-04 again. Next: commit the review, `make evaluate` DEV-01, DEV-02, DEV-03,
+  plus three gate bugs fixed (T12). DEV-05 passes. Next: DEV-04 again. Next: commit the review, `make evaluate` DEV-01, DEV-02, DEV-03,
   DEV-05, then DEV-04, each evidence committed alone before its flip; then the PR.
 
 ### 2026-10-25 · Multi-line node desc
