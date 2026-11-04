@@ -54,6 +54,7 @@ decisions go in ADRs, acceptance in `features.json`.
 ### 2026-11-04 · Discovery completion, spec 009 wave 1
 
 - T01: optional `object {apiVersion, kind, namespace, name}` on discovered elements, connections and references (ADR-0028), schema and loader; the adapter fills it. Flip of DSC-04 waits for `make evaluate`.
+- T02: references `env-from`, `secret-key`, `config-key`, `mounts` from workloads (one per workload, target and kind), ExternalSecret to target and store, stores to `k8s:_external/<provider>` elements (1Password, Vault, AWS; others `unknown-provider`), Argo CD `syncs`; no Secret value read. DSC-01 flip waits for `make evaluate`.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

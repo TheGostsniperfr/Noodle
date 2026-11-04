@@ -10,7 +10,7 @@ follow-ups for its features.
 
 - [x] **T01** Contract: optional `object` on discovered items, schema and loader,
   additive (FR-008, ADR-0028). Flip **DSC-04** after `make evaluate FEATURE=DSC-04`.
-- [ ] **T02** Configuration references: `envFrom`, `secretKeyRef`, `configMapKeyRef`,
+- [x] **T02** Configuration references: `envFrom`, `secretKeyRef`, `configMapKeyRef`,
   Secret, ConfigMap and PVC volumes, no Secret value (FR-001); ExternalSecret, stores,
   providers, Argo CD Applications (FR-002). Spec 003 T05. Flip **DSC-01**.
 - [ ] **T03** Addresses in ConfigMaps, env and CR specs to known Services, inferred

@@ -31,6 +31,9 @@ func (Adapter) Discover(ctx context.Context, src adapter.Source) (*model.Fragmen
 	f.Elements = append(f.Elements, ingresses(idx, g, u)...)
 	f.Elements = append(f.Elements, namespaces(idx, f.Elements)...)
 	selectsPods(idx, g, u)
+	configRefs(idx, g)
+	f.Elements = append(f.Elements, externalSecrets(idx, g, u)...)
+	applications(idx, g)
 	f.Connections, f.References = g.conns, g.refs
 	f.Unresolved = append(f.Unresolved, u.list()...)
 	f.Unresolved = append(f.Unresolved, unknownKinds(idx)...)
@@ -40,6 +43,9 @@ func (Adapter) Discover(ctx context.Context, src adapter.Source) (*model.Fragmen
 // id is k8s:<namespace>/<kind>/<name> (ADR-0015). A namespace is its own namespace.
 // Elements carry no title: the id holds the name, and the curated model names things.
 func id(ns, kind, name string) string {
+	if ns == "" {
+		ns = "_cluster"
+	}
 	return "k8s:" + ns + "/" + strings.ToLower(kind) + "/" + name
 }
 

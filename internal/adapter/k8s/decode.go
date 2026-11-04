@@ -23,6 +23,7 @@ type object struct {
 	APIVersion, Kind, Namespace, Name string
 	Labels, Annotations               map[string]string
 	Body                              map[string]any
+	Node                              *yaml.Node
 	Src                               model.Src
 }
 
@@ -175,7 +176,7 @@ func (in *input) add(file string, n *yaml.Node, lines lineIndex, end int) error 
 		APIVersion: str(body, "apiVersion"), Kind: kind,
 		Namespace: str(body, "metadata", "namespace"), Name: str(body, "metadata", "name"),
 		Labels: strMap(body, "metadata", "labels"), Annotations: strMap(body, "metadata", "annotations"),
-		Body: body, Src: model.Src{File: file, Line: n.Line},
+		Body: body, Node: n, Src: model.Src{File: file, Line: n.Line},
 	}
 	switch {
 	case kind == "CustomResourceDefinition":
