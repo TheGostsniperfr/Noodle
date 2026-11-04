@@ -36,7 +36,8 @@ output and the evaluator's grading. The ADR index is current without anyone edit
   THEN `make spec-check` fails with `docs/COMMANDS.md: no row for make foo`.
 - **FR-002** WHEN a spec, plan, tasks or contract file cites `Cnn` or `ADR-NNNN`, THE
   SYSTEM SHALL fail `make spec-check` unless the invariant is in `docs/CONSTITUTION.md`
-  and the ADR file exists; and WHEN `tasks.md` flips a feature, that feature SHALL exist
+  and the ADR file exists, a citation inside inline code being a quotation, not a
+  citation; and WHEN `tasks.md` flips a feature, that feature SHALL exist
   in `docs/features.json`.
   *Scenario:* WHEN a spec cites an invariant number the constitution does not define THEN `make spec-check` fails naming the spec and that number.
 - **FR-003** WHEN a spec declares `Mode: full`, THE SYSTEM SHALL fail `make spec-check`
@@ -64,8 +65,8 @@ output and the evaluator's grading. The ADR index is current without anyone edit
   SPEC=NNN` SHALL do the same for a contract, answering APPROVED or CHANGES.
   *Scenario:* WHEN `make evaluate FEATURE=DEV-04` runs THEN
   `specs/007-engineering-process/evidence/DEV-04.md` exists with a Verdict line.
-- **FR-007** THE SYSTEM SHALL make every CI step call a `make` target, and no workflow step
-  SHALL call a file under `scripts/`. A Claude Code hook that runs a check SHALL call
+- **FR-007** THE SYSTEM SHALL make every `run:` step of `ci.yml` call a `make` target, and
+  no step of any workflow SHALL call a file under `scripts/`. A Claude Code hook that runs a check SHALL call
   `make`; a hook-only script (session context, stop guard, formatter) SHALL be listed
   under "Hooks" in `docs/COMMANDS.md`.
   *Scenario:* WHEN `.github/workflows/ci.yml` is searched for `scripts/` THEN nothing

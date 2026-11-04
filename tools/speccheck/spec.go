@@ -14,6 +14,7 @@ var (
 	cRefRe       = regexp.MustCompile(`\bC(\d{2})\b`)
 	featureRefRe = regexp.MustCompile(`\*\*([A-Z][A-Za-z0-9]*-\d{2,})\*\*`)
 	cDefRe       = regexp.MustCompile(`(?m)^\| \*\*(C\d{2})\*\*`)
+	codeSpanRe   = regexp.MustCompile("`[^`\n]*`")
 )
 
 // CheckSpecs checks every spec, or only dirs. Rules for all specs: cited ADRs, Cnn
@@ -86,12 +87,14 @@ func (r *Repo) checkSpec(dir string, feats *Features, known, invariants map[stri
 	}
 	for name, text := range docs {
 		file := filepath.ToSlash(filepath.Join(dir, name))
-		for _, num := range uniqueSorted(submatches(adrRefRe, text)) {
+		// Inline code quotes a message or an example; only prose cites.
+		prose := codeSpanRe.ReplaceAllString(text, "")
+		for _, num := range uniqueSorted(submatches(adrRefRe, prose)) {
 			if !r.adrExists(num) {
 				out = append(out, Finding{file, "cites ADR-" + num + ", which does not exist"})
 			}
 		}
-		for _, n := range uniqueSorted(submatches(cRefRe, text)) {
+		for _, n := range uniqueSorted(submatches(cRefRe, prose)) {
 			if !invariants["C"+n] {
 				out = append(out, Finding{file, "cites C" + n + ", which is not in docs/CONSTITUTION.md"})
 			}

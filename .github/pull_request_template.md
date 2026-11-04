@@ -16,7 +16,7 @@ Otherwise write "None" and why, e.g. "docs only". -->
 
 ## Test plan
 
-- [ ] `./scripts/init.sh` green
+- [ ] `make check` green
 - [ ] PNG rendered in both themes and looked at
 
 ## Breaking changes

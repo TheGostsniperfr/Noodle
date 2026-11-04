@@ -112,6 +112,15 @@ func TestSpec_ReportsEachBrokenRule(t *testing.T) {
 			"specs/001-demo/plan.md: cites C42, which is not in docs/CONSTITUTION.md"},
 		{"unknown ADR in the contract", map[string]string{"specs/001-demo/contract.md": fullContract + "See ADR-0077.\n"},
 			"specs/001-demo/contract.md: cites ADR-0077, which does not exist"},
+		{"scenario without THEN", map[string]string{"specs/001-demo/spec.md": strings.Replace(fullSpec, "WHEN input THEN output.", "WHEN input, output.", 1)},
+			"specs/001-demo/spec.md: FR-001 has no Scenario with WHEN and THEN"},
+		{"requirement covered only by another phase", map[string]string{"docs/features.json": strings.Replace(
+			strings.Replace(featuresJSON, `["FR-002"]`, `[]`, 1), `]}], "backlog"`,
+			`]}, {"id": "e", "spec": "specs/009-x/spec.md", "features": [{"id": "E-01", "description": "e", "verify": "v", "passes": false, "covers": ["FR-002"]}]}], "backlog"`, 1)},
+			"docs/features.json: FR-002 of specs/001-demo/spec.md is covered by no feature of phase d"},
+		{"citation quoted in inline code", map[string]string{"specs/001-demo/plan.md": "The message is `cites C99 and ADR-0099`.\n"}, ""},
+		{"unknown ADR in the plan", map[string]string{"specs/001-demo/plan.md": "Uses ADR-0077.\n"},
+			"specs/001-demo/plan.md: cites ADR-0077, which does not exist"},
 		{"spec with no phase", map[string]string{"docs/features.json": strings.Replace(featuresJSON, "001-demo", "002-other", 1)},
 			"specs/001-demo/spec.md: no phase in docs/features.json points at this spec"},
 	}
@@ -391,4 +400,29 @@ func TestRun_FeaturesFailsThroughTheCLI(t *testing.T) {
 
 	assert.ErrorIs(t, err, errFindings)
 	assert.Contains(t, stderr.String(), "evidence/D-01.md")
+}
+
+func TestSpec_LegacyAndQuickSpecs(t *testing.T) {
+	t.Parallel()
+	legacy := "# Spec 001 · Old\n\n- Status: Done\n\n## Requirements\n\n- **FR-001** prose without the keyword.\n"
+	quick := "# Spec 001 · Bug\n\n- Mode: **quick**\n\n- **FR-001** prose, no scenario.\n"
+	tests := []struct {
+		name string
+		spec string
+		want []string
+	}{
+		{"legacy spec citing an unknown invariant", legacy + "Touches C99.\n", []string{"specs/001-demo/spec.md: cites C99, which is not in docs/CONSTITUTION.md"}},
+		{"quick spec without contract or scenarios", quick, nil},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			repo := fixture(t, map[string]string{"specs/001-demo/spec.md": tt.spec, "specs/001-demo/contract.md": ""})
+
+			findings, err := repo.CheckSpecs(nil)
+
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, messages(findings))
+		})
+	}
 }

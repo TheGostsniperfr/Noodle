@@ -31,8 +31,9 @@ You are given a feature id and its spec directory.
    - **Scope**: changes outside the plan's packages, or behaviour the spec did not ask for.
    - **Constitution**: any `Cnn` the diff breaks, C04 and C12 above all (a relaxed lint
      rule, an edited `features.json` entry).
-   - **Visual features**: render the example with `make render`, read the PNG if one is
-     committed, and say what you see. Lint green is not readability (C13).
+   - **Visual features**: `make examples` for the lint, then read the committed PNGs and
+     say what you see. Lint green is not readability (C13). You cannot render to a file:
+     your tools are read-only, and a command outside your allowlist is refused.
 5. Print the evidence file below, and nothing else.
 
 ## Mode 2 · Review a contract
