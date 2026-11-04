@@ -80,6 +80,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T12: README positioning (architecture as code, "designed to stay in sync" until P6a-05), VISION "Where it sits", and the Discovery section of the skill reference (#88); goldens refreshed for the skill text.
 - T13: goreleaser config (4 platforms, checksums), release workflow on `v*` tags, git-cliff config, `make changelog` and `make release-snapshot` (evaluator allowlist, recorded in ADR-0024), plugin `version` 0.1.0, first CHANGELOG.md. No tag pushed.
 - T14: `bin/noodle` downloads the release of the plugin's version when no noodle, Go or Nix is found, verifies SHA-256 against the release checksums, refuses a mismatch; Go test with stub curl, uname, go, nix.
+- T15: process skills `issue-writer`, `release-notes`, `contrib-check` in `.agents/skills/`, symlinked from `.claude/skills/`, checked by `make spec-check`.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

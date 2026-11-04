@@ -42,7 +42,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
   `version` field of `plugin.json`, and the first `CHANGELOG.md` (FR-013).
 - [x] **T14** `bin/noodle` download fallback with checksum verification, and its Go test
   with a stub `curl` (FR-014). Flip **PRJ-07** with T06 and T13.
-- [ ] **T15** The three process skills `issue-writer`, `release-notes`, `contrib-check`
+- [x] **T15** The three process skills `issue-writer`, `release-notes`, `contrib-check`
   where clarification 4 says (FR-015). Flip **PRJ-08**.
 
 ## Convergence
