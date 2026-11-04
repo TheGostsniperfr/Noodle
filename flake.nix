@@ -24,7 +24,7 @@
 
       devShells = forAll (pkgs: {
         default = pkgs.mkShell {
-          packages = with pkgs; [ go gopls golangci-lint gnumake jq drawio-headless jetbrains-mono ];
+          packages = with pkgs; [ go gopls golangci-lint gnumake jq kustomize drawio-headless jetbrains-mono ];
         };
       });
     };

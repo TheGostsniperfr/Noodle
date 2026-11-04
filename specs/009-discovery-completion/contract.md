@@ -60,7 +60,7 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 | 2 | `-argocd-app` sets the default namespace, silently | same, subtest `argocd-app` | the 3 objects get ids under `k8s:web/`, and stderr has no `name no namespace` line |
 | 3 | `-kustomize` renders read-only, passes `-enable-helm` only when asked, names the fragment | `go test ./internal/adapter/k8s/ ./cmd/noodle/ -run TestKustomize -v` | exit 0, with a fake `kustomize` on PATH that records its argv: `render` discovers its output, asserts argv is exactly `build <DIR>`, and the input directory's file hashes are unchanged; `enable-helm` asserts argv exactly `build <DIR> --enable-helm`; `fragment-name` asserts the file written is `discovered/k8s-shop.yaml`; `missing-tool` runs `-kustomize` with no `kustomize` on PATH and asserts a non-nil error whose message contains `kustomize` and `nix shell nixpkgs#kustomize`, and that no fragment is written; `hint-without-flag` walks a directory holding `kustomization.yaml` without the flag and asserts with `Equal` one `unrendered` entry whose hint is `noodle discover k8s -kustomize <DIR>` |
 | 3b | The tool is in the dev shell | `grep -cE '^\s*packages = with pkgs; \[[^]]*\bkustomize\b' flake.nix` | `1` (the `devShells` package list) |
-| 4 | `src` paths are relative | `go test ./internal/adapter/k8s/ -run TestSrcPaths -v`; `grep -rcE '(^\|[ {,-])file: */' examples/discovery-k8s/discovered/` | exit 0, subtests `manifests` and `kustomize` assert that every `src.file` starts with the input directory relative to the working directory, none starts with `/`, none contains `os.TempDir()`; grep gives `0` for every file |
+| 4 | `src` paths are relative | `go test ./internal/adapter/k8s/ -run TestSrcPaths -v`; `grep -rcE '(^\|[ {,-])file: *"?/' examples/discovery-k8s/discovered/` | exit 0, subtests `manifests` and `kustomize` assert that every `src.file` starts with the input directory relative to the working directory, none starts with `/`, none contains `os.TempDir()`; grep gives `0` for every file |
 | 5 | The decision is recorded | `grep -c '^status: accepted' docs/adr/0027-discovery-may-call-kustomize.md`; `make spec-check` | `1`; exit 0 |
 
 ## DSC-04 · Object identity
@@ -180,4 +180,4 @@ from that commit on, they replace the criterion they name.
 | DSC-08 | #1 | four counts, `^category`, `^model`, `^turns`, `^wall` on `expected.txt`, each ≥ `1` |
 | DSC-11 | #2 | plan 009 decides whether `path` crosses `denied` connections (proposed: it skips them), and subtest `path-denied` asserts it |
 | DSC-04 | scope | done: `schemas/v1alpha1/` is in plan 009's table |
-| DSC-03 | #4 | `grep -rcE '(^\|[ {,-])file: *"?/' examples/discovery-k8s/discovered/` = `0` for every file |
+| DSC-03 | #4 | `grep -rcE '(^\|[ {,-])file: *"?/' examples/discovery-k8s/discovered/` = `0` for every file. Applied in T04. |

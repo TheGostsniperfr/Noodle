@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -16,7 +17,7 @@ import (
 	"github.com/TheGostsniperfr/Noodle/internal/model"
 )
 
-const discoverUsage = "usage: noodle discover ADAPTER [PATH…|-] [-o fragment.yaml] [-namespace NS] [-ref REF] [-observed-at RFC3339]"
+const discoverUsage = "usage: noodle discover ADAPTER [PATH…|-] [-o fragment.yaml|DIR/] [-namespace NS] [-argocd-app FILE] [-kustomize DIR [-enable-helm]] [-ref REF] [-observed-at RFC3339]"
 
 // adapters lists every adapter noodle ships.
 func adapters() (*adapter.Registry, error) { return adapter.NewRegistry(k8s.Adapter{}) }
@@ -25,9 +26,12 @@ func adapters() (*adapter.Registry, error) { return adapter.NewRegistry(k8s.Adap
 // Flags may come before or after the arguments.
 func discoverCommand(ctx context.Context, reg *adapter.Registry, args []string, stdin io.Reader, stdout, stderr io.Writer) error {
 	fs := flag.NewFlagSet("discover", flag.ContinueOnError)
-	out := fs.String("o", "", "output fragment path, usually <system>/discovered/<adapter>-<source>.yaml (stdout when empty)")
+	out := fs.String("o", "", "output fragment path, usually <system>/discovered/<adapter>-<source>.yaml; an existing directory or a path ending in / gets that file name (stdout when empty)")
 	ref := fs.String("ref", "", "version of the source, e.g. a Git commit")
 	namespace := fs.String("namespace", "", "namespace of objects that name none, as kubectl apply -n (default: default)")
+	argocdApp := fs.String("argocd-app", "", "Argo CD Application file whose spec.destination.namespace is the default namespace (k8s)")
+	kustomize := fs.String("kustomize", "", "directory rendered with `kustomize build`, read-only (k8s)")
+	enableHelm := fs.Bool("enable-helm", false, "pass --enable-helm to kustomize build")
 	observed := fs.String("observed-at", "", "observation time, RFC 3339 (now when empty)")
 	var pos []string
 	for len(args) > 0 {
@@ -47,11 +51,23 @@ func discoverCommand(ctx context.Context, reg *adapter.Registry, args []string, 
 	if err != nil {
 		return err
 	}
-	src, err := source(pos[1:], stdin)
+	if (*argocdApp != "" || *kustomize != "" || *enableHelm) && a.Name() != "k8s" {
+		return fmt.Errorf("discover: -argocd-app, -kustomize and -enable-helm are for the k8s adapter")
+	}
+	if *enableHelm && *kustomize == "" {
+		return fmt.Errorf("discover: -enable-helm needs -kustomize")
+	}
+	src, err := source(pos[1:], stdin, *kustomize != "")
 	if err != nil {
 		return err
 	}
+	src.Kustomize, src.EnableHelm = *kustomize, *enableHelm
 	src.Namespace = *namespace
+	if src.Namespace == "" && *argocdApp != "" {
+		if src.Namespace, err = k8s.ArgoNamespace(*argocdApp); err != nil {
+			return fmt.Errorf("-argocd-app: %w", err)
+		}
+	}
 	at := time.Now()
 	if *observed != "" {
 		if at, err = time.Parse(time.RFC3339, *observed); err != nil {
@@ -73,20 +89,33 @@ func discoverCommand(ctx context.Context, reg *adapter.Registry, args []string, 
 		return err
 	}
 	fmt.Fprintln(stderr, summary(a.Name(), stats, f, buf.Len(), buf.Len()-without.Len()))
+	if *namespace == "" && *argocdApp == "" && stats.NoNamespace > 0 && stats.Namespaced > 0 {
+		fmt.Fprintf(stderr, "%d objects name no namespace; pass -namespace\n", stats.NoNamespace)
+	}
 	if *out == "" {
 		_, err = stdout.Write(buf.Bytes())
 		return err
 	}
-	return os.WriteFile(*out, buf.Bytes(), 0o644)
+	target := *out
+	if info, statErr := os.Stat(target); strings.HasSuffix(target, "/") || (statErr == nil && info.IsDir()) {
+		if err := os.MkdirAll(target, 0o755); err != nil {
+			return fmt.Errorf("discover: %w", err)
+		}
+		target = filepath.Join(target, a.Name()+"-"+src.Slug()+".yaml")
+	}
+	return os.WriteFile(target, buf.Bytes(), 0o644)
 }
 
-func source(paths []string, stdin io.Reader) (adapter.Source, error) {
-	if len(paths) == 0 || (len(paths) == 1 && paths[0] == "-") {
+func source(paths []string, stdin io.Reader, hasKustomize bool) (adapter.Source, error) {
+	if len(paths) == 0 && hasKustomize {
+		return adapter.Source{}, nil
+	}
+	if len(paths) == 0 || (len(paths) == 1 && paths[0] == "-" && !hasKustomize) {
 		return adapter.Source{Reader: stdin}, nil
 	}
 	for _, p := range paths {
 		if p == "-" {
-			return adapter.Source{}, fmt.Errorf("discover: - reads stdin and cannot be mixed with paths")
+			return adapter.Source{}, fmt.Errorf("discover: - reads stdin and cannot be mixed with paths or -kustomize")
 		}
 	}
 	return adapter.Source{Paths: paths}, nil

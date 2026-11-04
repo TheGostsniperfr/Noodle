@@ -16,7 +16,7 @@ follow-ups for its features.
 - [x] **T03** Addresses in ConfigMaps, env and CR specs to known Services, inferred
   (FR-003); public URL hosts to the Gateway or Ingress serving them (FR-004). Spec 003
   T06. Flip **DSC-02**.
-- [ ] **T04** Inputs: namespace warning and `-argocd-app` (FR-005), `-kustomize` and
+- [x] **T04** Inputs: namespace warning and `-argocd-app` (FR-005), `-kustomize` and
   `-enable-helm`, the failure when `kustomize` is missing and the rerun hint without the
   flag, `kustomize` in the flake dev shell (FR-006, ADR-0027), relative `src` paths
   (FR-007). Flip **DSC-03**.

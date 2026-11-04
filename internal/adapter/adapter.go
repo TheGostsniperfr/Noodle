@@ -7,6 +7,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
@@ -29,6 +31,9 @@ type Stats struct {
 	Objects    int
 	// Skipped counts objects left out, by reason.
 	Skipped map[string]int
+	// Namespaced and NoNamespace count the kept objects of a namespaced kind that name a
+	// namespace and that name none, so a command can warn about a mixed input.
+	Namespaced, NoNamespace int
 }
 
 // Source is either Paths (files or directories) or Reader, e.g. stdin.
@@ -38,6 +43,10 @@ type Source struct {
 	// Namespace is where objects that name none are applied, as kubectl apply -n and
 	// an Argo CD destination do. Rendered charts often leave it to the deployer.
 	Namespace string
+	// Kustomize is a directory rendered with `kustomize build` before discovery, with
+	// --enable-helm when EnableHelm is set (ADR-0027).
+	Kustomize  string
+	EnableHelm bool
 }
 
 // Name is what provenance.source records.
@@ -45,7 +54,54 @@ func (s Source) Name() string {
 	if s.Reader != nil {
 		return "-"
 	}
-	return strings.Join(s.Paths, ",")
+	var parts []string
+	for _, p := range append(append([]string{}, s.Paths...), s.Kustomize) {
+		if p != "" {
+			parts = append(parts, RelativePath(p))
+		}
+	}
+	return strings.Join(parts, ",")
+}
+
+// Slug names a fragment file after its source: the last element of the first path, or
+// of the kustomize directory, lowercased to letters, digits and hyphens.
+func (s Source) Slug() string {
+	p := s.Kustomize
+	if p == "" && len(s.Paths) > 0 {
+		p = s.Paths[0]
+	}
+	if p == "" {
+		return "stdin"
+	}
+	if abs, err := filepath.Abs(p); err == nil {
+		p = abs
+	}
+	var b strings.Builder
+	for _, r := range strings.ToLower(filepath.Base(p)) {
+		if r >= 'a' && r <= 'z' || r >= '0' && r <= '9' {
+			b.WriteRune(r)
+		} else if b.Len() > 0 && !strings.HasSuffix(b.String(), "-") {
+			b.WriteByte('-')
+		}
+	}
+	if slug := strings.Trim(b.String(), "-"); slug != "" {
+		return slug
+	}
+	return "stdin"
+}
+
+// RelativePath is p relative to the working directory, with forward slashes, so a
+// fragment never holds an absolute or temporary path (FR-007).
+func RelativePath(p string) string {
+	abs, err := filepath.Abs(p)
+	if err == nil {
+		if wd, err := os.Getwd(); err == nil {
+			if rel, err := filepath.Rel(wd, abs); err == nil {
+				return filepath.ToSlash(rel)
+			}
+		}
+	}
+	return filepath.ToSlash(p)
 }
 
 type Registry struct {
