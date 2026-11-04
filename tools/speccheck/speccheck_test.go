@@ -119,6 +119,12 @@ func TestSpec_ReportsEachBrokenRule(t *testing.T) {
 			`]}, {"id": "e", "spec": "specs/009-x/spec.md", "features": [{"id": "E-01", "description": "e", "verify": "v", "passes": false, "covers": ["FR-002"]}]}], "backlog"`, 1)},
 			"docs/features.json: FR-002 of specs/001-demo/spec.md is covered by no feature of phase d"},
 		{"citation quoted in inline code", map[string]string{"specs/001-demo/plan.md": "The message is `cites C99 and ADR-0099`.\n"}, ""},
+		{"scenario without WHEN", map[string]string{"specs/001-demo/spec.md": strings.Replace(fullSpec, "WHEN input THEN output.", "input THEN output.", 1)},
+			"specs/001-demo/spec.md: FR-001 has no Scenario with WHEN and THEN"},
+		{"unknown invariant in the contract", map[string]string{"specs/001-demo/contract.md": fullContract + "Keeps C77.\n"},
+			"specs/001-demo/contract.md: cites C77, which is not in docs/CONSTITUTION.md"},
+		{"unknown ADR in the tasks", map[string]string{"specs/001-demo/tasks.md": fullTasks + "Uses ADR-0077.\n"},
+			"specs/001-demo/tasks.md: cites ADR-0077, which does not exist"},
 		{"unknown ADR in the plan", map[string]string{"specs/001-demo/plan.md": "Uses ADR-0077.\n"},
 			"specs/001-demo/plan.md: cites ADR-0077, which does not exist"},
 		{"spec with no phase", map[string]string{"docs/features.json": strings.Replace(featuresJSON, "001-demo", "002-other", 1)},
@@ -183,13 +189,13 @@ func TestADR_ChecksFrontmatterADRs(t *testing.T) {
 		want string
 	}{
 		{"valid", newADR, ""},
-		{"no status", strings.Replace(newADR, "status: accepted\n", "", 1), `status "" is not one of`},
+		{"no status", strings.Replace(newADR, "status: accepted\n", "", 1), `status "" is not one of proposed, accepted, rejected, deprecated, superseded`},
 		{"no date", strings.Replace(newADR, "date: 2026-11-04\n", "", 1), "frontmatter needs date and deciders"},
-		{"unknown status", strings.Replace(newADR, "status: accepted", "status: maybe", 1), `status "maybe" is not one of`},
+		{"unknown status", strings.Replace(newADR, "status: accepted", "status: maybe", 1), `status "maybe" is not one of proposed, accepted, rejected, deprecated, superseded`},
 		{"no deciders", strings.Replace(newADR, "deciders: [Brian Perret]\n", "", 1), "frontmatter needs date and deciders"},
 		{"one option", strings.Replace(newADR, "2. **B**, two.\n", "", 1), "needs at least two considered options"},
-		{"no confirmation", strings.Replace(newADR, "### Confirmation\n\nA test.\n", "", 1), "needs a Confirmation section"},
-		{"empty confirmation", strings.Replace(newADR, "A test.\n", "", 1), "needs a Confirmation section"},
+		{"no confirmation", strings.Replace(newADR, "### Confirmation\n\nA test.\n", "", 1), "needs a Confirmation section: what proves the decision is kept"},
+		{"empty confirmation", strings.Replace(newADR, "A test.\n", "", 1), "needs a Confirmation section: what proves the decision is kept"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -203,8 +209,7 @@ func TestADR_ChecksFrontmatterADRs(t *testing.T) {
 				assert.Empty(t, messages(findings))
 				return
 			}
-			require.Len(t, findings, 1, messages(findings))
-			assert.Contains(t, findings[0].String(), "docs/adr/0002-second.md: "+tt.want)
+			assert.Equal(t, []string{"docs/adr/0002-second.md: " + tt.want}, messages(findings))
 		})
 	}
 }
@@ -425,4 +430,17 @@ func TestSpec_LegacyAndQuickSpecs(t *testing.T) {
 			assert.Equal(t, tt.want, messages(findings))
 		})
 	}
+}
+
+func TestRun_FeaturesAllowsEditsWithALLOW_FEATURE_EDIT(t *testing.T) {
+	repo := gitFixture(t, nil, map[string]string{"docs/features.json": strings.Replace(featuresJSON, `"description": "one"`, `"description": "uno"`, 1)})
+	var stdout, stderr strings.Builder
+
+	t.Setenv("ALLOW_FEATURE_EDIT", "")
+	refused := run([]string{"-root", repo.Root, "features", "-base", "HEAD"}, &stdout, &stderr)
+	t.Setenv("ALLOW_FEATURE_EDIT", "1")
+	allowed := run([]string{"-root", repo.Root, "features", "-base", "HEAD"}, &stdout, &stderr)
+
+	assert.ErrorIs(t, refused, errFindings)
+	assert.NoError(t, allowed)
 }

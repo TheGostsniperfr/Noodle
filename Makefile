@@ -20,9 +20,9 @@ EVALUATOR := claude -p --agent evaluator \
 	Bash(go run ./tools/speccheck commands) Bash(go run ./tools/speccheck features:*) Bash(go run ./tools/speccheck locate:*) \
 	Bash(git diff:*) Bash(git log:*) Bash(git show:*) Bash(git status:*) Bash(git grep:*) Bash(git rev-parse:*) \
 	Bash(grep:*) Bash(ls:*) Bash(cat:*) Bash(head:*) Bash(tail:*) Bash(wc:*) Bash(cut:*) Bash(jq:*) \
-	Bash(make check) Bash(make init) Bash(make spec-check) Bash(make features:*) Bash(make examples) \
-	Bash(make test) Bash(make vet) Bash(make help) Bash(make -s help) \
-	Bash(make -n evaluate:*) Bash(make -n review-contract:*) Bash(make evaluate FEATURE=) Bash(make review-contract SPEC=)"
+	Bash(make check) Bash(make init) Bash(make spec-check) Bash(make features) Bash(make features BASE=origin/main) \
+	Bash(make examples) Bash(make test) Bash(make vet) Bash(make help) Bash(make -s help) \
+	Bash(make evaluate FEATURE=) Bash(make review-contract SPEC=)"
 
 .PHONY: help init check ci vet test examples render features spec-check adr-index \
 	evaluate review-contract discover-eval plugin vendor-check next

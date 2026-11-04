@@ -67,9 +67,9 @@ which neither Spec Kit nor OpenSpec does. Process: `docs/PROCESS.md`.
 - Bad: a full-mode feature costs one or two extra agent runs (contract review, evaluation).
 - Bad: the evaluator is still a model and can be lenient; its prompt needs tuning from
   its logs, as the Anthropic post reports.
-- Bad: "read-only" means no Write or Edit tool. The evaluator keeps an allowlist of Bash
-  commands, some of which (`go run`, `make render`) can write files. `make evaluate` is
-  checked to change nothing but the evidence file; a stricter sandbox is left for later.
+- Bad: "read-only" means no Write or Edit tool and an allowlist of pinned commands. Two
+  patterns can still write: `go test` (`-o`, `-coverprofile`) and `git diff/log/show`
+  (`--output`), kept because verify steps need them. A sandboxed evaluator is left for later.
 
 ### Confirmation
 

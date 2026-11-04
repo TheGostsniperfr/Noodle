@@ -135,7 +135,11 @@ func (r *Repo) checkSpec(dir string, feats *Features, known, invariants map[stri
 		if !strings.Contains(req.text, "SHALL") {
 			out = append(out, Finding{specFile, req.id + " is not EARS: no SHALL"})
 		}
-		if !strings.Contains(req.text, "Scenario") || !strings.Contains(req.text, "WHEN") || !strings.Contains(req.text, "THEN") {
+		scenario := ""
+		if i := strings.Index(req.text, "Scenario"); i >= 0 {
+			scenario = req.text[i:]
+		}
+		if !strings.Contains(scenario, "WHEN") || !strings.Contains(scenario, "THEN") {
 			out = append(out, Finding{specFile, req.id + " has no Scenario with WHEN and THEN"})
 		}
 		if !strings.Contains(tasks, req.id) {
