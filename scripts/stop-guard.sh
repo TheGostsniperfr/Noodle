@@ -5,6 +5,8 @@
 set -euo pipefail
 input="$(cat)"
 [[ "$(jq -r '.stop_hook_active // false' <<<"$input")" == "true" ]] && exit 0
+# The evaluator is read-only: asking it to write PROGRESS would replace its evidence.
+[[ "${NOODLE_EVALUATOR:-}" == "1" ]] && exit 0
 cd "${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel)}"
 
 changes="$(git status --porcelain --untracked-files=all | grep -v 'docs/PROGRESS.md$' || true)"

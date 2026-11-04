@@ -12,7 +12,7 @@ REGRESSION_ICONS := -icons examples/platform-regression/icons
 
 # Read-only tools for the evaluator; write tools are refused outright. The tool flags take
 # lists, so the prompt goes on stdin, never as a trailing argument.
-EVALUATOR := claude -p --agent evaluator \
+EVALUATOR := NOODLE_EVALUATOR=1 claude -p --agent evaluator \
 	--disallowedTools "Edit Write NotebookEdit" \
 	--allowedTools "Read Glob Grep \
 	Bash(go test:*) Bash(go vet:*) \
