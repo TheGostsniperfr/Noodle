@@ -66,9 +66,9 @@ bands make room for it.
   a safety margin of at least two characters, or 4 % of the available width if larger,
   fits the available width; and the sequence resolver SHALL size participant boxes with
   the same margin before rounding.
-  *Scenario:* WHEN a sequence view has the participants `Velocity proxy [3.4.0-SNAPSHOT ·
-  LB Services]` and `Website + API [Laravel 12 · nginx + php-fpm]` THEN their boxes leave
-  that margin and the exported PNG shows each label on one line.
+  *Scenario:* WHEN a sequence view has the two participants quoted in #72, `Velocity proxy
+  [3.4.0-SNAPSHOT · LB Services]` and `Website + API [Laravel 12 · nginx + php-fpm]`, THEN
+  their boxes leave that margin and the exported PNG shows each label on one line.
 - **FR-005** WHEN two different port badges on the same node intersect once each is
   inflated by 2 px, THE SYSTEM SHALL report an error naming both edges; two connections
   to the same port SHALL still share one badge with no finding.
@@ -121,7 +121,7 @@ first option.
 |---|---|---|---|
 | 1 | How does the lint account for the export font (#72)? (a) measure with the widest monospace fallback, 0.602 em, plus the FR-004 margin; (b) bundle JetBrains Mono into the export so 0.6 em holds; (c) `whiteSpace=nowrap` on node text so an overflow is visible instead of wrapped | pending | |
 | 2 | What does FR-007 produce for an annotation with no drawn target? (a) a lint warning naming it, never blocking; (b) a lint error; (c) a generated "not shown in this view" line in the Gaps card | pending | |
-| 3 | How is a long zone sub handled (#87, #22)? (a) the sub wraps to a second line under the label, obstacle covers both lines; (b) the lint caps the sub length and asks for a shorter one; (c) edges may cross the sub text, which is no longer an obstacle (relaxes a rule, against C04) | pending | |
+| 3 | How is a long zone sub handled (#87, #22)? (a) the sub wraps under the label in a column at most 240 px wide (or the label's width if wider), and the obstacle covers exactly those lines, leaving the rest of the zone top free; a single extra line the zone's width would still block every lane; (b) the lint caps the sub length and asks for a shorter one; (c) edges may cross the sub text, which is no longer an obstacle (relaxes a rule, against C04) | pending | |
 | 4 | Does `labels: {id: ""}` also hide annotation badges (#78)? (a) no: `""` hides the text only, badges stay, matching B-28; (b) yes: `""` hides everything; (c) a view-level `hide_annotations: true` | pending | |
 | 5 | Where does card and legend layout live, so the lint measures what is drawn (FR-001, FR-002)? (a) a pure layout function in `internal/house` used by both the renderer and the lint; (b) the resolver fills row geometry into `diagram.Card`; (c) the lint duplicates the renderer's arithmetic | pending | |
 
