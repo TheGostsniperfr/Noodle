@@ -192,22 +192,36 @@ type Src struct {
 	Object string `yaml:"object,omitempty"`
 }
 
+// Object is the Kubernetes identity behind a discovered item (ADR-0028). Namespace is
+// empty for cluster-scoped objects.
+type Object struct {
+	APIVersion string `yaml:"apiVersion"`
+	Kind       string `yaml:"kind"`
+	Namespace  string `yaml:"namespace,omitempty"`
+	Name       string `yaml:"name"`
+}
+
+// DiscoveredElement carries an Object when one API object stands behind it; an element
+// synthesized without one, such as an implied namespace, carries none.
 type DiscoveredElement struct {
 	Element `yaml:",inline"`
-	Src     Src `yaml:"src"`
+	Src     Src     `yaml:"src"`
+	Object  *Object `yaml:"object,omitempty"`
 }
 
 // DiscoveredConnection is Inferred when a heuristic found it, such as a Service DNS
 // name in an env value, rather than a manifest that declares it.
 type DiscoveredConnection struct {
 	Connection `yaml:",inline"`
-	Inferred   bool `yaml:"inferred,omitempty"`
-	Src        Src  `yaml:"src,omitempty"`
+	Inferred   bool    `yaml:"inferred,omitempty"`
+	Src        Src     `yaml:"src,omitempty"`
+	Object     *Object `yaml:"object,omitempty"`
 }
 
 type DiscoveredReference struct {
 	Reference `yaml:",inline"`
-	Src       Src `yaml:"src"`
+	Src       Src     `yaml:"src"`
+	Object    *Object `yaml:"object,omitempty"`
 }
 
 // discoveredID is <adapter>:<path>, e.g. k8s:prod/deployment/api (ADR-0015).

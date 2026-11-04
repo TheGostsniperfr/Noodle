@@ -24,7 +24,7 @@ func workloads(idx *index) []model.DiscoveredElement {
 		if o.Kind == "DaemonSet" {
 			e.Multiplicity = "one per node"
 		}
-		out = append(out, model.DiscoveredElement{Element: e, Src: o.Src})
+		out = append(out, model.DiscoveredElement{Element: e, Src: o.Src, Object: o.identity()})
 	}
 	return out
 }
@@ -62,7 +62,7 @@ func services(idx *index) []model.DiscoveredElement {
 			}
 		}
 		out = append(out, model.DiscoveredElement{Element: model.Element{ID: o.id(), Kind: "backend",
-			Parent: id(o.Namespace, "Namespace", o.Namespace), Tech: tech, Ports: uniquePorts(ports)}, Src: o.Src})
+			Parent: id(o.Namespace, "Namespace", o.Namespace), Tech: tech, Ports: uniquePorts(ports)}, Src: o.Src, Object: o.identity()})
 	}
 	return out
 }
@@ -71,8 +71,10 @@ func services(idx *index) []model.DiscoveredElement {
 // without its Namespace object points at the first object read in it.
 func namespaces(idx *index, elements []model.DiscoveredElement) []model.DiscoveredElement {
 	srcs := map[string]model.Src{}
+	declared := map[string]*object{}
 	for _, o := range idx.byKind["Namespace"] {
 		srcs[o.Name] = o.Src
+		declared[o.Name] = o
 	}
 	used := map[string]bool{}
 	for _, e := range elements {
@@ -85,7 +87,7 @@ func namespaces(idx *index, elements []model.DiscoveredElement) []model.Discover
 	}
 	var out []model.DiscoveredElement
 	for _, ns := range sortedKeys(srcs) {
-		out = append(out, model.DiscoveredElement{Element: model.Element{ID: id(ns, "Namespace", ns), Kind: "group"}, Src: srcs[ns]})
+		out = append(out, model.DiscoveredElement{Element: model.Element{ID: id(ns, "Namespace", ns), Kind: "group"}, Src: srcs[ns], Object: declared[ns].identity()})
 	}
 	return out
 }

@@ -8,7 +8,7 @@ follow-ups for its features.
 
 ## Wave 1 · References, addresses, inputs
 
-- [ ] **T01** Contract: optional `object` on discovered items, schema and loader,
+- [x] **T01** Contract: optional `object` on discovered items, schema and loader,
   additive (FR-008, ADR-0028). Flip **DSC-04** after `make evaluate FEATURE=DSC-04`.
 - [ ] **T02** Configuration references: `envFrom`, `secretKeyRef`, `configMapKeyRef`,
   Secret, ConfigMap and PVC volumes, no Secret value (FR-001); ExternalSecret, stores,

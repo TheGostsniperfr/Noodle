@@ -29,7 +29,7 @@ func gateways(idx *index) []model.DiscoveredElement {
 			}
 		}
 		out = append(out, model.DiscoveredElement{Element: model.Element{ID: gw.id(), Kind: "backend",
-			Parent: id(gw.Namespace, "Namespace", gw.Namespace), Tech: tech, Ports: uniquePorts(ports)}, Src: gw.Src})
+			Parent: id(gw.Namespace, "Namespace", gw.Namespace), Tech: tech, Ports: uniquePorts(ports)}, Src: gw.Src, Object: gw.identity()})
 	}
 	return out
 }
@@ -43,7 +43,7 @@ func routes(idx *index, g *graph, u *unresolvedSet) []model.DiscoveredElement {
 		for _, r := range idx.byKind[kind] {
 			out = append(out, model.DiscoveredElement{Element: model.Element{ID: r.id(), Kind: "backend",
 				Parent: id(r.Namespace, "Namespace", r.Namespace), Tech: kind,
-				Desc: strings.Join(strSlice(r.Body, "spec", "hostnames"), ", ")}, Src: r.Src})
+				Desc: strings.Join(strSlice(r.Body, "spec", "hostnames"), ", ")}, Src: r.Src, Object: r.identity()})
 			var parents []string
 			for _, p := range slice(r.Body, "spec", "parentRefs") {
 				pm, _ := p.(map[string]any)
@@ -56,7 +56,7 @@ func routes(idx *index, g *graph, u *unresolvedSet) []model.DiscoveredElement {
 					u.add("missing-backend", id(ns, "Gateway", str(pm, "name")), "gateway", r.id(), r.Src)
 					continue
 				}
-				g.refer(r.id(), gw.id(), "parentRef", r.Src)
+				g.refer(r.id(), gw.id(), "parentRef", r, r.Src)
 				parents = append(parents, gw.id())
 			}
 			for _, rule := range slice(r.Body, "spec", "rules") {
@@ -67,9 +67,9 @@ func routes(idx *index, g *graph, u *unresolvedSet) []model.DiscoveredElement {
 					if svc == nil {
 						continue
 					}
-					g.refer(r.id(), svc.id(), "backendRef", r.Src)
+					g.refer(r.id(), svc.id(), "backendRef", r, r.Src)
 					for _, gw := range parents {
-						g.connect(gw, svc.id(), servicePortName(svc, str(bm, "port")), routeProtocols[kind], r.Src)
+						g.connect(gw, svc.id(), servicePortName(svc, str(bm, "port")), routeProtocols[kind], r, r.Src)
 					}
 				}
 			}
@@ -92,31 +92,32 @@ func ingresses(idx *index, g *graph, u *unresolvedSet) []model.DiscoveredElement
 			}
 		}
 		out = append(out, model.DiscoveredElement{Element: model.Element{ID: ing.id(), Kind: "backend",
-			Parent: id(ing.Namespace, "Namespace", ing.Namespace), Tech: "Ingress", Desc: strings.Join(hosts, ", ")}, Src: ing.Src})
+			Parent: id(ing.Namespace, "Namespace", ing.Namespace), Tech: "Ingress", Desc: strings.Join(hosts, ", ")}, Src: ing.Src, Object: ing.identity()})
 		source := ing.id()
 		if class := or(str(ing.Body, "spec", "ingressClassName"), ing.Annotations["kubernetes.io/ingress.class"]); class != "" {
 			source = classID(class)
 			if _, ok := classes[class]; !ok {
 				classes[class] = ing.Src
 			}
-			g.refer(ing.id(), source, "ingressClassName", ing.Src)
+			g.refer(ing.id(), source, "ingressClassName", ing, ing.Src)
 		}
 		for _, b := range ingressBackends(ing.Body) {
 			svc := backendService(idx, u, ing, "Service", ing.Namespace, b.name)
 			if svc == nil {
 				continue
 			}
-			g.refer(ing.id(), svc.id(), "backend", ing.Src)
-			g.connect(source, svc.id(), servicePortName(svc, b.port), "HTTP", ing.Src)
+			g.refer(ing.id(), svc.id(), "backend", ing, ing.Src)
+			g.connect(source, svc.id(), servicePortName(svc, b.port), "HTTP", ing, ing.Src)
 		}
 	}
 	for _, name := range sortedKeys(classes) {
 		tech, src := "IngressClass", classes[name]
-		if c := idx.get("", "IngressClass", name); c != nil {
+		c := idx.get("", "IngressClass", name)
+		if c != nil {
 			tech += " · " + str(c.Body, "spec", "controller")
 			src = c.Src
 		}
-		out = append(out, model.DiscoveredElement{Element: model.Element{ID: classID(name), Kind: "backend", Tech: tech}, Src: src})
+		out = append(out, model.DiscoveredElement{Element: model.Element{ID: classID(name), Kind: "backend", Tech: tech}, Src: src, Object: c.identity()})
 	}
 	return out
 }

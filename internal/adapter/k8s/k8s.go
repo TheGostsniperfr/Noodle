@@ -44,3 +44,21 @@ func id(ns, kind, name string) string {
 }
 
 func (o *object) id() string { return id(o.Namespace, o.Kind, o.Name) }
+
+// identity is the object block of every item built from o (ADR-0028). A nil object
+// gives nil, for the elements synthesized without one.
+func (o *object) identity() *model.Object {
+	if o == nil {
+		return nil
+	}
+	return &model.Object{APIVersion: o.APIVersion, Kind: o.Kind, Namespace: o.Namespace, Name: o.Name}
+}
+
+// srcAt is where a field of o sits. A rendered input has no meaningful line, so its
+// objects carry none and neither does anything derived from them.
+func (o *object) srcAt(line int) model.Src {
+	if o.Src.Line == 0 || line == 0 {
+		return o.Src
+	}
+	return model.Src{File: o.Src.File, Line: line}
+}
