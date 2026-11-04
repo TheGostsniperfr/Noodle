@@ -1,0 +1,13 @@
+unmatched (4)
+  k8s:_external/onepassword  examples/discovery-k8s/manifests/platform.yaml:111
+  k8s:prod/deployment/worker  examples/discovery-k8s/manifests/platform.yaml:82
+  k8s:prod/httproute/api  examples/discovery-k8s/manifests/platform.yaml:73
+  k8s:prod/httproute/web  examples/discovery-k8s/manifests/platform.yaml:38
+gone (1)
+  legacy-cache  k8s:prod/deployment/legacy-cache  model.yaml
+planned (1)
+  search  model.yaml
+unmodelled (3)
+  edge -> api  k8s:prod/gateway/shared -> k8s:prod/service/api  examples/discovery-k8s/manifests/platform.yaml:73
+  web -> database  k8s:prod/deployment/web -> k8s:data/service/postgres  examples/discovery-k8s/manifests/platform.yaml:29
+  web -> edge  k8s:prod/deployment/web -> k8s:prod/gateway/shared  examples/discovery-k8s/manifests/platform.yaml:27

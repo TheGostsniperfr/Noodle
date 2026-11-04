@@ -60,6 +60,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T05: `tools/tokencost` reads a Claude Code transcript (one turn per API message id) and prints turns, wall time, weighted tokens and dollars per model and per first tool; prices are an assumption per model family (opus 5, sonnet 3, haiku 1 $/M input), to confirm before the T09 checkpoint.
 - T06: `examples/discovery-k8s` (one manifests file, `list.yaml` mirroring its lines, curated `model.yaml`, golden `discovered/k8s-manifests.yaml`), `make examples` diffs a rerun against the golden file, `TestDiscoverExample`, `TestExample_ManifestsEqualList`, `TestDiscover_Property_Deterministic`, `TestIdentity/every-item`. DSC-05, P6a-03 and P6a-04 flips wait for `make evaluate`.
 - T07: `internal/graph` (`Merge`, `Lookup`, `Neighbours`, sources and objects kept per merged element and connection) and the command loader `loadSystem`, which render now uses; a discovered connection between matched ends is mapped onto curated ids, its port kept only if the curated end has it. DSC-06 flip waits for `make evaluate`.
+- T08: `noodle drift DIR` (unmatched, gone, planned, unmodelled; sorted; exit 0; error without fragments), cross-fragment resolution of `missing-backend` for a Gateway or Service another fragment defines, `examples/discovery-k8s/drift.txt` diffed by `make examples`. Namespace zones are not reported as unmatched. DSC-07 and P6a-05 flips wait for `make evaluate`. Wave 1 ends here: T09 is the paid checkpoint, not started.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

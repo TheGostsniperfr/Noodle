@@ -30,7 +30,7 @@ follow-ups for its features.
   Flip **DSC-05**, then **P6a-03** and **P6a-04** after their own `make evaluate`.
 - [x] **T07** `internal/graph`: merge per ADR-0015, `src` and `object` kept on merged
   elements, lookup, neighbours (FR-010). Spec 003 T09. Flip **DSC-06**.
-- [ ] **T08** `noodle drift` with `drift.txt` in the example; references resolved across
+- [x] **T08** `noodle drift` with `drift.txt` in the example; references resolved across
   fragments of one `discovered/` (FR-011, FR-012). Spec 003 T10. Flip **DSC-07**, then
   **P6a-05**.
 

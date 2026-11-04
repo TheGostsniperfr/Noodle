@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"testing"
@@ -53,4 +54,35 @@ func TestDiscoverExample(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, string(golden), stdout)
 	})
+}
+
+func TestDrift(t *testing.T) {
+	want, err := os.ReadFile("../../examples/discovery-k8s/drift.txt")
+	require.NoError(t, err)
+	var stdout bytes.Buffer
+
+	err = driftCommand([]string{"../../examples/discovery-k8s"}, &stdout)
+
+	require.NoError(t, err, "drift is a report: it exits 0")
+	assert.Equal(t, string(want), stdout.String())
+	assert.Contains(t, string(want), "k8s:prod/deployment/worker  examples/discovery-k8s/manifests/platform.yaml:82")
+}
+
+func TestDrift_Fails(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		want string
+	}{
+		{"without a directory", nil, "usage: noodle drift DIR"},
+		{"on a system without fragments", []string{"../../examples/landscape"}, "has no fragment"},
+		{"on a directory that is no system", []string{t.TempDir()}, "model.yaml"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := driftCommand(tt.args, &bytes.Buffer{})
+
+			assert.ErrorContains(t, err, tt.want)
+		})
+	}
 }

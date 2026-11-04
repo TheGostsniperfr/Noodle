@@ -58,6 +58,7 @@ examples: ## Lint every example, regression fixture and docs diagram, and rerun 
 	for d in platform-overview app-runtime-view repo-map; do $(NOODLE) render examples/platform-regression/$$d $(REGRESSION_ICONS); done
 	$(NOODLE) render docs/diagrams/contract-pipeline -icons docs/diagrams/icons
 	$(NOODLE) discover k8s examples/discovery-k8s/manifests -observed-at 2026-11-04T00:00:00Z | diff - examples/discovery-k8s/discovered/k8s-manifests.yaml
+	$(NOODLE) drift examples/discovery-k8s | diff - examples/discovery-k8s/drift.txt
 
 render: ## Lint and render one view: SYS=<dir> [VIEW=<id>] [OUT=<file.drawio>] [THEME=dark|light] [ICONS=<dirs>] [SLIDE=1]
 	@test -n "$(SYS)" || { echo "usage: make render SYS=<dir> [VIEW=<id>] [OUT=<file.drawio>]" >&2; exit 2; }

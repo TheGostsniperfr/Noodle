@@ -45,10 +45,15 @@ type Graph struct {
 	// Sources lists, by curated element or connection id, the discovered items merged into it.
 	Sources map[string][]Source
 
+	// Unresolved is what the fragments could not settle, minus what another fragment
+	// settles (FR-012).
+	Unresolved []model.Unresolved
+
 	curated    map[string]model.Element
 	discovered map[string]model.DiscoveredElement
 	edges      []Edge
 	matchedBy  map[string]string
+	unmodelled map[[2]string]Entry
 }
 
 // Merge applies ADR-0015: a field the curated element leaves empty is filled from the
@@ -60,7 +65,7 @@ func Merge(m *model.Model, fragments ...*model.Fragment) *Graph {
 	frags := append([]*model.Fragment{}, fragments...)
 	sort.SliceStable(frags, func(i, j int) bool { return frags[i].ID < frags[j].ID })
 	g := &Graph{Sources: map[string][]Source{}, curated: map[string]model.Element{},
-		discovered: map[string]model.DiscoveredElement{}, matchedBy: map[string]string{}}
+		discovered: map[string]model.DiscoveredElement{}, matchedBy: map[string]string{}, unmodelled: map[[2]string]Entry{}}
 	merged := *m
 	merged.Elements = make([]model.Element, len(m.Elements))
 	merged.Connections = append([]model.Connection{}, m.Connections...)
@@ -79,6 +84,7 @@ func Merge(m *model.Model, fragments ...*model.Fragment) *Graph {
 			g.edges = append(g.edges, Edge{ID: r.ID, From: r.From, To: r.To, Kind: r.Kind, Reference: true, Src: r.Src, Object: r.Object})
 		}
 	}
+	g.settleAcrossFragments(frags)
 	sort.SliceStable(g.edges, func(i, j int) bool { return g.edges[i].ID < g.edges[j].ID })
 
 	for i, e := range m.Elements {
@@ -149,6 +155,9 @@ func (g *Graph) mapConnections(m *model.Model, frags []*model.Fragment) {
 			if id, ok := existing[[2]string{from, to}]; ok {
 				g.Sources[id] = append(g.Sources[id], src)
 				continue
+			}
+			if _, seen := g.unmodelled[[2]string{from, to}]; !seen {
+				g.unmodelled[[2]string{from, to}] = Entry{ID: from + " -> " + to, Detail: c.From + " -> " + c.To, Src: c.Src}
 			}
 			port := c.Port
 			if !hasPort(g.curated[to], port) {
