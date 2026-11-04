@@ -23,7 +23,7 @@ follow-ups for its features.
 
 ## Wave 1 · Merge, drift, example, cost
 
-- [ ] **T05** `tools/tokencost` with a trimmed transcript fixture (FR-013). Spec 003 T12.
+- [x] **T05** `tools/tokencost` with a trimmed transcript fixture (FR-013). Spec 003 T12.
 - [ ] **T06** `examples/discovery-k8s`, its golden fragment and `list.yaml`, with an
   unmatched Deployment `worker`; `make examples` reruns discovery and diffs the golden
   file; `TestExample_ManifestsEqualList` in the adapter package (FR-009). Spec 003 T08.

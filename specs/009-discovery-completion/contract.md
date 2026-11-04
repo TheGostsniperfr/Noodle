@@ -105,7 +105,7 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 
 | # | Criterion | Verified by | Threshold |
 |---|---|---|---|
-| 1 | The transcript reader prints all four measures | `go test ./tools/tokencost/ -v`; `grep -cE '^(category\|model\|turns\|wall)' tools/tokencost/testdata/expected.txt` | exit 0, the test asserting with `Equal` the full stdout on the fixture against `expected.txt`; each of the four prefixes at least once |
+| 1 | The transcript reader prints all four measures | `go test ./tools/tokencost/ -v`; `grep -c '^category' tools/tokencost/testdata/expected.txt`, and the same for `^model`, `^turns` and `^wall` | exit 0, the test asserting with `Equal` the full stdout on the fixture against `expected.txt`; each of the four counts at least `1` |
 | 2 | The checkpoint rows and transcripts | `grep -cE '^[\|] [AC] [\|] \$[0-9]+\.[0-9]{2} [\|] [0-9]+/25 [\|] docs/benchmarks/transcripts/[^ ]+\.jsonl [\|]$' docs/benchmarks/discovery-checkpoint.md`; `ls` of each transcript path | `2`; each path exists |
 | 3 | Transcripts hold no tool results (C09) | `grep -c '"type":"tool_result"' docs/benchmarks/transcripts/*.jsonl` | `0` for every file |
 | 4 | The decision follows ADR-0029 | `cat docs/benchmarks/discovery-checkpoint.md`; `grep -c '^status: accepted' docs/adr/0029-discovery-checkpoint-threshold.md` | the file cites ADR-0029 and has exactly one line `Decision: go` or `Decision: stop`, `go` exactly when C's cost is at most 70 % of A's and C's edges are at least A's, given the two rows; `1` |
@@ -177,7 +177,7 @@ from that commit on, they replace the criterion they name.
 | DSC-12 | #5 | for each X in A, B, C and N in 1, 2: `grep -cE '^[\|] X [\|] N [\|]' docs/benchmarks/discovery-tokens.md` = `1`; add `cat` of the file so the C ≥ A means can be read |
 | DSC-08 | #4 | done: #4 now checks ADR-0029's `status: accepted` |
 | DSC-09 | #3 | the three `secret-endpoint-env`, `-envfrom` and `-externalsecret` subtests each assert no Secret value and no base64 form of it in the fragment |
-| DSC-08 | #1 | four counts, `^category`, `^model`, `^turns`, `^wall` on `expected.txt`, each ≥ `1` |
+| DSC-08 | #1 | four counts, `^category`, `^model`, `^turns`, `^wall` on `expected.txt`, each ≥ `1`. Applied in T05. |
 | DSC-11 | #2 | plan 009 decides whether `path` crosses `denied` connections (proposed: it skips them), and subtest `path-denied` asserts it |
 | DSC-04 | scope | done: `schemas/v1alpha1/` is in plan 009's table |
 | DSC-03 | #4 | `grep -rcE '(^\|[ {,-])file: *"?/' examples/discovery-k8s/discovered/` = `0` for every file. Applied in T04. |
