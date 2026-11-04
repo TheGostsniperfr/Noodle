@@ -248,7 +248,6 @@ func TestCommands_ReportsBothDirections(t *testing.T) {
 	}{
 		{"same targets", "| `make init` | a |\n| `make check` | b |\n", nil},
 		{"target with no row", "| `make init` | a |\n", []string{"docs/COMMANDS.md: no row for make check"}},
-		{"target without description", "| `make init` | a |\n| `make check` | b |\n", nil},
 		{"row with no target", "| `make init` | a |\n| `make check` | b |\n| `make ghost` | c |\n",
 			[]string{"Makefile: no documented target ghost (COMMANDS.md lists it; add it with a ## comment)"}},
 	}

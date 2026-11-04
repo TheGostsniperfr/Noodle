@@ -23,3 +23,6 @@ Plan: [`plan.md`](plan.md). Each task ends with `make check` green.
   **DEV-04** on their evidence.
 
 ## Convergence
+
+- [x] **T06** Drop the `target without description` case of `TestCommands_ReportsBothDirections`:
+  same input as `same targets`, so it tested nothing (DEV-01 evidence, finding 1).
