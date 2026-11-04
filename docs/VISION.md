@@ -28,6 +28,19 @@ One **architecture model**, versioned in Git, from which everything else is deri
 static diagrams, interactive views, guided presentations, visual PR diffs, discovered
 drafts, live overlays, and the context an AI needs.
 
+## Where it sits
+
+Two established terms say what noodle is for.
+
+- **Architecture as code.** The architecture is text in a repository: reviewed in pull
+  requests, diffed, versioned with the code it describes, and rendered by a tool instead of
+  drawn by hand. noodle is that, with a linter that refuses an unreadable diagram.
+- **Living documentation.** Documentation that follows the system rather than the last
+  time someone had an afternoon. This is the aim, not yet a claim: discovery drafts the
+  model from manifests today, and the report of drift between the curated model and the
+  real infrastructure is the next step (P6a-05). Until it ships, noodle is designed to
+  stay in sync, and does not yet prove it.
+
 ## Principles
 
 1. **Model first.** What exists (elements, connections, ports, zones) is described once.

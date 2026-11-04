@@ -1,11 +1,13 @@
 # Noodle 🍜
 
-Take the spaghetti out of a large architecture and keep it clear.
+Architecture as code, checked against the real infrastructure.
 
 Noodle turns an architecture described as code into readable, presentation-grade
-diagrams, and aims further: interactive views, guided tours, visual PR diffs, discovery
-from real clusters, live overlays, and a model AI agents can query.
-See [the vision](docs/VISION.md).
+diagrams that are designed to stay in sync with the systems they describe: discovery
+drafts the model from real manifests, and a lint refuses a diagram a person cannot read.
+It aims further: interactive views, guided tours, visual PR diffs, live overlays, and a
+model AI agents can query. See [the vision](docs/VISION.md), which relates this to
+architecture as code and living documentation.
 
 ![CNP runtime example](examples/cnp-runtime/runtime.dark.png)
 

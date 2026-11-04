@@ -77,6 +77,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T09: `noodle setup opencode|codex -project|-user` writes the skill to `.agents/skills/` and one agent file per host, idempotent, golden-file tests.
 - T10: setup marker line on every written file (replaced on rerun, foreign files kept and exit 1); README install section per host: Claude Code, OpenCode, Codex, Nix.
 - T11: user guide in `docs/guide/` (tutorial on `examples/tutorial`, four how-tos, explanation); `noodle help [-markdown]`, `make cli-doc`, `cli.md` and the test that keeps it current.
+- T12: README positioning (architecture as code, "designed to stay in sync" until P6a-05), VISION "Where it sits", and the Discovery section of the skill reference (#88); goldens refreshed for the skill text.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

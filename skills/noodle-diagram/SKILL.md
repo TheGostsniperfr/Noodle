@@ -37,6 +37,7 @@ anything different.
    ```bash
    S=architecture/<system>; V=<view-id>
    noodle render $S -view $V -icons .noodle/icons       # check and lint only; fix every finding
+   # no output means check and lint passed, not that the render works: icons resolve only with -o
    B=architecture/diagrams/$V
    for t in dark light; do
      noodle render $S -view $V -icons .noodle/icons -theme $t -o $B.$t.drawio
@@ -44,6 +45,9 @@ anything different.
    done
    ```
    `-slide` renders the drawing only, cropped to its content, for a slide deck.
+   Headless draw.io crops and stretches a PNG wider than about 4000 px, so `-s 2` is wrong
+   for a wide canvas (#71): use `-s` equal to `min(2, 3900 / (canvas width + 40))`, which is
+   1.6 for a 2400 px canvas.
    `drawio` must be installed for PNG and SVG exports. If it is missing, deliver the
    `.drawio` files and say so.
 5. **Look at the PNG.** The lint catches geometry, not taste. Expect two or three rounds.

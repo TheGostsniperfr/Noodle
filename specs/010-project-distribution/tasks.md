@@ -32,7 +32,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
 - [x] **T11** `docs/guide/` tutorial (its system in `examples/tutorial`, linted by
   `make examples`), how-to pages, explanation, `make cli-doc`, `cli.md` and its test
   (FR-009).
-- [ ] **T12** README positioning and the VISION paragraph (FR-010); the "Discovery"
+- [x] **T12** README positioning and the VISION paragraph (FR-010); the "Discovery"
   section of `reference.md` (FR-011). Flip **PRJ-06** with T11.
 
 ## Wave 3
