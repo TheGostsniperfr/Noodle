@@ -202,6 +202,7 @@ func TestADR_ChecksFrontmatterADRs(t *testing.T) {
 		{"unknown status", strings.Replace(newADR, "status: accepted", "status: maybe", 1), `status "maybe" is not one of proposed, accepted, rejected, deprecated, superseded`},
 		{"no deciders", strings.Replace(newADR, "deciders: [Brian Perret]\n", "", 1), "frontmatter needs date and deciders"},
 		{"one option", strings.Replace(newADR, "2. **B**, two.\n", "", 1), "needs at least two considered options"},
+		{"one option and a note", strings.Replace(newADR, "2. **B**, two.\n", "- a note about A\n", 1), "needs at least two considered options"},
 		{"no confirmation", strings.Replace(newADR, "### Confirmation\n\nA test.\n", "", 1), "needs a Confirmation section: what proves the decision is kept"},
 		{"empty confirmation", strings.Replace(newADR, "A test.\n", "", 1), "needs a Confirmation section: what proves the decision is kept"},
 	}

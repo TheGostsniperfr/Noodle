@@ -21,6 +21,8 @@ issue that raised it.
 
 ## Considered options
 
+A numbered list, one item per option; `make spec-check` counts the numbered items.
+
 1. **Option A**, one line.
 2. **Option B**, one line.
 

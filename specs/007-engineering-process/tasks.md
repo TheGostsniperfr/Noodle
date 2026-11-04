@@ -34,3 +34,5 @@ Plan: [`plan.md`](plan.md). Each task ends with `make check` green.
   hook does not fire mid-evaluation; on failure the draft path is printed (DEV-05; landed
   in `674fac9`, noted by the DEV-02 re-evaluation).
 - [x] **T10** Contract criteria ignore fenced examples (DEV-02 re-evaluation, finding 3).
+- [x] **T11** Considered options are the numbered items only, so a bullet note no longer
+  counts as a second option (DEV-03, finding 1).

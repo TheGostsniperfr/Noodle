@@ -21,7 +21,7 @@ var (
 	adrTitleRe   = regexp.MustCompile(`(?m)^# ADR-\d{4} · (.+)$`)
 	adrStatusRe  = regexp.MustCompile(`(?m)^- Status: (.+)$`)
 	adrStatuses  = map[string]bool{"proposed": true, "accepted": true, "rejected": true, "deprecated": true, "superseded": true}
-	optionItemRe = regexp.MustCompile(`(?m)^(?:- |### |\d+\. )`)
+	optionItemRe = regexp.MustCompile(`(?m)^\d+\. `)
 )
 
 // frontmatter of ADRs written with docs/adr/_template.md (ADR-0024). Older ADRs keep
