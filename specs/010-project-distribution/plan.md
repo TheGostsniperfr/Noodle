@@ -63,6 +63,30 @@ Unverified, to confirm at implementation and record in `fork-triage.md` or PROGR
 | process skills, per clarification 4 | three `SKILL.md` (FR-015) |
 | `flake.nix` | `goreleaser`, `git-cliff` in the dev shell |
 
+## Fixed choices for implementation
+
+- Read-only agent: an agent whose `tools` list has neither `Write` nor `Edit`. Today
+  `fact-finder` and `diagram-reviewer`; `icon-curator` is not.
+- OpenCode agent frontmatter written by setup: `mode: subagent`, and for read-only
+  agents `permission:` with `edit: deny`.
+- Marker: the first line of the Markdown body (after frontmatter) for `.md` files, and the
+  first comment line for `.toml` files: `noodle setup <host> <noodle version>, do not edit:
+  rerun noodle setup`. Never a frontmatter key, so the skill rules hold (FR-004).
+- `noodle setup` prints one `wrote <path>` line per file written, nothing for files left
+  as they were.
+- Golden files: `cmd/noodle/testdata/setup/opencode/` and `cmd/noodle/testdata/setup/codex/`.
+- Plugin version: a `version` field in `.claude-plugin/plugin.json`, set at each release;
+  `bin/noodle` downloads that version.
+- New Makefile targets, listed in COMMANDS.md: `make cli-doc` (writes `docs/guide/cli.md`),
+  `make changelog` (writes `CHANGELOG.md`), `make release-snapshot` (builds `dist/`, no
+  publishing). `make release-snapshot` joins the evaluator allowlist as an exact entry;
+  it writes only `dist/`, which is git-ignored. This extends the set DEV-05 reviewed and
+  is recorded in ADR-0024's accepted risks by T13.
+- Fork build (clarification 2, recommended answer): the fork is cloned into a temporary
+  directory and tested with `podman run --rm --network none -v <dir>:/src:ro -w /src
+  golang:1.26 go test -mod=vendor ./...`; the fork vendors its dependencies, so no
+  network is needed.
+
 ## Rules of `speccheck skills`
 
 Skills checked: `skills/*/SKILL.md` and the process skills of FR-015. Claude Code-only

@@ -56,7 +56,8 @@ which downloads and verifies the matching binary.
   (`license`), `flake.nix` (`meta.license`) and the frontmatter of
   `skills/noodle-diagram/SKILL.md` (`license`) SHALL name the same SPDX identifier.
   *Scenario:* WHEN `jq -r .license .claude-plugin/plugin.json` runs THEN it prints the
-  SPDX identifier that the first line of `LICENSE` names.
+  same SPDX identifier as the skill's `license:` line, and `LICENSE` holds that license's
+  standard text (for Apache-2.0, `Version 2.0, January 2004`).
 - **FR-002** IF a file in `assets/icons/` has no row in `assets/icons/ATTRIBUTION.md`
   giving its source URL and license, THEN THE SYSTEM SHALL fail `go test ./assets/`,
   naming the file; and the attribution page SHALL state that logos remain trademarks of
@@ -96,7 +97,8 @@ which downloads and verifies the matching binary.
   `-user` is given instead of `-project`, it SHALL write under `~/.agents/skills/` and
   `~/.config/opencode/agents/`.
   *Scenario:* WHEN `noodle setup opencode -project` runs twice in an empty directory
-  THEN the second run writes nothing and both runs list the same four paths.
+  THEN the first run lists the five files it wrote (the skill's `SKILL.md` and
+  `reference.md`, three agent files) and the second run writes nothing.
 - **FR-006** WHEN `noodle setup codex -project DIR` runs, THE SYSTEM SHALL write the
   `noodle-diagram` skill to `DIR/.agents/skills/noodle-diagram/` and one
   `DIR/.codex/agents/<name>.toml` per agent of `agents/`, in the format of the official
@@ -127,8 +129,9 @@ which downloads and verifies the matching binary.
   (first system to a rendered PNG), how-to pages (discover from manifests, draw a
   proposal as a diff, export for slides, use in OpenCode or Codex), an explanation page
   (model, view, layout, fragment; connection semantics in plain words), and a CLI
-  reference `docs/guide/cli.md` generated from the CLI usage text; IF `cli.md` differs
-  from the usage text the binary prints, THEN `go test ./cmd/noodle/` SHALL fail.
+  reference `docs/guide/cli.md` generated from the CLI usage text by `make cli-doc`; IF
+  `cli.md` differs from the usage text the binary prints, THEN `go test ./cmd/noodle/`
+  SHALL fail.
   *Scenario:* WHEN a flag is added to `render` and `cli.md` is not regenerated THEN
   `go test ./cmd/noodle/` fails naming `docs/guide/cli.md`.
 - **FR-010** THE README SHALL position noodle as architecture as code, checked against
@@ -157,10 +160,11 @@ which downloads and verifies the matching binary.
 - **FR-013** WHEN a tag `vX.Y.Z` is pushed, THE SYSTEM SHALL run a release workflow
   that builds `noodle` for linux and darwin on amd64 and arm64, publishes the archives
   and a SHA-256 checksums file on a GitHub Release, and uses the tag's section of
-  `CHANGELOG.md`, generated from conventional commits with the tool chosen in
-  clarification 3, as the release body.
-  *Scenario:* WHEN the release configuration builds a snapshot locally THEN `dist/`
-  holds four archives and one checksums file.
+  `CHANGELOG.md`, generated from conventional commits by `make changelog` with the tool
+  chosen in clarification 3, as the release body; `make release-snapshot` SHALL build the
+  same archives locally without publishing.
+  *Scenario:* WHEN `make release-snapshot` runs THEN `dist/` holds the four archives
+  `noodle_*_{linux,darwin}_{amd64,arm64}.tar.gz` and a checksums file of four lines.
 - **FR-014** WHILE neither a `noodle` on PATH, Go nor Nix is available, WHEN `bin/noodle`
   runs, THE SYSTEM SHALL download the release archive matching the plugin's version
   and platform from GitHub Releases, verify it against the release checksums file, and
@@ -189,11 +193,14 @@ which downloads and verifies the matching binary.
 
 | # | Question | Answer | ADR |
 |---|---|---|---|
-| 1 | License: Apache-2.0 with NOTICE, or MIT? | pending | |
-| 2 | How is the fork's code built and tested? | pending | |
-| 3 | Changelog and release tooling? | pending | |
-| 4 | Where do the process skills live? | pending | |
-| 5 | Do contributions need a DCO sign-off? | pending | |
+| 1 | License: Apache-2.0 with NOTICE, or MIT? | pending; contract assumes Apache-2.0 | |
+| 2 | How is the fork's code built and tested? | pending; contract assumes a container with `--network none` | |
+| 3 | Changelog and release tooling? | pending; contract assumes goreleaser and git-cliff | |
+| 4 | Where do the process skills live? | pending; contract assumes `.agents/skills/` with `.claude/skills/` symlinks | |
+| 5 | Do contributions need a DCO sign-off? | pending; contract assumes no | |
+
+The contract is written for the recommended answer of each question; its "If Brian
+answers otherwise" section lists the criteria each other answer changes.
 
 ## Success criteria
 

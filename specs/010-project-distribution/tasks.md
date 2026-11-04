@@ -29,15 +29,17 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
   idempotent, with golden-file tests in temporary directories (FR-005, FR-006).
 - [ ] **T10** The marker line, refusal to overwrite foreign files, and the README
   install section per host (FR-007). Flip **PRJ-04** with T08 and T09.
-- [ ] **T11** `docs/guide/` tutorial, how-to pages, explanation, `cli.md` and its test
+- [ ] **T11** `docs/guide/` tutorial (its system in `examples/tutorial`, linted by
+  `make examples`), how-to pages, explanation, `make cli-doc`, `cli.md` and its test
   (FR-009).
 - [ ] **T12** README positioning and the VISION paragraph (FR-010); the "Discovery"
   section of `reference.md` (FR-011). Flip **PRJ-06** with T11.
 
 ## Wave 3
 
-- [ ] **T13** Release configuration, release workflow, changelog config and first
-  `CHANGELOG.md` (FR-013).
+- [ ] **T13** Release configuration, release workflow, changelog config, `make changelog`,
+  `make release-snapshot` (in the evaluator allowlist, risk noted in ADR-0024), the
+  `version` field of `plugin.json`, and the first `CHANGELOG.md` (FR-013).
 - [ ] **T14** `bin/noodle` download fallback with checksum verification, and its Go test
   with a stub `curl` (FR-014). Flip **PRJ-07** with T06 and T13.
 - [ ] **T15** The three process skills `issue-writer`, `release-notes`, `contrib-check`
