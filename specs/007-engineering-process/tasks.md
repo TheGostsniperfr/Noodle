@@ -39,3 +39,6 @@ Plan: [`plan.md`](plan.md). Each task ends with `make check` green.
 - [x] **T12** The gate reads only a filled verdict line; backlog evidence lives in
   `docs/evidence/`; an unknown `BASE` is an error, not a skipped history check, except
   GitHub's forty-zero "before" of a first push (DEV-04 first run, findings 3 to 5).
+- [x] **T13** `review-contract` writes through `mktemp` like `evaluate`, and requires
+  `SPEC` to match exactly one directory (DEV-05, finding 2). Finding 1 did not hold: the
+  recipes run under `set -e`, so a failed `speccheck locate` stops before the evaluator.

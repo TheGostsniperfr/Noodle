@@ -79,9 +79,11 @@ evaluate: ## Grade one feature with the read-only evaluator; writes <spec>/evide
 
 review-contract: ## Review a spec's contract before implementation; writes <spec>/contract-review.md (SPEC=<NNN>)
 	@test -n "$(SPEC)" || { echo "usage: make review-contract SPEC=<NNN>" >&2; exit 2; }
-	@dir="$$(ls -d specs/$(SPEC)-*)"; out="$$dir/contract-review.md"; \
-	echo "Review the contract of $$dir before implementation. Follow your contract-review instructions and print only the review." | $(EVALUATOR) > "$$out"; \
-	grep -m1 '^- Review:' "$$out" || { echo "review has no '- Review:' line: $$out" >&2; exit 1; }
+	@dirs=(specs/$(SPEC)-*/); [[ $${#dirs[@]} -eq 1 && -d "$${dirs[0]}" ]] || { echo "SPEC=$(SPEC) must match exactly one specs/$(SPEC)-* directory" >&2; exit 2; }; \
+	dir="$${dirs[0]%/}"; out="$$dir/contract-review.md"; tmp="$$(mktemp)"; \
+	echo "Review the contract of $$dir before implementation. Follow your contract-review instructions and print only the review." | $(EVALUATOR) > "$$tmp"; \
+	if grep -q '^- Review:' "$$tmp"; then mv "$$tmp" "$$out"; grep -m1 '^- Review:' "$$out"; \
+	else echo "review has no '- Review:' line, kept in $$tmp" >&2; exit 1; fi
 
 discover-eval: ## Measure static discovery on real repositories, never written (REPOS="<dir>…" [MATCH=<regex>])
 	@test -n "$(REPOS)" || { echo "usage: make discover-eval REPOS=\"<dir>…\" [MATCH=<regex>]" >&2; exit 2; }
