@@ -31,6 +31,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T01: `house.Header` and `house.CardLayout` own the header, card and legend geometry; `render.go` draws from them, byte-equal on the frozen specs of `cmd/noodle/testdata/cardlayout`. Every example's `.drawio` is now committed and `TestExamples_DrawioCurrent` keeps it current.
 - T02: `card_text.go` measures every card row, legend row and note against the cell the renderer gives it, and card height. Four example legends were too narrow (cnp-runtime, platform-overview, app-runtime-view, repo-map): widened, neighbours shifted. Flips of LNT-01, B-07, B-26 wait for the evaluator.
 - T03: `header_overlap.go` reports a zone, node, card or note over the header block as drawn (`house.HeaderBox`). No example needed a fix. Flips of LNT-02 and B-25 wait for the evaluator.
+- T04: `ports.go` compares the distinct badges of a node pairwise, 2 px inflated; `testdata/ports-73.yaml` is the report's repro. No example needed a fix. LNT-04 flip waits for the evaluator.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

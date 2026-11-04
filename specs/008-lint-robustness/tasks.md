@@ -16,7 +16,7 @@ Clarifications 1 to 5 of the spec are answered (2026-11-04).
   (FR-001, FR-002). Flip **LNT-01** after `make evaluate FEATURE=LNT-01`; flip backlog
   **B-07** and **B-26** with `docs/evidence/` pointing at that evidence.
 - [x] **T03** `header_overlap.go` (FR-003). Flip **LNT-02**; flip backlog **B-25**.
-- [ ] **T04** Pairwise port badge overlap in `ports.go`, the report's repro as a fixture
+- [x] **T04** Pairwise port badge overlap in `ports.go`, the report's repro as a fixture
   (FR-005). Flip **LNT-04**.
 - [ ] **T05** Badge join on empty labels, `hide_annotations`, and the ADR-0026 checks of
   undrawn annotations and `hidden_annotations` (FR-006, FR-007, FR-011, FR-012). Flip

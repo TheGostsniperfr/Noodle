@@ -1,0 +1,9 @@
+id: ports-73
+width: 800
+height: 400
+nodes:
+  - {id: a, kind: backend, title: A, x: 300, y: 40, w: 300, h: 80}
+  - {id: b, kind: backend, title: B, x: 300, y: 200, w: 300, h: 80}
+edges:
+  - {id: e1, from: a, to: b, kind: flow, port: TCP 443, path: [[400, 120], [400, 200]]}
+  - {id: e2, from: a, to: b, kind: flow, port: TCP 8443, path: [[430, 120], [430, 200]]}
