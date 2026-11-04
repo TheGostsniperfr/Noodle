@@ -6,13 +6,15 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Start here
 
-1. `./scripts/init.sh`: fix anything red before new work.
+1. `make init`: fix anything red before new work. Commands: `docs/COMMANDS.md`; process: `docs/PROCESS.md`.
 2. Read the current spec: [`specs/003-static-discovery/spec.md`](../specs/003-static-discovery/spec.md)
    and ADR-0017, ADR-0018. Backlog: the [project board](https://github.com/users/TheGostsniperfr/projects/5), issue #42.
 3. Next action: spec 003 T05 (secrets and references, Argo CD Applications), then T06,
    T12 and the T14 checkpoint before anything else ([`tasks.md`](../specs/003-static-discovery/tasks.md)).
    Phase 1 still has spec 002 T03 (issue #43, in `dockair-docs`).
-   Measure on real repos with `scripts/discover-eval.sh`.
+   Measure on real repos with `make discover-eval`.
+4. Spec 007 (process, #108) on `feat/spec-process`: evaluate DEV-01 to DEV-05, then pilot the
+   process on #79 (`noodle drift`, P6a-05) as a full-mode spec.
 
 ## Open threads outside this repo
 
@@ -23,6 +25,16 @@ decisions go in ADRs, acceptance in `features.json`.
 | `~/.dotfiles` | noodle plugin installed declaratively (commit `9bf7e57`) | pushed. `nixos-rebuild switch` still to run. |
 
 ## Log
+
+### 2026-11-04 · Engineering process (spec 007, ADR-0024)
+
+- Backlog: 15 issues created (#93 to #107), #16 and #18 rewritten, #95 and #96 sub-issues
+  of #69, everything on the board; drafts in the artifact "Noodle B-42 to B-58".
+- Process: constitution (C01 to C15), EARS specs in full or quick mode, MADR 4 ADRs with
+  a generated index, contracts, a read-only `evaluator` agent, an evidence gate on
+  `features.json`. `tools/speccheck` enforces it; `Makefile` is the only entry point,
+  documented in `docs/COMMANDS.md`. `check-features.sh` ported to Go and removed;
+  `scripts/init.sh` is now `exec make init` because old verify steps cite it.
 
 ### 2026-10-25 · Multi-line node desc
 

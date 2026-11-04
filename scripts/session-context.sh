@@ -19,4 +19,4 @@ if [[ "$dirty" -gt 0 ]]; then
   echo "- $dirty uncommitted change(s): a previous session stopped mid-work, check them first"
 fi
 echo
-echo "Run ./scripts/init.sh before changing code. Protocol: AGENTS.md."
+echo "Run make init before changing code. Commands: docs/COMMANDS.md. Process: docs/PROCESS.md. Protocol: AGENTS.md."

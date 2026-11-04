@@ -90,7 +90,7 @@ The format is in [the skill reference](skills/noodle-diagram/reference.md).
 
 ```bash
 nix develop
-./scripts/init.sh        # vet, test, lint the example, validate the plugin, show next features
+make init                # vet, test, lint the examples, check specs and features, show next features
 ```
 
 Dependencies are vendored (`go mod vendor`) so the plugin can build offline. Run
