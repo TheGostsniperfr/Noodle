@@ -1,6 +1,6 @@
 apiVersion: noodle/v1alpha1
 kind: Layout
-canvas: {width: 1100, height: 820}
+canvas: {width: 1100, height: 580}
 elements:
   z-internet: {x: 40, y: 220, w: 220, h: 300}
   z-cluster: {x: 320, y: 220, w: 740, h: 300}
@@ -10,5 +10,3 @@ elements:
 edges:
   c-user-api: {from: user.right, to: api.left}
   c-api-db: {from: api.right, to: db.left}
-cards:
-  card-legend: {x: 40, y: 560, w: 1020, h: 220}

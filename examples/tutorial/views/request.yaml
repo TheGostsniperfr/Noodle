@@ -5,5 +5,3 @@ title: Demo · Web app · Request path
 subtitle: How a request reaches the database.
 meta: ["Scope: demo", "v0.1 · source: examples/tutorial"]
 steps: [c-user-api, c-api-db]
-cards:
-  - {id: card-legend, title: Legend, color: slate, legend: true}

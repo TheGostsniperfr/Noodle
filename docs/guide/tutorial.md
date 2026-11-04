@@ -54,8 +54,6 @@ title: Demo · Web app · Request path
 subtitle: How a request reaches the database.
 meta: ["Scope: demo", "v0.1 · source: architecture/demo"]
 steps: [c-user-api, c-api-db]
-cards:
-  - {id: card-legend, title: Legend, color: slate, legend: true}
 ```
 
 `steps` numbers the connections `[1]` and `[2]` in time order.
@@ -68,7 +66,7 @@ Create `architecture/demo/layouts/request.yaml`:
 ```yaml
 apiVersion: noodle/v1alpha1
 kind: Layout
-canvas: {width: 1100, height: 820}
+canvas: {width: 1100, height: 580}
 elements:
   z-internet: {x: 40, y: 220, w: 220, h: 300}
   z-cluster: {x: 320, y: 220, w: 740, h: 300}
@@ -78,8 +76,6 @@ elements:
 edges:
   c-user-api: {from: user.right, to: api.left}
   c-api-db: {from: api.right, to: db.left}
-cards:
-  card-legend: {x: 40, y: 560, w: 1020, h: 220}
 ```
 
 Boxes inside a zone are placed relative to that zone. Edges leave from a side of the
