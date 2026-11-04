@@ -1,6 +1,6 @@
 # Plan 008 · Lint robustness
 
-Spec: [`spec.md`](spec.md). Decisions: ADR-0006, ADR-0025; clarifications 1 to 5 of the spec.
+Spec: [`spec.md`](spec.md). Decisions: ADR-0006, ADR-0025, ADR-0026; clarifications 1 to 5 of the spec, answered.
 
 ## Approach
 
@@ -25,9 +25,11 @@ house: NodeFootprint, ZoneTitleBox, PortBadges, + HeaderBox, CardLayout (new)
 - **Text margin** (FR-004): one helper, `house.FitsWithMargin(textW, availW, fontSize)`, used by
   `node_text.go` and by `resolve.boxWidth`. The measuring width follows clarification 1.
 - **Port badges** (FR-005): `ports.go` compares the distinct badges of each node pairwise.
-- **Annotations** (FR-006, FR-007): `resolve.edges` joins label and badges with a
-  non-empty join; the resolver collects annotations with no drawn target and returns them
-  for the form chosen in clarification 2.
+- **Annotations** (FR-006, FR-007, FR-011, FR-012, ADR-0026): `resolve.edges` and the
+  sequence resolver join label and badges with a non-empty join, and drop the badges when
+  the view sets `hide_annotations`. The view gains `hidden_annotations` and
+  `hide_annotations` (model, schema); `model.Check` errors on an undrawn annotation not
+  acknowledged and on a bad acknowledgement, from `System.Included`, before rendering.
 - **Zone sub** (FR-008): `house.ZoneTitleBox` and the renderer's zone label follow
   clarification 3 together, so obstacle and drawing stay one computation.
 - **Canvas bounds** (FR-009): new rule `canvas_bounds.go`; `resolve/landscape.go`
@@ -40,7 +42,8 @@ house: NodeFootprint, ZoneTitleBox, PortBadges, + HeaderBox, CardLayout (new)
 |---|---|
 | `internal/house` | `HeaderBox`, `CardLayout`, `FitsWithMargin(textW, availW, fontSize)`; `ZoneTitleBox` per clarification 3 |
 | `internal/lint` | new `header_overlap.go`, `card_text.go`, `canvas_bounds.go`; `ports.go` pairwise; `node_text.go` margin; registered in `rules` |
-| `internal/resolve` | `sequence.go` box width with margin; `resolve.go` badge join and undrawn annotations; `landscape.go` side column |
+| `internal/model`, `schemas/v1alpha1/view.schema.json` | view fields `hidden_annotations` and `hide_annotations`; checks of ADR-0026 |
+| `internal/resolve` | `sequence.go` box width with margin and badge join; `resolve.go` badge join and `hide_annotations`; `landscape.go` side column |
 | `cmd/noodle` | `render.go` header, card, legend and zone label drawn from `house` |
 | `examples/`, `docs/diagrams/` | diagrams the new rules reject are fixed (FR-010); fixtures `regression-72`, `regression-78`, `regression-87` with committed `.drawio` and PNGs |
 | `cmd/noodle` tests | `TestRender_CardLayoutGolden` on frozen copies in `testdata/cardlayout/`; `TestExamples_DrawioCurrent` re-renders every committed fixture `.drawio` |

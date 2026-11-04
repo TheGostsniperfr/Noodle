@@ -1,11 +1,11 @@
 # Spec 008 · Lint robustness: what passes the lint is what the reader sees
 
-- Status: **Draft**
+- Status: **Clarified**
 - Mode: **full**
 - Phase: lint2, batch A of wave 1, pulled forward by ADR-0025 (C11)
-- Issue: #36, #44, #45, #72, #73, #78, #86, #87, #90 · Backlog: B-07, B-20, B-25, B-26,
+- Issue: #22, #36, #44, #45, #72, #73, #78, #86, #87, #90 · Backlog: B-07, B-20, B-25, B-26,
   B-28 (follow-up), B-30, B-31
-- Decisions it builds on: ADR-0003, ADR-0006, ADR-0011, ADR-0012, ADR-0024, ADR-0025
+- Decisions it builds on: ADR-0003, ADR-0006, ADR-0011, ADR-0012, ADR-0024, ADR-0025, ADR-0026
 - Invariants it touches: C04, C06, C12, C13
 
 ## Why
@@ -76,13 +76,15 @@ bands make room for it.
   and `b.top@130px` THEN the lint fails naming both edges.
 - **FR-006** WHEN an edge's label is empty and the edge carries annotation badges, THE
   SYSTEM SHALL render the badges alone, with no leading separator, and the lint SHALL
-  measure exactly that text.
+  measure exactly that text: `""` hides the text only (ADR-0026).
   *Scenario:* WHEN `labels: {c1: ""}` and an annotation G1 targets `c1` THEN the edge label
   is `!!⚠ G1!!` and renders as `⚠ G1`.
-- **FR-007** IF an annotation targets only ids that the view does not draw THEN THE SYSTEM
-  SHALL report it, naming the annotation and its targets (form fixed by clarification 2).
-  *Scenario:* WHEN an annotation targets a connection excluded from the view THEN
-  rendering that view reports the annotation by id.
+- **FR-007** IF an annotation targets only ids that the view does not draw, and the view
+  does not list it in `hidden_annotations`, THEN THE SYSTEM SHALL fail the check with an
+  error naming the annotation and its targets (ADR-0026).
+  *Scenario:* WHEN annotation G1 targets connection `c9` and the view leaves `c9` out
+  THEN `make render` fails naming G1 and `c9`; WHEN the view adds
+  `hidden_annotations: {G1: "background job, drawn in jobs view"}` THEN it passes.
 - **FR-008** WHERE a zone's label and sub do not fit on the title line within the zone's
   width, THE SYSTEM SHALL lay the sub out as clarification 3 decides, and the zone title
   obstacle SHALL cover exactly the text drawn.
@@ -94,6 +96,16 @@ bands make room for it.
   *Scenario:* WHEN the #90 view (one band of five flow sections, two more bands, a side
   column "Upkeep") is resolved THEN its side column lies inside the canvas and the lint is
   green; WHEN a node is placed past the canvas width THEN the lint fails naming it.
+- **FR-011** IF a view's `hidden_annotations` lists an id that is not an annotation of the
+  model, an annotation that has a target drawn in the view, or an empty reason, THEN THE
+  SYSTEM SHALL fail the check with an error naming the view and the id.
+  *Scenario:* WHEN a view lists `hidden_annotations: {G1: ""}` THEN the check fails
+  naming the view and G1; WHEN it lists G7, which the model does not define, THEN the
+  check fails naming G7.
+- **FR-012** WHERE a view sets `hide_annotations: true`, THE SYSTEM SHALL draw no annotation
+  badge on its elements and edges, and the lint SHALL measure labels without them.
+  *Scenario:* WHEN the view of `regression-78` sets `hide_annotations: true` THEN edge
+  `c1` has no label and no badge.
 - **FR-010** THE SYSTEM SHALL keep every example, regression fixture and docs diagram
   lint-green by fixing the diagrams that the new rules reject, never by relaxing a rule.
   *Scenario:* WHEN `make examples` runs on the branch THEN it exits 0, and the diff of
@@ -114,16 +126,15 @@ bands make room for it.
 
 ## Clarifications
 
-Five questions, sent to Brian in the wave 1 questionnaire. Each recommendation is the
-first option.
+Answered by Brian on 2026-11-04.
 
 | # | Question | Answer | ADR |
 |---|---|---|---|
-| 1 | How does the lint account for the export font (#72)? (a) measure with the widest monospace fallback, 0.602 em, plus the FR-004 margin; (b) bundle JetBrains Mono into the export so 0.6 em holds; (c) `whiteSpace=nowrap` on node text so an overflow is visible instead of wrapped | pending | |
-| 2 | What does FR-007 produce for an annotation with no drawn target? (a) a lint warning naming it, never blocking; (b) a lint error; (c) a generated "not shown in this view" line in the Gaps card | pending | |
-| 3 | How is a long zone sub handled (#87, #22)? (a) the sub wraps under the label in a column at most 240 px wide (or the label's width if wider), and the obstacle covers exactly those lines, leaving the rest of the zone top free; a single extra line the zone's width would still block every lane; (b) the lint caps the sub length and asks for a shorter one; (c) edges may cross the sub text, which is no longer an obstacle (relaxes a rule, against C04) | pending | |
-| 4 | Does `labels: {id: ""}` also hide annotation badges (#78)? (a) no: `""` hides the text only, badges stay, matching B-28; (b) yes: `""` hides everything; (c) a view-level `hide_annotations: true` | pending | |
-| 5 | Where does card and legend layout live, so the lint measures what is drawn (FR-001, FR-002)? (a) a pure layout function in `internal/house` used by both the renderer and the lint; (b) the resolver fills row geometry into `diagram.Card`; (c) the lint duplicates the renderer's arithmetic | pending | |
+| 1 | How does the lint account for the export font (#72)? | (a) measure node text at 0.602 em, the widest monospace fallback, plus the FR-004 margin | ADR-0025 |
+| 2 | What happens to an annotation with no drawn target (#86)? | Not a warning: warnings become noise. A lint error, unless the view acknowledges it with `hidden_annotations: {id: reason}`, a non-empty reason; acknowledging an id that is drawn or does not exist is itself an error | ADR-0026 |
+| 3 | How is a long zone sub handled (#87, #22)? | (a) it wraps under the label in a column at most 240 px wide, and the obstacle covers exactly those lines. #22 is closed with this batch | ADR-0025 |
+| 4 | Does `labels: {id: ""}` hide annotation badges (#78)? | (c) `""` hides the text only; a view-level `hide_annotations: true` hides the badges | ADR-0026 |
+| 5 | Where does card and legend layout live (FR-001, FR-002)? | (a) a pure `house.CardLayout` shared by the renderer and the lint | ADR-0025 |
 
 ## Success criteria
 

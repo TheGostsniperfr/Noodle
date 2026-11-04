@@ -2,7 +2,7 @@
 
 Plan: [`plan.md`](plan.md). One task per commit; each ends with `make check` green.
 Tick the box in the same commit. Tasks in one wave do not depend on each other.
-Clarifications 1 to 5 of the spec are answered before wave 2 starts.
+Clarifications 1 to 5 of the spec are answered (2026-11-04).
 
 ## Wave 1
 
@@ -18,8 +18,9 @@ Clarifications 1 to 5 of the spec are answered before wave 2 starts.
 - [ ] **T03** `header_overlap.go` (FR-003). Flip **LNT-02**; flip backlog **B-25**.
 - [ ] **T04** Pairwise port badge overlap in `ports.go`, the report's repro as a fixture
   (FR-005). Flip **LNT-04**.
-- [ ] **T05** Badge join on empty labels and the undrawn-annotation report (FR-006,
-  FR-007). Flip **LNT-05**.
+- [ ] **T05** Badge join on empty labels, `hide_annotations`, and the ADR-0026 checks of
+  undrawn annotations and `hidden_annotations` (FR-006, FR-007, FR-011, FR-012). Flip
+  **LNT-05**.
 - [ ] **T06** `canvas_bounds.go` and the landscape side column (FR-009). Flip **LNT-07**.
 
 ## Wave 3
@@ -28,7 +29,7 @@ Clarifications 1 to 5 of the spec are answered before wave 2 starts.
   width of clarification 1; the four participant labels of #72 as a fixture (FR-004).
   Flip **LNT-03**.
 - [ ] **T08** Zone sub layout and title obstacle per clarification 3 (FR-008). Flip
-  **LNT-06**; flip backlog **B-20**.
+  **LNT-06**; flip backlog **B-20**; close #22 and #87.
 
 ## Wave 4
 

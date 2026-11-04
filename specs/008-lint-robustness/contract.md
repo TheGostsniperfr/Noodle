@@ -5,8 +5,9 @@ One failed criterion fails the feature. Every "Verified by" runs inside the eval
 allowlist (`EVALUATOR` in the Makefile); a command outside it is refused, and fails.
 In a table cell, `\|` is the Markdown escape of a pipe: run every command with a plain `|`.
 
-- Agreed: 2026-11-04 after three rounds (cap reached), pending re-review of the rows
-  that depend on a clarification Brian answers differently from option (a).
+- Agreed: 2026-11-04 after three rounds (cap reached). Brian's answers (2026-11-04) keep
+  option (a) for clarifications 1, 3 and 5; answers 2 and 4 rewrote LNT-05 (ADR-0026),
+  re-reviewed once more.
 - Round 1 (2026-11-04): CHANGES, 23 points, all applied. Thresholds now assume the
   recommended answer (option a) of each clarification; see "Assumed answers" below.
 - Round 2: CHANGES, 12 points, all applied: the margin takes the font size, the sequence
@@ -25,19 +26,17 @@ In a table cell, `\|` is the Markdown escape of a pipe: run every command with a
 - C04 holds throughout: no existing rule of `internal/lint` is removed, skipped or given a
   wider tolerance; LNT-08 #2 checks it.
 
-## Assumed answers
+## Answers
 
-The spec's clarifications are pending. These thresholds are written for option (a) of
-each. If Brian picks another option, the affected rows are rewritten and re-reviewed
-before the task that implements them starts.
+Brian answered the spec's clarifications on 2026-11-04.
 
-| Clarification | Assumed | Rows that depend on it |
+| Clarification | Answer | Rows that depend on it |
 |---|---|---|
-| 1 · export font | node text measured at `house.ExportCharWidthEm = 0.602` | LNT-03 #1 to #3 |
-| 2 · undrawn annotation | a lint warning (never blocks) | LNT-05 #2, #3 |
-| 3 · zone sub | wraps under the label in a column of at most 240 px | LNT-06 #1 to #3 |
-| 4 · `""` and badges | `""` hides the text only, badges stay | LNT-05 #1, #5 |
-| 5 · card layout | `house.CardLayout` shared by renderer and lint | LNT-01 #5, #6, #7 |
+| 1 · export font | (a) node text measured at `house.ExportCharWidthEm = 0.602` | LNT-03 #1 to #4 |
+| 2 · undrawn annotation | an error unless the view lists it in `hidden_annotations` with a reason (ADR-0026) | LNT-05 #2 to #4, #8 |
+| 3 · zone sub | (a) wraps under the label in a column of at most 240 px | LNT-06 #1 to #3 |
+| 4 · `""` and badges | `""` hides the text only; `hide_annotations: true` hides the badges (ADR-0026) | LNT-05 #1, #5, #6, #7 |
+| 5 · card layout | (a) `house.CardLayout` shared by renderer and lint | LNT-01 #6 to #8 |
 
 ## Fixtures
 
@@ -118,15 +117,22 @@ A plain node (no icon) has `availW = W − 18`, the padding `node_text.go` subtr
 | 3 | A shared port is one badge | same | subtest `shared_port`: two connections to the same port of one node yield 0 findings |
 | 4 | Property: finding iff inflated rects intersect | `go test ./internal/lint/ -run 'TestLint_PortsOverlap_Property' -v` | a `testing/quick` test over random badge pairs on one side asserts a finding exactly when `a.Inflate(2).Intersects(b.Inflate(2))` |
 
-## LNT-05 · Annotations
+## LNT-05 · Annotations (ADR-0026)
+
+The model of these rows has annotation G1 targeting connection `c9`, and a view `v` that
+draws `a` and `b` but not `c9`'s ends. Messages are those of `model.Check` findings,
+`File: Where: Msg`, and the check fails `make render` before any drawing.
 
 | # | Criterion | Verified by | Threshold |
 |---|---|---|---|
 | 1 | An empty label keeps the badges alone | `go test ./internal/resolve/ -run 'TestResolve_AnnotationLabel' -v` | subtest `empty_label`: topology label exactly `!!⚠ G1!!`; `label`: `HTTPS` with G1 gives exactly `HTTPS · !!⚠ G1!!`; `sequence_empty_label`: a sequence message with `""` and G1 gives exactly `!!⚠ G1!!` |
-| 2 | The resolver reports an undrawn annotation | `go test ./internal/resolve/ -run 'TestResolve_UndrawnAnnotation' -v` | a model with G1 on `c9` and a view that leaves `c9` out: resolving then linting gives exactly `[{Where: G1, Msg: targets nothing drawn in this view: c9, Warn: true}]` |
-| 3 | The lint warns, never blocks | `go test ./internal/lint/ -run 'TestLint_UndrawnAnnotation' -v` | subtest `only_undrawn`: the same single warning; subtest `one_drawn_one_not`: 0 findings |
-| 4 | The rendered label has no leading separator | `make examples`; `ls examples/regression-78/ specs/008-lint-robustness/visual/`; read `view.light.png` | exit 0; `view.drawio`, both PNGs and `regression-78-view-before.png` listed; the edge shows `⚠ G1` with no character before it |
-| 5 | The lint measures the badge-only text | `go test ./internal/lint/ -run 'TestLint_AnnotationOnlyLabel' -v` | `house.LabelBox` of the badge-only edge is 32 px wide (`⚠ G1`, 4 runes × 6 + 2 × 4), against 50 on `main` (` · ⚠ G1`), same centre; subtest `one_px_in`: a node whose right edge is the box's X + 1 gives exactly one label-overlap finding; `one_px_outside`: a node whose right edge is the box's X − 1, still inside `main`'s box, gives 0 findings |
+| 2 | An undrawn annotation is an error | `go test ./internal/model/ -run 'TestCheck_UndrawnAnnotation' -v` | subtest `undrawn`: findings equal `[{File: views/v.yaml, ID: G1, Msg: annotation targets nothing drawn in this view (c9): draw a target or list it in hidden_annotations with a reason}]` |
+| 3 | Acknowledged, or one target drawn, passes | same | subtest `acknowledged`: `hidden_annotations: {G1: "background job, drawn in jobs view"}` gives 0 findings; `one_drawn_one_not`: G1 also targeting `a` gives 0 findings |
+| 4 | A bad acknowledgement is an error | same | subtests, one finding each, exact list: `empty_reason` (`{G1: ""}`) `[{File: views/v.yaml, ID: G1, Msg: hidden_annotations needs a reason}]`; `unknown_id` (`{G7: "x"}`) `[{File: views/v.yaml, ID: G7, Msg: hidden_annotations names G7, which is not an annotation}]`; `drawn_id` (G1 targeting `a`, listed) `[{File: views/v.yaml, ID: G1, Msg: hidden_annotations hides G1, which this view draws}]` |
+| 5 | `hide_annotations` drops the badges | `go test ./internal/resolve/ -run 'TestResolve_HideAnnotations' -v` | with `hide_annotations: true`, `c1` with G1 and `labels: {c1: ""}` resolves to an empty label and no label box; with label `HTTPS`, exactly `HTTPS` |
+| 6 | The rendered label has no leading separator | `make examples`; `ls examples/regression-78/ specs/008-lint-robustness/visual/`; read `view.light.png` | exit 0; `view.drawio`, both PNGs and `regression-78-view-before.png` listed; the edge shows `⚠ G1` with no character before it |
+| 7 | The lint measures the badge-only text | `go test ./internal/lint/ -run 'TestLint_AnnotationOnlyLabel' -v` | `house.LabelBox` of the badge-only edge is 32 px wide (`⚠ G1`, 4 runes × 6 + 2 × 4), against 50 on `main` (` · ⚠ G1`), same centre; subtest `one_px_in`: a node whose right edge is the box's X + 1 gives exactly one label-overlap finding; `one_px_outside`: a node whose right edge is the box's X − 1, still inside `main`'s box, gives 0 findings |
+| 8 | The view contract carries both fields | `grep -n 'hidden_annotations\|hide_annotations' schemas/v1alpha1/view.schema.json` | both fields present; `hidden_annotations` an object of non-empty strings |
 
 ## LNT-06 · Zone sub
 
