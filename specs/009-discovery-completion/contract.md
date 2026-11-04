@@ -14,14 +14,18 @@ character to match is written `[\|]`, that is `[|]` once unescaped.
   scope); Q4 a (`<system>/discovery.yaml`, its format ADR written in T13); Q5 a. The
   rows they reopened, DSC-03 #3 and #5, DSC-04, DSC-08 #4, DSC-10 #3 and #5, were
   rewritten for them.
-- Agreed: pending `make review-contract SPEC=009` (three rounds at most, PROCESS.md).
 - Round 1 (2026-11-04): CHANGES, 33 points, all applied.
 - Round 2: CHANGES, 21 points, all applied; phase `6a` now points at this spec, so the
   carried P6a features are evaluated in full mode here.
 - Round 3, the last (PROCESS.md cap): CHANGES; the three points that made a criterion
   pass or fail whatever the code does are applied (DSC-04 #2 and #3, the FR-015 gate of
   DSC-09 #4); nine follow-ups are recorded below, for the implementer to apply in the
-  first commit of the matching task. Agreed 2026-11-04.
+  first commit of the matching task.
+- Post-answer review (2026-11-04): CHANGES, 4 points: DSC-04 #1 `legacy-fragment`
+  applied (a byte-identical round trip failed whatever the code does, since yaml.v3
+  single-quotes ids in flow style); DSC-03 #3b, DSC-04 #6 and DSC-10 #5 tightened as
+  proposed.
+- Agreed: 2026-11-04, after round 3 and the post-answer review.
 
 Test names below are the ones the implementation must use. Each named test is
 table-driven and asserts with `Equal` on the whole output it checks (a full reference or
@@ -55,7 +59,7 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 | 1 | The namespace warning | `go test ./cmd/noodle/ -run TestNamespace -v` | exit 0: subtest `mixed` prints exactly `3 objects name no namespace; pass -namespace` on stderr; `all-named` prints no such line; `namespace-flag` with `-namespace web` prints no such line and gives the 3 objects ids under `k8s:web/` |
 | 2 | `-argocd-app` sets the default namespace, silently | same, subtest `argocd-app` | the 3 objects get ids under `k8s:web/`, and stderr has no `name no namespace` line |
 | 3 | `-kustomize` renders read-only, passes `-enable-helm` only when asked, names the fragment | `go test ./internal/adapter/k8s/ ./cmd/noodle/ -run TestKustomize -v` | exit 0, with a fake `kustomize` on PATH that records its argv: `render` discovers its output, asserts argv is exactly `build <DIR>`, and the input directory's file hashes are unchanged; `enable-helm` asserts argv exactly `build <DIR> --enable-helm`; `fragment-name` asserts the file written is `discovered/k8s-shop.yaml`; `missing-tool` runs `-kustomize` with no `kustomize` on PATH and asserts a non-nil error whose message contains `kustomize` and `nix shell nixpkgs#kustomize`, and that no fragment is written; `hint-without-flag` walks a directory holding `kustomization.yaml` without the flag and asserts with `Equal` one `unrendered` entry whose hint is `noodle discover k8s -kustomize <DIR>` |
-| 3b | The tool is in the dev shell | `grep -c 'kustomize' flake.nix` | ≥ `1`, inside the `devShells` package list |
+| 3b | The tool is in the dev shell | `grep -cE '^\s*packages = with pkgs; \[[^]]*\bkustomize\b' flake.nix` | `1` (the `devShells` package list) |
 | 4 | `src` paths are relative | `go test ./internal/adapter/k8s/ -run TestSrcPaths -v`; `grep -rcE '(^\|[ {,-])file: */' examples/discovery-k8s/discovered/` | exit 0, subtests `manifests` and `kustomize` assert that every `src.file` starts with the input directory relative to the working directory, none starts with `/`, none contains `os.TempDir()`; grep gives `0` for every file |
 | 5 | The decision is recorded | `grep -c '^status: accepted' docs/adr/0027-discovery-may-call-kustomize.md`; `make spec-check` | `1`; exit 0 |
 
@@ -63,12 +67,12 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 
 | # | Criterion | Verified by | Threshold |
 |---|---|---|---|
-| 1 | The contract: optional top-level `object`, `src.object` kept | `go test ./internal/model/ -run TestIdentity -v` | exit 0: `schema-accepts` (an item with `object {apiVersion, kind, namespace, name}`, and an item without `object`); `schema-rejects` with three cases, no `apiVersion`, no `kind`, no `name`, each refused; `src-object-unchanged` (a fragment using only the string `src.object` validates); `legacy-fragment` loads `internal/model/testdata/minimal/discovered/k8s-manifests.yaml` and marshals it back byte-identical |
+| 1 | The contract: optional top-level `object`, `src.object` kept | `go test ./internal/model/ -run TestIdentity -v` | exit 0: `schema-accepts` (an item with `object {apiVersion, kind, namespace, name}`, and an item without `object`); `schema-rejects` with three cases, no `apiVersion`, no `kind`, no `name`, each refused; `src-object-unchanged` (a fragment using only the string `src.object` validates); `legacy-fragment` loads `internal/model/testdata/minimal/discovered/k8s-manifests.yaml` (which validates against `schemas/v1alpha1/fragment.schema.json`), encodes it with `EncodeFragment` and loads the result again: `Equal` on the two `Fragment` values, no encoded item has a top-level `object` key, and `bytes.Equal(EncodeFragment(load(fixture)), EncodeFragment(load(EncodeFragment(load(fixture)))))` |
 | 2 | The legacy fixture predates this spec | `git log --format=%h origin/main -- internal/model/testdata/minimal/discovered/k8s-manifests.yaml` | non-empty |
 | 3 | The adapter fills them where an object stands behind the item | `go test ./internal/adapter/k8s/ -run TestIdentity -v` | exit 0: `scenario` asserts FR-008's scenario exactly; `every-item`, on the fragment of `examples/discovery-k8s/manifests`, asserts 0 object-derived items without `object`, and with `Equal` the full list of ids that carry no `object` (the synthesized elements only); no item or reference has a `field` key (out of scope, ADR-0028); `connection-object` asserts an inferred connection carries the `object` of the ConfigMap whose value created it |
 | 4 | Existing fixtures are not rewritten | `git diff --name-only --diff-filter=MD origin/main...HEAD -- internal/adapter/k8s/testdata cmd/noodle/testdata internal/model/testdata` | no output |
 | 5 | The decision is recorded (C06) | `grep -c '^status: accepted' docs/adr/0028-fragments-carry-object-identity.md`; `make spec-check` | `1`; exit 0 |
-| 6 | No version bump | `grep -c 'noodle/v1alpha2' schemas/v1alpha1/fragment.schema.json` | `0` |
+| 6 | No version bump | `ls schemas/`; `grep -c 'noodle/v1alpha1' schemas/v1alpha1/fragment.schema.json` | only `v1alpha1`; at least `1`, and no other apiVersion string in that file |
 
 ## DSC-05 · The example
 
@@ -124,7 +128,7 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 | 2 | A malformed rule is refused | same, subtest `bad-template` | discovery fails with an error matching `^.*discovery\.yaml:[0-9]+: ` followed by the template, asserted with `Regexp` |
 | 3 | The six reference kinds of FR-020 | `go test ./internal/adapter/k8s/ -run TestReferenceKinds -v` | exit 0, subtests `owner`, `selects`, `runs-as`, `bound-by`, `scales`, `issues`, each asserting `{from, to, kind, src.line}` with `Equal` (no `field`, ADR-0028) |
 | 4 | Started only after `Decision: go` | DSC-09 #4, which covers `rules.go` and `refkinds.go` | same threshold |
-| 5 | The rules file format is decided | `grep -l 'discovery.yaml' docs/adr/0*.md`; for that file, `grep -c '^status: accepted'`; `make spec-check` | one ADR, written in T13 and listing `"009"` in its `specs`; `1`; exit 0 |
+| 5 | The rules file format is decided | `grep -l '^specs: .*"009"' docs/adr/0*.md`, then `grep -l 'discovery.yaml'` on those files; for the result, `grep -c '^status: accepted'`; `make spec-check` | exactly one file, written in T13; `1`; exit 0 |
 
 ## DSC-11 · Query
 
