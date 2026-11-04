@@ -89,6 +89,11 @@ func discoverCommand(ctx context.Context, reg *adapter.Registry, args []string, 
 		return err
 	}
 	fmt.Fprintln(stderr, summary(a.Name(), stats, f, buf.Len(), buf.Len()-without.Len()))
+	for _, u := range f.Unresolved {
+		if u.Kind == "unrendered" && u.Hint == "kustomize" {
+			fmt.Fprintf(stderr, "%s: kustomization found, rerun: noodle discover k8s -kustomize %s (needs kustomize: nix shell nixpkgs#kustomize)\n", u.Value, u.Value)
+		}
+	}
 	if *namespace == "" && *argocdApp == "" && stats.NoNamespace > 0 && stats.Namespaced > 0 {
 		fmt.Fprintf(stderr, "%d objects name no namespace; pass -namespace\n", stats.NoNamespace)
 	}

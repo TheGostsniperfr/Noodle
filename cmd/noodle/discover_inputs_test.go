@@ -154,6 +154,25 @@ func TestKustomize(t *testing.T) {
 		assert.NoDirExists(t, filepath.Join(root, "discovered"))
 	})
 
+	t.Run("hint-without-flag", func(t *testing.T) {
+		root := t.TempDir()
+		require.NoError(t, os.MkdirAll(filepath.Join(root, "overlay"), 0o755))
+		require.NoError(t, os.WriteFile(filepath.Join(root, "overlay", "kustomization.yaml"), []byte("resources: []\n"), 0o644))
+		t.Chdir(root)
+
+		stdout, stderr, err := runDiscover(t, "", ".")
+
+		require.NoError(t, err)
+		var doc struct {
+			Unresolved []struct {
+				Kind, Value, Hint string
+			}
+		}
+		require.NoError(t, yaml.Unmarshal([]byte(stdout), &doc))
+		assert.Equal(t, []struct{ Kind, Value, Hint string }{{"unrendered", "overlay", "kustomize"}}, doc.Unresolved)
+		assert.Contains(t, strings.Split(stderr, "\n"), "overlay: kustomization found, rerun: noodle discover k8s -kustomize overlay (needs kustomize: nix shell nixpkgs#kustomize)")
+	})
+
 	t.Run("stdin-with-kustomize-fails", func(t *testing.T) {
 		_, _, err := runDiscover(t, "", "-", "-kustomize", "apps/shop")
 
