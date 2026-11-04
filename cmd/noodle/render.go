@@ -303,10 +303,10 @@ func (r *renderer) background() {
 
 func (r *renderer) header() {
 	s := r.spec
-	h := house.Header(s)
-	if h.Box == (diagram.Rect{}) {
+	if house.HeaderBox(s) == (diagram.Rect{}) {
 		return
 	}
+	h := house.Header(s)
 	r.vertex("header-dot", "1", "", style("ellipse", "fillColor="+r.th.Accent, "strokeColor=none"), h.Dot.X, h.Dot.Y, h.Dot.W, h.Dot.H)
 	title := fmt.Sprintf(`<b>%s</b>`, html.EscapeString(s.Title))
 	r.vertex("header-title", "1", title, style("text", "html=1", "align=left", "verticalAlign=middle", font(house.HeaderTitleSize, r.th.Title)), h.Title.X, h.Title.Y, h.Title.W, h.Title.H)

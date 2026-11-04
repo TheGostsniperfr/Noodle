@@ -38,6 +38,7 @@ var rules = []rule{
 	checkOfferingText,
 	checkMatrixText,
 	checkCardText,
+	checkHeaderOverlap,
 }
 
 type linter struct {
