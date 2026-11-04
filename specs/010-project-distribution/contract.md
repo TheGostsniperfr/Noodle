@@ -7,11 +7,17 @@ In a table cell, `\|` is the Markdown escape of a pipe: run every command with a
 `|`. A literal pipe inside a regex is written `[|]`. "exit 0" with subtests means every
 subtest passes, each one asserting the failure it provokes.
 
-- Agreed: pending `make review-contract SPEC=010` (at most three rounds, PROCESS.md).
+- Agreed: 2026-11-04 after three rounds, the cap of PROCESS.md. Round 3 points that made
+  a criterion pass or fail whatever the code does were applied; the others are listed
+  under "Follow-ups" and are not graded. Implementation waits for clarification 1 and
+  its ADR (T01).
 - Round 1 (2026-11-04): CHANGES, 31 points, all applied. Clarifications are still open:
   the criteria below assume the recommended answer of each, and the last section lists
   what changes if Brian answers otherwise.
-- Round 2: CHANGES, 19 points, all applied. Clarifications are still open; the fallback
+- Round 2: CHANGES, 19 points, all applied.
+- Round 3: CHANGES, 7 points; 3 applied (a `-run` pattern that never matched, a count
+  that a correct triage could fail, a check that could pass reading nothing), 3 follow-ups,
+  1 precondition (clarifications before T01). Clarifications are still open; the fallback
   table names literal files and commands for each other answer.
 - The evaluator cannot run `gh`; #94's seven pieces are quoted below, in #94's order:
   `.opencode/agents/*.md`, `evidence.how`, `geometry-free semantic validation`,
@@ -31,16 +37,20 @@ subtest passes, each one asserting the failure it provokes.
 
 ## PRJ-02 · Fork triage
 
-The disposition count is checked with this command, outside the table:
+The disposition count and the order of the pieces are checked with these commands,
+outside the table:
 
 ```bash
 grep -cE '^[|] .* [|] (#[0-9]+|declined: .+) [|]$' specs/010-project-distribution/fork-triage.md
+grep -E '^[|] .* [|] (#[0-9]+|declined: .+) [|]$' specs/010-project-distribution/fork-triage.md \
+  | grep -n -F -e '.opencode/agents/*.md' -e 'evidence.how' -e 'geometry-free semantic validation' \
+      -e 'non-destructive' -e 'Mermaid export' -e 'noodle scan' -e 'roadmap change'
 ```
 
 | # | Criterion | Verified by | Threshold |
 |---|---|---|---|
 | 1 | Commits and build result recorded | `grep -n -e 6d61ce0 -e 2541717 specs/010-project-distribution/fork-triage.md`; `grep -n -e '^## ' -e 'network none' specs/010-project-distribution/fork-triage.md`; `grep -nE '^- go test exit code: [0-9]+$' specs/010-project-distribution/fork-triage.md` | both SHAs found; `--network none` and exactly one exit-code line lie between `## Build and test` and the next `## ` |
-| 2 | One disposition per piece of #94, in #94's order | the command above; `grep -n -F -e '.opencode/agents/*.md' -e 'evidence.how' -e 'geometry-free semantic validation' -e 'non-destructive' -e 'Mermaid export' -e 'noodle scan' -e 'roadmap change' specs/010-project-distribution/fork-triage.md` | `7`; each piece found once, with line numbers in the quoted order |
+| 2 | One disposition per piece of #94, in #94's order | the two commands above | `7`; the second prints seven lines, numbered 1 to 7, one per piece in the quoted order |
 | 3 | Draft reply present | `grep -n -e '^## ' -e 'Apache-2.0' -e '#94' specs/010-project-distribution/fork-triage.md` | `Apache-2.0` and `#94` each have a line between `## Reply to the author` and the next `## ` or the end of the file |
 | 4 | The license is on main before triage lands | `git log origin/main --diff-filter=A --format=%h -- LICENSE` | non-empty |
 | 5 | No fork commit predates the license | `git log origin/main -i --author=girold --format=%h`; `git log <sha from #4>..origin/main -i --author=girold --format=%h` | the two lists are equal as sets |
@@ -60,7 +70,7 @@ grep -cE '^[|] .* [|] (#[0-9]+|declined: .+) [|]$' specs/010-project-distributio
 |---|---|---|---|
 | 1 | OpenCode project setup | `go test ./cmd/noodle/ -run Setup_OpenCode -v` | exit 0; files equal `cmd/noodle/testdata/setup/opencode/`; stdout is exactly five `wrote` lines: `.agents/skills/noodle-diagram/SKILL.md`, `.agents/skills/noodle-diagram/reference.md`, `.opencode/agents/diagram-reviewer.md`, `.opencode/agents/fact-finder.md`, `.opencode/agents/icon-curator.md` |
 | 2 | Codex project setup in the documented format | `go test ./cmd/noodle/ -run Setup_Codex -v`; `grep -n -e '^name = ' -e '^description = ' -e '^developer_instructions = ' cmd/noodle/testdata/setup/codex/.codex/agents/fact-finder.toml` | exit 0; files equal `cmd/noodle/testdata/setup/codex/`; stdout is exactly the five files written; all three keys found |
-| 2b | Written agents carry the real instructions | `go test ./cmd/noodle/ -run 'Setup_OpenCode/instructions\|Setup_Codex/instructions' -v` | `--- PASS` for both: for each agent, the body of `agents/<name>.md` after its frontmatter appears verbatim in the written file |
+| 2b | Written agents carry the real instructions | `go test ./cmd/noodle/ -run 'Setup_(OpenCode\|Codex)/instructions' -v` | `--- PASS` for `TestSetup_OpenCode/instructions` and `TestSetup_Codex/instructions`, and under each for `instructions/diagram-reviewer`, `instructions/fact-finder` and `instructions/icon-curator`: the body of `agents/<name>.md` after its frontmatter appears verbatim in the written file |
 | 3 | `-user` scope | `go test ./cmd/noodle/ -run Setup_User -v` | exit 0; with `HOME` set to a temp dir, files appear under `~/.agents/skills/`, `~/.config/opencode/agents/` and `~/.codex/agents/` |
 | 4 | Idempotent per host | `go test ./cmd/noodle/ -run Setup_Idempotent -v` | exit 0; subtests `opencode` and `codex`: the second run prints no `wrote` line and every file's bytes and modification time are unchanged |
 | 5 | Foreign files are kept | `go test ./cmd/noodle/ -run Setup_KeepsForeign -v` | exit 0; a file without the marker is unchanged, named on stderr, and the exit code is 1 |
@@ -110,10 +120,18 @@ grep -cE '^[|] .* [|] (#[0-9]+|declined: .+) [|]$' specs/010-project-distributio
 | # | Criterion | Verified by | Threshold |
 |---|---|---|---|
 | 1 | Three skills, one source | `ls .agents/skills/`; `ls -l .claude/skills/` | `issue-writer`, `release-notes`, `contrib-check` each with a `SKILL.md` under `.agents/skills/`; each also present in `.claude/skills/` as a symlink to it |
-| 2 | They pass the skill rules | `make spec-check`; `go test ./tools/speccheck/ -run Skills -v` | exit 0; subtest `process_skill_broken` writes `<t.TempDir()>/.agents/skills/broken/SKILL.md` with an over-long description and asserts one finding naming `.agents/skills/broken/SKILL.md` |
+| 2 | They pass the skill rules | `make spec-check`; `go test ./tools/speccheck/ -run Skills -v` | exit 0; subtest `process_skill_broken` writes `<t.TempDir()>/.agents/skills/broken/SKILL.md` with an over-long description, runs `run([]string{"-root", tmp, "all"}, …)`, and asserts `errFindings` with one stderr line naming `.agents/skills/broken/SKILL.md` |
 | 3 | `issue-writer` targets the template | `grep -n -e 'idea.yml' -e 'B-NN' .agents/skills/issue-writer/SKILL.md` | both found |
 | 4 | `release-notes` reuses PR images and links migrations | `grep -n -e 'before/after' -e 'migration' .agents/skills/release-notes/SKILL.md` | both found |
 | 5 | `contrib-check` runs the CONTRIBUTING checklist | `grep -n -e 'CONTRIBUTING.md' -e 'make check' .agents/skills/contrib-check/SKILL.md` | both found |
+
+## Follow-ups (round 3, not graded)
+
+- PRJ-07 #7: a subtest `nix_on_path` (a stub `nix`: no download), and names
+  `download_verified` and `download_altered` for the two download subtests.
+- PRJ-06 #1: `explanation.md` has headings for model, view, layout, fragment and
+  connection semantics.
+- PRJ-03 #1: `claude_name_outside_heading` is table-driven over the six literals of #4.
 
 ## If Brian answers otherwise
 
