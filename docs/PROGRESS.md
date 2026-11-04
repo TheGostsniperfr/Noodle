@@ -68,6 +68,7 @@ decisions go in ADRs, acceptance in `features.json`.
 ### 2026-11-04 · Spec 010 implementation (project and distribution)
 
 - T01: Apache-2.0 `LICENSE`, `NOTICE`, and `license` in plugin.json, flake.nix and SKILL.md.
+- T02: icon attribution page (45 rows, source and license) and `go test ./assets/` that fails per missing row, URL or license.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 
