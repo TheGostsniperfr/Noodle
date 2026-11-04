@@ -17,6 +17,7 @@
           # Dependencies are vendored so the plugin wrapper can build offline too.
           vendorHash = null;
           env.CGO_ENABLED = 0;
+          ldflags = [ "-X main.version=${self.shortRev or self.dirtyShortRev or "dev"}" ];
           meta = {
             mainProgram = "noodle";
             license = pkgs.lib.licenses.asl20;

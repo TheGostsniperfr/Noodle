@@ -15,7 +15,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
   Flip **PRJ-03** with T03.
 - [x] **T05** `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, issue templates,
   README links (FR-008). Flip **PRJ-05**.
-- [ ] **T06** `noodle version` with the ldflags variable; the flake passes its revision
+- [x] **T06** `noodle version` with the ldflags variable; the flake passes its revision
   (FR-012).
 
 ## Wave 2

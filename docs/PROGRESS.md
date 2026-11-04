@@ -72,6 +72,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T04: skill wording: Claude Code-only names moved under an `In Claude Code` section; the facts step names the `fact-finder` subagent.
 - T03: `speccheck skills` (run by `all`) checks every SKILL.md against the Agent Skills rules; rules live in `internal/skillrules` so `noodle setup` tests can reuse them.
 - T05: CONTRIBUTING, SECURITY, CODE_OF_CONDUCT (Contributor Covenant 2.1), idea and bug issue templates, README links.
+- T06: `noodle version` prints `main.version`; the flake sets it from the flake revision.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

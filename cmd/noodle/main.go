@@ -21,12 +21,16 @@ const usage = `usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|
        noodle migrate SPEC.yaml DIR   (a v0 single file to a v1alpha1 system)
        noodle discover ADAPTER [PATH…|-] [-o fragment.yaml]
        noodle drift DIR   (the curated model against DIR/discovered)
+       noodle version
        noodle -list-icons [-icons DIR[,DIR]]`
+
+// version is set at build time with -ldflags "-X main.version=<value>".
+var version = "dev"
 
 func main() {
 	if len(os.Args) > 1 {
 		commands := map[string]func([]string) error{"render": renderCommand, "migrate": migrateCommand,
-			"drift": func(args []string) error { return driftCommand(args, os.Stdout) }, "discover": func(args []string) error {
+			"version": versionCommand, "drift": func(args []string) error { return driftCommand(args, os.Stdout) }, "discover": func(args []string) error {
 				reg, err := adapters()
 				if err != nil {
 					return err
@@ -59,6 +63,14 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Println(strings.Join(set.names(), "\n"))
+}
+
+func versionCommand(args []string) error {
+	if len(args) > 0 {
+		return fmt.Errorf("version takes no arguments, got %q", args[0])
+	}
+	fmt.Println(version)
+	return nil
 }
 
 func splitList(s string) []string {
