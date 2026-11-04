@@ -7,7 +7,9 @@ In a table cell, `\|` is the Markdown escape of a pipe: run every command with a
 
 - Agreed: 2026-11-04 after three rounds (cap reached). Brian's answers (2026-11-04) keep
   option (a) for clarifications 1, 3 and 5; answers 2 and 4 rewrote LNT-05 (ADR-0026),
-  re-reviewed once more.
+  re-reviewed once more: CHANGES, 4 points, all on LNT-05, all applied (node and
+  sequence badges under `hide_annotations`, the undrawn check under the flag, globs and
+  sequence views, an exact schema threshold).
 - Round 1 (2026-11-04): CHANGES, 23 points, all applied. Thresholds now assume the
   recommended answer (option a) of each clarification; see "Assumed answers" below.
 - Round 2: CHANGES, 12 points, all applied: the margin takes the font size, the sequence
@@ -128,11 +130,13 @@ draws `a` and `b` but not `c9`'s ends. Messages are those of `model.Check` findi
 | 1 | An empty label keeps the badges alone | `go test ./internal/resolve/ -run 'TestResolve_AnnotationLabel' -v` | subtest `empty_label`: topology label exactly `!!⚠ G1!!`; `label`: `HTTPS` with G1 gives exactly `HTTPS · !!⚠ G1!!`; `sequence_empty_label`: a sequence message with `""` and G1 gives exactly `!!⚠ G1!!` |
 | 2 | An undrawn annotation is an error | `go test ./internal/model/ -run 'TestCheck_UndrawnAnnotation' -v` | subtest `undrawn`: findings equal `[{File: views/v.yaml, ID: G1, Msg: annotation targets nothing drawn in this view (c9): draw a target or list it in hidden_annotations with a reason}]` |
 | 3 | Acknowledged, or one target drawn, passes | same | subtest `acknowledged`: `hidden_annotations: {G1: "background job, drawn in jobs view"}` gives 0 findings; `one_drawn_one_not`: G1 also targeting `a` gives 0 findings |
+| 3b | "Drawn" agrees with the resolver | same | subtest `include_glob`: `include: [grp/**]` with G1 targeting a child of `grp` gives 0 findings; `sequence_view`: a sequence view whose messages do not use `c9`, with G1 on `c9`, gives exactly the `undrawn` finding with `File: views/<that view>.yaml` |
+| 3c | `hide_annotations` does not skip the check | same | subtest `hide_annotations_still_checks`: view `v` with `hide_annotations: true` and G1 only on `c9` gives exactly the `undrawn` list of #2; `hide_annotations_drawn`: the same view with G1 also on `a` gives 0 findings |
 | 4 | A bad acknowledgement is an error | same | subtests, one finding each, exact list: `empty_reason` (`{G1: ""}`) `[{File: views/v.yaml, ID: G1, Msg: hidden_annotations needs a reason}]`; `unknown_id` (`{G7: "x"}`) `[{File: views/v.yaml, ID: G7, Msg: hidden_annotations names G7, which is not an annotation}]`; `drawn_id` (G1 targeting `a`, listed) `[{File: views/v.yaml, ID: G1, Msg: hidden_annotations hides G1, which this view draws}]` |
-| 5 | `hide_annotations` drops the badges | `go test ./internal/resolve/ -run 'TestResolve_HideAnnotations' -v` | with `hide_annotations: true`, `c1` with G1 and `labels: {c1: ""}` resolves to an empty label and no label box; with label `HTTPS`, exactly `HTTPS` |
+| 5 | `hide_annotations` drops the badges | `go test ./internal/resolve/ -run 'TestResolve_HideAnnotations' -v` | with `hide_annotations: true`: subtest `edge_empty`, `c1` with G1 and `labels: {c1: ""}` resolves to an empty label and no label box; `edge_label`, label `HTTPS` gives exactly `HTTPS`; `node_badge`, G2 on element `a` gives node `a` `Badge == ""`, and `"G2"` without the flag; `sequence`, a message labelled `HTTPS` with G1 gives exactly `HTTPS` |
 | 6 | The rendered label has no leading separator | `make examples`; `ls examples/regression-78/ specs/008-lint-robustness/visual/`; read `view.light.png` | exit 0; `view.drawio`, both PNGs and `regression-78-view-before.png` listed; the edge shows `⚠ G1` with no character before it |
 | 7 | The lint measures the badge-only text | `go test ./internal/lint/ -run 'TestLint_AnnotationOnlyLabel' -v` | `house.LabelBox` of the badge-only edge is 32 px wide (`⚠ G1`, 4 runes × 6 + 2 × 4), against 50 on `main` (` · ⚠ G1`), same centre; subtest `one_px_in`: a node whose right edge is the box's X + 1 gives exactly one label-overlap finding; `one_px_outside`: a node whose right edge is the box's X − 1, still inside `main`'s box, gives 0 findings |
-| 8 | The view contract carries both fields | `grep -n 'hidden_annotations\|hide_annotations' schemas/v1alpha1/view.schema.json` | both fields present; `hidden_annotations` an object of non-empty strings |
+| 8 | The view contract carries both fields | `jq -c '.properties.hidden_annotations \| {type, additionalProperties}, .properties.hide_annotations.type' schemas/v1alpha1/view.schema.json` | exactly the two lines `{"type":"object","additionalProperties":{"type":"string","minLength":1}}` and `"boolean"` |
 
 ## LNT-06 · Zone sub
 
