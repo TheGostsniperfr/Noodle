@@ -30,3 +30,7 @@ Plan: [`plan.md`](plan.md). Each task ends with `make check` green.
   mention of the id; tests for an empty section and for an id only in prose (DEV-02, 1-2).
 - [x] **T08** Citations inside fenced code blocks are quotations too; a requirement is
   named by a task line, not by prose in `tasks.md` (DEV-02, findings 3 and 4).
+- [x] **T09** `make evaluate` writes its draft with `mktemp`, outside the tree, so the Stop
+  hook does not fire mid-evaluation; on failure the draft path is printed (DEV-05; landed
+  in `674fac9`, noted by the DEV-02 re-evaluation).
+- [x] **T10** Contract criteria ignore fenced examples (DEV-02 re-evaluation, finding 3).

@@ -21,6 +21,8 @@ In a table cell, `\|` is the Markdown escape of a pipe: run every command with a
   DEV-04 again. Each evidence file is committed alone, before its flip.
 - Round 5: CHANGES, 6 points, all applied; the pipe convention above, exact messages
   everywhere, the allowlist listed in full, `spec-check` tested on each of its checks.
+- After agreement: DEV-02 #1 tightened following the DEV-02 NEEDS_WORK (prose-only id,
+  empty section, fenced blocks, continuation lines). Stricter only; no new round.
 - Accepted risks, not graded as "read-only": `Bash(go test:*)` allows `-o`, `-exec` and
   `-coverprofile`, and `Bash(git diff/log/show:*)` allow `--output`. They stay because the
   verify steps need them; ADR-0024 records the residual risk.

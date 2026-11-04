@@ -173,7 +173,7 @@ func (r *Repo) checkSpec(dir string, feats *Features, known, invariants map[stri
 	if !hasContract {
 		return append(out, Finding{contractFile, "a full-mode spec needs a contract"}), nil
 	}
-	criteria := contractCriteria(contract)
+	criteria := contractCriteria(fenceRe.ReplaceAllString(contract, ""))
 	for _, f := range phase.Features {
 		if criteria[f.ID] == 0 {
 			out = append(out, Finding{contractFile, "no criteria for " + f.ID})

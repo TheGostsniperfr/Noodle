@@ -105,6 +105,8 @@ func TestSpec_ReportsEachBrokenRule(t *testing.T) {
 		{"feature named only in contract prose", map[string]string{"specs/001-demo/contract.md": "Order: D-01, D-02.\n## D-01\n| 1 | x | y | z |\n"},
 			"specs/001-demo/contract.md: no criteria for D-02"},
 		{"requirement named on a task's continuation line", map[string]string{"specs/001-demo/tasks.md": strings.Replace(fullTasks, " (FR-002).", "\n  and more (FR-002).", 1)}, ""},
+		{"criterion only inside a fenced example", map[string]string{"specs/001-demo/contract.md": "## D-01\n| 1 | x | y | z |\n```\n## D-02\n| 1 | x | y | z |\n```\n"},
+			"specs/001-demo/contract.md: no criteria for D-02"},
 		{"requirement named only in tasks prose", map[string]string{"specs/001-demo/tasks.md": strings.Replace(fullTasks, "(FR-002)", "", 1) + "Note: FR-002 comes later.\n"},
 			"specs/001-demo/tasks.md: FR-002 is named by no task"},
 		{"missing contract", map[string]string{"specs/001-demo/contract.md": ""},
