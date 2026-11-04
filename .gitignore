@@ -3,3 +3,6 @@
 *.drawio.bkp
 .direnv/
 result
+
+# Worktrees of parallel agents (ADR-0025)
+.claude/worktrees/
