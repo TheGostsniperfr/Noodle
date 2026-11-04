@@ -1,0 +1,31 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: landscape
+title: Landscape 90
+subtitle: The side column must stay inside the canvas.
+bands:
+  - id: supply
+    title: Supply chain
+    color: emerald
+    flow: true
+    sections:
+      - {title: "Source control", items: [src]}
+      - {title: "Build pipeline", items: [ci]}
+      - {title: "Image registry", items: [reg]}
+      - {title: "Vulnerability scan", items: [scan]}
+      - {title: "Image signing", items: [sign]}
+  - id: deploy
+    title: Deployment
+    color: violet
+    sections:
+      - {title: "GitOps controller", items: [gitops]}
+      - {title: "Secrets operator", items: [secrets]}
+  - id: network
+    title: Network
+    color: sky
+    sections:
+      - {title: "Service mesh", items: [mesh]}
+      - {title: "Ingress gateway", items: [ingress]}
+      - {title: "DNS automation", items: [dns]}
+side:
+  - {title: Upkeep, color: amber, items: [backup]}

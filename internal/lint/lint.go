@@ -39,6 +39,7 @@ var rules = []rule{
 	checkMatrixText,
 	checkCardText,
 	checkHeaderOverlap,
+	checkCanvasBounds,
 }
 
 type linter struct {

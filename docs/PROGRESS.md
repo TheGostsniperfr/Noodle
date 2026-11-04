@@ -33,6 +33,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T03: `header_overlap.go` reports a zone, node, card or note over the header block as drawn (`house.HeaderBox`). No example needed a fix. Flips of LNT-02 and B-25 wait for the evaluator.
 - T04: `ports.go` compares the distinct badges of a node pairwise, 2 px inflated; `testdata/ports-73.yaml` is the report's repro. No example needed a fix. LNT-04 flip waits for the evaluator.
 - T05: empty label plus badges renders the badges alone; views gain `hide_annotations` and `hidden_annotations` (schema, model, ADR-0026), and `model.Check` fails an annotation no view target draws. `examples/regression-78` is the fixture; oidc-login acknowledges G1 and G2. LNT-05 flip waits for the evaluator.
+- T06: `canvas_bounds.go` reports a zone, node, card or note past any canvas edge. The #90 landscape does not overrun the canvas at this commit (fixture `landscape-90` reaches the width cap and stays inside), so the resolver is unchanged; see the report. LNT-07 flip waits for the evaluator.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 
