@@ -34,6 +34,12 @@ before the contracts it depends on are frozen.
 - **Live and actions last.** They need infrastructure access, storage and an
   authorization model.
 
+## Working order: batches and waves
+
+Since 2026-11-04 the backlog is worked in thematic batches, a wave at a time, every batch
+in full mode (ADR-0025). Wave 1: lint robustness (spec 008), discovery 6a completion
+(spec 009), project and distribution (spec 010). The table of batches is in ADR-0025.
+
 ## Next up: phase 1
 
 Spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
