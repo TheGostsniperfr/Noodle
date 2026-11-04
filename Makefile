@@ -52,6 +52,7 @@ examples: ## Lint every example, regression fixture and docs diagram (no output 
 	$(NOODLE) render examples/cnp-access --view matrix
 	$(NOODLE) render examples/messaging --view broker
 	$(NOODLE) render examples/regression-72
+	$(NOODLE) render examples/regression-87
 	$(NOODLE) render examples/regression-78
 	for v in proposal reference focus; do $(NOODLE) render examples/topology-diff --view $$v $(REGRESSION_ICONS); done
 	for d in platform-overview app-runtime-view repo-map; do $(NOODLE) render examples/platform-regression/$$d $(REGRESSION_ICONS); done

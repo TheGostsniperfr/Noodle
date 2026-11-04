@@ -1,0 +1,7 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: topology
+title: "Regression 87 · Long zone sub"
+subtitle: "The sub wraps under the label; the edge enters right of it."
+meta:
+  - "v0.1 · source: examples/regression-87"

@@ -28,7 +28,7 @@ Clarifications 1 to 5 of the spec are answered (2026-11-04).
 - [x] **T07** Text margin in `node_text.go` and `resolve.boxWidth`, with the measuring
   width of clarification 1; the four participant labels of #72 as a fixture (FR-004).
   Flip **LNT-03**.
-- [ ] **T08** Zone sub layout and title obstacle per clarification 3 (FR-008). Flip
+- [x] **T08** Zone sub layout and title obstacle per clarification 3 (FR-008). Flip
   **LNT-06**; flip backlog **B-20**; close #22 and #87.
 
 ## Wave 4

@@ -1,0 +1,13 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+
+# Regression fixture for issue #87: a long zone sub used to widen the title obstacle
+# across the whole zone, so an edge entering beside the title failed the lint.
+
+elements:
+  - {id: platform, kind: region, title: Platform, color: sky, sub: "abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi abcdefghi."}
+  - {id: gateway, kind: backend, title: Gateway, tech: "[Envoy]"}
+  - {id: api, kind: backend, parent: platform, title: API, tech: "[Go]"}
+
+connections:
+  - {id: c1, from: gateway, to: api, kind: flow, protocol: HTTP}

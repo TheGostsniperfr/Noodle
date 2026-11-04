@@ -331,7 +331,15 @@ func (r *renderer) zone(z diagram.Zone) error {
 		pad += house.ZoneIconSize + 8
 	}
 	v := fmt.Sprintf(`<b>%s</b>`, html.EscapeString(z.Label))
-	if z.Sub != "" {
+	subLines := house.ZoneSubLines(z)
+	switch {
+	case len(subLines) > 0:
+		escaped := make([]string, len(subLines))
+		for i, l := range subLines {
+			escaped[i] = html.EscapeString(l)
+		}
+		v += fmt.Sprintf(`<br><font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, house.SubFontSize, strings.Join(escaped, "<br>"))
+	case z.Sub != "":
 		v += fmt.Sprintf(`&nbsp;&nbsp;<font color="%s" style="font-size:%gpx">%s</font>`, r.th.Muted, house.SubFontSize, html.EscapeString(z.Sub))
 	}
 	fill := style("fillColor="+color, fmt.Sprintf("fillOpacity=%d", opacity))
@@ -362,16 +370,20 @@ func (r *renderer) zone(z diagram.Zone) error {
 	r.vertex(z.ID, "1", "", st, z.X, z.Y, z.W, z.H)
 	// Title and icon share one row and are both centred on it; draw.io's own label
 	// padding would otherwise leave the icon a few pixels above the text.
-	title := house.ZoneTitleBox(z)
+	title, row := house.ZoneTitleBox(z), house.ZoneTitleRow(z)
 	rowY := title.Y - z.Y
-	r.vertex(z.ID+"__title", z.ID, v, style("text", "html=1", "align=left", "verticalAlign=middle", "spacing=0",
+	align := "verticalAlign=middle"
+	if len(subLines) > 0 {
+		align = fmt.Sprintf("verticalAlign=top;spacingTop=%g", (row.H-house.ZoneFontSize*house.LineHeightEm)/2)
+	}
+	r.vertex(z.ID+"__title", z.ID, v, style("text", "html=1", "align=left", align, "spacing=0",
 		fmt.Sprintf("spacingLeft=%g", pad-12), font(house.ZoneFontSize, color), "movable=0", "resizable=0", "connectable=0", titleOpacity),
 		12, rowY, title.W, title.H)
 	if pill, ok := house.ZonePillRect(z); ok {
 		r.pill(z.ID+"__pill", house.BoxPillText(z.Status, z.Target, z.Change), pill, r.pillFill(z.Change))
 	}
 	if z.Icon != "" {
-		return r.imageStyled(z.ID+"__icon", z.ID, z.Icon, 12, rowY+(title.H-house.ZoneIconSize)/2, house.ZoneIconSize, iconStyle)
+		return r.imageStyled(z.ID+"__icon", z.ID, z.Icon, 12, rowY+(row.H-house.ZoneIconSize)/2, house.ZoneIconSize, iconStyle)
 	}
 	return nil
 }

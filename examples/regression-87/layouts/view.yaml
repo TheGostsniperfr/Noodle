@@ -1,0 +1,9 @@
+apiVersion: noodle/v1alpha1
+kind: Layout
+canvas: {width: 1000, height: 580}
+elements:
+  gateway: {x: 320, y: 130, w: 160, h: 70}
+  platform: {x: 100, y: 240, w: 600, h: 280}
+  api: {x: 220, y: 130, w: 160, h: 70}
+edges:
+  c1: {from: gateway.bottom@80px, to: api.top@80px}

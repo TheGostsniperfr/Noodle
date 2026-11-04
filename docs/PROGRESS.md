@@ -35,6 +35,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T05: empty label plus badges renders the badges alone; views gain `hide_annotations` and `hidden_annotations` (schema, model, ADR-0026), and `model.Check` fails an annotation no view target draws. `examples/regression-78` is the fixture; oidc-login acknowledges G1 and G2. LNT-05 flip waits for the evaluator.
 - T06: `canvas_bounds.go` reports a zone, node, card or note past any canvas edge. The #90 landscape does not overrun the canvas at this commit (fixture `landscape-90` reaches the width cap and stays inside), so the resolver is unchanged; see the report. LNT-07 flip waits for the evaluator.
 - T07: node text is measured at `house.ExportCharWidthEm` (0.602) plus `house.FitsWithMargin`, in the lint, `resolve.boxWidth` and the landscape tile width. Fixture `examples/regression-72`. cnp-runtime, platform-overview and app-runtime-view boxes widened (nodes shifted to keep their edges); sequence boxes and landscape tiles grow by themselves. LNT-03 flip waits for the evaluator.
+- T08: a zone sub that does not fit the title line inside the zone wraps under the label in a column of at most 240 px; `house.ZoneTitleBox` covers exactly those lines and the renderer draws them. Fixture `examples/regression-87` (rejected by the lint on main, so its before image comes from main's renderer with the lint off). No other example changed. LNT-06, B-20 flips wait for the evaluator.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 
