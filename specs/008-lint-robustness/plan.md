@@ -22,7 +22,7 @@ house: NodeFootprint, ZoneTitleBox, PortBadges, + HeaderBox, CardLayout (new)
   rows the renderer draws (title, listed lines with their bullet, or the legend's two
   columns of rows and its notes block), each with its rectangle and font size. The
   renderer's `card()` and `legend()` draw from it; new rule `card_text.go` measures it.
-- **Text margin** (FR-004): one helper, `house.FitsWithMargin(textW, availW)`, used by
+- **Text margin** (FR-004): one helper, `house.FitsWithMargin(textW, availW, fontSize)`, used by
   `node_text.go` and by `resolve.boxWidth`. The measuring width follows clarification 1.
 - **Port badges** (FR-005): `ports.go` compares the distinct badges of each node pairwise.
 - **Annotations** (FR-006, FR-007): `resolve.edges` joins label and badges with a
@@ -38,11 +38,12 @@ house: NodeFootprint, ZoneTitleBox, PortBadges, + HeaderBox, CardLayout (new)
 
 | Package | Change |
 |---|---|
-| `internal/house` | `HeaderBox`, `CardLayout`, `FitsWithMargin`; `ZoneTitleBox` per clarification 3 |
+| `internal/house` | `HeaderBox`, `CardLayout`, `FitsWithMargin(textW, availW, fontSize)`; `ZoneTitleBox` per clarification 3 |
 | `internal/lint` | new `header_overlap.go`, `card_text.go`, `canvas_bounds.go`; `ports.go` pairwise; `node_text.go` margin; registered in `rules` |
 | `internal/resolve` | `sequence.go` box width with margin; `resolve.go` badge join and undrawn annotations; `landscape.go` side column |
 | `cmd/noodle` | `render.go` header, card, legend and zone label drawn from `house` |
-| `examples/`, `docs/diagrams/` | diagrams the new rules reject are fixed (FR-010) |
+| `examples/`, `docs/diagrams/` | diagrams the new rules reject are fixed (FR-010); fixtures `regression-72`, `regression-78`, `regression-87` with committed `.drawio` and PNGs |
+| `cmd/noodle` tests | `TestRender_CardLayoutGolden` on frozen copies in `testdata/cardlayout/`; `TestExamples_DrawioCurrent` re-renders every committed fixture `.drawio` |
 
 ## Alternatives set aside
 
