@@ -59,9 +59,11 @@ func TestMerge(t *testing.T) {
 
 		g := graph.Merge(m, fragment("k8s-a", []model.DiscoveredElement{none, first, second}))
 
-		assert.Equal(t, []model.Port{port("http", 8080), port("metrics", 9090)}, g.Model.Elements[0].Ports,
-			"the first matched element that has ports, whole, not merged with the next")
-		assert.Equal(t, []string{"edge"}, g.Model.Elements[0].Tags)
+		assert.Equal(t, []model.Element{{ID: "api", Kind: "backend", Tech: "Deployment · api:1",
+			Ports:   []model.Port{port("http", 8080), port("metrics", 9090)},
+			Tags:    []string{"edge"},
+			Matches: []string{"k8s:prod/deployment/none", "k8s:prod/deployment/api", "k8s:prod/service/api"}}}, g.Model.Elements,
+			"ports from the first matched element that has any, whole, not merged with the next one's")
 	})
 
 	t.Run("keeps-sources", func(t *testing.T) {
