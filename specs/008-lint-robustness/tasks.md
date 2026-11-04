@@ -33,7 +33,7 @@ Clarifications 1 to 5 of the spec are answered (2026-11-04).
 
 ## Wave 4
 
-- [ ] **T09** Fix every example, regression fixture and docs diagram the new rules reject;
+- [x] **T09** Fix every example, regression fixture and docs diagram the new rules reject;
   before/after PNGs in the PR (FR-010). Flip **LNT-08**.
 
 ## Convergence
