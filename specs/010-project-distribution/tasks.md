@@ -29,7 +29,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
   idempotent, with golden-file tests in temporary directories (FR-005, FR-006).
 - [x] **T10** The marker line, refusal to overwrite foreign files, and the README
   install section per host (FR-007). Flip **PRJ-04** with T08 and T09.
-- [ ] **T11** `docs/guide/` tutorial (its system in `examples/tutorial`, linted by
+- [x] **T11** `docs/guide/` tutorial (its system in `examples/tutorial`, linted by
   `make examples`), how-to pages, explanation, `make cli-doc`, `cli.md` and its test
   (FR-009).
 - [ ] **T12** README positioning and the VISION paragraph (FR-010); the "Discovery"

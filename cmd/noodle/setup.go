@@ -45,6 +45,20 @@ var hosts = map[string]host{
 	"codex":    {projectAgentDir: ".codex/agents", userAgentDir: ".codex/agents", agentFile: codexAgent},
 }
 
+type setupFlags struct {
+	set           *flag.FlagSet
+	project, user *bool
+}
+
+func newSetupFlags() setupFlags {
+	fs := flag.NewFlagSet("setup", flag.ContinueOnError)
+	return setupFlags{
+		set:     fs,
+		project: fs.Bool("project", false, "write under DIR (default .)"),
+		user:    fs.Bool("user", false, "write under the home directory"),
+	}
+}
+
 // setupEnv is what runSetup needs from its surroundings, so tests can run it anywhere.
 type setupEnv struct {
 	stdout, stderr io.Writer
@@ -68,10 +82,9 @@ func runSetup(args []string, env setupEnv) error {
 	if !ok {
 		return fmt.Errorf("setup: unknown host %q\n%s", args[0], setupUsage)
 	}
-	flags := flag.NewFlagSet("setup", flag.ContinueOnError)
+	opts := newSetupFlags()
+	flags, project, user := opts.set, opts.project, opts.user
 	flags.SetOutput(env.stderr)
-	project := flags.Bool("project", false, "write under DIR (default .)")
-	user := flags.Bool("user", false, "write under the home directory")
 	var dirs []string
 	rest := args[1:]
 	for {

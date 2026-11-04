@@ -24,7 +24,7 @@ EVALUATOR := NOODLE_EVALUATOR=1 claude -p --agent evaluator \
 	Bash(make examples) Bash(make test) Bash(make vet) Bash(make help) Bash(make -s help) \
 	Bash(make evaluate FEATURE=) Bash(make review-contract SPEC=)"
 
-.PHONY: help init check ci vet test examples render features spec-check adr-index \
+.PHONY: help init check ci vet test examples render features spec-check adr-index cli-doc \
 	evaluate review-contract discover-eval plugin vendor-check next
 
 help: ## List the targets
@@ -54,6 +54,7 @@ examples: ## Lint every example, regression fixture and docs diagram, and rerun 
 	$(NOODLE) render examples/regression-72
 	$(NOODLE) render examples/regression-87
 	$(NOODLE) render examples/regression-78
+	$(NOODLE) render examples/tutorial
 	for v in proposal reference focus; do $(NOODLE) render examples/topology-diff --view $$v $(REGRESSION_ICONS); done
 	for d in platform-overview app-runtime-view repo-map; do $(NOODLE) render examples/platform-regression/$$d $(REGRESSION_ICONS); done
 	$(NOODLE) render docs/diagrams/contract-pipeline -icons docs/diagrams/icons
@@ -63,6 +64,9 @@ examples: ## Lint every example, regression fixture and docs diagram, and rerun 
 render: ## Lint and render one view: SYS=<dir> [VIEW=<id>] [OUT=<file.drawio>] [THEME=dark|light] [ICONS=<dirs>] [SLIDE=1]
 	@test -n "$(SYS)" || { echo "usage: make render SYS=<dir> [VIEW=<id>] [OUT=<file.drawio>]" >&2; exit 2; }
 	$(NOODLE) render $(SYS) $(if $(VIEW),--view $(VIEW)) $(if $(OUT),-o $(OUT)) $(if $(THEME),-theme $(THEME)) $(if $(ICONS),-icons $(ICONS)) $(if $(SLIDE),-slide)
+
+cli-doc: ## Regenerate docs/guide/cli.md from the usage text of the binary
+	$(NOODLE) help -markdown > docs/guide/cli.md
 
 features: ## features.json keeps its history; every new pass has its evidence (BASE=<ref>, default HEAD)
 	@echo "== features (base $(BASE))"

@@ -1,0 +1,13 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: z-internet, kind: region, color: slate, icon: globe, title: INTERNET}
+  - {id: z-cluster, kind: region, color: cyan, icon: kubernetes, title: CLUSTER}
+  - {id: user, kind: frontend, parent: z-internet, shape: actor, icon: user, title: User, desc: browser}
+  - {id: api, kind: backend, parent: z-cluster, icon: k8s-deploy, title: API, tech: "[Deployment]", desc: Serves requests,
+     ports: [{name: https, protocol: TCP, port: 443}]}
+  - {id: db, kind: database, parent: z-cluster, shape: cylinder, icon: cnpg, title: Postgres, tech: "[CloudNativePG]",
+     desc: App data, ports: [{name: pg, protocol: TCP, port: 5432}]}
+connections:
+  - {id: c-user-api, from: user, to: api, kind: flow, port: https, protocol: HTTPS, verb: GET}
+  - {id: c-api-db, from: api, to: db, kind: flow, port: pg, protocol: SQL, verb: query}

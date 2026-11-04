@@ -95,6 +95,7 @@ The format is in [the skill reference](skills/noodle-diagram/reference.md).
 
 | System | Shows |
 |---|---|
+| [`tutorial`](examples/tutorial) | the system of the tutorial: a user, an API and a database in two zones |
 | [`cnp-runtime`](examples/cnp-runtime) | one model, two views: the runtime topology and the OIDC login sequence |
 | [`sequence-basics`](examples/sequence-basics) | every sequence step kind: messages, a relay against a tunnel, a note, replies |
 | [`landscape`](examples/landscape) | a tech stack: bands, a side column, a pipeline, planned items with a target |
@@ -106,6 +107,7 @@ The format is in [the skill reference](skills/noodle-diagram/reference.md).
 
 ## Docs
 
+- [User guide](docs/guide/tutorial.md): a tutorial from a first system to a PNG, how-to pages, an explanation of model, view, layout and fragment, and the [CLI reference](docs/guide/cli.md)
 - [Vision](docs/VISION.md): the problem, principles and capability levels L0 to L6
 - [Architecture](docs/ARCHITECTURE.md): modules, contracts, interfaces, storage and security
 - [Progress](docs/PROGRESS.md): where the work stands and where the next session starts

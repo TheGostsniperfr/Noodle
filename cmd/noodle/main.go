@@ -5,7 +5,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -23,6 +22,7 @@ const usage = `usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|
        noodle drift DIR   (the curated model against DIR/discovered)
        noodle setup opencode|codex (-project [DIR] | -user)
        noodle version
+       noodle help [-markdown]
        noodle -list-icons [-icons DIR[,DIR]]`
 
 // version is set at build time with -ldflags "-X main.version=<value>".
@@ -31,7 +31,7 @@ var version = "dev"
 func main() {
 	if len(os.Args) > 1 {
 		commands := map[string]func([]string) error{"render": renderCommand, "migrate": migrateCommand,
-			"version": versionCommand, "setup": func(args []string) error { return setupCommand(args, os.Stdout, os.Stderr) }, "drift": func(args []string) error { return driftCommand(args, os.Stdout) }, "discover": func(args []string) error {
+			"version": versionCommand, "help": func(args []string) error { return helpCommand(args, os.Stdout) }, "setup": func(args []string) error { return setupCommand(args, os.Stdout, os.Stderr) }, "drift": func(args []string) error { return driftCommand(args, os.Stdout) }, "discover": func(args []string) error {
 				reg, err := adapters()
 				if err != nil {
 					return err
@@ -46,13 +46,12 @@ func main() {
 			return
 		}
 	}
-	icons := flag.String("icons", "", "comma-separated directories of extra <name>.svg icons, searched before the built-in ones")
-	listIcons := flag.Bool("list-icons", false, "print the available icon names and exit")
-	flag.Parse()
+	flags, icons, listIcons := newListIconsFlags()
+	flags.Parse(os.Args[1:])
 
 	if !*listIcons {
-		if flag.NArg() == 1 && strings.HasSuffix(flag.Arg(0), ".yaml") {
-			fmt.Fprintf(os.Stderr, "noodle: %s looks like a v0 single file, which is no longer rendered.\nConvert it once with: noodle migrate %s DIR, then: noodle render DIR\n", flag.Arg(0), flag.Arg(0))
+		if flags.NArg() == 1 && strings.HasSuffix(flags.Arg(0), ".yaml") {
+			fmt.Fprintf(os.Stderr, "noodle: %s looks like a v0 single file, which is no longer rendered.\nConvert it once with: noodle migrate %s DIR, then: noodle render DIR\n", flags.Arg(0), flags.Arg(0))
 		} else {
 			fmt.Fprintln(os.Stderr, usage)
 		}
