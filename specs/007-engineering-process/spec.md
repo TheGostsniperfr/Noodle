@@ -1,6 +1,6 @@
 # Spec 007 · Engineering process: traceable specs, evaluated features, one command entry
 
-- Status: **In progress**
+- Status: **Done**
 - Mode: **full**
 - Phase: dev, the engineering process, outside the product roadmap. Needed before the
   specs of #16, #18 and #93 to #107 are written (C11 does not apply: no product code).

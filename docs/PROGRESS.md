@@ -13,8 +13,8 @@ decisions go in ADRs, acceptance in `features.json`.
    T12 and the T14 checkpoint before anything else ([`tasks.md`](../specs/003-static-discovery/tasks.md)).
    Phase 1 still has spec 002 T03 (issue #43, in `dockair-docs`).
    Measure on real repos with `make discover-eval`.
-4. Spec 007 (process, #108) on `feat/spec-process`: evaluate DEV-01 to DEV-05, then pilot the
-   process on #79 (`noodle drift`, P6a-05) as a full-mode spec.
+4. Spec 007 (process, #108) is done on `feat/spec-process`; PR pending. Then pilot the
+   process on #79 (`noodle drift`, P6a-05) as spec 008, full mode.
 
 ## Open threads outside this repo
 
@@ -36,11 +36,12 @@ decisions go in ADRs, acceptance in `features.json`.
   documented in `docs/COMMANDS.md`. `check-features.sh` ported to Go and removed;
   `scripts/init.sh` is now `exec make init` because old verify steps cite it.
 - Contract reviewed in five rounds, all applied; reviews now capped at three (PROCESS.md).
-- DEV-01 passes (evaluator, 7/7 criteria). DEV-02 came back NEEDS_WORK: the contract
-  criteria rule matched any mention of an id, so a deleted section went unnoticed. Fixed
-  (T07, T08); DEV-02 passes on re-evaluation, DEV-03 passes. DEV-04 first run NEEDS_WORK as planned,
-  plus three gate bugs fixed (T12). DEV-05 passes. Next: DEV-04 again. Next: commit the review, `make evaluate` DEV-01, DEV-02, DEV-03,
-  DEV-05, then DEV-04, each evidence committed alone before its flip; then the PR.
+- Every feature evaluated by the read-only evaluator; DEV-01 to DEV-05 pass. Its
+  NEEDS_WORK verdicts found real bugs, fixed as Convergence tasks T06 to T14: contract
+  criteria matched any mention of an id, an unfilled template verdict passed the gate, a
+  misspelled BASE skipped the history rules, an Evaluator look-alike was accepted.
+  One finding was wrong (set -e already stops a failed locate) and is recorded as such.
+- Next: PR for spec 007 (closes #108), then the pilot: #79 `noodle drift` as spec 008.
 
 ### 2026-10-25 · Multi-line node desc
 

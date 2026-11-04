@@ -11,7 +11,7 @@ import (
 
 var (
 	verdictRe   = regexp.MustCompile(`(?m)^- Verdict: \*\*(PASS|NEEDS_WORK)\*\*\s*$`)
-	evaluatorRe = regexp.MustCompile(`(?m)^- Evaluator: (.+)$`)
+	evaluatorRe = regexp.MustCompile(`(?m)^- Evaluator: evaluator(?: |$)`)
 )
 
 // CheckFeatures guards docs/features.json against rewriting history (an entry never
@@ -78,12 +78,16 @@ func (r *Repo) evidenceProblem(feats *Features, id string) string {
 	if v == nil || v[1] != "PASS" {
 		return file + " has no '- Verdict: PASS' line"
 	}
-	spec, _ := r.read(dir, "spec.md")
-	if specMode(spec) == "full" {
-		e := evaluatorRe.FindStringSubmatch(text)
-		if e == nil || !strings.HasPrefix(strings.TrimSpace(e[1]), "evaluator") {
-			return file + " must come from the evaluator agent: the spec is in full mode"
+	mode := ""
+	if p := feats.phaseOf(id); p != nil && p.Spec != "" {
+		spec, err := r.read(dir, "spec.md")
+		if err != nil {
+			return "cannot read the spec of its phase, " + p.Spec + ", to know its mode"
 		}
+		mode = specMode(spec)
+	}
+	if mode == "full" && !evaluatorRe.MatchString(text) {
+		return file + " must come from the evaluator agent: the spec is in full mode"
 	}
 	return ""
 }

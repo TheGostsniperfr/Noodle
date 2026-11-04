@@ -19,7 +19,7 @@ Plan: [`plan.md`](plan.md). Each task ends with `make check` green.
 
 ## Wave 3
 
-- [ ] **T05** Contract reviewed, every feature evaluated; flip **DEV-02**, **DEV-03**,
+- [x] **T05** Contract reviewed, every feature evaluated; flip **DEV-02**, **DEV-03**,
   **DEV-04** on their evidence.
 
 ## Convergence
@@ -42,3 +42,5 @@ Plan: [`plan.md`](plan.md). Each task ends with `make check` green.
 - [x] **T13** `review-contract` writes through `mktemp` like `evaluate`, and requires
   `SPEC` to match exactly one directory (DEV-05, finding 2). Finding 1 did not hold: the
   recipes run under `set -e`, so a failed `speccheck locate` stops before the evaluator.
+- [x] **T14** The Evaluator line must be `evaluator` as a word, and a phase whose spec
+  cannot be read is a finding instead of quick mode by default (DEV-04 second run).
