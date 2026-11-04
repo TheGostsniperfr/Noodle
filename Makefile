@@ -9,6 +9,8 @@ NOODLE := go run ./cmd/noodle
 SPECCHECK := go run ./tools/speccheck
 BASE ?= HEAD
 REGRESSION_ICONS := -icons examples/platform-regression/icons
+GORELEASER := $(if $(shell command -v goreleaser),goreleaser,nix develop -c goreleaser)
+GIT_CLIFF := $(if $(shell command -v git-cliff),git-cliff,nix develop -c git-cliff)
 
 # Read-only tools for the evaluator; write tools are refused outright. The tool flags take
 # lists, so the prompt goes on stdin, never as a trailing argument.
@@ -21,10 +23,10 @@ EVALUATOR := NOODLE_EVALUATOR=1 claude -p --agent evaluator \
 	Bash(git diff:*) Bash(git log:*) Bash(git show:*) Bash(git status:*) Bash(git grep:*) Bash(git rev-parse:*) \
 	Bash(grep:*) Bash(ls:*) Bash(cat:*) Bash(head:*) Bash(tail:*) Bash(wc:*) Bash(cut:*) Bash(jq:*) \
 	Bash(make check) Bash(make init) Bash(make spec-check) Bash(make features) Bash(make features BASE=origin/main) \
-	Bash(make examples) Bash(make test) Bash(make vet) Bash(make help) Bash(make -s help) \
+	Bash(make examples) Bash(make release-snapshot) Bash(make test) Bash(make vet) Bash(make help) Bash(make -s help) \
 	Bash(make evaluate FEATURE=) Bash(make review-contract SPEC=)"
 
-.PHONY: help init check ci vet test examples render features spec-check adr-index cli-doc \
+.PHONY: help init check ci vet test examples render features spec-check adr-index cli-doc changelog release-snapshot \
 	evaluate review-contract discover-eval plugin vendor-check next
 
 help: ## List the targets
@@ -67,6 +69,12 @@ render: ## Lint and render one view: SYS=<dir> [VIEW=<id>] [OUT=<file.drawio>] [
 
 cli-doc: ## Regenerate docs/guide/cli.md from the usage text of the binary
 	$(NOODLE) help -markdown > docs/guide/cli.md
+
+changelog: ## Regenerate CHANGELOG.md from conventional commits with git-cliff
+	$(GIT_CLIFF) --output CHANGELOG.md
+
+release-snapshot: ## Build the four release archives and checksums into dist/ without publishing
+	$(GORELEASER) release --snapshot --clean
 
 features: ## features.json keeps its history; every new pass has its evidence (BASE=<ref>, default HEAD)
 	@echo "== features (base $(BASE))"

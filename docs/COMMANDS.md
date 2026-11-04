@@ -15,6 +15,8 @@ fails when the two differ. Process: [`PROCESS.md`](PROCESS.md).
 | `make examples` | after a change to model, lint, render or discovery | none | an example no longer lints, or discovery no longer reproduces `examples/discovery-k8s`'s golden fragment: fix the change, never the rule (C04) |
 | `make render` | to look at a diagram | `SYS=<dir>` `VIEW=<id>` `OUT=<file.drawio>` `THEME=dark\|light` `ICONS=<dirs>` `SLIDE=1` | the view fails its lint; without `OUT` nothing is written |
 | `make cli-doc` | after adding or changing a flag or a subcommand | none | `go test ./cmd/noodle/` fails with `docs/guide/cli.md` differing from `noodle help`: run it and commit the page |
+| `make changelog` | before a release, and to preview the next one | none | `git-cliff` failed or a commit message is not conventional; fix the message, not the tool |
+| `make release-snapshot` | to check the release build locally | none | goreleaser could not build a platform; nothing is published and `dist/` is git-ignored |
 | `make help` | to list targets | none | never fails |
 | `make next` | to see what to make pass next | none | never fails |
 

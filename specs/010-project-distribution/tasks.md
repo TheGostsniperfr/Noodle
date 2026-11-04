@@ -37,7 +37,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
 
 ## Wave 3
 
-- [ ] **T13** Release configuration, release workflow, changelog config, `make changelog`,
+- [x] **T13** Release configuration, release workflow, changelog config, `make changelog`,
   `make release-snapshot` (in the evaluator allowlist, risk noted in ADR-0024), the
   `version` field of `plugin.json`, and the first `CHANGELOG.md` (FR-013).
 - [ ] **T14** `bin/noodle` download fallback with checksum verification, and its Go test

@@ -78,6 +78,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T10: setup marker line on every written file (replaced on rerun, foreign files kept and exit 1); README install section per host: Claude Code, OpenCode, Codex, Nix.
 - T11: user guide in `docs/guide/` (tutorial on `examples/tutorial`, four how-tos, explanation); `noodle help [-markdown]`, `make cli-doc`, `cli.md` and the test that keeps it current.
 - T12: README positioning (architecture as code, "designed to stay in sync" until P6a-05), VISION "Where it sits", and the Discovery section of the skill reference (#88); goldens refreshed for the skill text.
+- T13: goreleaser config (4 platforms, checksums), release workflow on `v*` tags, git-cliff config, `make changelog` and `make release-snapshot` (evaluator allowlist, recorded in ADR-0024), plugin `version` 0.1.0, first CHANGELOG.md. No tag pushed.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

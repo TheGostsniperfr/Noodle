@@ -70,6 +70,9 @@ which neither Spec Kit nor OpenSpec does. Process: `docs/PROCESS.md`.
 - Bad: "read-only" means no Write or Edit tool and an allowlist of pinned commands. Two
   patterns can still write: `go test` (`-o`, `-coverprofile`) and `git diff/log/show`
   (`--output`), kept because verify steps need them. A sandboxed evaluator is left for later.
+  Spec 010 adds one exact entry, `make release-snapshot`, for the release dry run of its
+  contract: it runs goreleaser, builds from the working tree and writes only `dist/`, which
+  is git-ignored. Through `nix develop` it may fetch tools from the Nix cache.
 - Bad: the gate trusts the `- Evaluator:` line as text; anyone can write it by hand. The
   mitigation is review: an evaluation commit holds only its evidence file.
 
