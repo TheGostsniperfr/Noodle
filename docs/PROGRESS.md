@@ -70,6 +70,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - Evaluator NEEDS_WORK on PRJ-06: tasks T16 to T18 below.
 - T16: VISION names architecture as code and living documentation in lowercase.
 - T17: tutorial view drops its legend card (the generated Gx line was false for a view with no gaps); PNG re-rendered and looked at.
+- T18: test keeps the YAML blocks of tutorial.md equal to examples/tutorial.
 
 ### 2026-11-04 · Spec 010 implementation (project and distribution)
 

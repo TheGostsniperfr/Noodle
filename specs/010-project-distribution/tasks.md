@@ -53,5 +53,5 @@ Tasks the evaluator found missing, appended here; never edit the waves above.
   documentation" in lowercase in "Where it sits" (evidence/PRJ-06.md).
 - [x] **T17** The tutorial view has no gaps, so drop its legend card, whose generated
   "Gx" line would be false; re-render and look at the PNG (evidence/PRJ-06.md).
-- [ ] **T18** A test keeps the YAML blocks of `docs/guide/tutorial.md` equal to
+- [x] **T18** A test keeps the YAML blocks of `docs/guide/tutorial.md` equal to
   `examples/tutorial/*` (evidence/PRJ-06.md).
