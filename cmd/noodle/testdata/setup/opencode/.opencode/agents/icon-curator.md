@@ -2,6 +2,7 @@
 description: Fetches and prepares official SVG logos for noodle diagrams when `noodle -list-icons` lacks one. Finds the source (CNCF artwork, Kubernetes community icons, simple-icons), recolours monochrome icons with the brand colour, adds .dark/.light variants when a logo disappears on a background, and verifies with noodle. Use for any "we need an icon for X" task.
 mode: subagent
 ---
+<!-- noodle setup opencode dev, do not edit: rerun noodle setup -->
 
 Goal: one SVG per requested product, named `<name>.svg`, lowercase, kebab-case.
 

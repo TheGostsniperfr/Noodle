@@ -5,8 +5,8 @@ import (
 	"flag"
 	"io/fs"
 	"os"
+	"os/exec"
 	"path/filepath"
-	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -45,12 +45,16 @@ func wroteLines(paths []string) string {
 	return b.String()
 }
 
+func testEnv(stdout, stderr *bytes.Buffer, home string) setupEnv {
+	return setupEnv{stdout: stdout, stderr: stderr, home: home, version: "dev"}
+}
+
 func setupProject(t *testing.T, hostName string) (dir, stdout string) {
 	t.Helper()
 	dir = t.TempDir()
 	var out, errOut bytes.Buffer
 
-	err := runSetup([]string{hostName, "-project", dir}, &out, &errOut, "")
+	err := runSetup([]string{hostName, "-project", dir}, testEnv(&out, &errOut, ""))
 
 	require.NoError(t, err)
 	require.Empty(t, errOut.String())
@@ -183,7 +187,7 @@ func TestSetup_Idempotent(t *testing.T) {
 			before := treeFiles(t, dir)
 			var out, errOut bytes.Buffer
 
-			err := runSetup([]string{hostName, "-project", dir}, &out, &errOut, "")
+			err := runSetup([]string{hostName, "-project", dir}, testEnv(&out, &errOut, ""))
 
 			require.NoError(t, err)
 			assert.Empty(t, out.String())
@@ -212,7 +216,7 @@ func TestSetup_ReadsFlagsAndDirInAnyOrder(t *testing.T) {
 			dir := t.TempDir()
 			var out, errOut bytes.Buffer
 
-			err := runSetup(tt.args(dir), &out, &errOut, "")
+			err := runSetup(tt.args(dir), testEnv(&out, &errOut, ""))
 
 			require.NoError(t, err)
 			assert.Equal(t, wroteLines(openCodeWant), out.String())
@@ -240,7 +244,7 @@ func TestSetup_RejectsBadArguments(t *testing.T) {
 			t.Parallel()
 			var out, errOut bytes.Buffer
 
-			err := runSetup(tt.args, &out, &errOut, t.TempDir())
+			err := runSetup(tt.args, testEnv(&out, &errOut, t.TempDir()))
 
 			require.Error(t, err)
 			assert.Contains(t, err.Error(), tt.want)
@@ -249,24 +253,109 @@ func TestSetup_RejectsBadArguments(t *testing.T) {
 	}
 }
 
-func TestSetup_WritesNothingNewOverADifferingFile(t *testing.T) {
+func TestSetup_KeepsForeign(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name    string
+		host    string
+		foreign string
+		wrote   []string
+	}{
+		{"an OpenCode agent file", "opencode", ".opencode/agents/fact-finder.md", []string{
+			".agents/skills/noodle-diagram/SKILL.md", ".agents/skills/noodle-diagram/reference.md",
+			".opencode/agents/diagram-reviewer.md", ".opencode/agents/icon-curator.md"}},
+		{"a Codex agent file", "codex", ".codex/agents/fact-finder.toml", []string{
+			".agents/skills/noodle-diagram/SKILL.md", ".agents/skills/noodle-diagram/reference.md",
+			".codex/agents/diagram-reviewer.toml", ".codex/agents/icon-curator.toml"}},
+		{"the shared skill", "codex", ".agents/skills/noodle-diagram/SKILL.md", []string{
+			".agents/skills/noodle-diagram/reference.md",
+			".codex/agents/diagram-reviewer.toml", ".codex/agents/fact-finder.toml", ".codex/agents/icon-curator.toml"}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			dir := t.TempDir()
+			target := filepath.Join(dir, filepath.FromSlash(tt.foreign))
+			require.NoError(t, os.MkdirAll(filepath.Dir(target), 0o755))
+			require.NoError(t, os.WriteFile(target, []byte("my own text\n"), 0o644))
+			var out, errOut bytes.Buffer
+
+			err := runSetup([]string{tt.host, "-project", dir}, testEnv(&out, &errOut, ""))
+
+			require.Error(t, err)
+			raw, readErr := os.ReadFile(target)
+			require.NoError(t, readErr)
+			assert.Equal(t, "my own text\n", string(raw))
+			assert.Equal(t, "kept "+tt.foreign+": it was not written by noodle setup\n", errOut.String())
+			assert.Equal(t, wroteLines(tt.wrote), out.String())
+		})
+	}
+}
+
+func TestSetup_ExitsOneAndKeepsAForeignFile(t *testing.T) {
 	t.Parallel()
 	dir := t.TempDir()
 	target := filepath.Join(dir, ".opencode", "agents", "fact-finder.md")
 	require.NoError(t, os.MkdirAll(filepath.Dir(target), 0o755))
-	require.NoError(t, os.WriteFile(target, []byte("mine\n"), 0o644))
-	var out, errOut bytes.Buffer
+	require.NoError(t, os.WriteFile(target, []byte("my own text\n"), 0o644))
 
-	err := runSetup([]string{"opencode", "-project", dir}, &out, &errOut, "")
+	cmd := exec.Command(buildNoodle(t, ""), "setup", "opencode", "-project", dir)
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	err := cmd.Run()
 
-	require.Error(t, err)
+	var exitErr *exec.ExitError
+	require.ErrorAs(t, err, &exitErr)
+	assert.Equal(t, 1, exitErr.ExitCode())
+	assert.Contains(t, stderr.String(), ".opencode/agents/fact-finder.md")
 	raw, readErr := os.ReadFile(target)
 	require.NoError(t, readErr)
-	assert.Equal(t, "mine\n", string(raw))
-	assert.Contains(t, errOut.String(), ".opencode/agents/fact-finder.md")
-	written := strings.Fields(strings.ReplaceAll(out.String(), "wrote ", ""))
-	sort.Strings(written)
-	assert.Equal(t, []string{".agents/skills/noodle-diagram/SKILL.md", ".agents/skills/noodle-diagram/reference.md", ".opencode/agents/diagram-reviewer.md", ".opencode/agents/icon-curator.md"}, written)
+	assert.Equal(t, "my own text\n", string(raw))
+}
+
+func TestSetup_ReplacesAFileItWroteWhenTheVersionChanges(t *testing.T) {
+	t.Parallel()
+	for _, hostName := range []string{"opencode", "codex"} {
+		t.Run(hostName, func(t *testing.T) {
+			t.Parallel()
+			dir := t.TempDir()
+			var out, errOut bytes.Buffer
+			require.NoError(t, runSetup([]string{hostName, "-project", dir}, setupEnv{stdout: &out, stderr: &errOut, version: "v1.0.0"}))
+			out.Reset()
+
+			err := runSetup([]string{hostName, "-project", dir}, setupEnv{stdout: &out, stderr: &errOut, version: "v1.1.0"})
+
+			require.NoError(t, err)
+			assert.Equal(t, 5, strings.Count(out.String(), "wrote "))
+			for rel, content := range treeFiles(t, dir) {
+				assert.Contains(t, content, "noodle setup", rel)
+				assert.NotContains(t, content, "v1.0.0", rel)
+				assert.Contains(t, content, "v1.1.0", rel)
+			}
+		})
+	}
+}
+
+func TestSetup_MarkerDoesNotBreakTheSkillRules(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name    string
+		content string
+		want    string
+	}{
+		{"with frontmatter", "---\nname: x\n---\n\n# Body\n", "---\nname: x\n---\n<!-- noodle setup skills dev, do not edit: rerun noodle setup -->\n\n# Body\n"},
+		{"without frontmatter", "# Reference\n", "<!-- noodle setup skills dev, do not edit: rerun noodle setup -->\n\n# Reference\n"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			got := markMarkdown(tt.content, markerText("skills", "dev"))
+
+			assert.Equal(t, tt.want, got)
+			assert.True(t, markerRe.MatchString(got))
+		})
+	}
 }
 
 func TestCodexAgent_EscapesWhatTOMLTreatsAsSyntax(t *testing.T) {
@@ -279,24 +368,24 @@ func TestCodexAgent_EscapesWhatTOMLTreatsAsSyntax(t *testing.T) {
 		{
 			"plain",
 			agent{name: "scout", description: "Finds things", body: "\nLook.\n"},
-			"name = \"scout\"\ndescription = \"Finds things\"\ndeveloper_instructions = \"\"\"\n\nLook.\n\"\"\"\n",
+			"# marker\nname = \"scout\"\ndescription = \"Finds things\"\ndeveloper_instructions = \"\"\"\n\nLook.\n\"\"\"\n",
 		},
 		{
 			"quotes, backslashes and newlines in the description",
 			agent{name: "scout", description: "say \"hi\" \\ now\nthen", body: "x\n"},
-			"name = \"scout\"\ndescription = \"say \\\"hi\\\" \\\\ now\\nthen\"\ndeveloper_instructions = \"\"\"\nx\n\"\"\"\n",
+			"# marker\nname = \"scout\"\ndescription = \"say \\\"hi\\\" \\\\ now\\nthen\"\ndeveloper_instructions = \"\"\"\nx\n\"\"\"\n",
 		},
 		{
 			"backslashes and triple quotes in the instructions",
 			agent{name: "scout", description: "d", body: "a \\n b \"\"\" c\n"},
-			"name = \"scout\"\ndescription = \"d\"\ndeveloper_instructions = \"\"\"\na \\\\n b \\\"\\\"\\\" c\n\"\"\"\n",
+			"# marker\nname = \"scout\"\ndescription = \"d\"\ndeveloper_instructions = \"\"\"\na \\\\n b \\\"\\\"\\\" c\n\"\"\"\n",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			file, content := codexAgent(tt.agent)
+			file, content := codexAgent(tt.agent, "marker")
 
 			assert.Equal(t, "scout.toml", file)
 			assert.Equal(t, tt.want, content)

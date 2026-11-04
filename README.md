@@ -20,7 +20,11 @@ Kubernetes manifests ([roadmap](docs/ROADMAP.md)).
 
 ## Install
 
-### As a Claude Code plugin (skill + `noodle` command)
+noodle is one binary, `noodle`, plus a skill and three subagents that teach an AI agent to
+use it. Claude Code gets both from a plugin. OpenCode and Codex get the binary, then
+`noodle setup` writes the skill and the agents where they look.
+
+### Claude Code
 
 ```
 /plugin marketplace add TheGostsniperfr/Noodle
@@ -29,8 +33,9 @@ Kubernetes manifests ([roadmap](docs/ROADMAP.md)).
 
 Then enable auto-update once, under **Marketplaces** in `/plugin`, to follow `main`.
 The plugin puts `noodle` on the PATH. On first use it builds itself from the plugin's
-sources with Go, or with Nix; a `noodle` already on the PATH wins. PNG and SVG exports
-also need [draw.io desktop](https://www.drawio.com/) (`drawio`).
+sources with Go or with Nix, or downloads a release binary when neither is installed;
+a `noodle` already on the PATH wins. PNG and SVG exports also need
+[draw.io desktop](https://www.drawio.com/) (`drawio`).
 
 To offer it to everyone working in a repository, run once there and commit the result:
 
@@ -38,7 +43,32 @@ To offer it to everyone working in a repository, run once there and commit the r
 claude plugin marketplace add TheGostsniperfr/Noodle --scope project
 ```
 
-### With Nix
+### OpenCode
+
+Install the `noodle` binary (see Nix below, or take an archive from the
+[releases](https://github.com/TheGostsniperfr/Noodle/releases)), then in your repository:
+
+```bash
+noodle setup opencode -project
+```
+
+This writes the `noodle-diagram` skill to `.agents/skills/` and the subagents to
+`.opencode/agents/`. Use `-user` instead to install for every project, under
+`~/.agents/skills/` and `~/.config/opencode/agents/`. Rerunning it changes nothing, and it
+never overwrites a file it did not write.
+
+### Codex
+
+Install the `noodle` binary as above, then in your repository:
+
+```bash
+noodle setup codex -project
+```
+
+This writes the skill to `.agents/skills/` and one TOML file per subagent to
+`.codex/agents/`. `-user` writes under `~/.agents/skills/` and `~/.codex/agents/`.
+
+### Nix
 
 ```nix
 inputs.noodle.url = "github:TheGostsniperfr/Noodle";

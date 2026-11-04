@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -36,7 +37,7 @@ type agent struct {
 type host struct {
 	projectAgentDir string
 	userAgentDir    string
-	agentFile       func(a agent) (name string, content string)
+	agentFile       func(a agent, marker string) (name string, content string)
 }
 
 var hosts = map[string]host{
@@ -44,23 +45,31 @@ var hosts = map[string]host{
 	"codex":    {projectAgentDir: ".codex/agents", userAgentDir: ".codex/agents", agentFile: codexAgent},
 }
 
+// setupEnv is what runSetup needs from its surroundings, so tests can run it anywhere.
+type setupEnv struct {
+	stdout, stderr io.Writer
+	home           string
+	version        string
+}
+
 // setupCommand is "noodle setup HOST (-project|-user) [DIR]": it writes the noodle-diagram
 // skill and the subagents in the format the host reads.
 func setupCommand(args []string, stdout, stderr io.Writer) error {
 	home, _ := os.UserHomeDir()
-	return runSetup(args, stdout, stderr, home)
+	return runSetup(args, setupEnv{stdout: stdout, stderr: stderr, home: home, version: version})
 }
 
-func runSetup(args []string, stdout, stderr io.Writer, home string) error {
+func runSetup(args []string, env setupEnv) error {
 	if len(args) == 0 {
 		return errors.New(setupUsage)
 	}
-	h, ok := hosts[args[0]]
+	hostName := args[0]
+	h, ok := hosts[hostName]
 	if !ok {
 		return fmt.Errorf("setup: unknown host %q\n%s", args[0], setupUsage)
 	}
 	flags := flag.NewFlagSet("setup", flag.ContinueOnError)
-	flags.SetOutput(stderr)
+	flags.SetOutput(env.stderr)
 	project := flags.Bool("project", false, "write under DIR (default .)")
 	user := flags.Bool("user", false, "write under the home directory")
 	var dirs []string
@@ -83,20 +92,20 @@ func runSetup(args []string, stdout, stderr io.Writer, home string) error {
 	}
 
 	if *user {
-		if home == "" {
+		if env.home == "" {
 			return errors.New("setup: cannot find the home directory")
 		}
-		return writeSetup(h, home, h.userAgentDir, "~/", stdout, stderr)
+		return writeSetup(h, hostName, env, env.home, h.userAgentDir, "~/")
 	}
 	base := "."
 	if len(dirs) == 1 {
 		base = dirs[0]
 	}
-	return writeSetup(h, base, h.projectAgentDir, "", stdout, stderr)
+	return writeSetup(h, hostName, env, base, h.projectAgentDir, "")
 }
 
-func writeSetup(h host, base, agentDir, display string, stdout, stderr io.Writer) error {
-	files, err := setupFiles(h, agentDir)
+func writeSetup(h host, hostName string, env setupEnv, base, agentDir, display string) error {
+	files, err := setupFiles(h, hostName, env.version, agentDir)
 	if err != nil {
 		return err
 	}
@@ -113,11 +122,11 @@ func writeSetup(h host, base, agentDir, display string, stdout, stderr io.Writer
 		switch {
 		case err == nil && string(existing) == files[rel]:
 			continue
-		case err == nil:
-			fmt.Fprintf(stderr, "kept %s: it exists and differs\n", display+rel)
+		case err == nil && !markerRe.Match(existing):
+			fmt.Fprintf(env.stderr, "kept %s: it was not written by noodle setup\n", display+rel)
 			kept++
 			continue
-		case !errors.Is(err, fs.ErrNotExist):
+		case err != nil && !errors.Is(err, fs.ErrNotExist):
 			return fmt.Errorf("setup: %w", err)
 		}
 		if err := os.MkdirAll(filepath.Dir(target), 0o755); err != nil {
@@ -126,7 +135,7 @@ func writeSetup(h host, base, agentDir, display string, stdout, stderr io.Writer
 		if err := os.WriteFile(target, []byte(files[rel]), 0o644); err != nil {
 			return fmt.Errorf("setup: %w", err)
 		}
-		fmt.Fprintf(stdout, "wrote %s\n", display+rel)
+		fmt.Fprintf(env.stdout, "wrote %s\n", display+rel)
 	}
 	if kept > 0 {
 		return fmt.Errorf("setup: %d file(s) kept", kept)
@@ -135,7 +144,7 @@ func writeSetup(h host, base, agentDir, display string, stdout, stderr io.Writer
 }
 
 // setupFiles maps each file to write, by path relative to the base directory, to its content.
-func setupFiles(h host, agentDir string) (map[string]string, error) {
+func setupFiles(h host, hostName, version, agentDir string) (map[string]string, error) {
 	files := map[string]string{}
 	err := fs.WalkDir(noodle.Content, embeddedSkillDir, func(p string, d fs.DirEntry, err error) error {
 		if err != nil || d.IsDir() {
@@ -145,7 +154,7 @@ func setupFiles(h host, agentDir string) (map[string]string, error) {
 		if err != nil {
 			return err
 		}
-		files[path.Join(sharedSkillDir, strings.TrimPrefix(p, embeddedSkillDir+"/"))] = string(raw)
+		files[path.Join(sharedSkillDir, strings.TrimPrefix(p, embeddedSkillDir+"/"))] = markMarkdown(string(raw), markerText("skills", version))
 		return nil
 	})
 	if err != nil {
@@ -156,10 +165,27 @@ func setupFiles(h host, agentDir string) (map[string]string, error) {
 		return nil, err
 	}
 	for _, a := range agents {
-		name, content := h.agentFile(a)
+		name, content := h.agentFile(a, markerText(hostName, version))
 		files[path.Join(agentDir, name)] = content
 	}
 	return files, nil
+}
+
+// The marker is the first line of the body of a Markdown file and the first comment of a
+// TOML file, never a frontmatter key, so the skill still follows the Agent Skills rules.
+// Rerunning setup replaces a file that has it and keeps one that does not.
+var markerRe = regexp.MustCompile(`(?m)^(?:<!-- |# )noodle setup \S+ \S+, do not edit: rerun noodle setup(?: -->)?$`)
+
+func markerText(target, version string) string {
+	return "noodle setup " + target + " " + version + ", do not edit: rerun noodle setup"
+}
+
+func markMarkdown(content, text string) string {
+	_, body, hasFrontmatter := skillrules.SplitFrontmatter(content)
+	if !hasFrontmatter {
+		return "<!-- " + text + " -->\n\n" + content
+	}
+	return content[:len(content)-len(body)] + "<!-- " + text + " -->\n" + body
 }
 
 func loadAgents() ([]agent, error) {
@@ -196,7 +222,7 @@ func loadAgents() ([]agent, error) {
 	return out, nil
 }
 
-func openCodeAgent(a agent) (string, string) {
+func openCodeAgent(a agent, marker string) (string, string) {
 	type permission struct {
 		Edit string `yaml:"edit"`
 	}
@@ -209,12 +235,12 @@ func openCodeAgent(a agent) (string, string) {
 		meta.Permission = &permission{Edit: "deny"}
 	}
 	front, _ := yaml.Marshal(meta)
-	return a.name + ".md", "---\n" + string(front) + "---\n" + a.body
+	return a.name + ".md", markMarkdown("---\n"+string(front)+"---\n"+a.body, marker)
 }
 
-func codexAgent(a agent) (string, string) {
+func codexAgent(a agent, marker string) (string, string) {
 	instructions := strings.ReplaceAll(strings.ReplaceAll(a.body, `\`, `\\`), `"""`, `\"\"\"`)
-	content := "name = " + tomlString(a.name) + "\n" +
+	content := "# " + marker + "\nname = " + tomlString(a.name) + "\n" +
 		"description = " + tomlString(a.description) + "\n" +
 		"developer_instructions = \"\"\"\n" + instructions + "\"\"\"\n"
 	return a.name + ".toml", content

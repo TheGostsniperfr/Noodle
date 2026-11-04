@@ -1,3 +1,4 @@
+# noodle setup codex dev, do not edit: rerun noodle setup
 name = "fact-finder"
 description = "Collects the facts a noodle diagram needs from a system's code (Helm charts, Kubernetes manifests, Terraform, compose files, proxy and app config) and returns them as one compact YAML inventory with a source on every fact. Read-only. Use for the \"facts first\" step of the noodle-diagram skill, so the raw files never enter the main session."
 developer_instructions = """

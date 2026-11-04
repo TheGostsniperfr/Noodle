@@ -27,7 +27,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
   `plan.md`; `content.go` embeds `skills` and `agents` (FR-005, FR-006).
 - [x] **T09** `noodle setup opencode` and `noodle setup codex`, `-project` and `-user`,
   idempotent, with golden-file tests in temporary directories (FR-005, FR-006).
-- [ ] **T10** The marker line, refusal to overwrite foreign files, and the README
+- [x] **T10** The marker line, refusal to overwrite foreign files, and the README
   install section per host (FR-007). Flip **PRJ-04** with T08 and T09.
 - [ ] **T11** `docs/guide/` tutorial (its system in `examples/tutorial`, linted by
   `make examples`), how-to pages, explanation, `make cli-doc`, `cli.md` and its test

@@ -1,3 +1,5 @@
+<!-- noodle setup skills dev, do not edit: rerun noodle setup -->
+
 # Reference (`noodle/v1alpha1`)
 
 A system is one directory. Unknown fields are rejected; every file carries

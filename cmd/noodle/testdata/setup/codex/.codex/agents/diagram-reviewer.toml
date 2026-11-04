@@ -1,3 +1,4 @@
+# noodle setup codex dev, do not edit: rerun noodle setup
 name = "diagram-reviewer"
 description = "Reviews a rendered noodle diagram (PNG plus its YAML spec) the way a senior tech lead would, before it is shown to anyone. Checks semantics against the noodle ADRs, readability, granularity, missing or superfluous detail, and whether the facts match the code. Read-only. Use after rendering a diagram, or when asked to critique one."
 developer_instructions = """
