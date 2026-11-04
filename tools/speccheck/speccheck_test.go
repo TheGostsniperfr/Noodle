@@ -386,13 +386,30 @@ func TestFeatures_AcceptsAFeatureThatAlreadyPassedAtBase(t *testing.T) {
 
 func TestRun_ExitsWithFindingsThroughTheCLI(t *testing.T) {
 	t.Parallel()
-	repo := fixture(t, map[string]string{"specs/001-demo/tasks.md": strings.Replace(fullTasks, "(FR-002)", "", 1)})
-	var stdout, stderr strings.Builder
+	tests := []struct {
+		name     string
+		override map[string]string
+		want     string
+	}{
+		{"spec finding", map[string]string{"specs/001-demo/tasks.md": strings.Replace(fullTasks, "(FR-002)", "", 1)},
+			"specs/001-demo/tasks.md: FR-002 is named by no task"},
+		{"commands finding", map[string]string{"docs/COMMANDS.md": "| `make init` | a |\n"},
+			"docs/COMMANDS.md: no row for make check"},
+		{"stale ADR index", map[string]string{"docs/adr/0002-second.md": newADR},
+			"docs/adr/README.md: index is stale: run make adr-index"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			repo := fixture(t, tt.override)
+			var stdout, stderr strings.Builder
 
-	err := run([]string{"-root", repo.Root, "all"}, &stdout, &stderr)
+			err := run([]string{"-root", repo.Root, "all"}, &stdout, &stderr)
 
-	assert.ErrorIs(t, err, errFindings)
-	assert.Contains(t, stderr.String(), "specs/001-demo/tasks.md: FR-002 is named by no task\n")
+			assert.ErrorIs(t, err, errFindings)
+			assert.Equal(t, tt.want+"\n", stderr.String())
+		})
+	}
 }
 
 func TestRun_FeaturesFailsThroughTheCLI(t *testing.T) {

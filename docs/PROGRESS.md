@@ -35,8 +35,8 @@ decisions go in ADRs, acceptance in `features.json`.
   `features.json`. `tools/speccheck` enforces it; `Makefile` is the only entry point,
   documented in `docs/COMMANDS.md`. `check-features.sh` ported to Go and removed;
   `scripts/init.sh` is now `exec make init` because old verify steps cite it.
-- In progress: contract review round 4 running (rounds 1 to 3 answered CHANGES, all
-  applied in `96dd1eb`). Next: commit the review, `make evaluate` DEV-01, DEV-02, DEV-03,
+- In progress: contract review, five rounds of CHANGES, all applied. Waiting for Brian:
+  cap reviews at three rounds in PROCESS.md, or run until APPROVED. Next: commit the review, `make evaluate` DEV-01, DEV-02, DEV-03,
   DEV-05, then DEV-04, each evidence committed alone before its flip; then the PR.
 
 ### 2026-10-25 · Multi-line node desc
