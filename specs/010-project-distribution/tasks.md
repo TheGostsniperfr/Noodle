@@ -10,7 +10,7 @@ Tasks in one wave do not depend on each other. Evaluate each feature with
   and `SKILL.md` (FR-001).
 - [x] **T02** `assets/icons/ATTRIBUTION.md` and `assets/attribution_test.go` (FR-002).
   Flip **PRJ-01** with T01.
-- [ ] **T03** `speccheck skills`, run by `all`; table-driven tests per rule (FR-004).
+- [x] **T03** `speccheck skills`, run by `all`; table-driven tests per rule (FR-004).
 - [x] **T04** Skill wording: Claude Code-only names moved under "In Claude Code" (FR-004).
   Flip **PRJ-03** with T03.
 - [ ] **T05** `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, issue templates,

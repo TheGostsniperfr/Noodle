@@ -13,10 +13,11 @@ import (
 )
 
 const usage = `usage: speccheck [-root DIR] COMMAND
-  all                 spec + adr + commands (what make spec-check runs)
+  all                 spec + adr + commands + skills (what make spec-check runs)
   spec [SPEC_DIR...]  traceability of every spec, or of the given ones
   adr [-write]        ADR shape, and docs/adr/README.md index (rewritten with -write)
   commands            Makefile targets and docs/COMMANDS.md list the same commands
+  skills              every SKILL.md follows the Agent Skills rules
   features [-base REF]  features.json history and evidence for every new pass
   locate FEATURE_ID   print the spec directory that owns a feature`
 
@@ -52,6 +53,7 @@ func run(args []string, stdout, stderr io.Writer) error {
 			func() ([]Finding, error) { return repo.CheckSpecs(nil) },
 			func() ([]Finding, error) { return repo.CheckADRs(false) },
 			repo.CheckCommands,
+			repo.CheckSkills,
 		} {
 			f, cerr := check()
 			if cerr != nil {
@@ -70,6 +72,8 @@ func run(args []string, stdout, stderr io.Writer) error {
 		findings, err = repo.CheckADRs(*write)
 	case "commands":
 		findings, err = repo.CheckCommands()
+	case "skills":
+		findings, err = repo.CheckSkills()
 	case "features":
 		ffs := flag.NewFlagSet("features", flag.ContinueOnError)
 		base := ffs.String("base", "HEAD", "git ref to compare docs/features.json against")
