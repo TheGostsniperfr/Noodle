@@ -42,7 +42,7 @@ vet: ## go vet on every package
 test: ## go test on every package
 	go test ./...
 
-examples: ## Lint every example, regression fixture and docs diagram (no output written)
+examples: ## Lint every example, regression fixture and docs diagram, and rerun discovery against its golden file (no output written)
 	@echo "== examples"
 	$(NOODLE) render examples/cnp-runtime --view runtime
 	$(NOODLE) render examples/cnp-runtime --view oidc-login
@@ -57,6 +57,7 @@ examples: ## Lint every example, regression fixture and docs diagram (no output 
 	for v in proposal reference focus; do $(NOODLE) render examples/topology-diff --view $$v $(REGRESSION_ICONS); done
 	for d in platform-overview app-runtime-view repo-map; do $(NOODLE) render examples/platform-regression/$$d $(REGRESSION_ICONS); done
 	$(NOODLE) render docs/diagrams/contract-pipeline -icons docs/diagrams/icons
+	$(NOODLE) discover k8s examples/discovery-k8s/manifests -observed-at 2026-11-04T00:00:00Z | diff - examples/discovery-k8s/discovered/k8s-manifests.yaml
 
 render: ## Lint and render one view: SYS=<dir> [VIEW=<id>] [OUT=<file.drawio>] [THEME=dark|light] [ICONS=<dirs>] [SLIDE=1]
 	@test -n "$(SYS)" || { echo "usage: make render SYS=<dir> [VIEW=<id>] [OUT=<file.drawio>]" >&2; exit 2; }

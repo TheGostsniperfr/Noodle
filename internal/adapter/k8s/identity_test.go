@@ -1,11 +1,16 @@
 package k8s_test
 
 import (
+	"context"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
+	"github.com/TheGostsniperfr/Noodle/internal/adapter"
+	"github.com/TheGostsniperfr/Noodle/internal/adapter/k8s"
 	"github.com/TheGostsniperfr/Noodle/internal/model"
 )
 
@@ -106,5 +111,29 @@ spec:
 			}
 		}
 		assert.Equal(t, []*model.Object{{APIVersion: "v1", Kind: "ConfigMap", Namespace: "prod", Name: "settings"}}, objects)
+	})
+
+	t.Run("every-item", func(t *testing.T) {
+		root, err := filepath.Abs("../../..")
+		require.NoError(t, err)
+		t.Chdir(root)
+
+		f, _, err := adapter.Run(context.Background(), k8s.Adapter{}, adapter.Source{Paths: []string{exampleSources}}, "", exampleTime)
+
+		require.NoError(t, err)
+		var withoutObject []string
+		for _, e := range f.Elements {
+			if e.Object == nil {
+				withoutObject = append(withoutObject, e.ID)
+			}
+		}
+		assert.Equal(t, []string{"k8s:_external/onepassword", "k8s:data/namespace/data", "k8s:prod/namespace/prod"}, withoutObject,
+			"only the elements synthesized without an object: the provider and the implied namespaces")
+		for _, c := range f.Connections {
+			assert.NotNil(t, c.Object, c.ID)
+		}
+		for _, r := range f.References {
+			assert.NotNil(t, r.Object, r.ID)
+		}
 	})
 }

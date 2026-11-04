@@ -1,0 +1,12 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+elements:
+  - {id: edge, kind: backend, title: "Gateway", tech: "[Gateway API]", matches: ["k8s:prod/gateway/shared"]}
+  - {id: web, kind: frontend, title: "Web", tech: "[Deployment]", matches: ["k8s:prod/deployment/web", "k8s:prod/service/web"]}
+  - {id: api, kind: backend, title: "API", tech: "[Deployment]", matches: ["k8s:prod/deployment/api", "k8s:prod/service/api"]}
+  - {id: database, kind: database, shape: cylinder, title: "Postgres", matches: ["k8s:data/statefulset/postgres", "k8s:data/service/postgres"]}
+  - {id: legacy-cache, kind: backend, title: "Legacy cache", matches: ["k8s:prod/deployment/legacy-cache"]}
+  - {id: search, kind: backend, title: "Search", status: planned}
+connections:
+  - {id: c-edge-web, from: edge, to: web, kind: flow}
+  - {id: c-api-database, from: api, to: database, kind: flow}
