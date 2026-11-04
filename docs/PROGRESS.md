@@ -41,7 +41,11 @@ decisions go in ADRs, acceptance in `features.json`.
   criteria matched any mention of an id, an unfilled template verdict passed the gate, a
   misspelled BASE skipped the history rules, an Evaluator look-alike was accepted.
   One finding was wrong (set -e already stops a failed locate) and is recorded as such.
-- Next: PR for spec 007 (closes #108), then the pilot: #79 `noodle drift` as spec 008.
+- PR #109 opened for spec 007 (closes #108).
+- ADR-0025: the backlog is worked in thematic batches and waves, all in full mode, on
+  `plan/wave-1`. Wave 1 specs being written in parallel worktrees: 008 lint robustness,
+  009 discovery 6a completion (takes over spec 003's open tasks and #79), 010 project and
+  distribution. Next: one questionnaire to Brian with their open questions.
 
 ### 2026-10-25 · Multi-line node desc
 
