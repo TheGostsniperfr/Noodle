@@ -1,0 +1,108 @@
+        <mxCell id="header-dot" value="" style="ellipse;fillColor=#34d399;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="44" width="12" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="header-title" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;Acme · staging · Application runtime view&lt;/b&gt;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=24;fontColor=#f8fafc;" vertex="1" parent="1">
+          <mxGeometry x="64" y="30" width="2440" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="header-sub" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#e2e8f0&quot; style=&quot;font-size:13px&quot;&gt;Seen from inside an application&amp;#39;s pods: who can reach it, what it can reach, and what the platform hands it.&lt;/font&gt;&lt;br&gt;Scope: one business app deployed with generic-app-chart + secure-route, staging, as of 2026-09-27 · derived from code and checked live on ticketing&lt;br&gt;Out of scope: the edge team edge and TLS (see platform-staging) · OIDC login sequence · CI pipeline · BI extraction · prod differences (2+ replicas, 3 DB instances)&lt;br&gt;v0.1 · source: examples/platform-regression/app-runtime-view · anonymized from a real platform, kept as a regression fixture&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#94a3b8;" vertex="1" parent="1">
+          <mxGeometry x="64" y="74" width="2440" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="card-legend" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#94a3b8&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:13px&quot;&gt;Legend&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#0b1222;strokeColor=#1e293b;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1390" width="500" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-frontend" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#0c2234;strokeColor=#22d3ee;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1446" width="22" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-frontend-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;client / frontend&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="92" y="1442" width="190" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-backend" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#0b2d31;strokeColor=#34d399;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1472" width="22" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-backend-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;service / routing&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="92" y="1468" width="190" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-database" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#271955;strokeColor=#a78bfa;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1498" width="22" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-database-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;data / secrets&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="92" y="1494" width="190" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-security" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#3f152f;strokeColor=#fb7185;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1524" width="22" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-security-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;security / identity&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="92" y="1520" width="190" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-bus" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#563c2f;strokeColor=#fb923c;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1550" width="22" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-bus-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;bus / messaging&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="92" y="1546" width="190" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-external" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#172033;strokeColor=#94a3b8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1576" width="22" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-external-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;external / out of scope&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="92" y="1572" width="190" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-steps" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;1&lt;/span&gt; request step · &lt;span style=&quot;border:1px solid #f8fafc;color:#f8fafc;border-radius:3px;padding:0px 3px;font-weight:bold;&quot;&gt;A&lt;/span&gt; background step&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1606" width="230" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-port" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;TCP 80&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;html=1;fillColor=#34d399;strokeColor=none;align=center;verticalAlign=middle;fontStyle=1;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=9;fontColor=#020617;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1635" width="40.4" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-port-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;listening port on the server&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="112" y="1632" width="180" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-edge-flow" value="" style="edgeStyle=none;html=1;strokeColor=#94a3b8;strokeWidth=1.5;endArrow=blockThin;endFill=1;endSize=6;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="300" y="1453" as="sourcePoint" />
+            <mxPoint x="340" y="1453" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-edge-flow-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;connection, client → server&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="352" y="1442" width="178" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-edge-async" value="" style="edgeStyle=none;html=1;strokeColor=#a78bfa;strokeWidth=1.5;endArrow=blockThin;endFill=1;endSize=6;dashed=1;dashPattern=6 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="300" y="1479" as="sourcePoint" />
+            <mxPoint x="340" y="1479" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-edge-async-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;background sync&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="352" y="1468" width="178" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-edge-blocked" value="" style="edgeStyle=none;html=1;strokeColor=#f87171;strokeWidth=1.8;endArrow=cross;endFill=0;endSize=6;dashed=1;dashPattern=6 4;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="300" y="1505" as="sourcePoint" />
+            <mxPoint x="340" y="1505" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-edge-blocked-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;must not happen&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="352" y="1494" width="178" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-edge-link" value="" style="edgeStyle=none;html=1;strokeColor=#64748b;strokeWidth=1.2;endArrow=open;endFill=0;endSize=6;dashed=1;dashPattern=2 3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="300" y="1531" as="sourcePoint" />
+            <mxPoint x="340" y="1531" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-edge-link-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;object reference, not traffic&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="352" y="1520" width="178" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="card-legend-notes" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;Large dashed frame: infra perimeter · small: functional group&lt;br&gt;&lt;font color=&quot;#fb923c&quot;&gt;&lt;b&gt;⚠ Gx&lt;/b&gt;&lt;/font&gt;: docs and code disagree, see &quot;Gaps&quot;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#94a3b8;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1730" width="460" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="card-data-plane" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#22d3ee&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:13px&quot;&gt;Request path · data plane&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;div style=&quot;line-height:1.6&quot;&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;1&lt;/span&gt; A signed-in user calls https://&amp;lt;app&amp;gt;.staging.acme.example/api. TLS already ended at the edge team.&lt;br&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;2&lt;/span&gt; eg checks the GitLab id-token cookie and the route&amp;#39;s allowedGroups, then proxies plain HTTP to the backend Service.&lt;br&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;3&lt;/span&gt; The backend queries its own CNPG cluster with DATABASE_URL.&lt;br&gt;&lt;span style=&quot;background-color:#f8fafc;color:#020617;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;4&lt;/span&gt; It calls another app on its public hostname from &amp;lt;APP&amp;gt;_URL. hostAliases pins that name to eg-internal, which routes /api only.&lt;br&gt;• Other apps call this one the same way, unauthenticated.&lt;br&gt;• To verify: whether the id-token cookie reaches the backend, i.e. whether the app can read the user&amp;#39;s identity.&lt;/div&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#0b1222;strokeColor=#1e293b;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="560" y="1390" width="520" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="card-control-plane" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#a78bfa&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:13px&quot;&gt;Background · control plane&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;div style=&quot;line-height:1.6&quot;&gt;• Argo CD renders generic-app-chart: team values from app-configs first, platform baseline last, so the baseline wins on images, security and vault[].&lt;br&gt;• The migration Job runs as a PreSync hook before each rollout.&lt;br&gt;&lt;span style=&quot;border:1px solid #f8fafc;color:#f8fafc;border-radius:3px;padding:0px 3px;font-weight:bold;&quot;&gt;A&lt;/span&gt; VSO reads the app&amp;#39;s Vault path with the role pinned by the baseline, and writes it as a K8s Secret.&lt;br&gt;• CNPG creates &amp;lt;app&amp;gt;-db and publishes &amp;lt;app&amp;gt;-db-app, the source of DATABASE_*.&lt;br&gt;• Image Updater bumps the image tag in app-configs on every rc build.&lt;/div&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#0b1222;strokeColor=#1e293b;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="1390" width="460" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="card-contract" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#818cf8&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:13px&quot;&gt;Runtime contract · what the pod sees&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;div style=&quot;line-height:1.6&quot;&gt;• &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Env, always:&lt;/font&gt;&lt;/b&gt; APP_NAME, APP_COMPONENT, APP_ENV, APP_DOMAIN, POD_NAME, POD_NAMESPACE, LOG_LEVEL.&lt;br&gt;• &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Env, database:&lt;/font&gt;&lt;/b&gt; DATABASE_HOST, _PORT, _NAME, _USER, _PASSWORD, _URL (driver from urlScheme).&lt;br&gt;• &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Env, other apps:&lt;/font&gt;&lt;/b&gt; &amp;lt;APP&amp;gt;_URL for the 8 known apps, e.g. BOOKING_URL=http://booking.staging.acme.example.&lt;br&gt;• &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Secrets:&lt;/font&gt;&lt;/b&gt; each vault[] entry becomes a Secret, injected as env via injectInto. No files, no Vault token. Rotation needs a restart.&lt;br&gt;• &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Sandbox:&lt;/font&gt;&lt;/b&gt; non-root uid 1000, read-only root, writable /tmp 64Mi, all capabilities dropped, seccomp RuntimeDefault.&lt;br&gt;• &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Must expose:&lt;/font&gt;&lt;/b&gt; HTTP on 8000 (backend) or 8080 (frontend), /health/live, /health/ready, /metrics. JSON logs on stdout.&lt;br&gt;• &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Sizing:&lt;/font&gt;&lt;/b&gt; 1 replica, 100m/128Mi request, 500m/512Mi limit, required anti-affinity.&lt;/div&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#0b1222;strokeColor=#1e293b;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="1580" y="1390" width="620" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="card-gaps" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#fb923c&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:13px&quot;&gt;Gaps between docs and code&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;div style=&quot;line-height:1.6&quot;&gt;&lt;b&gt;&lt;font color=&quot;#fb923c&quot;&gt;G1&lt;/font&gt;&lt;/b&gt; &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;East-west auth.&lt;/font&gt;&lt;/b&gt; eg-internal has no SecurityPolicy. Any app pod can call any app&amp;#39;s /api, and the callee cannot tell who is calling.&lt;br&gt;&lt;b&gt;&lt;font color=&quot;#fb923c&quot;&gt;G2&lt;/font&gt;&lt;/b&gt; &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;No broker.&lt;/font&gt;&lt;/b&gt; Docs promise RabbitMQ with one vhost per app. Not deployed, RABBITMQ_URL not injected, egress rule off. The template&amp;#39;s publisher and worker cannot run.&lt;br&gt;&lt;b&gt;&lt;font color=&quot;#fb923c&quot;&gt;G3&lt;/font&gt;&lt;/b&gt; &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Archetype vs contract.&lt;/font&gt;&lt;/b&gt; Backends serve /health and /ready, not /health/live and /health/ready. Frontends run stock nginx as root on port 80.&lt;br&gt;&lt;b&gt;&lt;font color=&quot;#fb923c&quot;&gt;G4&lt;/font&gt;&lt;/b&gt; &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Observability.&lt;/font&gt;&lt;/b&gt; /metrics is required but no Prometheus runs. Logs only through kubectl.&lt;br&gt;&lt;b&gt;&lt;font color=&quot;#fb923c&quot;&gt;G5&lt;/font&gt;&lt;/b&gt; &lt;b&gt;&lt;font color=&quot;#f8fafc&quot;&gt;Durability.&lt;/font&gt;&lt;/b&gt; The DB sits on local-path (node-pinned), backups off. FLIGHT_TRACKING_URL is injected but that app does not exist.&lt;/div&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#0b1222;strokeColor=#1e293b;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="2220" y="1390" width="580" height="390" as="geometry" />
+        </mxCell>

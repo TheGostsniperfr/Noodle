@@ -1,0 +1,534 @@
+{
+ "ID": "contract-pipeline",
+ "Type": "",
+ "Title": "Noodle · Phase 1 · Contract pipeline",
+ "Subtitle": "How does a system directory become a diagram, and which file holds which fact?",
+ "Meta": [
+  "Scope: noodle CLI after phase 1, per ADR-0007 and specs/001 plan.md · arrows are data handoffs in process order, not network connections",
+  "Out of scope: SVG renderer (phase 2), MCP server (2b), web viewer (3), auto-layout (6)",
+  "v0.1 · source: docs/diagrams/contract-pipeline"
+ ],
+ "Width": 3100,
+ "Height": 1100,
+ "Zones": [
+  {
+   "ID": "z-git",
+   "Kind": "region",
+   "Label": "GIT · SYSTEM DIRECTORY",
+   "Sub": "reviewed in PRs",
+   "Color": "orange",
+   "Icon": "git",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 40,
+   "Y": 220,
+   "W": 420,
+   "H": 480
+  },
+  {
+   "ID": "z-cli",
+   "Kind": "region",
+   "Label": "NOODLE CLI",
+   "Sub": "noodle render \u003cdir\u003e --view \u003cid\u003e",
+   "Color": "cyan",
+   "Icon": "go",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 580,
+   "Y": 220,
+   "W": 2060,
+   "H": 480
+  },
+  {
+   "ID": "z-out",
+   "Kind": "region",
+   "Label": "GENERATED",
+   "Sub": "not committed (ADR-0005)",
+   "Color": "slate",
+   "Icon": "drawio",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 2740,
+   "Y": 220,
+   "W": 320,
+   "H": 480
+  }
+ ],
+ "Nodes": [
+  {
+   "ID": "model-file",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "json",
+   "Title": "model.yaml",
+   "Tech": "[kind Model]",
+   "Desc": "What exists: elements, connections",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 70,
+   "Y": 290,
+   "W": 350,
+   "H": 90
+  },
+  {
+   "ID": "view-file",
+   "Kind": "frontend",
+   "Shape": "",
+   "Icon": "json",
+   "Title": "views/\u003cid\u003e.yaml",
+   "Tech": "[kind View · topology | sequence]",
+   "Desc": "What is shown: steps, cards",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 70,
+   "Y": 410,
+   "W": 350,
+   "H": 90
+  },
+  {
+   "ID": "layout-file",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "json",
+   "Title": "layouts/\u003cview-id\u003e.yaml",
+   "Tech": "[kind Layout · topology only]",
+   "Desc": "Where: relative x/y, lanes",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 70,
+   "Y": 530,
+   "W": 350,
+   "H": 90
+  },
+  {
+   "ID": "loader",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "go",
+   "Title": "Loader",
+   "Tech": "[internal/model]",
+   "Desc": "Strict YAML, id checks",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 620,
+   "Y": 410,
+   "W": 260,
+   "H": 90
+  },
+  {
+   "ID": "schemas",
+   "Kind": "security",
+   "Shape": "",
+   "Icon": "json",
+   "Title": "JSON Schemas",
+   "Tech": "[schemas/v1alpha1]",
+   "Desc": "Published contract",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 620,
+   "Y": 570,
+   "W": 260,
+   "H": 90
+  },
+  {
+   "ID": "resolver",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "go",
+   "Title": "Resolver",
+   "Tech": "[internal/resolve]",
+   "Desc": "Symbols to absolute points",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1060,
+   "Y": 410,
+   "W": 260,
+   "H": 90
+  },
+  {
+   "ID": "diagram",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "go",
+   "Title": "Resolved diagram",
+   "Tech": "[internal/diagram]",
+   "Desc": "The v0 geometry, in memory",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1500,
+   "Y": 410,
+   "W": 260,
+   "H": 90
+  },
+  {
+   "ID": "lint",
+   "Kind": "security",
+   "Shape": "",
+   "Icon": "go",
+   "Title": "Lint",
+   "Tech": "[internal/lint]",
+   "Desc": "One rule per file",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1940,
+   "Y": 410,
+   "W": 260,
+   "H": 90
+  },
+  {
+   "ID": "renderer",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "go",
+   "Title": "draw.io renderer",
+   "Tech": "[cmd/noodle]",
+   "Desc": "Unchanged in phase 1",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2340,
+   "Y": 410,
+   "W": 260,
+   "H": 90
+  },
+  {
+   "ID": "drawio-file",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "drawio",
+   "Title": "\u003cview\u003e.\u003ctheme\u003e.drawio",
+   "Tech": "[editable]",
+   "Desc": "One per theme",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2770,
+   "Y": 410,
+   "W": 260,
+   "H": 90
+  },
+  {
+   "ID": "png-file",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "drawio",
+   "Title": "\u003cview\u003e.\u003ctheme\u003e.png",
+   "Tech": "[drawio CLI export]",
+   "Desc": "For docs and PRs",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2770,
+   "Y": 570,
+   "W": 260,
+   "H": 90
+  }
+ ],
+ "Edges": [
+  {
+   "ID": "e-1-git-loader",
+   "From": "z-git",
+   "To": "loader",
+   "Kind": "flow",
+   "Label": "[1] parse",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     460,
+     455
+    ],
+    [
+     620,
+     455
+    ]
+   ],
+   "LabelAt": [
+    520,
+    455
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-2-loader-resolver",
+   "From": "loader",
+   "To": "resolver",
+   "Kind": "flow",
+   "Label": "[2] model + view + layout",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     880,
+     455
+    ],
+    [
+     1060,
+     455
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-3-resolver-diagram",
+   "From": "resolver",
+   "To": "diagram",
+   "Kind": "flow",
+   "Label": "[3] emit geometry",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1320,
+     455
+    ],
+    [
+     1500,
+     455
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-4-diagram-lint",
+   "From": "diagram",
+   "To": "lint",
+   "Kind": "flow",
+   "Label": "[4] check",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1760,
+     455
+    ],
+    [
+     1940,
+     455
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-5-lint-renderer",
+   "From": "lint",
+   "To": "renderer",
+   "Kind": "flow",
+   "Label": "[5] clean only",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2200,
+     455
+    ],
+    [
+     2340,
+     455
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-6-renderer-drawio",
+   "From": "renderer",
+   "To": "drawio-file",
+   "Kind": "flow",
+   "Label": "[6] write",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2600,
+     455
+    ],
+    [
+     2770,
+     455
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-7-drawio-png",
+   "From": "drawio-file",
+   "To": "png-file",
+   "Kind": "flow",
+   "Label": "[7] export",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2900,
+     500
+    ],
+    [
+     2900,
+     570
+    ]
+   ],
+   "LabelAt": [
+    2900,
+    535
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-schemas-git",
+   "From": "schemas",
+   "To": "z-git",
+   "Kind": "link",
+   "Label": "validates",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     620,
+     615
+    ],
+    [
+     460,
+     615
+    ]
+   ],
+   "LabelAt": [
+    520,
+    615
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  }
+ ],
+ "Notes": [
+  {
+   "ID": "n-sequence",
+   "Text": "Sequence views have no layout: columns in order of first appearance, one row per step.",
+   "X": 1060,
+   "Y": 530,
+   "W": 300,
+   "H": 70
+  }
+ ],
+ "Cards": [
+  {
+   "ID": "card-legend",
+   "Title": "Legend",
+   "Color": "slate",
+   "Legend": true,
+   "Lines": [],
+   "X": 40,
+   "Y": 760,
+   "W": 640,
+   "H": 300
+  },
+  {
+   "ID": "card-files",
+   "Title": "Which file holds which fact",
+   "Color": "orange",
+   "Legend": false,
+   "Lines": [
+    "**model.yaml** · elements and zones, connections (flow, auth, tunnel, async, denied), references, gaps, status, multiplicity",
+    "**views/\u003cid\u003e.yaml** · include, steps [1] and [A], label overrides, cards, notes, participants (sequence)",
+    "**layouts/\u003cview-id\u003e.yaml** · canvas, positions relative to the parent zone, endpoints id.side@ratio, named lanes",
+    "A view's model is the model.yaml of its directory. Every id a view or layout uses must exist there.",
+    "A reviewer reads model.yaml and views/; layouts/ churns without hiding facts."
+   ],
+   "X": 720,
+   "Y": 760,
+   "W": 1160,
+   "H": 300
+  },
+  {
+   "ID": "card-steps",
+   "Title": "Pipeline · one render",
+   "Color": "cyan",
+   "Legend": false,
+   "Lines": [
+    "[1] The loader parses the three files strictly and checks every id reference; JSON Schemas validate the same files in go test.",
+    "[2] The resolver gets the model, the view and its layout.",
+    "[3] It emits absolute geometry: points, labels '[n] verb · protocol', gap badges.",
+    "[4] The v0 geometry rules check it, with the same messages.",
+    "[5] Only a clean diagram reaches the renderer.",
+    "[6] One draw.io file per theme, [7] exported to PNG."
+   ],
+   "X": 1920,
+   "Y": 760,
+   "W": 1140,
+   "H": 300
+  }
+ ],
+ "Arrows": null,
+ "Offerings": null,
+ "Matrix": null,
+ "Diff": false,
+ "Highlight": false
+}

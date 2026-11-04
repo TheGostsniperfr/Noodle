@@ -1,0 +1,604 @@
+{
+ "ID": "focus",
+ "Type": "",
+ "Title": "Observability focus · the whole log and metrics domain",
+ "Subtitle": "Which parts of the cluster make up observability once the proposal ships?",
+ "Meta": [
+  "Example of a topology diff (ADR-0021): planned elements and connections are added, deprecated ones removed, the rest is dimmed.",
+  "source: examples/topology-diff"
+ ],
+ "Width": 2360,
+ "Height": 1480,
+ "Zones": [
+  {
+   "ID": "z-internet",
+   "Kind": "region",
+   "Label": "INTERNET",
+   "Sub": "",
+   "Color": "slate",
+   "Icon": "globe",
+   "Status": "",
+   "Target": "",
+   "Change": "unchanged",
+   "X": 40,
+   "Y": 220,
+   "W": 220,
+   "H": 300
+  },
+  {
+   "ID": "z-cluster",
+   "Kind": "region",
+   "Label": "CLUSTER",
+   "Sub": "",
+   "Color": "cyan",
+   "Icon": "kubernetes",
+   "Status": "",
+   "Target": "",
+   "Change": "unchanged",
+   "X": 320,
+   "Y": 220,
+   "W": 1640,
+   "H": 860
+  },
+  {
+   "ID": "g-app",
+   "Kind": "group",
+   "Label": "APPLICATION",
+   "Sub": "ns prod",
+   "Color": "sky",
+   "Icon": "k8s-ns",
+   "Status": "",
+   "Target": "",
+   "Change": "unchanged",
+   "X": 350,
+   "Y": 280,
+   "W": 420,
+   "H": 420
+  },
+  {
+   "ID": "g-obs",
+   "Kind": "group",
+   "Label": "OBSERVABILITY",
+   "Sub": "ns monitoring",
+   "Color": "amber",
+   "Icon": "prometheus",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 1020,
+   "Y": 280,
+   "W": 910,
+   "H": 760
+  },
+  {
+   "ID": "z-saas",
+   "Kind": "region",
+   "Label": "THIRD-PARTY SAAS",
+   "Sub": "",
+   "Color": "slate",
+   "Icon": "globe",
+   "Status": "",
+   "Target": "",
+   "Change": "unchanged",
+   "X": 2040,
+   "Y": 220,
+   "W": 280,
+   "H": 300
+  }
+ ],
+ "Nodes": [
+  {
+   "ID": "user",
+   "Kind": "frontend",
+   "Shape": "actor",
+   "Icon": "user",
+   "Title": "User",
+   "Tech": "",
+   "Desc": "browser",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "unchanged",
+   "X": 122,
+   "Y": 362,
+   "W": 56,
+   "H": 56
+  },
+  {
+   "ID": "envoy",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "envoy",
+   "Title": "Gateway",
+   "Tech": "[Envoy Gateway]",
+   "Desc": "TLS and host routing",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "unchanged",
+   "X": 380,
+   "Y": 340,
+   "W": 320,
+   "H": 100
+  },
+  {
+   "ID": "api",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "api",
+   "Tech": "[Quarkus]",
+   "Desc": "Business API",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "unchanged",
+   "X": 380,
+   "Y": 520,
+   "W": 320,
+   "H": 110
+  },
+  {
+   "ID": "grafana",
+   "Kind": "frontend",
+   "Shape": "",
+   "Icon": "grafana",
+   "Title": "Grafana",
+   "Tech": "[kube-prometheus-stack]",
+   "Desc": "Dashboards and Explore",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1050,
+   "Y": 540,
+   "W": 320,
+   "H": 100
+  },
+  {
+   "ID": "prometheus",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "prometheus",
+   "Title": "Prometheus",
+   "Tech": "[Prometheus Operator]",
+   "Desc": "Metrics, 30 days",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1050,
+   "Y": 720,
+   "W": 320,
+   "H": 100
+  },
+  {
+   "ID": "alertmanager",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "prometheus",
+   "Title": "Alertmanager",
+   "Tech": "[kube-prometheus-stack]",
+   "Desc": "Routes alerts",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1580,
+   "Y": 720,
+   "W": 320,
+   "H": 100
+  },
+  {
+   "ID": "loki",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "loki",
+   "Title": "Loki",
+   "Tech": "[monolithic · PVC]",
+   "Desc": "Logs, 14 days",
+   "Badge": "",
+   "Status": "planned",
+   "Target": "SP3",
+   "Multiplicity": "",
+   "Change": "added",
+   "X": 1580,
+   "Y": 540,
+   "W": 320,
+   "H": 100
+  },
+  {
+   "ID": "alloy",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "grafana-alloy",
+   "Title": "Alloy",
+   "Tech": "[DaemonSet]",
+   "Desc": "Tails pod logs",
+   "Badge": "",
+   "Status": "planned",
+   "Target": "SP3",
+   "Multiplicity": "one per node",
+   "Change": "added",
+   "X": 1580,
+   "Y": 360,
+   "W": 320,
+   "H": 100
+  },
+  {
+   "ID": "fluentbit",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-pod",
+   "Title": "Fluent Bit",
+   "Tech": "[DaemonSet]",
+   "Desc": "Ships pod logs",
+   "Badge": "",
+   "Status": "deprecated",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "removed",
+   "X": 1050,
+   "Y": 900,
+   "W": 320,
+   "H": 100
+  },
+  {
+   "ID": "elastic",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "Elasticsearch",
+   "Tech": "[single node]",
+   "Desc": "Log index",
+   "Badge": "",
+   "Status": "deprecated",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "removed",
+   "X": 1580,
+   "Y": 900,
+   "W": 320,
+   "H": 100
+  },
+  {
+   "ID": "discord",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "discord",
+   "Title": "Discord",
+   "Tech": "[webhook]",
+   "Desc": "#alerts channel",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "unchanged",
+   "X": 2070,
+   "Y": 300,
+   "W": 220,
+   "H": 100
+  }
+ ],
+ "Edges": [
+  {
+   "ID": "c-user-envoy",
+   "From": "user",
+   "To": "envoy",
+   "Kind": "flow",
+   "Label": "[1] GET · HTTPS",
+   "Port": "TCP 443",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     178,
+     390
+    ],
+    [
+     380,
+     390
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": "unchanged"
+  },
+  {
+   "ID": "c-envoy-api",
+   "From": "envoy",
+   "To": "api",
+   "Kind": "flow",
+   "Label": "[2] proxy · HTTP",
+   "Port": "TCP 8080",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     540,
+     440
+    ],
+    [
+     540,
+     520
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": "unchanged"
+  },
+  {
+   "ID": "c-grafana-prometheus",
+   "From": "grafana",
+   "To": "prometheus",
+   "Kind": "flow",
+   "Label": "PromQL · HTTP",
+   "Port": "TCP 9090",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1210,
+     640
+    ],
+    [
+     1210,
+     720
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "c-grafana-loki",
+   "From": "grafana",
+   "To": "loki",
+   "Kind": "flow",
+   "Label": "+ LogQL · HTTP",
+   "Port": "TCP 3100",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1370,
+     590
+    ],
+    [
+     1580,
+     590
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": "added"
+  },
+  {
+   "ID": "c-prometheus-api",
+   "From": "prometheus",
+   "To": "api",
+   "Kind": "async",
+   "Label": "[A] + scrape · HTTP",
+   "Port": "TCP 8080",
+   "AgainstFlow": true,
+   "Path": [
+    [
+     1050,
+     770
+    ],
+    [
+     900,
+     770
+    ],
+    [
+     900,
+     600
+    ],
+    [
+     700,
+     600
+    ]
+   ],
+   "LabelAt": [
+    975,
+    770
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": "added"
+  },
+  {
+   "ID": "c-prometheus-alertmanager",
+   "From": "prometheus",
+   "To": "alertmanager",
+   "Kind": "flow",
+   "Label": "alerts · HTTP",
+   "Port": "TCP 9093",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1370,
+     770
+    ],
+    [
+     1580,
+     770
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "c-alertmanager-discord",
+   "From": "alertmanager",
+   "To": "discord",
+   "Kind": "flow",
+   "Label": "+ webhook · HTTPS",
+   "Port": "TCP 443",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1900,
+     770
+    ],
+    [
+     2000,
+     770
+    ],
+    [
+     2000,
+     350
+    ],
+    [
+     2070,
+     350
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": "added"
+  },
+  {
+   "ID": "c-alloy-loki",
+   "From": "alloy",
+   "To": "loki",
+   "Kind": "async",
+   "Label": "[B] + push · HTTP",
+   "Port": "TCP 3100",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1740,
+     460
+    ],
+    [
+     1740,
+     540
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": "added"
+  },
+  {
+   "ID": "c-fluentbit-elastic",
+   "From": "fluentbit",
+   "To": "elastic",
+   "Kind": "async",
+   "Label": "− bulk · HTTP",
+   "Port": "TCP 9200",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1370,
+     950
+    ],
+    [
+     1580,
+     950
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": "removed"
+  },
+  {
+   "ID": "r-alloy-api",
+   "From": "alloy",
+   "To": "api",
+   "Kind": "link",
+   "Label": "+ tails logs",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1580,
+     410
+    ],
+    [
+     960,
+     410
+    ],
+    [
+     960,
+     560
+    ],
+    [
+     700,
+     560
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": "added"
+  }
+ ],
+ "Notes": null,
+ "Cards": [
+  {
+   "ID": "card-legend",
+   "Title": "Legend",
+   "Color": "slate",
+   "Legend": true,
+   "Lines": [],
+   "X": 40,
+   "Y": 1130,
+   "W": 1100,
+   "H": 310
+  },
+  {
+   "ID": "card-proposal",
+   "Title": "The proposal",
+   "Color": "emerald",
+   "Legend": false,
+   "Lines": [
+    "[A] Prometheus scrapes the API metrics, from SP2.",
+    "[B] Alloy tails the pod logs on every node and pushes them to Loki, from SP3.",
+    "Grafana queries Loki next to Prometheus, so one UI covers metrics and logs.",
+    "Alertmanager gets a Discord receiver, from SP2.",
+    "Fluent Bit and Elasticsearch go once Loki holds 14 days of logs."
+   ],
+   "X": 1180,
+   "Y": 1130,
+   "W": 1140,
+   "H": 310
+  }
+ ],
+ "Arrows": null,
+ "Offerings": null,
+ "Matrix": null,
+ "Diff": true,
+ "Highlight": true
+}

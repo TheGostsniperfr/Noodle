@@ -1,0 +1,19 @@
+{
+ "ID": "catalog",
+ "Type": "catalog",
+ "Title": "Example · Service catalogue",
+ "Subtitle": "A catalog view (ADR-0013) resolved from the model's offerings, with no layout file.",
+ "Meta": null,
+ "Width": 1240,
+ "Height": 758,
+ "Zones": null,
+ "Nodes": null,
+ "Edges": null,
+ "Notes": null,
+ "Cards": null,
+ "Arrows": null,
+ "Offerings": null,
+ "Matrix": null,
+ "Diff": false,
+ "Highlight": false
+}

@@ -1,0 +1,9 @@
+        <mxCell id="header-dot" value="" style="ellipse;fillColor=#34d399;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="44" width="12" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="header-title" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;Example · Tech stack&lt;/b&gt;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=24;fontColor=#f8fafc;" vertex="1" parent="1">
+          <mxGeometry x="64" y="30" width="836" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="header-sub" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#e2e8f0&quot; style=&quot;font-size:13px&quot;&gt;A landscape view (ADR-0012) resolved from the model, with no layout file.&lt;/font&gt;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#94a3b8;" vertex="1" parent="1">
+          <mxGeometry x="64" y="74" width="836" height="80" as="geometry" />
+        </mxCell>

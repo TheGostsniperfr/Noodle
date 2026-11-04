@@ -1,0 +1,9 @@
+        <mxCell id="header-dot" value="" style="ellipse;fillColor=#059669;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="44" width="12" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="header-title" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;CNP · Runtime · OIDC login&lt;/b&gt;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=24;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="64" y="30" width="1280" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="header-sub" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#1e293b&quot; style=&quot;font-size:13px&quot;&gt;What happens when a user without a session opens a tenant app, until Envoy sets the session cookie.&lt;/font&gt;&lt;br&gt;Scope: the connections of views/runtime.yaml, in time order · main as of 2026-09-26 · derived from code&lt;br&gt;The Keycloak login form is collapsed into one note. After the last step the user follows the nominal path of the runtime view.&lt;br&gt;v0.1 · source: examples/cnp-runtime/views/oidc-login.yaml&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#475569;" vertex="1" parent="1">
+          <mxGeometry x="64" y="74" width="1280" height="80" as="geometry" />
+        </mxCell>

@@ -1,0 +1,961 @@
+{
+ "ID": "app-runtime-view",
+ "Type": "",
+ "Title": "Acme · staging · Application runtime view",
+ "Subtitle": "Seen from inside an application's pods: who can reach it, what it can reach, and what the platform hands it.",
+ "Meta": [
+  "Scope: one business app deployed with generic-app-chart + secure-route, staging, as of 2026-09-27 · derived from code and checked live on ticketing",
+  "Out of scope: the edge team edge and TLS (see platform-staging) · OIDC login sequence · CI pipeline · BI extraction · prod differences (2+ replicas, 3 DB instances)",
+  "v0.1 · source: examples/platform-regression/app-runtime-view · anonymized from a real platform, kept as a regression fixture"
+ ],
+ "Width": 2840,
+ "Height": 1820,
+ "Zones": [
+  {
+   "ID": "z-callers",
+   "Kind": "region",
+   "Label": "CALLERS",
+   "Sub": "",
+   "Color": "slate",
+   "Icon": "globe",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 40,
+   "Y": 220,
+   "W": 280,
+   "H": 640
+  },
+  {
+   "ID": "z-cluster",
+   "Kind": "region",
+   "Label": "ACME STAGING CLUSTER",
+   "Sub": "Cilium default-deny · every allowed flow is explicit",
+   "Color": "cyan",
+   "Icon": "talos",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 380,
+   "Y": 220,
+   "W": 1920,
+   "H": 1110
+  },
+  {
+   "ID": "g-gateway",
+   "Kind": "group",
+   "Label": "GATEWAY API",
+   "Sub": "ns envoy-gateway",
+   "Color": "emerald",
+   "Icon": "envoy-gateway",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 420,
+   "Y": 290,
+   "W": 340,
+   "H": 440
+  },
+  {
+   "ID": "g-app",
+   "Kind": "group",
+   "Label": "NAMESPACE \u003capp\u003e",
+   "Sub": "owned by the app team · 1 replica in staging",
+   "Color": "indigo",
+   "Icon": "k8s-ns",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 840,
+   "Y": 290,
+   "W": 900,
+   "H": 720
+  },
+  {
+   "ID": "g-deps",
+   "Kind": "group",
+   "Label": "REACHABLE DEPENDENCIES",
+   "Sub": "egress allowed by the app's CNP",
+   "Color": "sky",
+   "Icon": "cilium",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 1820,
+   "Y": 290,
+   "W": 440,
+   "H": 720
+  },
+  {
+   "ID": "g-controllers",
+   "Kind": "group",
+   "Label": "PLATFORM CONTROLLERS",
+   "Sub": "",
+   "Color": "violet",
+   "Icon": "kubernetes",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 840,
+   "Y": 1080,
+   "W": 1420,
+   "H": 220
+  },
+  {
+   "ID": "g-denied",
+   "Kind": "group",
+   "Label": "DENIED DESTINATIONS",
+   "Sub": "no allow rule",
+   "Color": "rose",
+   "Icon": "cilium",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 2360,
+   "Y": 290,
+   "W": 440,
+   "H": 790
+  }
+ ],
+ "Nodes": [
+  {
+   "ID": "user",
+   "Kind": "frontend",
+   "Shape": "actor",
+   "Icon": "user",
+   "Title": "User",
+   "Tech": "",
+   "Desc": "browser, GitLab account",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 152,
+   "Y": 422,
+   "W": 56,
+   "H": 56
+  },
+  {
+   "ID": "caller-app",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "Other app backend",
+   "Tech": "[any app namespace]",
+   "Desc": "Calls $\u003cAPP\u003e_URL/api",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 60,
+   "Y": 580,
+   "W": 240,
+   "H": 90
+  },
+  {
+   "ID": "envoy-eg",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "envoy",
+   "Title": "eg · north-south",
+   "Tech": "[OIDC + groups_direct check]",
+   "Desc": "Public *.staging hostnames",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 450,
+   "Y": 380,
+   "W": 280,
+   "H": 110
+  },
+  {
+   "ID": "envoy-eg-internal",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "envoy",
+   "Title": "eg-internal · east-west",
+   "Tech": "[ClusterIP 10.96.0.100]",
+   "Desc": "Same hostnames, /api only",
+   "Badge": "G1",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 450,
+   "Y": 560,
+   "W": 280,
+   "H": 110
+  },
+  {
+   "ID": "app-frontend",
+   "Kind": "frontend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "\u003capp\u003e-frontend",
+   "Tech": "[Deployment · nginx SPA]",
+   "Desc": "Static UI, no server logic",
+   "Badge": "G3",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 880,
+   "Y": 350,
+   "W": 260,
+   "H": 90
+  },
+  {
+   "ID": "app-backend",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "\u003capp\u003e-backend",
+   "Tech": "[Deployment · FastAPI · uid 1000]",
+   "Desc": "Team code: API + business rules",
+   "Badge": "G3 G4",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 880,
+   "Y": 500,
+   "W": 260,
+   "H": 130
+  },
+  {
+   "ID": "app-db",
+   "Kind": "database",
+   "Shape": "cylinder",
+   "Icon": "cnpg",
+   "Title": "\u003capp\u003e-db",
+   "Tech": "[CNPG · owner \u003capp\u003e]",
+   "Desc": "The only DB the app reaches",
+   "Badge": "G5",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1300,
+   "Y": 470,
+   "W": 240,
+   "H": 130
+  },
+  {
+   "ID": "app-secrets",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "k8s-secret",
+   "Title": "Secrets",
+   "Tech": "[K8s Secret · env only]",
+   "Desc": "\u003capp\u003e-db-app · \u003capp\u003e-\u003centry\u003e",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1260,
+   "Y": 690,
+   "W": 240,
+   "H": 90
+  },
+  {
+   "ID": "app-migration",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-pod",
+   "Title": "\u003capp\u003e-migration",
+   "Tech": "[Job · Argo CD PreSync]",
+   "Desc": "alembic upgrade head",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 880,
+   "Y": 840,
+   "W": 260,
+   "H": 80
+  },
+  {
+   "ID": "app-sa",
+   "Kind": "security",
+   "Shape": "",
+   "Icon": "k8s-sa",
+   "Title": "ServiceAccount",
+   "Tech": "[no token mounted]",
+   "Desc": "No K8s API",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1540,
+   "Y": 840,
+   "W": 180,
+   "H": 80
+  },
+  {
+   "ID": "other-apis",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "envoy",
+   "Title": "Other apps' APIs",
+   "Tech": "[via eg-internal · hostAliases]",
+   "Desc": "http://\u003cother\u003e.staging.acme.example",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1860,
+   "Y": 610,
+   "W": 370,
+   "H": 100
+  },
+  {
+   "ID": "coredns",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "kubernetes",
+   "Title": "CoreDNS",
+   "Tech": "[kube-system]",
+   "Desc": "Name resolution",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1860,
+   "Y": 760,
+   "W": 370,
+   "H": 100
+  },
+  {
+   "ID": "rabbitmq",
+   "Kind": "bus",
+   "Shape": "",
+   "Icon": "rabbitmq",
+   "Title": "RabbitMQ",
+   "Tech": "[not deployed · egress rule off]",
+   "Desc": "Documented: one vhost per app",
+   "Badge": "G2",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1860,
+   "Y": 895,
+   "W": 370,
+   "H": 90
+  },
+  {
+   "ID": "denied-internet",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "globe",
+   "Title": "Internet, external APIs",
+   "Tech": "[no egress rule]",
+   "Desc": "Dropped at the pod",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2390,
+   "Y": 380,
+   "W": 380,
+   "H": 90
+  },
+  {
+   "ID": "denied-pods",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "k8s-pod",
+   "Title": "Other apps' pods and DBs",
+   "Tech": "[pod-to-pod]",
+   "Desc": "Only reachable through eg-internal",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2390,
+   "Y": 520,
+   "W": 380,
+   "H": 90
+  },
+  {
+   "ID": "denied-platform",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "kubernetes",
+   "Title": "kube-apiserver, Vault",
+   "Tech": "[no token, no route]",
+   "Desc": "Platform APIs stay platform-only",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2390,
+   "Y": 660,
+   "W": 380,
+   "H": 90
+  },
+  {
+   "ID": "argocd",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "argo",
+   "Title": "Argo CD",
+   "Tech": "[generic-app-chart + baseline]",
+   "Desc": "Renders and applies the app",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 880,
+   "Y": 1160,
+   "W": 260,
+   "H": 100
+  },
+  {
+   "ID": "vso",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "vault",
+   "Title": "Vault Secrets Operator",
+   "Tech": "[ricoberger]",
+   "Desc": "Vault KV to K8s Secrets",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1250,
+   "Y": 1160,
+   "W": 270,
+   "H": 100
+  },
+  {
+   "ID": "vault",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "vault",
+   "Title": "Vault",
+   "Tech": "[kvv2]",
+   "Desc": "apps/\u003cenv\u003e/\u003capp\u003e/*",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1620,
+   "Y": 1160,
+   "W": 220,
+   "H": 100
+  },
+  {
+   "ID": "cnpg-operator",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "cnpg",
+   "Title": "CNPG operator",
+   "Tech": "[cnpg-system]",
+   "Desc": "Runs \u003capp\u003e-db, writes its Secret",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1940,
+   "Y": 1160,
+   "W": 290,
+   "H": 100
+  }
+ ],
+ "Edges": [
+  {
+   "ID": "e-1-user-eg",
+   "From": "user",
+   "To": "envoy-eg",
+   "Kind": "flow",
+   "Label": "[1] GET /api · HTTPS",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     208,
+     450
+    ],
+    [
+     450,
+     450
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-2-eg-backend",
+   "From": "envoy-eg",
+   "To": "app-backend",
+   "Kind": "flow",
+   "Label": "[2] proxy · HTTP",
+   "Port": "TCP 8000",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     730,
+     470
+    ],
+    [
+     800,
+     470
+    ],
+    [
+     800,
+     575
+    ],
+    [
+     880,
+     575
+    ]
+   ],
+   "LabelAt": [
+    800,
+    520
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-3-backend-db",
+   "From": "app-backend",
+   "To": "app-db",
+   "Kind": "flow",
+   "Label": "[3] query · SQL",
+   "Port": "TCP 5432",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1140,
+     560
+    ],
+    [
+     1300,
+     560
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    -24
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-4-backend-other-apis",
+   "From": "app-backend",
+   "To": "other-apis",
+   "Kind": "flow",
+   "Label": "[4] GET $BOOKING_URL/api/v1/… · HTTP",
+   "Port": "TCP 80",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1140,
+     585
+    ],
+    [
+     1220,
+     585
+    ],
+    [
+     1220,
+     660
+    ],
+    [
+     1860,
+     660
+    ]
+   ],
+   "LabelAt": [
+    1640,
+    660
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-eg-frontend",
+   "From": "envoy-eg",
+   "To": "app-frontend",
+   "Kind": "flow",
+   "Label": "/ SPA · HTTP",
+   "Port": "TCP 8080",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     730,
+     410
+    ],
+    [
+     880,
+     410
+    ]
+   ],
+   "LabelAt": [
+    800,
+    410
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-caller-eg-internal",
+   "From": "caller-app",
+   "To": "envoy-eg-internal",
+   "Kind": "flow",
+   "Label": "no auth · HTTP",
+   "Port": "TCP 80",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     300,
+     625
+    ],
+    [
+     450,
+     625
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-eg-internal-backend",
+   "From": "envoy-eg-internal",
+   "To": "app-backend",
+   "Kind": "flow",
+   "Label": "/api · HTTP",
+   "Port": "TCP 8000",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     730,
+     610
+    ],
+    [
+     880,
+     610
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-backend-dns",
+   "From": "app-backend",
+   "To": "coredns",
+   "Kind": "flow",
+   "Label": "resolve · DNS",
+   "Port": "UDP 53",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1140,
+     615
+    ],
+    [
+     1180,
+     615
+    ],
+    [
+     1180,
+     830
+    ],
+    [
+     1860,
+     830
+    ]
+   ],
+   "LabelAt": [
+    1680,
+    830
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "x-app-denied",
+   "From": "g-app",
+   "To": "g-denied",
+   "Kind": "blocked",
+   "Label": "any other egress · dropped by Cilium",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1700,
+     1010
+    ],
+    [
+     1700,
+     1045
+    ],
+    [
+     2360,
+     1045
+    ]
+   ],
+   "LabelAt": [
+    1950,
+    1045
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-a-vso-vault",
+   "From": "vso",
+   "To": "vault",
+   "Kind": "async",
+   "Label": "[A] read",
+   "Port": "TCP 8200",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1520,
+     1210
+    ],
+    [
+     1620,
+     1210
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    -24
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-backend-secrets",
+   "From": "app-backend",
+   "To": "app-secrets",
+   "Kind": "link",
+   "Label": "env / envFrom",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1100,
+     630
+    ],
+    [
+     1100,
+     735
+    ],
+    [
+     1260,
+     735
+    ]
+   ],
+   "LabelAt": [
+    1100,
+    690
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-vso-secrets",
+   "From": "vso",
+   "To": "app-secrets",
+   "Kind": "link",
+   "Label": "writes Secret",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1390,
+     1160
+    ],
+    [
+     1390,
+     780
+    ]
+   ],
+   "LabelAt": [
+    1390,
+    1040
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-argocd-app",
+   "From": "argocd",
+   "To": "g-app",
+   "Kind": "link",
+   "Label": "applies",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1120,
+     1160
+    ],
+    [
+     1120,
+     1010
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  }
+ ],
+ "Notes": [
+  {
+   "ID": "n-302",
+   "Text": "No session: eg replies **302** to GitLab. Signed in but not in allowedGroups: **403**. The app never sees either.",
+   "X": 52,
+   "Y": 700,
+   "W": 266,
+   "H": 110
+  }
+ ],
+ "Cards": [
+  {
+   "ID": "card-legend",
+   "Title": "Legend",
+   "Color": "slate",
+   "Legend": true,
+   "Lines": [],
+   "X": 40,
+   "Y": 1390,
+   "W": 500,
+   "H": 390
+  },
+  {
+   "ID": "card-data-plane",
+   "Title": "Request path · data plane",
+   "Color": "cyan",
+   "Legend": false,
+   "Lines": [
+    "[1] A signed-in user calls https://\u003capp\u003e.staging.acme.example/api. TLS already ended at the edge team.",
+    "[2] eg checks the GitLab id-token cookie and the route's allowedGroups, then proxies plain HTTP to the backend Service.",
+    "[3] The backend queries its own CNPG cluster with DATABASE_URL.",
+    "[4] It calls another app on its public hostname from \u003cAPP\u003e_URL. hostAliases pins that name to eg-internal, which routes /api only.",
+    "Other apps call this one the same way, unauthenticated.",
+    "To verify: whether the id-token cookie reaches the backend, i.e. whether the app can read the user's identity."
+   ],
+   "X": 560,
+   "Y": 1390,
+   "W": 520,
+   "H": 390
+  },
+  {
+   "ID": "card-control-plane",
+   "Title": "Background · control plane",
+   "Color": "violet",
+   "Legend": false,
+   "Lines": [
+    "Argo CD renders generic-app-chart: team values from app-configs first, platform baseline last, so the baseline wins on images, security and vault[].",
+    "The migration Job runs as a PreSync hook before each rollout.",
+    "[A] VSO reads the app's Vault path with the role pinned by the baseline, and writes it as a K8s Secret.",
+    "CNPG creates \u003capp\u003e-db and publishes \u003capp\u003e-db-app, the source of DATABASE_*.",
+    "Image Updater bumps the image tag in app-configs on every rc build."
+   ],
+   "X": 1100,
+   "Y": 1390,
+   "W": 460,
+   "H": 390
+  },
+  {
+   "ID": "card-contract",
+   "Title": "Runtime contract · what the pod sees",
+   "Color": "indigo",
+   "Legend": false,
+   "Lines": [
+    "**Env, always:** APP_NAME, APP_COMPONENT, APP_ENV, APP_DOMAIN, POD_NAME, POD_NAMESPACE, LOG_LEVEL.",
+    "**Env, database:** DATABASE_HOST, _PORT, _NAME, _USER, _PASSWORD, _URL (driver from urlScheme).",
+    "**Env, other apps:** \u003cAPP\u003e_URL for the 8 known apps, e.g. BOOKING_URL=http://booking.staging.acme.example.",
+    "**Secrets:** each vault[] entry becomes a Secret, injected as env via injectInto. No files, no Vault token. Rotation needs a restart.",
+    "**Sandbox:** non-root uid 1000, read-only root, writable /tmp 64Mi, all capabilities dropped, seccomp RuntimeDefault.",
+    "**Must expose:** HTTP on 8000 (backend) or 8080 (frontend), /health/live, /health/ready, /metrics. JSON logs on stdout.",
+    "**Sizing:** 1 replica, 100m/128Mi request, 500m/512Mi limit, required anti-affinity."
+   ],
+   "X": 1580,
+   "Y": 1390,
+   "W": 620,
+   "H": 390
+  },
+  {
+   "ID": "card-gaps",
+   "Title": "Gaps between docs and code",
+   "Color": "orange",
+   "Legend": false,
+   "Lines": [
+    "!!G1!! **East-west auth.** eg-internal has no SecurityPolicy. Any app pod can call any app's /api, and the callee cannot tell who is calling.",
+    "!!G2!! **No broker.** Docs promise RabbitMQ with one vhost per app. Not deployed, RABBITMQ_URL not injected, egress rule off. The template's publisher and worker cannot run.",
+    "!!G3!! **Archetype vs contract.** Backends serve /health and /ready, not /health/live and /health/ready. Frontends run stock nginx as root on port 80.",
+    "!!G4!! **Observability.** /metrics is required but no Prometheus runs. Logs only through kubectl.",
+    "!!G5!! **Durability.** The DB sits on local-path (node-pinned), backups off. FLIGHT_TRACKING_URL is injected but that app does not exist."
+   ],
+   "X": 2220,
+   "Y": 1390,
+   "W": 580,
+   "H": 390
+  }
+ ],
+ "Arrows": null,
+ "Offerings": null,
+ "Matrix": null,
+ "Diff": false,
+ "Highlight": false
+}
