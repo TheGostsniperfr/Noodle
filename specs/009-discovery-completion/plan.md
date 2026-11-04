@@ -29,7 +29,8 @@ kubectl   ─┘     rules: refs, addresses, operators,   ├─ graph.Merge(mod
 
 | Path | Change |
 |---|---|
-| `internal/model` | items gain `object`, references gain `field` (Q3); `fragment.schema.json` updated |
+| `internal/model` | items gain `object`, references gain `field` (Q3) |
+| `schemas/v1alpha1/` | `fragment.schema.json`: optional `object` and `field` (Q3) |
 | `internal/adapter/k8s` | one rule per file: `refs.go` (FR-001), `refkinds.go` (FR-020), `externalsecrets.go` and `argocd.go` (FR-002), `addresses.go` (FR-003, FR-004), `namespace.go` (FR-005), `kustomize.go` (FR-006), `netpol.go` (FR-016), `secretendpoint.go` (FR-017), `operators.go` (FR-018), `rules.go` (FR-019); `src` paths relative (FR-007) |
 | `internal/graph` | new: `Merge`, `Lookup`, `Neighbours`, `Path`, `Drift`; cross-fragment index (FR-012) |
 | `cmd/noodle` | `discover` flags `-argocd-app`, `-kustomize`, `-enable-helm`; new `drift` and `query` subcommands |

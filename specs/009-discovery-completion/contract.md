@@ -20,6 +20,10 @@ character to match is written `[\|]`, that is `[|]` once unescaped.
 - Round 1 (2026-11-04): CHANGES, 33 points, all applied.
 - Round 2: CHANGES, 21 points, all applied; phase `6a` now points at this spec, so the
   carried P6a features are evaluated in full mode here.
+- Round 3, the last (PROCESS.md cap): CHANGES; the three points that made a criterion
+  pass or fail whatever the code does are applied (DSC-04 #2 and #3, the FR-015 gate of
+  DSC-09 #4); nine follow-ups are recorded below, for the implementer to apply in the
+  first commit of the matching task. Agreed 2026-11-04.
 
 Test names below are the ones the implementation must use. Each named test is
 table-driven and asserts with `Equal` on the whole output it checks (a full reference or
@@ -60,9 +64,9 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 
 | # | Criterion | Verified by | Threshold |
 |---|---|---|---|
-| 1 | The contract: top-level `object`, `field` on references, `src.object` kept | `go test ./internal/model/ -run TestIdentity -v` | exit 0: `schema-accepts` (an item with `object {apiVersion, kind, namespace, name}`, a reference with `field`); `schema-rejects` with three cases, no `apiVersion`, no `kind`, no `name`, each refused; `src-object-unchanged` (a fragment using only the string `src.object` validates); `legacy-fragment` loads `internal/model/testdata/fragment-v1alpha1.yaml` and marshals it back byte-identical |
-| 2 | The legacy fixture predates this spec | `git log --format=%h origin/main -- internal/model/testdata/fragment-v1alpha1.yaml` | non-empty: the file is committed on `origin/main` before the feature's commits |
-| 3 | The adapter fills them everywhere | `go test ./internal/adapter/k8s/ -run TestIdentity -v` | exit 0: `scenario` asserts FR-008's scenario exactly; `every-item` asserts that the fragment of `examples/discovery-k8s/manifests` has 0 items without `object` and 0 references without `field` |
+| 1 | The contract: top-level `object`, `field` on references, `src.object` kept | `go test ./internal/model/ -run TestIdentity -v` | exit 0: `schema-accepts` (an item with `object {apiVersion, kind, namespace, name}`, a reference with `field`); `schema-rejects` with three cases, no `apiVersion`, no `kind`, no `name`, each refused; `src-object-unchanged` (a fragment using only the string `src.object` validates); `legacy-fragment` loads `internal/model/testdata/minimal/discovered/k8s-manifests.yaml` and marshals it back byte-identical |
+| 2 | The legacy fixture predates this spec | `git log --format=%h origin/main -- internal/model/testdata/minimal/discovered/k8s-manifests.yaml` | non-empty |
+| 3 | The adapter fills them where an object stands behind the item | `go test ./internal/adapter/k8s/ -run TestIdentity -v` | exit 0: `scenario` asserts FR-008's scenario exactly; `every-item`, on the fragment of `examples/discovery-k8s/manifests`, asserts 0 object-derived items without `object`, 0 references without `field`, and with `Equal` the full list of ids that carry no `object` (the synthesized elements only); `connection-object` asserts an inferred connection carries the `object` of the ConfigMap whose value created it |
 | 4 | Existing fixtures are not rewritten | `git diff --name-only --diff-filter=MD origin/main...HEAD -- internal/adapter/k8s/testdata cmd/noodle/testdata internal/model/testdata` | no output |
 | 5 | The decision of Q3 is recorded (C06) | the ADR of Q3; `make spec-check` | the file exists, its frontmatter says `status: accepted`; exit 0 |
 
@@ -110,7 +114,7 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 | 1 | Each rule has its fixtures | `go test ./internal/adapter/k8s/ -run 'TestNetworkPolicy\|TestSecretEndpoint\|TestOperatorRules' -v` | exit 0, subtests `netpol-deny`, `netpol-deny-route`, `netpol-egress`, `netpol-allow`, `secret-endpoint-env`, `secret-endpoint-envfrom`, `secret-endpoint-externalsecret`, `secret-endpoint-ignores-password`, `cnpg-cluster`, `prometheus-alertmanager`, `certmanager-issuer`, `external-dns`, `servicemonitor`, `podmonitor`; each asserts with `Equal` the fixture's full list of the items it produces (connections, entries or elements) |
 | 2 | FR-016's scenario, both halves | `TestNetworkPolicy/netpol-deny` in #1 | the full connection list has `web → postgres` with `denied: true` and `enforced_by: k8s:data/networkpolicy/default-deny`, and `api → postgres` with neither field |
 | 3 | `secret-endpoint` names keys and readers, never values | `TestSecretEndpoint/secret-endpoint-env` and `TestSecretEndpoint/secret-endpoint-ignores-password` in #1 | value `db/DB_URL`, `about` equal to `[k8s:prod/deployment/api, k8s:prod/deployment/worker]`, no Secret value in the fragment; no entry for key `PASSWORD` |
-| 4 | Started only after `Decision: go` (FR-015) | anchor `git log --format=%h -S'Decision: go' --reverse -- docs/benchmarks/discovery-checkpoint.md \| head -1`; then, for `netpol.go`, `secretendpoint.go`, `operators.go`, `rules.go`, `refkinds.go` of `internal/adapter/k8s/` and their `_test.go`, `git log --format=%h <anchor>..HEAD -- <files>` and `git log --format=%h -- <files>` | the anchor exists and the two lists are equal; if the file says `Decision: stop` instead, `grep -c '^## Revision' specs/009-discovery-completion/spec.md` ≥ `1` and the full list is empty |
+| 4 | Started only after `Decision: go` (FR-015) | anchor `git log --format=%h -S'Decision: go' --reverse -- docs/benchmarks/discovery-checkpoint.md \| head -1`; content check: `git log --format=%h -G'func Test(NetworkPolicy\|SecretEndpoint\|OperatorRules\|Rules\|ReferenceKinds)\|enforced_by\|EnforcedBy\|secret-endpoint' -- internal/adapter/k8s/` and the same limited to `<anchor>..HEAD`; file check: for `netpol.go`, `secretendpoint.go`, `operators.go`, `rules.go`, `refkinds.go` of `internal/adapter/k8s/` and their `_test.go`, `git log --format=%h <anchor>..HEAD -- <files>` and `git log --format=%h -- <files>` | the anchor exists, and in each check the two lists are equal; if the file says `Decision: stop` instead, `grep -c '^## Revision' specs/009-discovery-completion/spec.md` ≥ `1` and both full lists are empty |
 
 ## DSC-10 · Rules file and reference kinds
 
@@ -156,3 +160,20 @@ writes `specs/009-discovery-completion/evidence/P6a-0N.md`, in full mode (C12).
 | P6a-09 | DSC-09 #1 and #3 (env, envFrom and ExternalSecret targets) |
 | P6a-10 | DSC-09 #1, operator subtests |
 | all | `go run ./tools/speccheck locate P6a-03` prints exactly `specs/009-discovery-completion` |
+
+## Follow-ups from round 3
+
+Not graded until the implementer applies them in the first commit of the matching task;
+from that commit on, they replace the criterion they name.
+
+| Feature | Criterion | Follow-up |
+|---|---|---|
+| DSC-12 | #4 | also catch indirect reads: `grep '"type":"tool_use"' … \| grep -E 'manifests\|list\.yaml\|"name":"(Grep\|Glob)".*discovery-k8s' \| grep -vc 'noodle discover'` = `0` |
+| DSC-08, DSC-12 | DSC-08 #3, DSC-12 #5 | `grep -cE '"type": *"tool_result"\|"toolUseResult"' docs/benchmarks/transcripts/*.jsonl` = `0` for every file |
+| DSC-12 | #5 | for each X in A, B, C and N in 1, 2: `grep -cE '^[\|] X [\|] N [\|]' docs/benchmarks/discovery-tokens.md` = `1`; add `cat` of the file so the C ≥ A means can be read |
+| DSC-08 | #4 | the ADR of Q1 has `status: accepted`; `tasks.md` already requires it before any task |
+| DSC-09 | #3 | the three `secret-endpoint-env`, `-envfrom` and `-externalsecret` subtests each assert no Secret value and no base64 form of it in the fragment |
+| DSC-08 | #1 | four counts, `^category`, `^model`, `^turns`, `^wall` on `expected.txt`, each ≥ `1` |
+| DSC-11 | #2 | plan 009 decides whether `path` crosses `denied` connections (proposed: it skips them), and subtest `path-denied` asserts it |
+| DSC-04 | scope | done: `schemas/v1alpha1/` is in plan 009's table |
+| DSC-03 | #4 | `grep -rcE '(^\|[ {,-])file: *"?/' examples/discovery-k8s/discovered/` = `0` for every file |

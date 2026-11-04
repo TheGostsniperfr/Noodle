@@ -87,11 +87,15 @@ to jump from a node back to the YAML document that defines it.
   *Scenario:* WHEN discovery reads a rendered temp file for `-kustomize apps/shop` THEN
   every `src.file` of the fragment starts with `apps/shop/` or names the Kustomization,
   and none starts with `/`.
-- **FR-008** THE SYSTEM SHALL give every discovered item a top-level `object` identity
-  `{apiVersion, kind, namespace, name}`, required `apiVersion`, `kind` and `name`, beside
-  its `src`, whose existing string `src.object` stays valid and unchanged; and every
-  reference the field path that created it, `field`
-  (`spec.template.spec.volumes[2].secret.secretName`). (Option of question 3.)
+- **FR-008** THE SYSTEM SHALL give every discovered item built from one API object a
+  top-level `object` identity `{apiVersion, kind, namespace, name}`, required
+  `apiVersion`, `kind` and `name`, beside its `src`, whose existing string `src.object`
+  stays valid and unchanged; an element synthesized without an object behind it (an
+  implied namespace, an Ingress controller, an external provider) SHALL carry no
+  `object`; a connection SHALL carry the `object` of the object whose value created it
+  (the ConfigMap, the workload's env); and every reference SHALL carry the field path
+  that created it, `field` (`spec.template.spec.volumes[2].secret.secretName`). (Option
+  of question 3.)
   *Scenario:* WHEN the Deployment `api` mounts Secret `db` through its third volume THEN
   its `mounts` reference has `field: spec.template.spec.volumes[2].secret.secretName` and
   the element `k8s:prod/deployment/api` has `object: {apiVersion: apps/v1, kind:

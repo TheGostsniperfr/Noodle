@@ -4,7 +4,8 @@ Plan: [`plan.md`](plan.md). One task per commit; each ends with `make check` gre
 the box in the same commit. Tasks in one wave do not depend on each other, except where
 a task names another. Before any task: the five questions answered, `contract.md`
 revised where an answer differs from its stated assumption, and the ADRs of questions
-2, 3 and 4 accepted.
+1, 2, 3 and 4 accepted. Each task's first commit applies the contract's round 3
+follow-ups for its features.
 
 ## Wave 1 · References, addresses, inputs
 
