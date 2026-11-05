@@ -16,7 +16,6 @@ import (
 	"github.com/TheGostsniperfr/Noodle/internal/skillrules"
 )
 
-
 var (
 	agentNames   = []string{"diagram-reviewer", "fact-finder", "icon-curator"}
 	openCodeWant = []string{

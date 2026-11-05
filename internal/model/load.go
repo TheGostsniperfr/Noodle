@@ -121,3 +121,20 @@ func yamlFiles(dir string) ([]string, error) {
 }
 
 func stem(path string) string { return strings.TrimSuffix(filepath.Base(path), ".yaml") }
+
+// LoadFragments reads every fragment of dir, sorted by file name.
+func LoadFragments(dir string) ([]*Fragment, error) {
+	paths, err := yamlFiles(dir)
+	if err != nil {
+		return nil, fmt.Errorf("LoadFragments: %w", err)
+	}
+	var out []*Fragment
+	for _, path := range paths {
+		f := &Fragment{ID: stem(path)}
+		if err := decodeFile(path, "Fragment", f); err != nil {
+			return nil, fmt.Errorf("LoadFragments: %w", err)
+		}
+		out = append(out, f)
+	}
+	return out, nil
+}

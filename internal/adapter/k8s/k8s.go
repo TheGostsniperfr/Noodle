@@ -31,6 +31,7 @@ func (Adapter) Discover(ctx context.Context, src adapter.Source) (*model.Fragmen
 	f.Elements = append(f.Elements, ingresses(idx, g, u)...)
 	selectsPods(idx, g, u)
 	uses := configRefs(idx, g)
+	secretEndpoints(idx, uses, u)
 	f.Elements = append(f.Elements, externalSecrets(idx, g, u)...)
 	applications(idx, g)
 	f.Elements = append(f.Elements, addresses(idx, g, uses)...)

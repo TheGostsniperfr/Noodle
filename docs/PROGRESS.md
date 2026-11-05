@@ -7,14 +7,14 @@ decisions go in ADRs, acceptance in `features.json`.
 ## Start here
 
 1. `make init`: fix anything red before new work. Commands: `docs/COMMANDS.md`; process: `docs/PROCESS.md`.
-2. Read the current spec: [`specs/003-static-discovery/spec.md`](../specs/003-static-discovery/spec.md)
-   and ADR-0017, ADR-0018. Backlog: the [project board](https://github.com/users/TheGostsniperfr/projects/5), issue #42.
-3. Next action: spec 003 T05 (secrets and references, Argo CD Applications), then T06,
-   T12 and the T14 checkpoint before anything else ([`tasks.md`](../specs/003-static-discovery/tasks.md)).
-   Phase 1 still has spec 002 T03 (issue #43, in `dockair-docs`).
-   Measure on real repos with `make discover-eval`.
-4. Spec 007 (process, #108) is done on `feat/spec-process`; PR pending. Then pilot the
-   process on #79 (`noodle drift`, P6a-05) as spec 008, full mode.
+2. Current spec: [`specs/009-discovery-completion`](../specs/009-discovery-completion/tasks.md),
+   Three checkpoints said **stop** (`docs/benchmarks/discovery-checkpoint-3.md`): phase 6a
+   closes without its exit criterion, discovery stays for `drift`, `check`, `query`.
+   Next phase per the roadmap: 2 (own SVG renderer), with #82, #91, #71. Backlog: the [project board](https://github.com/users/TheGostsniperfr/projects/5), issue #42.
+3. Open for Brian: DSC-03's `unrendered` hint is still a short code (the fragment schema
+   restricts `hint`); PRJ-02 of spec 010; PRs #14, #60, #89; branch `feat/access-views`
+   (PR #53 closed unmerged); CodeQL alert 5 to dismiss as a false positive.
+4. Phase 1 still has spec 002 T03 (issue #43, in `dockair-docs`).
 
 ## Open threads outside this repo
 
@@ -25,6 +25,20 @@ decisions go in ADRs, acceptance in `features.json`.
 | `~/.dotfiles` | noodle plugin installed declaratively (commit `9bf7e57`) | pushed. `nixos-rebuild switch` still to run. |
 
 ## Log
+
+### 2026-11-05 · Discovery checkpoint (spec 009 T09)
+
+- DSC-15 passes (evaluator); per-edge scoring of all six runs in `platform-overview-edges.md`; roadmap marks 6a closed.
+- T29: checkpoint 3 on PAE platform-overview, arm A $3.89 23/25, arm C $4.91 25/25: Decision: stop, final (C at 126 %). Phase 6a closes without its exit criterion; discovery serves drift, check and query, FR-022 and FR-023 dropped (ADR-0031). Summary of the three rounds in `docs/benchmarks/discovery-checkpoint-3.md`.
+- Revision 2 and ADR-0032 (agreed with Brian): a third and last checkpoint, C told what discovery never sees instead of "complete" (T29, DSC-15).
+- T28: DSC-13 and DSC-14 pass (evaluator); their findings fixed.
+- T23: checkpoint 2 on PAE platform-overview, arm A $4.82 25/25, arm C $3.04 22/25 with the digest: Decision: stop (cost 63 %, recall lower). C misses Grafana → Prometheus, Prometheus → Alertmanager and image pulls, operator edges the digest lacks, and the C prompt claimed the digest complete. Next step after a second stop (ADR-0031) is Brian's call.
+- T22: `noodle digest DIR`: Services folded into their workload, routes resolved to it (across fragments too), ExternalSecret paths, open entries, `src` on every line; stderr prints both token estimates. PAE: ~35.0k tokens of fragments, ~6.4k of digest (18 %). `make examples` diffs `examples/discovery-k8s/digest.txt`. DSC-13 passes.
+- T27: credential words drop a key only as its last segment (`OAUTH_TOKEN_URL` kept).
+- T24-T26: P6a-09 convergence, real Secret values in every leak fixture, one entry per Secret id across namespaces, plan table.
+- T21: `secret-endpoint` entries from `secretKeyRef` keys and `envFrom` Secrets (keys from the Secret or its ExternalSecrets, never values), one per Secret and key set; credential words win (`SMTP_SERVER_PASSWORD` is skipped). Schema enum gains the kind ADR-0018 named. P6a-09 passes (evaluator, after T24-T26).
+- Revision 1 of spec 009 and ADR-0031, agreed with Brian: `noodle digest` for agents, `secret-endpoint` out of the gate, then a second checkpoint (wave 2b, T21 to T23, DSC-13 and DSC-14).
+- T09: DSC-08 passes (evaluator). P6a-08 left false: its verify step holds, but its description claims C is cheaper, which the run refutes. Checkpoint on PAE platform-overview, arm A $4.34 24/25, arm C $4.76 25/25: Decision: stop (ADR-0029, C at 110 % of A). C finds the edge A leaves unresolved but re-reads the repos for what fragments lack (credential-implied addresses, app config). Wave 3 stays closed (FR-015); the spec revision is Brian's call. Ground truth, scripts and filtered transcripts in `docs/benchmarks/`.
 
 ### 2026-11-05 · Spec 008 convergence
 

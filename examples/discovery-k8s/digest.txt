@@ -1,0 +1,18 @@
+# noodle digest of 1 fragments: 6 components, 5 connections, 1 secrets, 1 open
+# components
+data/postgres  StatefulSet · postgres:16  ports pg:5432  src examples/discovery-k8s/manifests/platform.yaml:120
+external/onepassword  1Password  src examples/discovery-k8s/manifests/platform.yaml:111
+prod/api  Deployment · api:1.4.2  ports http:8080  src examples/discovery-k8s/manifests/platform.yaml:47
+prod/gateway/shared  Gateway · envoy  ports http:80,https:443  src examples/discovery-k8s/manifests/platform.yaml:4
+prod/web  Deployment · web:2.3.0  ports http:8080  src examples/discovery-k8s/manifests/platform.yaml:13
+prod/worker  Deployment · worker:1.4.2  src examples/discovery-k8s/manifests/platform.yaml:82
+# connections
+prod/api -> data/postgres  pg inferred  src examples/discovery-k8s/manifests/platform.yaml:61
+prod/gateway/shared -> prod/api  http HTTP host api.example.com  src examples/discovery-k8s/manifests/platform.yaml:73
+prod/gateway/shared -> prod/web  http HTTP host web.example.com  src examples/discovery-k8s/manifests/platform.yaml:38
+prod/web -> data/postgres  pg inferred  src examples/discovery-k8s/manifests/platform.yaml:29
+prod/web -> prod/gateway/shared  https inferred  src examples/discovery-k8s/manifests/platform.yaml:27
+# secrets
+prod/secret/db <- externalsecret <- prod/secretstore/onepassword <- external/onepassword  src examples/discovery-k8s/manifests/platform.yaml:118
+# open
+secret-endpoint prod/db: DB_URL  about prod/api, prod/worker  src examples/discovery-k8s/manifests/platform.yaml:64

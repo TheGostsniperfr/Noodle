@@ -20,6 +20,7 @@ const usage = `usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|
        noodle migrate SPEC.yaml DIR   (a v0 single file to a v1alpha1 system)
        noodle discover ADAPTER [PATH…|-] [-o fragment.yaml]
        noodle drift DIR   (the curated model against DIR/discovered)
+       noodle digest DIR  (a compact view of the fragments in DIR, for agents)
        noodle setup opencode|codex (-project [DIR] | -user)
        noodle version
        noodle help [-markdown]
@@ -31,7 +32,7 @@ var version = "dev"
 func main() {
 	if len(os.Args) > 1 {
 		commands := map[string]func([]string) error{"render": renderCommand, "migrate": migrateCommand,
-			"version": versionCommand, "help": func(args []string) error { return helpCommand(args, os.Stdout) }, "setup": func(args []string) error { return setupCommand(args, os.Stdout, os.Stderr) }, "drift": func(args []string) error { return driftCommand(args, os.Stdout) }, "discover": func(args []string) error {
+			"version": versionCommand, "help": func(args []string) error { return helpCommand(args, os.Stdout) }, "setup": func(args []string) error { return setupCommand(args, os.Stdout, os.Stderr) }, "drift": func(args []string) error { return driftCommand(args, os.Stdout) }, "digest": func(args []string) error { return digestCommand(args, os.Stdout, os.Stderr) }, "discover": func(args []string) error {
 				reg, err := adapters()
 				if err != nil {
 					return err

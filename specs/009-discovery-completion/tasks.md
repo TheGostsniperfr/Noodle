@@ -36,7 +36,7 @@ follow-ups for its features.
 
 ## Wave 2 · Checkpoint
 
-- [ ] **T09** Arms A and C on PAE `platform-overview`, cost from `tools/tokencost`, recall
+- [x] **T09** Arms A and C on PAE `platform-overview`, cost from `tools/tokencost`, recall
   against the 25 in-cluster edges, decision recorded in `docs/PROGRESS.md` and
   `docs/benchmarks/discovery-checkpoint.md` (FR-014). Spec 003 T14. Needs T02, T03, T05.
   Flip **DSC-08**, then **P6a-08**.
@@ -73,3 +73,35 @@ Tasks the evaluator found missing, appended here; never edit the waves above.
   fields that can differ, so `assert.Positive` can fail.
 - [x] **T20** DSC-06 #2: `TestMerge/keeps-sources` asserts through `Lookup("api")`
   (`Node.Sources`), the way commands read it.
+- [x] **T24** P6a-09: the `-env`, `-externalsecret` and `-ignores-password` fixtures hold a
+  Secret `db` with values, so the leak check can fail; `-externalsecret` also asserts its
+  template value is absent.
+- [x] **T25** P6a-09: same-name Secrets of two namespaces stay two entries (merge keyed
+  on the Secret id, value unchanged), subtest `secret-endpoint-namespaces`.
+- [x] **T26** P6a-09: plan 009's file table lists the `secret-endpoint` enum value of
+  `fragment.schema.json` (ADR-0018).
+- [x] **T27** P6a-09 finding: a credential word drops a key only as its last segment, so
+  `OAUTH_TOKEN_URL` is an address and `OAUTH_SERVER_KEY` is not; subtest
+  `secret-endpoint-credential-suffix`.
+- [x] **T28** DSC-13 and DSC-14 findings: `digest` guards a `secret-endpoint` with no
+  `about`; plan table lists `digest`, `LoadFragments`, `digest.txt` and the benchmark
+  scripts; round 2 records its snapshot commits; `setup_test.go` gofmt'd.
+
+## Wave 2b · Revision 1 (ADR-0031)
+
+After T09's `Decision: stop`. Order: T21, T22, then T23.
+
+- [x] **T21** `secret-endpoint` entries (FR-017), out of the gate by revision 1, with the
+  DSC-09 #1 and #3 subtests `secret-endpoint-*`. Flip **P6a-09**.
+- [x] **T22** `noodle digest DIR` and `examples/discovery-k8s/digest.txt`, checked by
+  `make examples` (FR-024). Flip **DSC-13** after the size bound of T23.
+- [x] **T23** Second checkpoint: digest of the PAE fragments with both token estimates,
+  arms A and C by `docs/benchmarks/run-arm.sh`, recorded in
+  `docs/benchmarks/discovery-checkpoint-2.md` and `docs/PROGRESS.md` (FR-025, FR-026).
+  Flip **DSC-14**.
+
+## Wave 2c · Revision 2 (ADR-0032)
+
+- [x] **T29** Third and last checkpoint, C's paragraph `checkpoint-prompt-c3.md`, recorded
+  in `docs/benchmarks/discovery-checkpoint-3.md` and `docs/PROGRESS.md` (FR-027). Flip
+  **DSC-15**.

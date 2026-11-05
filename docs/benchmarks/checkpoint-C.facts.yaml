@@ -1,0 +1,570 @@
+connections:
+  # ---------------------------------------------------------------- Argo CD
+  - from: argocd/argocd-repo-server
+    to: gitlab.sre.paris
+    port: 443
+    protocol: HTTPS (git)
+    evidence: argocd/argocd/applicationset/tenant-sre.yaml:73, argocd/argocd/applicationset/tenant-majoutes.yaml:73, argocd/argocd/applicationset/tenant-catch-it-agent.yaml:70, argocd/argocd/applicationset/tenant-lafleur-boissiere.yaml:70
+  - from: argocd/argocd-repo-server
+    to: helm-repo/argoproj.github.io
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/argocd/prod/Chart.yaml:6, argocd/tenants/sre/argocd-image-updater/prod/Chart.yaml:7 (charts/ is not committed, argocd/.gitignore:6)
+  - from: argocd/argocd-repo-server
+    to: helm-repo/helm.cilium.io
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/cilium/prod/Chart.yaml:6
+  - from: argocd/argocd-repo-server
+    to: helm-repo/charts.external-secrets.io
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/external-secrets/prod/Chart.yaml:6
+  - from: argocd/argocd-repo-server
+    to: helm-repo/kyverno.github.io
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/kyverno/prod/Chart.yaml:9
+  - from: argocd/argocd-repo-server
+    to: helm-repo/kubernetes.github.io
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/ingress-nginx/prod/Chart.yaml:8
+  - from: argocd/argocd-repo-server
+    to: docker-hub
+    port: 443
+    protocol: HTTPS (OCI)
+    evidence: argocd/tenants/sre/envoy-gateway/prod/Chart.yaml:6
+  - from: argocd/argocd-repo-server
+    to: helm-repo/kubernetes-sigs.github.io
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/external-dns/prod/Chart.yaml:6
+  - from: argocd/argocd-repo-server
+    to: helm-repo/kedacore.github.io
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/keda/prod/Chart.yaml:6
+  - from: argocd/argocd-repo-server
+    to: helm-repo/charts.jetstack.io
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/cert-manager/prod/Chart.yaml:8
+  - from: argocd/argocd-repo-server
+    to: helm-repo/prometheus-community.github.io
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/prometheus-stack/prod/Chart.yaml:8
+  - from: argocd/argocd-repo-server
+    to: helm-repo/charts.longhorn.io
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/longhorn/prod/Chart.yaml:6
+  - from: argocd/argocd-repo-server
+    to: helm-repo/twin.github.io
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/gatus/prod/Chart.yaml:6, k8s-majoutes/majoutes/gatus/prod/Chart.yaml:6, k8s-majoutes/majoutes/gatus/preprod/Chart.yaml:6 (charts/ is not committed, k8s-majoutes/.gitignore:6)
+  - from: argocd/argocd-repo-server
+    to: helm-repo/charts.gitlab.io
+    port: 443
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/gitlab-runner-majoutes/prod/Chart.yaml:9, k8s-majoutes/majoutes/gitlab-runner-renovate/prod/Chart.yaml:9
+  - from: argocd/argocd-repo-server
+    to: argocd/argocd-redis
+    port: 6379
+    protocol: Redis
+    evidence: discovered/k8s-argocd-prod-argocd.yaml:59
+  - from: argocd/argocd-server
+    to: argocd/argocd-repo-server
+    port: 8081
+    protocol: gRPC
+    evidence: discovered/k8s-argocd-prod-argocd.yaml:55
+  - from: argocd/argocd-server
+    to: argocd/argocd-redis
+    port: 6379
+    protocol: Redis
+    evidence: discovered/k8s-argocd-prod-argocd.yaml:61
+  - from: argocd/argocd-server
+    to: argocd/argocd-dex-server
+    port: 5556
+    protocol: HTTP
+    evidence: discovered/k8s-argocd-prod-argocd.yaml:58, discovered/k8s-argocd-prod-argocd.yaml:17
+  - from: argocd/argocd-application-controller
+    to: argocd/argocd-repo-server
+    port: 8081
+    protocol: gRPC
+    evidence: discovered/k8s-argocd-prod-argocd.yaml:37
+  - from: argocd/argocd-application-controller
+    to: argocd/argocd-redis
+    port: 6379
+    protocol: Redis
+    evidence: discovered/k8s-argocd-prod-argocd.yaml:68
+  - from: argocd/argocd-application-controller
+    to: kube-system/kube-apiserver
+    port: 6443
+    protocol: HTTPS
+    evidence: argocd/argocd/appprojects/tenant-sre.yaml:20, argocd/argocd/appprojects/tenant-majoutes.yaml:18
+  - from: argocd/argocd-applicationset-controller
+    to: argocd/argocd-repo-server
+    port: 8081
+    protocol: gRPC
+    evidence: discovered/k8s-argocd-prod-argocd.yaml:40
+  - from: argocd/argocd-notifications-controller
+    to: argocd/argocd-repo-server
+    port: 8081
+    protocol: gRPC
+    evidence: discovered/k8s-argocd-prod-argocd.yaml:50
+  - from: argocd/argocd-dex-server
+    to: gitlab.sre.paris
+    port: 443
+    protocol: HTTPS (OIDC)
+    evidence: argocd/tenants/sre/argocd/prod/templates/argocd-cm.yaml:30-34
+  - from: argocd-image-updater/argocd-image-updater-controller
+    to: docker-hub
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/argocd-image-updater/prod/values.yaml:9, argocd/tenants/sre/argocd-image-updater/prod/templates/ImageUpdater.yaml:19
+  - from: argocd-image-updater/argocd-image-updater-controller
+    to: gitlab.sre.paris
+    port: 443
+    protocol: HTTPS (git write-back)
+    evidence: argocd/tenants/sre/argocd-image-updater/prod/templates/ImageUpdater.yaml:10-12
+
+  # ---------------------------------------------------- Certificates / DNS / secrets
+  - from: cert-manager/cert-manager
+    to: letsencrypt-acme
+    port: 443
+    protocol: HTTPS (ACME)
+    evidence: argocd/tenants/sre/cert-manager/prod/templates/clusterIssuer-dns.yaml:29, argocd/tenants/sre/cert-manager/prod/templates/clusterIssuer-dns.yaml:50, argocd/tenants/sre/cert-manager/prod/templates/clusterIssuer-http.yaml:9, argocd/tenants/sre/cert-manager/prod/templates/clusterIssuer-http.yaml:25
+  - from: cert-manager/cert-manager
+    to: aws-route53
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/cert-manager/prod/templates/clusterIssuer-dns.yaml:56-57, argocd/tenants/sre/cert-manager/prod/values.yaml:10
+  - from: cert-manager/cert-manager
+    to: dns-1.1.1.1
+    port: 53
+    protocol: DNS
+    evidence: argocd/tenants/sre/cert-manager/prod/values.yaml:24
+  - from: cert-manager/cert-manager
+    to: dns-8.8.8.8
+    port: 53
+    protocol: DNS
+    evidence: argocd/tenants/sre/cert-manager/prod/values.yaml:24
+  - from: external-dns/external-dns
+    to: aws-route53
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/external-dns/prod/values.yaml:4, argocd/tenants/sre/external-dns/prod/values.yaml:10
+  - from: external-secrets/external-secrets
+    to: 1password
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/external-secrets/prod/templates/secretStore.yaml:9-10, argocd/tenants/sre/external-secrets/prod/templates/secretStore.yaml:25-26
+
+  # ---------------------------------------------------- Kubernetes API / node plumbing
+  - from: cilium/cilium
+    to: kube-system/kube-apiserver
+    port: 7445
+    protocol: HTTPS (via Talos KubePrism on localhost)
+    evidence: argocd/tenants/sre/cilium/prod/values.yaml:39-40
+  - from: cilium/cilium-operator
+    to: kube-system/kube-apiserver
+    port: 7445
+    protocol: HTTPS (via Talos KubePrism on localhost)
+    evidence: argocd/tenants/sre/cilium/prod/values.yaml:39-40
+  - from: kube-system/kube-apiserver
+    to: kyverno/kyverno-admission-controller
+    port: 443
+    protocol: HTTPS (admission webhook)
+    evidence: discovered/k8s-kyverno-prod-kyverno.yaml:15, argocd/tenants/sre/kyverno/prod/values.yaml:22
+  - from: kube-system/kube-apiserver
+    to: cert-manager/cert-manager-webhook
+    port: 443
+    protocol: HTTPS (admission webhook)
+    evidence: discovered/k8s-cert-manager-prod-cert-manager.yaml:10
+  - from: kube-system/kube-apiserver
+    to: external-secrets/external-secrets-webhook
+    port: 443
+    protocol: HTTPS (admission webhook)
+    evidence: discovered/k8s-external-secrets-prod-external-secrets.yaml:10
+  - from: kube-system/kube-apiserver
+    to: keda/keda-admission-webhooks
+    port: 443
+    protocol: HTTPS (admission webhook)
+    evidence: discovered/k8s-keda-prod-keda.yaml:9
+  - from: kube-system/kube-apiserver
+    to: keda/keda-operator-metrics-apiserver
+    port: 443
+    protocol: HTTPS (aggregated API)
+    evidence: discovered/k8s-keda-prod-keda.yaml:11
+  - from: kube-system/kube-apiserver
+    to: ingress-nginx/ingress-nginx-controller
+    port: 443
+    protocol: HTTPS (admission webhook)
+    evidence: discovered/k8s-ingress-nginx-prod-ingress-nginx.yaml:10
+  - from: kube-system/metrics-server
+    to: node/kubelet
+    protocol: HTTPS
+    evidence: talos/setup/enable-metrics.yaml:6, talos/setup/enable-metrics.yaml:11
+  - from: node/kubelet
+    to: docker-hub
+    port: 443
+    protocol: HTTPS (image pull)
+    evidence: k8s-majoutes/majoutes/majoutes-api/values-common.yaml:5, k8s-majoutes/majoutes/majoutes-front/values-common.yaml:5, k8s-majoutes/majoutes/gitlab-runner-majoutes/prod/values.yaml:48
+
+  # ---------------------------------------------------- Ingress: ingress-nginx
+  - from: ingress-nginx/ingress-nginx-controller
+    to: argocd/argocd-server
+    port: 80
+    protocol: HTTP
+    evidence: discovered/k8s-argocd-prod-argocd.yaml:26, argocd/tenants/sre/argocd/prod/values.yaml:67-75
+  - from: ingress-nginx/ingress-nginx-controller
+    to: gatus/gatus
+    port: 80
+    protocol: HTTP
+    evidence: discovered/k8s-gatus-prod-gatus.yaml:13, argocd/tenants/sre/gatus/prod/values.yaml:47-49
+  - from: ingress-nginx/ingress-nginx-controller
+    to: longhorn-system/longhorn-ui
+    port: 80
+    protocol: HTTP
+    evidence: discovered/k8s-longhorn-system-prod-longhorn.yaml:22, argocd/tenants/sre/longhorn/prod/values.yaml:18-21
+  - from: ingress-nginx/ingress-nginx-controller
+    to: prometheus-stack/prometheus-stack-grafana
+    port: 80
+    protocol: HTTP
+    evidence: discovered/k8s-prometheus-stack-prod-prometheus-stack.yaml:32, argocd/tenants/sre/prometheus-stack/prod/values.yaml:94-96
+
+  # ---------------------------------------------------- Ingress: Envoy Gateway (shared-gateway)
+  - from: gateway-nfra/envoy-shared-gateway
+    to: gateway-nfra/envoy-gateway
+    port: 18000
+    protocol: gRPC (xDS)
+    evidence: discovered/k8s-gateway-nfra-prod-envoy-gateway.yaml:9, argocd/tenants/sre/envoy-gateway/prod/templates/gateway.yaml:14-23
+  - from: gateway-nfra/envoy-shared-gateway
+    to: gitlab.sre.paris
+    port: 443
+    protocol: HTTPS (OIDC token + JWKS)
+    evidence: argocd/tenants/charts/secure-route/values.yaml:4-5, argocd/tenants/charts/secure-route/templates/security-policy.yaml:15-35, k8s-majoutes/charts/secure-route/values.yaml:4-5
+  - from: gateway-nfra/envoy-shared-gateway
+    to: argocd/argocd-server
+    port: 80
+    protocol: HTTP
+    evidence: argocd/tenants/sre/argocd/prod/values.yaml:112-118
+  - from: gateway-nfra/envoy-shared-gateway
+    to: gatus/gatus
+    port: 80
+    protocol: HTTP
+    evidence: argocd/tenants/sre/gatus/prod/values.yaml:169-175
+  - from: gateway-nfra/envoy-shared-gateway
+    to: longhorn-system/longhorn-ui
+    port: 80
+    protocol: HTTP
+    evidence: argocd/tenants/sre/longhorn/prod/values.yaml:35-41
+  - from: gateway-nfra/envoy-shared-gateway
+    to: prometheus-stack/prometheus-stack-grafana
+    port: 80
+    protocol: HTTP
+    evidence: argocd/tenants/sre/prometheus-stack/prod/values.yaml:186-192
+  - from: gateway-nfra/envoy-shared-gateway
+    to: prod-majoutes/majoutes-front
+    port: 80
+    protocol: HTTP
+    evidence: k8s-majoutes/majoutes/majoutes-front/prod/values.yaml:54-60
+  - from: gateway-nfra/envoy-shared-gateway
+    to: prod-majoutes/majoutes-api
+    port: 8080
+    protocol: HTTP
+    evidence: k8s-majoutes/majoutes/majoutes-api/prod/values.yaml:87-96
+  - from: gateway-nfra/envoy-shared-gateway
+    to: prod-majoutes/keycloak
+    port: 8080
+    protocol: HTTP
+    evidence: k8s-majoutes/majoutes/keycloak/prod/values.yaml:56-62
+  - from: gateway-nfra/envoy-shared-gateway
+    to: prod-majoutes/gatus
+    port: 80
+    protocol: HTTP
+    evidence: k8s-majoutes/majoutes/gatus/prod/values.yaml:90-96
+  - from: gateway-nfra/envoy-shared-gateway
+    to: preprod-majoutes/majoutes-front
+    port: 80
+    protocol: HTTP
+    evidence: k8s-majoutes/majoutes/majoutes-front/preprod/values.yaml:41-47
+  - from: gateway-nfra/envoy-shared-gateway
+    to: preprod-majoutes/majoutes-api
+    port: 8080
+    protocol: HTTP
+    evidence: k8s-majoutes/majoutes/majoutes-api/preprod/values.yaml:64-73
+  - from: gateway-nfra/envoy-shared-gateway
+    to: preprod-majoutes/keycloak
+    port: 8080
+    protocol: HTTP
+    evidence: k8s-majoutes/majoutes/keycloak/preprod/values.yaml:57-63
+  - from: gateway-nfra/envoy-shared-gateway
+    to: preprod-majoutes/gatus
+    port: 80
+    protocol: HTTP
+    evidence: k8s-majoutes/majoutes/gatus/preprod/values.yaml:88-94
+
+  # ---------------------------------------------------- Monitoring: prometheus-stack
+  - from: prometheus-stack/prometheus-stack-kube-prom-prometheus
+    to: prometheus-stack/prometheus-stack-kube-prom-alertmanager
+    port: 9093
+    protocol: HTTP
+    evidence: discovered/k8s-prometheus-stack-prod-prometheus-stack.yaml:27
+  - from: prometheus-stack/prometheus-stack-kube-prom-prometheus
+    to: prometheus-stack-node-exporter/prometheus-stack-prometheus-node-exporter
+    port: 9100
+    protocol: HTTP (scrape)
+    evidence: discovered/k8s-prometheus-stack-prod-prometheus-stack.yaml:14
+  - from: prometheus-stack/prometheus-stack-kube-prom-prometheus
+    to: prometheus-stack/prometheus-stack-kube-state-metrics
+    port: 8080
+    protocol: HTTP (scrape)
+    evidence: discovered/k8s-prometheus-stack-prod-prometheus-stack.yaml:30
+  - from: prometheus-stack/prometheus-stack-kube-prom-prometheus
+    to: prometheus-stack/prometheus-stack-kube-prom-operator
+    port: 10250
+    protocol: HTTPS (scrape)
+    evidence: discovered/k8s-prometheus-stack-prod-prometheus-stack.yaml:28
+  - from: prometheus-stack/prometheus-stack-kube-prom-prometheus
+    to: kube-system/coredns
+    port: 9153
+    protocol: HTTP (scrape)
+    evidence: discovered/k8s-prometheus-stack-prod-prometheus-stack.yaml:7
+  - from: prometheus-stack/prometheus-stack-kube-prom-prometheus
+    to: kube-system/kube-controller-manager
+    port: 10257
+    protocol: HTTPS (scrape)
+    evidence: discovered/k8s-prometheus-stack-prod-prometheus-stack.yaml:8
+  - from: prometheus-stack/prometheus-stack-kube-prom-prometheus
+    to: kube-system/etcd
+    port: 2381
+    protocol: HTTP (scrape)
+    evidence: discovered/k8s-prometheus-stack-prod-prometheus-stack.yaml:9
+  - from: prometheus-stack/prometheus-stack-kube-prom-prometheus
+    to: kube-system/kube-scheduler
+    port: 10259
+    protocol: HTTPS (scrape)
+    evidence: discovered/k8s-prometheus-stack-prod-prometheus-stack.yaml:11
+  - from: prometheus-stack/prometheus-stack-grafana
+    to: prometheus-stack/prometheus-stack-kube-prom-prometheus
+    port: 9090
+    protocol: HTTP
+    evidence: discovered/k8s-prometheus-stack-prod-prometheus-stack.yaml:29, argocd/tenants/sre/prometheus-stack/prod/values.yaml:130-132
+  - from: prometheus-stack/prometheus-stack-grafana
+    to: raw.githubusercontent.com
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/prometheus-stack/prod/values.yaml:137, argocd/tenants/sre/prometheus-stack/prod/values.yaml:139
+
+  # ---------------------------------------------------- Storage
+  - from: longhorn-system/longhorn-ui
+    to: longhorn-system/longhorn-manager
+    port: 9500
+    protocol: HTTP
+    evidence: discovered/k8s-longhorn-system-prod-longhorn.yaml:15
+
+  # ---------------------------------------------------- Gatus (tooling, namespace gatus)
+  - from: gatus/gatus
+    to: dns-1.1.1.1
+    port: 53
+    protocol: TCP
+    evidence: argocd/tenants/sre/gatus/values-common.yaml:27
+  - from: gatus/gatus
+    to: discord
+    port: 443
+    protocol: HTTPS (webhook)
+    evidence: argocd/tenants/sre/gatus/values-common.yaml:31, argocd/tenants/sre/gatus/prod/templates/externalSecrets.yaml:16
+  - from: gatus/gatus
+    to: preprod-majoutes/gatus
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/gatus/prod/values.yaml:84
+  - from: gatus/gatus
+    to: prod-majoutes/gatus
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/gatus/prod/values.yaml:91
+  - from: gatus/gatus
+    to: argocd/argocd-server
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/gatus/prod/values.yaml:98
+  - from: gatus/gatus
+    to: gitlab.sre.paris
+    port: 443
+    protocol: HTTPS
+    evidence: argocd/tenants/sre/gatus/prod/values.yaml:105
+  - from: gatus/gatus
+    to: kube-system/kube-apiserver
+    port: 6443
+    protocol: TCP
+    evidence: argocd/tenants/sre/gatus/prod/values.yaml:116, argocd/tenants/sre/gatus/prod/values.yaml:123, argocd/tenants/sre/gatus/prod/values.yaml:130
+  - from: gatus/gatus
+    to: ingress-nginx/ingress-nginx-controller
+    port: 30080
+    protocol: TCP
+    evidence: argocd/tenants/sre/gatus/prod/values.yaml:137, argocd/tenants/sre/gatus/prod/values.yaml:144, argocd/tenants/sre/gatus/prod/values.yaml:151, argocd/tenants/sre/ingress-nginx/prod/values.yaml:23
+  - from: gatus/gatus
+    to: postgresql-prod
+    port: 5432
+    protocol: TCP
+    evidence: argocd/tenants/sre/gatus/prod/values.yaml:158
+  - from: gatus/gatus
+    to: postgresql-preprod
+    port: 5432
+    protocol: TCP
+    evidence: argocd/tenants/sre/gatus/prod/values.yaml:165
+
+  # ---------------------------------------------------- Majoutes prod (namespace prod-majoutes)
+  - from: prod-majoutes/majoutes-api
+    to: postgresql-prod
+    protocol: PostgreSQL (JDBC)
+    evidence: k8s-majoutes/majoutes/majoutes-api/prod/values.yaml:41-48, webapp/backend/src/main/resources/application.properties:5
+  - from: prod-majoutes/majoutes-api
+    to: prod-majoutes/keycloak
+    port: 443
+    protocol: HTTPS (OIDC + Keycloak admin API)
+    evidence: k8s-majoutes/majoutes/majoutes-api/prod/values.yaml:35-40, webapp/backend/src/main/resources/application.properties:36, webapp/backend/src/main/resources/application.properties:53
+  - from: prod-majoutes/majoutes-api
+    to: aws-s3
+    port: 443
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/majoutes-api/prod/values.yaml:49-54, webapp/backend/src/main/resources/application.properties:65, webapp/backend/src/main/resources/application.properties:77
+  - from: prod-majoutes/majoutes-api
+    to: discord
+    port: 443
+    protocol: HTTPS/WSS (Discord bot API)
+    evidence: webapp/backend/src/main/resources/application.properties:85, webapp/backend/src/main/java/paris/sre/pae/services/DiscordService.java:22
+  - from: prod-majoutes/majoutes-api
+    to: smtp.gmail.com
+    port: 465
+    protocol: SMTPS
+    evidence: webapp/backend/src/main/resources/application.properties:92-94
+  - from: prod-majoutes/majoutes-api-db-migration
+    to: postgresql-prod
+    protocol: PostgreSQL (JDBC, Flyway)
+    evidence: k8s-majoutes/charts/generic-api/templates/migration-job.yaml:22-30, k8s-majoutes/majoutes/majoutes-api/prod/values.yaml:4-5
+  - from: prod-majoutes/keycloak
+    to: postgresql-prod
+    protocol: PostgreSQL
+    evidence: k8s-majoutes/majoutes/keycloak/prod/values.yaml:37-54
+  - from: prod-majoutes/keycloak
+    to: prod-majoutes/keycloak
+    port: 7800
+    protocol: TCP (JGroups cluster, via keycloak-discovery)
+    evidence: discovered/k8s-prod-majoutes-prod-keycloak.yaml:12, k8s-majoutes/charts/keycloak/templates/statefulset.yaml:73
+  - from: prod-majoutes/gatus
+    to: postgresql-prod
+    protocol: PostgreSQL (sslmode=require)
+    evidence: k8s-majoutes/majoutes/gatus/values-common.yaml:13-14, k8s-majoutes/majoutes/gatus/prod/templates/externalSecrets.yaml:33
+  - from: prod-majoutes/gatus
+    to: dns-1.1.1.1
+    port: 53
+    protocol: TCP
+    evidence: k8s-majoutes/majoutes/gatus/values-common.yaml:25
+  - from: prod-majoutes/gatus
+    to: discord
+    port: 443
+    protocol: HTTPS (webhook)
+    evidence: k8s-majoutes/majoutes/gatus/values-common.yaml:29, k8s-majoutes/majoutes/gatus/prod/templates/externalSecrets.yaml:16
+  - from: prod-majoutes/gatus
+    to: prod-majoutes/majoutes-front
+    port: 443
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/gatus/prod/values.yaml:68
+  - from: prod-majoutes/gatus
+    to: prod-majoutes/majoutes-api
+    port: 443
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/gatus/prod/values.yaml:75
+  - from: prod-majoutes/gatus
+    to: prod-majoutes/keycloak
+    port: 443
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/gatus/prod/values.yaml:86
+  - from: prod-majoutes/gitlab-runner-majoutes
+    to: gitlab.sre.paris
+    port: 443
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/gitlab-runner-majoutes/prod/values.yaml:3
+  - from: prod-majoutes/gitlab-runner-majoutes
+    to: kube-system/kube-apiserver
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/gitlab-runner-majoutes/prod/values.yaml:45-47
+  - from: prod-majoutes/gitlab-runner-renovate
+    to: gitlab.sre.paris
+    port: 443
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/gitlab-runner-renovate/prod/values.yaml:3
+  - from: prod-majoutes/gitlab-runner-renovate
+    to: kube-system/kube-apiserver
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/gitlab-runner-renovate/prod/values.yaml:45-47
+
+  # ---------------------------------------------------- Majoutes preprod (namespace preprod-majoutes)
+  - from: preprod-majoutes/majoutes-api
+    to: postgresql-preprod
+    protocol: PostgreSQL (JDBC)
+    evidence: k8s-majoutes/majoutes/majoutes-api/preprod/values.yaml:19-26, webapp/backend/src/main/resources/application.properties:5
+  - from: preprod-majoutes/majoutes-api
+    to: preprod-majoutes/keycloak
+    port: 443
+    protocol: HTTPS (OIDC + Keycloak admin API)
+    evidence: k8s-majoutes/majoutes/majoutes-api/preprod/values.yaml:13-18, webapp/backend/src/main/resources/application.properties:36, webapp/backend/src/main/resources/application.properties:53
+  - from: preprod-majoutes/majoutes-api
+    to: aws-s3
+    port: 443
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/majoutes-api/preprod/values.yaml:27-32, webapp/backend/src/main/resources/application.properties:65, webapp/backend/src/main/resources/application.properties:78
+  - from: preprod-majoutes/majoutes-api
+    to: discord
+    port: 443
+    protocol: HTTPS/WSS (Discord bot API)
+    evidence: webapp/backend/src/main/resources/application.properties:85, webapp/backend/src/main/java/paris/sre/pae/services/DiscordService.java:22
+  - from: preprod-majoutes/majoutes-api
+    to: smtp.gmail.com
+    port: 465
+    protocol: SMTPS
+    evidence: webapp/backend/src/main/resources/application.properties:92-94
+  - from: preprod-majoutes/keycloak
+    to: postgresql-preprod
+    protocol: PostgreSQL
+    evidence: k8s-majoutes/majoutes/keycloak/preprod/values.yaml:38-55
+  - from: preprod-majoutes/keycloak
+    to: preprod-majoutes/keycloak
+    port: 7800
+    protocol: TCP (JGroups cluster, via keycloak-discovery)
+    evidence: discovered/k8s-preprod-majoutes-preprod-keycloak.yaml:12, k8s-majoutes/charts/keycloak/templates/statefulset.yaml:73
+  - from: preprod-majoutes/gatus
+    to: postgresql-preprod
+    protocol: PostgreSQL (sslmode=require)
+    evidence: k8s-majoutes/majoutes/gatus/values-common.yaml:13-14, k8s-majoutes/majoutes/gatus/preprod/templates/externalSecrets.yaml:33
+  - from: preprod-majoutes/gatus
+    to: dns-1.1.1.1
+    port: 53
+    protocol: TCP
+    evidence: k8s-majoutes/majoutes/gatus/values-common.yaml:25
+  - from: preprod-majoutes/gatus
+    to: discord
+    port: 443
+    protocol: HTTPS (webhook)
+    evidence: k8s-majoutes/majoutes/gatus/values-common.yaml:29, k8s-majoutes/majoutes/gatus/preprod/templates/externalSecrets.yaml:16
+  - from: preprod-majoutes/gatus
+    to: preprod-majoutes/majoutes-front
+    port: 443
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/gatus/preprod/values.yaml:66
+  - from: preprod-majoutes/gatus
+    to: preprod-majoutes/majoutes-api
+    port: 443
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/gatus/preprod/values.yaml:73
+  - from: preprod-majoutes/gatus
+    to: preprod-majoutes/keycloak
+    port: 443
+    protocol: HTTPS
+    evidence: k8s-majoutes/majoutes/gatus/preprod/values.yaml:84
