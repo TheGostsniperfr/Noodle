@@ -242,8 +242,11 @@ func (d *digester) unresolved() {
 		text := u.Kind
 		switch u.Kind {
 		case "secret-endpoint":
-			ns := strings.Split(strings.TrimPrefix(u.About[0], "k8s:"), "/")[0]
-			text += " " + ns + "/" + strings.Replace(u.Value, "/", ": ", 1)
+			ns := ""
+			if len(u.About) > 0 {
+				ns = strings.Split(strings.TrimPrefix(u.About[0], "k8s:"), "/")[0] + "/"
+			}
+			text += " " + ns + strings.Replace(u.Value, "/", ": ", 1)
 		default:
 			if u.Value != "" {
 				text += " " + short(u.Value)

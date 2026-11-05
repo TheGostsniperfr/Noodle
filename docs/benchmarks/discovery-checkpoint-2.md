@@ -19,7 +19,9 @@ C costs 63 % of A, which passes the cost half, but finds three edges fewer.
 ## Protocol
 
 As in [round 1](discovery-checkpoint.md), with [`run-arm.sh`](run-arm.sh) round `2`:
-same snapshot, model, tools and prompt. C's paragraph is
+same model, tools and prompt, and the same snapshot (`argocd` b9f9230, `k8s-majoutes`
+db49537, `webapp` 4387720, `talos` fff8518). The PAE fragments are not committed; the
+token line above is the stderr of `noodle digest` on them. C's paragraph is
 [`checkpoint-prompt-c2.md`](checkpoint-prompt-c2.md). Fragments come from
 [`render-pae.sh`](render-pae.sh), now with relative `src`. `result.json` is now written
 outside the work directory, since both arms opened it in round 1. The CLI's own

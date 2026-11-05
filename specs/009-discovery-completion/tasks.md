@@ -83,6 +83,9 @@ Tasks the evaluator found missing, appended here; never edit the waves above.
 - [x] **T27** P6a-09 finding: a credential word drops a key only as its last segment, so
   `OAUTH_TOKEN_URL` is an address and `OAUTH_SERVER_KEY` is not; subtest
   `secret-endpoint-credential-suffix`.
+- [x] **T28** DSC-13 and DSC-14 findings: `digest` guards a `secret-endpoint` with no
+  `about`; plan table lists `digest`, `LoadFragments`, `digest.txt` and the benchmark
+  scripts; round 2 records its snapshot commits; `setup_test.go` gofmt'd.
 
 ## Wave 2b · Revision 1 (ADR-0031)
 

@@ -29,15 +29,15 @@ kubectl   ─┘     rules: refs, addresses, operators,   ├─ graph.Merge(mod
 
 | Path | Change |
 |---|---|
-| `internal/model` | discovered items gain an optional `object` (ADR-0028) |
+| `internal/model` | discovered items gain an optional `object` (ADR-0028); `LoadFragments` for `digest` (ADR-0031) |
 | `schemas/v1alpha1/` | `fragment.schema.json`: optional `object` (ADR-0028), `secret-endpoint` in the `unresolved` kinds (ADR-0018) |
 | `flake.nix` | `kustomize` in the dev shell (ADR-0027) |
 | `internal/adapter/k8s` | one rule per file: `refs.go` (FR-001), `refkinds.go` (FR-020), `externalsecrets.go` and `argocd.go` (FR-002), `addresses.go` (FR-003, FR-004), `namespace.go` (FR-005), `kustomize.go` (FR-006), `netpol.go` (FR-016), `secretendpoint.go` (FR-017), `operators.go` (FR-018), `rules.go` (FR-019); `src` paths relative (FR-007) |
 | `internal/graph` | new: `Merge`, `Lookup`, `Neighbours`, `Path`, `Drift`; cross-fragment index (FR-012) |
-| `cmd/noodle` | `discover` flags `-argocd-app`, `-kustomize`, `-enable-helm`; new `drift` and `query` subcommands |
+| `cmd/noodle` | `discover` flags `-argocd-app`, `-kustomize`, `-enable-helm`; new `drift`, `query` and `digest` (FR-024, ADR-0031) subcommands |
 | `tools/tokencost` | new: transcript reader (FR-013) |
-| `examples/discovery-k8s` | manifests, `list.yaml`, `model.yaml`, golden `discovered/k8s-manifests.yaml`, `drift.txt` |
-| `docs/benchmarks/` | `discovery-checkpoint.md`, `discovery-tokens.md`, and `transcripts/*.jsonl` of every arm and of the skill run |
+| `examples/discovery-k8s` | manifests, `list.yaml`, `model.yaml`, golden `discovered/k8s-manifests.yaml`, `drift.txt`, `digest.txt` |
+| `docs/benchmarks/` | `discovery-checkpoint.md`, `discovery-checkpoint-2.md`, `render-pae.sh`, `run-arm.sh`, the prompts and the ground truth, `discovery-tokens.md`, and `transcripts/*.jsonl` of every arm and of the skill run |
 | `skills/noodle-diagram` | step 1 runs discovery first; `reference.md` documents `matches` and the rules file |
 | `Makefile`, `docs/COMMANDS.md` | `make examples` reruns discovery on the example and diffs the golden file |
 

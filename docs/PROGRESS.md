@@ -27,8 +27,9 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-11-05 · Discovery checkpoint (spec 009 T09)
 
+- T28: DSC-13 and DSC-14 pass (evaluator); their findings fixed.
 - T23: checkpoint 2 on PAE platform-overview, arm A $4.82 25/25, arm C $3.04 22/25 with the digest: Decision: stop (cost 63 %, recall lower). C misses Grafana → Prometheus, Prometheus → Alertmanager and image pulls, operator edges the digest lacks, and the C prompt claimed the digest complete. Next step after a second stop (ADR-0031) is Brian's call.
-- T22: `noodle digest DIR`: Services folded into their workload, routes resolved to it (across fragments too), ExternalSecret paths, open entries, `src` on every line; stderr prints both token estimates. PAE: ~35.0k tokens of fragments, ~6.4k of digest (18 %). `make examples` diffs `examples/discovery-k8s/digest.txt`. DSC-13 flip waits for T23.
+- T22: `noodle digest DIR`: Services folded into their workload, routes resolved to it (across fragments too), ExternalSecret paths, open entries, `src` on every line; stderr prints both token estimates. PAE: ~35.0k tokens of fragments, ~6.4k of digest (18 %). `make examples` diffs `examples/discovery-k8s/digest.txt`. DSC-13 passes.
 - T27: credential words drop a key only as its last segment (`OAUTH_TOKEN_URL` kept).
 - T24-T26: P6a-09 convergence, real Secret values in every leak fixture, one entry per Secret id across namespaces, plan table.
 - T21: `secret-endpoint` entries from `secretKeyRef` keys and `envFrom` Secrets (keys from the Secret or its ExternalSecrets, never values), one per Secret and key set; credential words win (`SMTP_SERVER_PASSWORD` is skipped). Schema enum gains the kind ADR-0018 named. P6a-09 passes (evaluator, after T24-T26).
