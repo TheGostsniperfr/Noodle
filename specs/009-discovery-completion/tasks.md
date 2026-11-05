@@ -102,6 +102,6 @@ After T09's `Decision: stop`. Order: T21, T22, then T23.
 
 ## Wave 2c · Revision 2 (ADR-0032)
 
-- [ ] **T29** Third and last checkpoint, C's paragraph `checkpoint-prompt-c3.md`, recorded
+- [x] **T29** Third and last checkpoint, C's paragraph `checkpoint-prompt-c3.md`, recorded
   in `docs/benchmarks/discovery-checkpoint-3.md` and `docs/PROGRESS.md` (FR-027). Flip
   **DSC-15**.

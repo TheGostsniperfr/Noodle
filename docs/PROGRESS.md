@@ -8,8 +8,9 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `make init`: fix anything red before new work. Commands: `docs/COMMANDS.md`; process: `docs/PROCESS.md`.
 2. Current spec: [`specs/009-discovery-completion`](../specs/009-discovery-completion/tasks.md),
-   T09 checkpoint said **stop**; revision 1 (ADR-0031) opens wave 2b: T21 `secret-endpoint`,
-   T22 `noodle digest`, T23 second checkpoint. Wave 3 waits for its `Decision: go`. Backlog: the [project board](https://github.com/users/TheGostsniperfr/projects/5), issue #42.
+   Three checkpoints said **stop** (`docs/benchmarks/discovery-checkpoint-3.md`): phase 6a
+   closes without its exit criterion, discovery stays for `drift`, `check`, `query`.
+   Next phase per the roadmap: 2 (own SVG renderer), with #82, #91, #71. Backlog: the [project board](https://github.com/users/TheGostsniperfr/projects/5), issue #42.
 3. Open for Brian: DSC-03's `unrendered` hint is still a short code (the fragment schema
    restricts `hint`); PRJ-02 of spec 010; PRs #14, #60, #89; branch `feat/access-views`
    (PR #53 closed unmerged); CodeQL alert 5 to dismiss as a false positive.
@@ -27,7 +28,8 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-11-05 · Discovery checkpoint (spec 009 T09)
 
-- Revision 2 and ADR-0032 (agreed with Brian): a third and last checkpoint, C told what discovery never sees instead of "complete" (T29, DSC-15). Running.
+- T29: checkpoint 3 on PAE platform-overview, arm A $3.89 23/25, arm C $4.91 25/25: Decision: stop, final (C at 126 %). Phase 6a closes without its exit criterion; discovery serves drift, check and query, FR-022 and FR-023 dropped (ADR-0031). Summary of the three rounds in `docs/benchmarks/discovery-checkpoint-3.md`.
+- Revision 2 and ADR-0032 (agreed with Brian): a third and last checkpoint, C told what discovery never sees instead of "complete" (T29, DSC-15).
 - T28: DSC-13 and DSC-14 pass (evaluator); their findings fixed.
 - T23: checkpoint 2 on PAE platform-overview, arm A $4.82 25/25, arm C $3.04 22/25 with the digest: Decision: stop (cost 63 %, recall lower). C misses Grafana → Prometheus, Prometheus → Alertmanager and image pulls, operator edges the digest lacks, and the C prompt claimed the digest complete. Next step after a second stop (ADR-0031) is Brian's call.
 - T22: `noodle digest DIR`: Services folded into their workload, routes resolved to it (across fragments too), ExternalSecret paths, open entries, `src` on every line; stderr prints both token estimates. PAE: ~35.0k tokens of fragments, ~6.4k of digest (18 %). `make examples` diffs `examples/discovery-k8s/digest.txt`. DSC-13 passes.
