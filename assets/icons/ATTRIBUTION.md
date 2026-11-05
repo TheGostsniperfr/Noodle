@@ -25,6 +25,7 @@ Notes on the sources:
 |---|---|---|
 | `argo.svg` | https://github.com/cncf/artwork/blob/main/projects/argo/icon/color/argo-icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
 | `ceph.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/ceph.svg | CC0-1.0 |
+| `cert-manager.svg` | https://github.com/cncf/artwork/blob/main/projects/cert-manager/icon/color/cert-manager-icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
 | `cilium.svg` | https://github.com/cncf/artwork/blob/main/projects/cilium/icon/color/cilium_icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
 | `cloudflare.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/cloudflare.svg | CC0-1.0 |
 | `cnpg.dark.svg` | https://github.com/cloudnative-pg/artwork/blob/main/icon/white/cloudnativepg-icon-white.svg | Apache-2.0 |
@@ -35,9 +36,15 @@ Notes on the sources:
 | `envoy-gateway.svg` | https://github.com/cncf/artwork/blob/main/projects/envoy/icon/color/envoy-icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
 | `envoy.svg` | https://github.com/cncf/artwork/blob/main/projects/envoy/icon/color/envoy-icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
 | `fastapi.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/fastapi.svg | CC0-1.0 |
+| `github.dark.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/github.svg | CC0-1.0 |
+| `github.light.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/github.svg | CC0-1.0 |
+| `gitlab.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/gitlab.svg | CC0-1.0 |
 | `globe.dark.svg` | https://github.com/TheGostsniperfr/Noodle/blob/main/assets/icons/globe.dark.svg | Apache-2.0 |
 | `globe.light.svg` | https://github.com/TheGostsniperfr/Noodle/blob/main/assets/icons/globe.light.svg | Apache-2.0 |
+| `grafana.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/grafana.svg | CC0-1.0 |
 | `grafana-alloy.svg` | https://github.com/grafana/alloy/blob/main/docs/sources/assets/alloy_icon_orange.svg | Apache-2.0 |
+| `helm.dark.svg` | https://github.com/cncf/artwork/blob/main/projects/helm/icon/white/helm-icon-white.svg | Linux Foundation trademark usage guidelines, no code license |
+| `helm.light.svg` | https://github.com/cncf/artwork/blob/main/projects/helm/icon/color/helm-icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
 | `k8s-crd.svg` | https://github.com/kubernetes/community/blob/master/icons/svg/resources/unlabeled/crd.svg | Apache-2.0 |
 | `k8s-deploy.svg` | https://github.com/kubernetes/community/blob/master/icons/svg/resources/unlabeled/deploy.svg | Apache-2.0 |
 | `k8s-ns.svg` | https://github.com/kubernetes/community/blob/master/icons/svg/resources/unlabeled/ns.svg | Apache-2.0 |
@@ -48,10 +55,17 @@ Notes on the sources:
 | `keycloak.svg` | https://github.com/cncf/artwork/blob/main/projects/keycloak/icon/color/keycloak-icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
 | `kubernetes.svg` | https://github.com/cncf/artwork/blob/main/projects/kubernetes/icon/color/kubernetes-icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
 | `kyverno.svg` | https://github.com/cncf/artwork/blob/main/projects/kyverno/icon/color/kyverno-icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
+| `laravel.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/laravel.svg | CC0-1.0 |
 | `linear.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/linear.svg | CC0-1.0 |
 | `loki.svg` | https://grafana.com/oss/loki/ | Grafana Labs trademark, no license grant |
+| `longhorn.svg` | https://github.com/cncf/artwork/blob/main/projects/longhorn/icon/color/longhorn-icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
+| `metallb.svg` | https://github.com/cncf/artwork/blob/main/projects/metallb/icon/color/metallb-icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
+| `minio.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/minio.svg | CC0-1.0 |
+| `nginx.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/nginx.svg | CC0-1.0 |
 | `opencost.svg` | https://github.com/cncf/artwork/blob/main/projects/opencost/icon/color/Opencost_Icon_Color.svg | Linux Foundation trademark usage guidelines, no code license |
 | `openstack.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/openstack.svg | CC0-1.0 |
+| `postgresql.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/postgresql.svg | CC0-1.0 |
+| `prometheus.svg` | https://github.com/cncf/artwork/blob/main/projects/prometheus/icon/color/prometheus-icon-color.svg | Linux Foundation trademark usage guidelines, no code license |
 | `python.svg` | https://github.com/simple-icons/simple-icons/blob/develop/icons/python.svg | CC0-1.0 |
 | `rack.dark.svg` | https://github.com/TheGostsniperfr/Noodle/blob/main/assets/icons/rack.dark.svg | Apache-2.0 |
 | `rack.light.svg` | https://github.com/TheGostsniperfr/Noodle/blob/main/assets/icons/rack.light.svg | Apache-2.0 |
