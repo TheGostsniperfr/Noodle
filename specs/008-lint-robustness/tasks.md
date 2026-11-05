@@ -43,3 +43,8 @@ Tasks the evaluator found missing, appended here; never edit the waves above.
 - [x] **T10** LNT-04 #3: a shared port is tested with two connections that meet only on the
   final point (no collinear finding), asserting 0 findings; two different ports on one point
   now yield a finding instead of one badge silently dropping the other (FR-005).
+
+- [x] **T11** LNT-01 #1: a 420 px legend with the `link` edge kind yields exactly one finding:
+  the step and port rows get the room up to the card's inner edge when no right-column row
+  shares their height (`CardRow.Room`). The shrink-probe test sets `H` before use, covers
+  notes, and a render test checks every title and listed line is drawn (FR-001).

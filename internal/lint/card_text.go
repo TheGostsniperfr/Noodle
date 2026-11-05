@@ -9,8 +9,8 @@ func checkCardText(l *linter) {
 	for _, c := range l.s.Cards {
 		layout := house.CardLayout(l.s, c)
 		for _, row := range layout.Rows {
-			if text, w := row.Widest(); w > row.Rect.W {
-				l.errf(c.ID, "%q needs %.0fpx, its cell is %.0fpx wide", text, w, row.Rect.W)
+			if text, w := row.Widest(); w > row.Room() {
+				l.errf(c.ID, "%q needs %.0fpx, its cell is %.0fpx wide", text, w, row.Room())
 			}
 		}
 		if layout.Needed > c.H {

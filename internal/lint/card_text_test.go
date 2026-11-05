@@ -52,11 +52,7 @@ func TestLint_CardText(t *testing.T) {
 		{"legend_420px_ref_row",
 			withCards(scaffold([]string{"backend", "backend"}, []string{"link"}),
 				diagram.Card{ID: "legend", Title: "Legend", Legend: true, X: 40, Y: 400, W: 420, H: 300}),
-			[]lint.Finding{
-				{Where: "legend", Msg: `" 1  request step ·  A  background step" needs 239px, its cell is 190px wide`},
-				{Where: "legend", Msg: `"listening port on the server" needs 176px, its cell is 140px wide`},
-				{Where: "legend", Msg: `"object reference, not traffic" needs 183px, its cell is 138px wide`},
-			}},
+			[]lint.Finding{{Where: "legend", Msg: `"object reference, not traffic" needs 183px, its cell is 138px wide`}}},
 		{"legend_120px_six_kinds",
 			withCards(scaffold([]string{"frontend", "backend", "database", "cloud", "security", "bus"}, nil),
 				diagram.Card{ID: "legend", Title: "Legend", Legend: true, X: 40, Y: 500, W: 700, H: 120}),
@@ -121,10 +117,10 @@ func minWidthOf(t *testing.T, spec *diagram.Spec, card diagram.Card, index int) 
 		return house.CardLayout(spec, c).Rows[index]
 	}
 	a, b := at(1000), at(1100)
-	slope := (b.Rect.W - a.Rect.W) / 100
+	slope := (b.Room() - a.Room()) / 100
 	require.NotZero(t, slope)
 	_, need := a.Widest()
-	return 1000 + (need-a.Rect.W)/slope
+	return 1000 + (need-a.Room())/slope
 }
 
 func TestLint_CardText_EveryLayoutRowIsMeasured(t *testing.T) {
@@ -148,9 +144,9 @@ func TestLint_CardText_EveryLayoutRowIsMeasured(t *testing.T) {
 						tooNarrow++
 					}
 				}
+				narrow.H = 1e6
 				probe := spec
 				probe.Cards = []diagram.Card{narrow}
-				narrow.H = 1e6
 
 				var widthFindings int
 				for _, f := range lint.Lint(&probe) {
@@ -179,4 +175,32 @@ func TestLint_CardText_EveryLayoutRowIsMeasured(t *testing.T) {
 			})
 		}
 	}
+}
+
+func TestLint_CardText_EveryNoteIsMeasured(t *testing.T) {
+	t.Parallel()
+	measured := 0
+	for name, spec := range frozenSpecs(t) {
+		for _, note := range spec.Notes {
+			measured++
+			t.Run(name+"/"+note.ID, func(t *testing.T) {
+				t.Parallel()
+				_, widest := house.NoteRow(note).Widest()
+				narrow := note
+				narrow.W = widest - 1
+				probe := spec
+				probe.Notes = []diagram.Note{narrow}
+
+				var findings int
+				for _, f := range lint.Lint(&probe) {
+					if f.Where == note.ID && strings.Contains(f.Msg, "the note is") {
+						findings++
+					}
+				}
+
+				assert.Equal(t, 1, findings)
+			})
+		}
+	}
+	require.NotZero(t, measured, "the frozen specs hold at least one note")
 }

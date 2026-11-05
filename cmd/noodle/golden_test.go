@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"html"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -85,6 +86,37 @@ func TestRender_EveryDrawnLegendCellIsALayoutRow(t *testing.T) {
 
 			for _, m := range drawn {
 				assert.True(t, allowed[m[1]], "%s is drawn but is not a CardLayout row", m[1])
+			}
+		})
+	}
+}
+
+func TestRender_EveryCardRowIsDrawn(t *testing.T) {
+	specs, err := filepath.Glob("testdata/cardlayout/*.spec.json")
+	require.NoError(t, err)
+	for _, path := range specs {
+		t.Run(filepath.Base(path), func(t *testing.T) {
+			raw, err := os.ReadFile(path)
+			require.NoError(t, err)
+			var spec diagram.Spec
+			require.NoError(t, json.Unmarshal(raw, &spec))
+			th, err := house.ThemeByName("dark")
+			require.NoError(t, err)
+			set, err := newIconSet(nil)
+			require.NoError(t, err)
+			r := &renderer{spec: &spec, th: th, icons: set, cache: map[string]string{}, ports: house.PortBadges(&spec)}
+			for _, c := range spec.Cards {
+				r.b.Reset()
+				r.card(c)
+				drawn := r.b.String()
+				for _, row := range house.CardLayout(&spec, c).Rows {
+					switch row.Kind {
+					case house.RowTitle:
+						assert.Contains(t, drawn, xmlAttr(html.EscapeString(row.Text)), "%s title", c.ID)
+					case house.RowLine:
+						assert.Contains(t, drawn, xmlAttr(r.markup(row.Text)), "%s line %q", c.ID, row.Text)
+					}
+				}
 			}
 		})
 	}

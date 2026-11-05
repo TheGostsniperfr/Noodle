@@ -28,6 +28,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-11-05 · Lint robustness, convergence (spec 008)
 
+- T11: LNT-01 #1 holds exactly: the 420 px legend now has one finding, the `link` row; step and port rows use the free room to the card edge. Notes and every drawn card row are covered by tests.
 - T10: LNT-04 shared-port test now asserts 0 findings; two ports on the same point are reported.
 
 ### 2026-11-04 · Lint robustness (spec 008)

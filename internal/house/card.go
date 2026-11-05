@@ -66,6 +66,17 @@ type CardRow struct {
 	// (a listed card, a note), so that only a word wider than the cell overflows it.
 	FontSize, LineH float64
 	Wraps           bool
+	// Avail, when set, is the room the text really has: wider than Rect when the cell's
+	// neighbours leave the row free. Room says which applies.
+	Avail float64
+}
+
+// Room is the width the row's text may take before it is cut or collides.
+func (r CardRow) Room() float64 {
+	if r.Avail > 0 {
+		return r.Avail
+	}
+	return r.Rect.W
 }
 
 // Widest is the text that decides whether the row fits sideways, and its width: the widest
@@ -194,6 +205,7 @@ func legendRows(l *Layout, s *diagram.Spec, c diagram.Card) {
 		y += LegendRowPitch
 	}
 	y = statusRows(l, s, x, y, half-72)
+	extendFreeRows(l, c)
 	l.Rows = append(l.Rows, CardRow{
 		Kind: RowLegendNotes, ID: c.ID + "-notes",
 		Plain:    []string{"Large dashed frame: infra perimeter · small: functional group", "⚠ Gx: docs and code disagree, see \"Gaps\""},
@@ -264,4 +276,26 @@ func NoteRow(n diagram.Note) CardRow {
 		row.Plain = append(row.Plain, PlainText(line))
 	}
 	return row
+}
+
+// extendFreeRows gives the step and port rows, which end the left column, the room up to
+// the card's inner right edge when no row of the right column shares their height: the
+// text then overflows its cell onto empty card.
+func extendFreeRows(l *Layout, c diagram.Card) {
+	right := c.X + c.W - 20
+	for i, r := range l.Rows {
+		if r.Kind != RowLegendSteps && r.Kind != RowLegendPort {
+			continue
+		}
+		free := true
+		for _, o := range l.Rows {
+			if o.Kind == RowLegendEdge || o.Kind == RowLegendPlanned || o.Kind == RowLegendDeprecated || o.Kind == RowLegendStack ||
+				o.Kind == RowLegendAdded || o.Kind == RowLegendRemoved || o.Kind == RowLegendUnchanged {
+				free = free && (o.Rect.Y >= r.Rect.Y+r.Rect.H || o.Rect.Y+o.Rect.H <= r.Rect.Y)
+			}
+		}
+		if free {
+			l.Rows[i].Avail = right - r.Rect.X
+		}
+	}
 }
