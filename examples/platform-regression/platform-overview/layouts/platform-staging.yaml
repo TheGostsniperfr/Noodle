@@ -1,6 +1,6 @@
 apiVersion: noodle/v1alpha1
 kind: Layout
-canvas: {width: 3400, height: 2280}
+canvas: {width: 3440, height: 2280}
 elements:
   z-internet: {x: 40, y: 220, w: 240, h: 1580}
   z-openstack: {x: 340, y: 220, w: 3020, h: 1230}
@@ -37,12 +37,12 @@ elements:
   rabbitmq: {x: 340, y: 80, w: 280, h: 90}
   clock: {x: 660, y: 80, w: 270, h: 90}
   kube-apiserver: {x: 20, y: 50, w: 250, h: 80}
-  cilium: {x: 20, y: 170, w: 250, h: 80}
+  cilium: {x: 20, y: 170, w: 260, h: 80}
   argocd: {x: 30, y: 60, w: 260, h: 100}
   image-updater: {x: 320, y: 60, w: 250, h: 100}
-  vso: {x: 20, y: 60, w: 260, h: 100}
+  vso: {x: 10, y: 60, w: 270, h: 100}
   vault: {x: 370, y: 60, w: 210, h: 100}
-  prometheus: {x: 30, y: 70, w: 200, h: 90}
+  prometheus: {x: 20, y: 70, w: 210, h: 90}
   loki: {x: 260, y: 70, w: 200, h: 90}
   grafana: {x: 490, y: 70, w: 200, h: 90}
   boundary: {x: 60, y: 70, w: 280, h: 100}
@@ -81,7 +81,7 @@ notes:
   n-apply: {x: 52, y: 850, w: 216, h: 110}
   n-spa: {x: 52, y: 700, w: 216, h: 110}
 cards:
-  card-control-plane: {x: 1480, y: 1860, w: 900, h: 380}
-  card-data-plane: {x: 630, y: 1860, w: 820, h: 380}
-  card-gaps: {x: 2410, y: 1860, w: 950, h: 380}
-  card-legend: {x: 40, y: 1860, w: 560, h: 380}
+  card-control-plane: {x: 1520, y: 1860, w: 900, h: 380}
+  card-data-plane: {x: 670, y: 1860, w: 820, h: 380}
+  card-gaps: {x: 2450, y: 1860, w: 950, h: 380}
+  card-legend: {x: 40, y: 1860, w: 600, h: 380}

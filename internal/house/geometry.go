@@ -163,16 +163,53 @@ func NodeIconRect(n diagram.Node) diagram.Rect {
 	return diagram.Rect{X: x, Y: n.Y + IconInset, W: IconSize, H: IconSize}
 }
 
-func ZoneTitleBox(z diagram.Zone) diagram.Rect {
-	x := z.X + 12
+// ZoneSubColumn is the widest a zone's sub gets when it wraps under the label.
+const ZoneSubColumn = 240.0
+
+// ZoneSubLines is the sub of a zone as drawn: nil when it sits on the title line after
+// the label, the lines of a column at most ZoneSubColumn wide under the label when label
+// and sub do not fit together inside the zone's width.
+func ZoneSubLines(z diagram.Zone) []string {
+	if z.Sub == "" {
+		return nil
+	}
+	if r := zoneTitleRow(z, true); r.X+r.W <= z.X+z.W-12 {
+		return nil
+	}
+	return Wrap(z.Sub, SubFontSize, ZoneSubColumn)
+}
+
+// zoneTitleRow is the label and icon, with the sub after them when inline.
+func zoneTitleRow(z diagram.Zone, inline bool) diagram.Rect {
 	w := TextWidth(z.Label, ZoneFontSize) + 12
 	if z.Icon != "" {
 		w += ZoneIconSize + 8
 	}
-	if z.Sub != "" {
+	if inline && z.Sub != "" {
 		w += 2*ZoneFontSize*CharWidthEm + TextWidth(z.Sub, SubFontSize)
 	}
-	return diagram.Rect{X: x, Y: z.Y + 4, W: w, H: math.Max(ZoneFontSize*LineHeightEm, ZoneIconSize) + 6}
+	return diagram.Rect{X: z.X + 12, Y: z.Y + 4, W: w, H: math.Max(ZoneFontSize*LineHeightEm, ZoneIconSize) + 6}
+}
+
+// ZoneTitleRow is the line the label, the icon and the pill sit on: the whole title when
+// the sub is inline, the label alone when the sub wraps under it.
+func ZoneTitleRow(z diagram.Zone) diagram.Rect {
+	return zoneTitleRow(z, ZoneSubLines(z) == nil)
+}
+
+// ZoneTitleBox is the area the zone's title covers as drawn, sub lines included.
+func ZoneTitleBox(z diagram.Zone) diagram.Rect {
+	row := ZoneTitleRow(z)
+	lines := ZoneSubLines(z)
+	indent := 0.0
+	if z.Icon != "" {
+		indent = ZoneIconSize + 8
+	}
+	for _, l := range lines {
+		row.W = math.Max(row.W, indent+TextWidth(l, SubFontSize))
+	}
+	row.H += float64(len(lines)) * SubFontSize * LineHeightEm
+	return row
 }
 
 // PillText is what a planned box's pill says: its target, or "planned" without one
@@ -239,7 +276,7 @@ func ZonePillRect(z diagram.Zone) (diagram.Rect, bool) {
 	if text == "" {
 		return diagram.Rect{}, false
 	}
-	t := ZoneTitleBox(z)
+	t := ZoneTitleRow(z)
 	return diagram.Rect{X: t.X + t.W + 6, Y: t.Y + (t.H-PortHeight)/2, W: PortWidth(text), H: PortHeight}, true
 }
 

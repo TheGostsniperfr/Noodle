@@ -227,13 +227,17 @@ type View struct {
 	Include  []string `yaml:"include"`
 	// Highlight keeps these elements, and the edges that touch them, in full; the rest of
 	// a topology view is dimmed (ADR-0022). Same patterns as Include.
-	Highlight    []string          `yaml:"highlight"`
-	Steps        []Step            `yaml:"steps"`
-	Background   []string          `yaml:"background"`
-	Labels       map[string]string `yaml:"labels"`
-	Participants []string          `yaml:"participants"`
-	Cards        []Card            `yaml:"cards"`
-	Notes        []Note            `yaml:"notes"`
+	Highlight  []string          `yaml:"highlight"`
+	Steps      []Step            `yaml:"steps"`
+	Background []string          `yaml:"background"`
+	Labels     map[string]string `yaml:"labels"`
+	// HiddenAnnotations acknowledges an annotation none of whose targets the view draws,
+	// with the reason; HideAnnotations draws no annotation badge (ADR-0026).
+	HiddenAnnotations map[string]string `yaml:"hidden_annotations"`
+	HideAnnotations   bool              `yaml:"hide_annotations"`
+	Participants      []string          `yaml:"participants"`
+	Cards             []Card            `yaml:"cards"`
+	Notes             []Note            `yaml:"notes"`
 	// Landscape views (ADR-0012): rows of sections, an optional side column, and the
 	// canvas width the grid wraps to.
 	Bands []Band    `yaml:"bands"`

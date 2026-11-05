@@ -1,0 +1,8 @@
+apiVersion: noodle/v1alpha1
+kind: Layout
+canvas: {width: 900, height: 360}
+elements:
+  client: {x: 80, y: 160, w: 220, h: 80}
+  api: {x: 580, y: 160, w: 220, h: 80}
+edges:
+  c1: {from: client.right@60px, to: api.left@60px}

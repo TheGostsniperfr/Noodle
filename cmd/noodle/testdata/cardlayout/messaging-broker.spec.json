@@ -1,0 +1,464 @@
+{
+ "ID": "broker",
+ "Type": "",
+ "Title": "Example · Message broker · Routes and queues",
+ "Subtitle": "How one published event reaches each subscribed application, and where a failing message ends up.",
+ "Meta": [
+  "Scope: one topic exchange, two subscribers, one dead-letter path",
+  "Out of scope: broker deployment, network policies",
+  "v0.1 · source: examples/messaging"
+ ],
+ "Width": 1600,
+ "Height": 1060,
+ "Zones": [
+  {
+   "ID": "g-apps",
+   "Kind": "group",
+   "Label": "APPLICATIONS",
+   "Sub": "AMQP clients",
+   "Color": "indigo",
+   "Icon": "k8s-ns",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 40,
+   "Y": 220,
+   "W": 340,
+   "H": 500
+  },
+  {
+   "ID": "g-broker",
+   "Kind": "group",
+   "Label": "MESSAGE BROKER",
+   "Sub": "vhost /shop · AMQP TCP 5672",
+   "Color": "orange",
+   "Icon": "k8s-ns",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 720,
+   "Y": 220,
+   "W": 840,
+   "H": 500
+  }
+ ],
+ "Nodes": [
+  {
+   "ID": "orders",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "orders",
+   "Tech": "[producer]",
+   "Desc": "Publishes order events",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 70,
+   "Y": 270,
+   "W": 280,
+   "H": 80
+  },
+  {
+   "ID": "billing",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "billing",
+   "Tech": "[consumer]",
+   "Desc": "2 pods, one shared queue",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "replicas of one app",
+   "Change": "",
+   "X": 70,
+   "Y": 410,
+   "W": 280,
+   "H": 80
+  },
+  {
+   "ID": "mailer",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "mailer",
+   "Tech": "[consumer]",
+   "Desc": "Sends confirmations",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 70,
+   "Y": 580,
+   "W": 280,
+   "H": 80
+  },
+  {
+   "ID": "x-events",
+   "Kind": "bus",
+   "Shape": "",
+   "Icon": "k8s-crd",
+   "Title": "shop.events",
+   "Tech": "[exchange · topic]",
+   "Desc": "Routes by key, stores nothing",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 760,
+   "Y": 340,
+   "W": 260,
+   "H": 80
+  },
+  {
+   "ID": "x-dlx",
+   "Kind": "bus",
+   "Shape": "",
+   "Icon": "k8s-crd",
+   "Title": "shop.dlx",
+   "Tech": "[exchange · topic]",
+   "Desc": "Dead letters by queue name",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 760,
+   "Y": 580,
+   "W": 260,
+   "H": 80
+  },
+  {
+   "ID": "q-billing",
+   "Kind": "bus",
+   "Shape": "pipe",
+   "Icon": "k8s-crd",
+   "Title": "q.billing.orders",
+   "Tech": "[queue · quorum]",
+   "Desc": "Owned by billing",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1200,
+   "Y": 250,
+   "W": 300,
+   "H": 80
+  },
+  {
+   "ID": "q-mailer",
+   "Kind": "bus",
+   "Shape": "pipe",
+   "Icon": "k8s-crd",
+   "Title": "q.mailer.orders",
+   "Tech": "[queue · quorum]",
+   "Desc": "Owned by mailer",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1200,
+   "Y": 460,
+   "W": 300,
+   "H": 80
+  },
+  {
+   "ID": "q-billing-dlq",
+   "Kind": "bus",
+   "Shape": "pipe",
+   "Icon": "k8s-crd",
+   "Title": "q.billing.dlq",
+   "Tech": "[queue · quorum · no TTL]",
+   "Desc": "Billing dead letters",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1200,
+   "Y": 610,
+   "W": 300,
+   "H": 80
+  }
+ ],
+ "Edges": [
+  {
+   "ID": "e-1-orders-events",
+   "From": "orders",
+   "To": "x-events",
+   "Kind": "flow",
+   "Label": "[1] publish · AMQP",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     350,
+     310
+    ],
+    [
+     480,
+     310
+    ],
+    [
+     480,
+     380
+    ],
+    [
+     760,
+     380
+    ]
+   ],
+   "LabelAt": [
+    620,
+    380
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-2-billing-q",
+   "From": "billing",
+   "To": "q-billing",
+   "Kind": "flow",
+   "Label": "[2] consume · AMQP",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     350,
+     450
+    ],
+    [
+     440,
+     450
+    ],
+    [
+     440,
+     290
+    ],
+    [
+     1200,
+     290
+    ]
+   ],
+   "LabelAt": [
+    620,
+    290
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-3-mailer-q",
+   "From": "mailer",
+   "To": "q-mailer",
+   "Kind": "flow",
+   "Label": "[3] consume · AMQP",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     350,
+     620
+    ],
+    [
+     460,
+     620
+    ],
+    [
+     460,
+     500
+    ],
+    [
+     1200,
+     500
+    ]
+   ],
+   "LabelAt": [
+    620,
+    500
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "rt-events-billing",
+   "From": "x-events",
+   "To": "q-billing",
+   "Kind": "route",
+   "Label": "binding · orders.order.*",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1020,
+     360
+    ],
+    [
+     1360,
+     360
+    ],
+    [
+     1360,
+     330
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "rt-events-mailer",
+   "From": "x-events",
+   "To": "q-mailer",
+   "Kind": "route",
+   "Label": "binding · orders.order.placed",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1020,
+     400
+    ],
+    [
+     1360,
+     400
+    ],
+    [
+     1360,
+     460
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "rt-billing-dlx",
+   "From": "q-billing",
+   "To": "x-dlx",
+   "Kind": "route",
+   "Label": "dead-letter · after 3 deliveries",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1500,
+     290
+    ],
+    [
+     1540,
+     290
+    ],
+    [
+     1540,
+     575
+    ],
+    [
+     1100,
+     575
+    ],
+    [
+     1100,
+     600
+    ],
+    [
+     1020,
+     600
+    ]
+   ],
+   "LabelAt": [
+    1320,
+    575
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "rt-dlx-billing-dlq",
+   "From": "x-dlx",
+   "To": "q-billing-dlq",
+   "Kind": "route",
+   "Label": "binding · q.billing.#",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1020,
+     640
+    ],
+    [
+     1200,
+     640
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  }
+ ],
+ "Notes": null,
+ "Cards": [
+  {
+   "ID": "card-steps",
+   "Title": "Request path · data plane",
+   "Color": "emerald",
+   "Legend": false,
+   "Lines": [
+    "[1] orders publishes orders.order.placed. It does not know who listens",
+    "The exchange copies it into every queue whose binding matches the key",
+    "[2] The billing pods share their queue: each message goes to one of them",
+    "[3] mailer gets its own copy in its own queue",
+    "After 3 failed deliveries, billing's message goes to its own dead-letter queue"
+   ],
+   "X": 40,
+   "Y": 760,
+   "W": 860,
+   "H": 260
+  },
+  {
+   "ID": "card-legend",
+   "Title": "Legend",
+   "Color": "slate",
+   "Legend": true,
+   "Lines": null,
+   "X": 920,
+   "Y": 760,
+   "W": 640,
+   "H": 260
+  }
+ ],
+ "Arrows": null,
+ "Offerings": null,
+ "Matrix": null,
+ "Diff": false,
+ "Highlight": false
+}

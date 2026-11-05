@@ -1,0 +1,18 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+
+# Fixture for issue #90: five flow sections in one band, two more bands and a side column,
+# with tech lines long enough that the natural width reaches the landscape width cap.
+
+elements:
+  - {id: src, kind: backend, icon: kubernetes, title: "Source control", tech: "[GitLab 17 · self-managed and a considerably longer technology description line]"}
+  - {id: ci, kind: backend, icon: kubernetes, title: "Build pipeline", tech: "[GitLab CI · runners and a considerably longer technology description line]"}
+  - {id: reg, kind: backend, icon: kubernetes, title: "Image registry", tech: "[Harbor · replicated and a considerably longer technology description line]"}
+  - {id: scan, kind: backend, icon: kubernetes, title: "Vulnerability scan", tech: "[Trivy · admission and a considerably longer technology description line]"}
+  - {id: sign, kind: backend, icon: kubernetes, title: "Image signing", tech: "[cosign · keyless and a considerably longer technology description line]"}
+  - {id: gitops, kind: backend, icon: kubernetes, title: "GitOps controller", tech: "[Argo CD · app of apps and a considerably longer technology description line]"}
+  - {id: secrets, kind: backend, icon: kubernetes, title: "Secrets operator", tech: "[Vault Secrets Operator and a considerably longer technology description line]"}
+  - {id: mesh, kind: backend, icon: kubernetes, title: "Service mesh", tech: "[Cilium · Hubble and a considerably longer technology description line]"}
+  - {id: ingress, kind: backend, icon: kubernetes, title: "Ingress gateway", tech: "[Envoy Gateway and a considerably longer technology description line]"}
+  - {id: dns, kind: backend, icon: kubernetes, title: "DNS automation", tech: "[external-dns · Cloudflare and a considerably longer technology description line]"}
+  - {id: backup, kind: backend, icon: kubernetes, title: "Backups", tech: "[Velero · restic and a considerably longer technology description line]"}

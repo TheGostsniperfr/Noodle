@@ -1,6 +1,6 @@
 apiVersion: noodle/v1alpha1
 kind: Layout
-canvas: {width: 3000, height: 2400}
+canvas: {width: 3040, height: 2400}
 elements:
   z-teams: {x: 40, y: 220, w: 240, h: 1760}
   z-gitlab: {x: 340, y: 220, w: 1900, h: 1760}
@@ -60,7 +60,7 @@ notes:
   n-apps: {x: 860, y: 355, w: 760, h: 70}
   n-bi: {x: 860, y: 860, w: 620, h: 70}
 cards:
-  card-gaps: {x: 2420, y: 2040, w: 540, h: 320}
-  card-legend: {x: 40, y: 2040, w: 500, h: 320}
-  card-steps: {x: 1760, y: 2040, w: 640, h: 320}
-  card-where: {x: 560, y: 2040, w: 1180, h: 320}
+  card-gaps: {x: 2460, y: 2040, w: 540, h: 320}
+  card-legend: {x: 40, y: 2040, w: 540, h: 320}
+  card-steps: {x: 1800, y: 2040, w: 640, h: 320}
+  card-where: {x: 600, y: 2040, w: 1180, h: 320}

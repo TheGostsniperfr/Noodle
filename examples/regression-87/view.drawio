@@ -1,0 +1,38 @@
+<mxfile host="archgen">
+  <diagram id="view-dark" name="Regression 87 · Long zone sub (dark)">
+    <mxGraphModel grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1000" pageHeight="580" background="#020617" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="bg" value="" style="shape=image;image=data:image/svg+xml,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAwIiBoZWlnaHQ9IjU4MCI+PGRlZnM+PHBhdHRlcm4gaWQ9ImciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSA0MCAwIEwgMCAwIDAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzFlMjkzYiIgc3Ryb2tlLXdpZHRoPSIwLjUiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMwMjA2MTciLz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2cpIi8+PC9zdmc+;imageAspect=0;locked=1;editable=0;movable=0;resizable=0;deletable=0;" vertex="1" parent="1">
+          <mxGeometry x="0" y="0" width="1000" height="580" as="geometry" />
+        </mxCell>
+        <mxCell id="header-dot" value="" style="ellipse;fillColor=#34d399;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="44" width="12" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="header-title" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;Regression 87 · Long zone sub&lt;/b&gt;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=24;fontColor=#f8fafc;" vertex="1" parent="1">
+          <mxGeometry x="64" y="30" width="600" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="header-sub" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#e2e8f0&quot; style=&quot;font-size:13px&quot;&gt;The sub wraps under the label; the edge enters right of it.&lt;/font&gt;&lt;br&gt;v0.1 · source: examples/regression-87&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#94a3b8;" vertex="1" parent="1">
+          <mxGeometry x="64" y="74" width="600" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="platform" value="" style="rounded=1;absoluteArcSize=1;arcSize=12;html=1;fillColor=#38bdf8;fillOpacity=3;strokeColor=#38bdf8;strokeWidth=1.2;dashed=1;dashPattern=8 4;container=0;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="240" width="600" height="280" as="geometry" />
+        </mxCell>
+        <mxCell id="platform__title" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;Platform&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#94a3b8&quot; style=&quot;font-size:10px&quot;&gt;abcdefghi abcdefghi abcdefghi abcdefghi&lt;br&gt;abcdefghi abcdefghi abcdefghi abcdefghi&lt;br&gt;abcdefghi.&lt;/font&gt;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;spacingTop=5.125;spacing=0;spacingLeft=0;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#38bdf8;movable=0;resizable=0;connectable=0;" vertex="1" parent="platform">
+          <mxGeometry x="12" y="4" width="234" height="61.5" as="geometry" />
+        </mxCell>
+        <mxCell id="c1" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;HTTP&lt;/span&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;html=1;jumpStyle=arc;jumpSize=10;strokeColor=#94a3b8;strokeWidth=1.5;endArrow=blockThin;endFill=1;endSize=7;exitX=0.5000;exitY=1.0000;exitPerimeter=0;entryX=0.5000;entryY=0.0000;entryPerimeter=0;labelBackgroundColor=#020617;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10;fontColor=#e2e8f0;" edge="1" parent="1" source="gateway" target="api">
+          <mxGeometry x="0.0000" relative="1" as="geometry">
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="gateway" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:12px&quot;&gt;Gateway&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;&lt;font color=&quot;#e2e8f0&quot; style=&quot;font-size:10px&quot;&gt;[Envoy]&lt;/font&gt;&lt;/i&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=12;fillColor=#0b2d31;html=1;whiteSpace=wrap;strokeColor=#34d399;strokeWidth=1.5;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;spacingRight=8;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=12;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="130" width="160" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="api" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;&lt;font color=&quot;#f8fafc&quot; style=&quot;font-size:12px&quot;&gt;API&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;i&gt;&lt;font color=&quot;#e2e8f0&quot; style=&quot;font-size:10px&quot;&gt;[Go]&lt;/font&gt;&lt;/i&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=12;fillColor=#0b2d31;html=1;whiteSpace=wrap;strokeColor=#34d399;strokeWidth=1.5;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;spacingRight=8;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=12;fontColor=#e2e8f0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="370" width="160" height="70" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

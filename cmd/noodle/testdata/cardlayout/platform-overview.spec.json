@@ -1,0 +1,1693 @@
+{
+ "ID": "platform-staging",
+ "Type": "",
+ "Title": "Acme · staging · Platform overview",
+ "Subtitle": "What runs in Acme staging, and which path do a user request, a deployment and a secret take through it?",
+ "Meta": [
+  "Scope: Acme staging cluster as of 2026-09-27 · derived from code (platform/infra, generic-app-chart, openstack-provisioning, app-templates) and checked live on admin@staging",
+  "Out of scope: prod cluster (same layout, own Argo CD) · the edge team internals · CI pipeline internals · OIDC login sequence · per-app runtime contract (see app-runtime-view)",
+  "v0.1 · source: examples/platform-regression/platform-overview · anonymized from a real platform, kept as a regression fixture"
+ ],
+ "Width": 3400,
+ "Height": 2280,
+ "Zones": [
+  {
+   "ID": "z-internet",
+   "Kind": "region",
+   "Label": "INTERNET · USERS",
+   "Sub": "",
+   "Color": "slate",
+   "Icon": "globe",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 40,
+   "Y": 220,
+   "W": 240,
+   "H": 1580
+  },
+  {
+   "ID": "z-openstack",
+   "Kind": "region",
+   "Label": "OPENSTACK · PRIVATE CLOUD",
+   "Sub": "network internal · 10.20.0.0/24, shared with the edge team and prod",
+   "Color": "rose",
+   "Icon": "openstack",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 340,
+   "Y": 220,
+   "W": 3020,
+   "H": 1230
+  },
+  {
+   "ID": "z-edge",
+   "Kind": "region",
+   "Label": "EDGE TEAM",
+   "Sub": "RKE2 · FIP .10",
+   "Color": "amber",
+   "Icon": "nginx",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 370,
+   "Y": 290,
+   "W": 300,
+   "H": 440
+  },
+  {
+   "ID": "z-cluster",
+   "Kind": "region",
+   "Label": "ACME STAGING CLUSTER",
+   "Sub": "Talos 1.13 · K8s 1.32 · 1 CP m1.medium + 3 workers m1.large · pods 10.44/16 · svc 10.45/16",
+   "Color": "cyan",
+   "Icon": "talos",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 740,
+   "Y": 290,
+   "W": 2580,
+   "H": 1130
+  },
+  {
+   "ID": "g-gateway",
+   "Kind": "group",
+   "Label": "GATEWAY API",
+   "Sub": "ns envoy-gateway · Envoy Gateway 1.8.1",
+   "Color": "emerald",
+   "Icon": "envoy-gateway",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 770,
+   "Y": 340,
+   "W": 380,
+   "H": 520
+  },
+  {
+   "ID": "g-apps",
+   "Kind": "group",
+   "Label": "BUSINESS APPLICATIONS",
+   "Sub": "8 namespaces, same generic-app-chart · 2 shown",
+   "Color": "indigo",
+   "Icon": "k8s-ns",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 1230,
+   "Y": 340,
+   "W": 1020,
+   "H": 710
+  },
+  {
+   "ID": "g-app-a",
+   "Kind": "group",
+   "Label": "APP \u003capp-a\u003e",
+   "Sub": "ns \u003capp-a\u003e · https://\u003capp-a\u003e.staging.acme.example",
+   "Color": "sky",
+   "Icon": "k8s-ns",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 1260,
+   "Y": 390,
+   "W": 960,
+   "H": 280
+  },
+  {
+   "ID": "g-app-b",
+   "Kind": "group",
+   "Label": "APP \u003capp-b\u003e",
+   "Sub": "ns \u003capp-b\u003e · https://\u003capp-b\u003e.staging.acme.example",
+   "Color": "violet",
+   "Icon": "k8s-ns",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 1260,
+   "Y": 740,
+   "W": 960,
+   "H": 280
+  },
+  {
+   "ID": "g-bi",
+   "Kind": "group",
+   "Label": "DATA · BI",
+   "Sub": "ns airbyte · dagster · metabase · bi-warehouse",
+   "Color": "sky",
+   "Icon": "k8s-ns",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 2330,
+   "Y": 340,
+   "W": 960,
+   "H": 400
+  },
+  {
+   "ID": "g-managed",
+   "Kind": "group",
+   "Label": "MANAGED SERVICES",
+   "Sub": "DBaaS · MQaaS · simulation",
+   "Color": "violet",
+   "Icon": "cnpg",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 2330,
+   "Y": 800,
+   "W": 960,
+   "H": 250
+  },
+  {
+   "ID": "g-core",
+   "Kind": "group",
+   "Label": "CLUSTER CORE",
+   "Sub": "",
+   "Color": "slate",
+   "Icon": "kubernetes",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 870,
+   "Y": 1110,
+   "W": 280,
+   "H": 290
+  },
+  {
+   "ID": "g-gitops",
+   "Kind": "group",
+   "Label": "GITOPS",
+   "Sub": "ns argocd",
+   "Color": "orange",
+   "Icon": "argo",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 1230,
+   "Y": 1110,
+   "W": 600,
+   "H": 290
+  },
+  {
+   "ID": "g-secrets",
+   "Kind": "group",
+   "Label": "SECRETS",
+   "Sub": "ns vault · vault-secrets-operator",
+   "Color": "rose",
+   "Icon": "vault",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 1910,
+   "Y": 1110,
+   "W": 600,
+   "H": 290
+  },
+  {
+   "ID": "g-observability",
+   "Kind": "group",
+   "Label": "OBSERVABILITY",
+   "Sub": "planned, not deployed",
+   "Color": "slate",
+   "Icon": "prometheus",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 2570,
+   "Y": 1110,
+   "W": 720,
+   "H": 290
+  },
+  {
+   "ID": "z-shared-it",
+   "Kind": "region",
+   "Label": "SHARED IT SERVICES",
+   "Sub": "",
+   "Color": "orange",
+   "Icon": "gitlab",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 340,
+   "Y": 1510,
+   "W": 3020,
+   "H": 290
+  }
+ ],
+ "Nodes": [
+  {
+   "ID": "user",
+   "Kind": "frontend",
+   "Shape": "actor",
+   "Icon": "user",
+   "Title": "User",
+   "Tech": "",
+   "Desc": "browser",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 124,
+   "Y": 442,
+   "W": 56,
+   "H": 56
+  },
+  {
+   "ID": "admin",
+   "Kind": "frontend",
+   "Shape": "actor",
+   "Icon": "user",
+   "Title": "Platform admin",
+   "Tech": "",
+   "Desc": "kubectl · talosctl",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 124,
+   "Y": 1582,
+   "W": 56,
+   "H": 56
+  },
+  {
+   "ID": "developer",
+   "Kind": "frontend",
+   "Shape": "actor",
+   "Icon": "user",
+   "Title": "App developer",
+   "Tech": "",
+   "Desc": "git push",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 124,
+   "Y": 1702,
+   "W": 56,
+   "H": 56
+  },
+  {
+   "ID": "edge-ingress",
+   "Kind": "cloud",
+   "Shape": "",
+   "Icon": "nginx",
+   "Title": "Shared Ingress",
+   "Tech": "[nginx · Let's Encrypt HTTP01]",
+   "Desc": "TLS ends · *.staging wildcard",
+   "Badge": "G1",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 390,
+   "Y": 420,
+   "W": 260,
+   "H": 110
+  },
+  {
+   "ID": "envoy-eg",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "envoy",
+   "Title": "eg · north-south",
+   "Tech": "[Gateway · NodePort 30080]",
+   "Desc": "Host routing + GitLab OIDC",
+   "Badge": "G2",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 830,
+   "Y": 400,
+   "W": 280,
+   "H": 140
+  },
+  {
+   "ID": "envoy-eg-internal",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "envoy",
+   "Title": "eg-internal",
+   "Tech": "[ClusterIP 10.96.0.100]",
+   "Desc": "App-to-app, no OIDC",
+   "Badge": "G5",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 870,
+   "Y": 720,
+   "W": 240,
+   "H": 100
+  },
+  {
+   "ID": "a-frontend",
+   "Kind": "frontend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "\u003capp-a\u003e-frontend",
+   "Tech": "[Deployment · nginx SPA]",
+   "Desc": "Static files only",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1290,
+   "Y": 420,
+   "W": 250,
+   "H": 80
+  },
+  {
+   "ID": "a-backend",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "\u003capp-a\u003e-backend",
+   "Tech": "[Deployment · FastAPI]",
+   "Desc": "Business API /api/v1",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1290,
+   "Y": 550,
+   "W": 250,
+   "H": 90
+  },
+  {
+   "ID": "a-db",
+   "Kind": "database",
+   "Shape": "cylinder",
+   "Icon": "cnpg",
+   "Title": "\u003capp-a\u003e-db",
+   "Tech": "[CloudNativePG · PG 17]",
+   "Desc": "1 primary + 1 replica",
+   "Badge": "G1",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1700,
+   "Y": 520,
+   "W": 240,
+   "H": 110
+  },
+  {
+   "ID": "b-backend",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "\u003capp-b\u003e-backend",
+   "Tech": "[Deployment · FastAPI]",
+   "Desc": "Business API /api/v1",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1290,
+   "Y": 790,
+   "W": 250,
+   "H": 90
+  },
+  {
+   "ID": "b-frontend",
+   "Kind": "frontend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "\u003capp-b\u003e-frontend",
+   "Tech": "[Deployment · nginx SPA]",
+   "Desc": "Static files only",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1290,
+   "Y": 905,
+   "W": 250,
+   "H": 80
+  },
+  {
+   "ID": "b-db",
+   "Kind": "database",
+   "Shape": "cylinder",
+   "Icon": "cnpg",
+   "Title": "\u003capp-b\u003e-db",
+   "Tech": "[CloudNativePG · PG 17]",
+   "Desc": "1 primary + 1 replica",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1700,
+   "Y": 770,
+   "W": 240,
+   "H": 110
+  },
+  {
+   "ID": "dagster",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "Dagster",
+   "Tech": "[orchestrator]",
+   "Desc": "Schedules syncs",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2350,
+   "Y": 430,
+   "W": 200,
+   "H": 90
+  },
+  {
+   "ID": "airbyte",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "airbyte",
+   "Title": "Airbyte",
+   "Tech": "[ELT]",
+   "Desc": "Reads app DB replicas",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2660,
+   "Y": 430,
+   "W": 230,
+   "H": 90
+  },
+  {
+   "ID": "bi-warehouse",
+   "Kind": "database",
+   "Shape": "cylinder",
+   "Icon": "cnpg",
+   "Title": "bi-warehouse",
+   "Tech": "[CloudNativePG]",
+   "Desc": "Analytics store",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 3010,
+   "Y": 410,
+   "W": 250,
+   "H": 150
+  },
+  {
+   "ID": "metabase",
+   "Kind": "frontend",
+   "Shape": "",
+   "Icon": "metabase",
+   "Title": "Metabase",
+   "Tech": "[BI dashboards]",
+   "Desc": "Queries the warehouse",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2660,
+   "Y": 620,
+   "W": 230,
+   "H": 90
+  },
+  {
+   "ID": "cnpg-operator",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "cnpg",
+   "Title": "CNPG operator",
+   "Tech": "[cloudnative-pg 0.29]",
+   "Desc": "PostgreSQL per app",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2360,
+   "Y": 880,
+   "W": 270,
+   "H": 90
+  },
+  {
+   "ID": "rabbitmq",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "rabbitmq",
+   "Title": "RabbitMQ · soon",
+   "Tech": "[Cluster Operator · MQaaS]",
+   "Desc": "Async events · 1 vhost/app",
+   "Badge": "G3",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2670,
+   "Y": 880,
+   "W": 280,
+   "H": 90
+  },
+  {
+   "ID": "clock",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "Clock · soon",
+   "Tech": "[platform service]",
+   "Desc": "Simulated time, ticks",
+   "Badge": "G3",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2990,
+   "Y": 880,
+   "W": 270,
+   "H": 90
+  },
+  {
+   "ID": "kube-apiserver",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "kubernetes",
+   "Title": "kube-apiserver",
+   "Tech": "[cp-1 · 10.20.0.11]",
+   "Desc": "Also Talos API :50000",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 890,
+   "Y": 1160,
+   "W": 250,
+   "H": 80
+  },
+  {
+   "ID": "cilium",
+   "Kind": "security",
+   "Shape": "",
+   "Icon": "cilium",
+   "Title": "Cilium",
+   "Tech": "[eBPF · no kube-proxy · VXLAN]",
+   "Desc": "Default-deny + per-app CNP",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 890,
+   "Y": 1280,
+   "W": 250,
+   "H": 80
+  },
+  {
+   "ID": "argocd",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "argo",
+   "Title": "Argo CD",
+   "Tech": "[App-of-Apps · Dex GitLab SSO]",
+   "Desc": "Auto-sync, prune, self-heal",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1260,
+   "Y": 1170,
+   "W": 260,
+   "H": 100
+  },
+  {
+   "ID": "image-updater",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "argo",
+   "Title": "Image Updater",
+   "Tech": "[argocd-image-updater]",
+   "Desc": "Tracks vX.Y.Z-rc.N tags",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1550,
+   "Y": 1170,
+   "W": 250,
+   "H": 100
+  },
+  {
+   "ID": "vso",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "vault",
+   "Title": "Vault Secrets Operator",
+   "Tech": "[ricoberger · K8s operator]",
+   "Desc": "Vault KV to K8s Secrets",
+   "Badge": "G4",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1930,
+   "Y": 1170,
+   "W": 260,
+   "H": 100
+  },
+  {
+   "ID": "vault",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "vault",
+   "Title": "Vault",
+   "Tech": "[raft · tls_disable]",
+   "Desc": "kvv2 · K8s auth",
+   "Badge": "G1",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2280,
+   "Y": 1170,
+   "W": 210,
+   "H": 100
+  },
+  {
+   "ID": "prometheus",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "prometheus",
+   "Title": "Prometheus",
+   "Tech": "[kube-prometheus-stack]",
+   "Desc": "Scrapes /metrics",
+   "Badge": "G3",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2600,
+   "Y": 1180,
+   "W": 200,
+   "H": 90
+  },
+  {
+   "ID": "loki",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "grafana",
+   "Title": "Loki + Alloy",
+   "Tech": "[logs · DaemonSet]",
+   "Desc": "JSON stdout logs",
+   "Badge": "G3",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2830,
+   "Y": 1180,
+   "W": 200,
+   "H": 90
+  },
+  {
+   "ID": "grafana",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "grafana",
+   "Title": "Grafana",
+   "Tech": "[dashboards]",
+   "Desc": "Exposed to the CMP",
+   "Badge": "G3",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 3060,
+   "Y": 1180,
+   "W": 200,
+   "H": 90
+  },
+  {
+   "ID": "boundary",
+   "Kind": "security",
+   "Shape": "",
+   "Icon": "boundary",
+   "Title": "Boundary",
+   "Tech": "[HashiCorp · shared instance]",
+   "Desc": "Brokered TCP sessions",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 400,
+   "Y": 1580,
+   "W": 280,
+   "H": 100
+  },
+  {
+   "ID": "gitlab-oidc",
+   "Kind": "security",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "GitLab OIDC",
+   "Tech": "[IdP · groups_direct claim]",
+   "Desc": "Login, tokens, JWKS",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 760,
+   "Y": 1590,
+   "W": 300,
+   "H": 90
+  },
+  {
+   "ID": "gitlab-repos",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "GitLab repositories",
+   "Tech": "[infra · generic-app-chart · app-configs]",
+   "Desc": "Desired state of the cluster",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1260,
+   "Y": 1590,
+   "W": 320,
+   "H": 110
+  },
+  {
+   "ID": "gitlab-registry",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "GitLab CI + registry",
+   "Tech": "[registry.acme.example]",
+   "Desc": "Builds and stores images",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1660,
+   "Y": 1590,
+   "W": 300,
+   "H": 110
+  }
+ ],
+ "Edges": [
+  {
+   "ID": "e-1-user-edge",
+   "From": "user",
+   "To": "edge-ingress",
+   "Kind": "flow",
+   "Label": "[1] GET · HTTPS",
+   "Port": "TCP 443",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     180,
+     470
+    ],
+    [
+     390,
+     470
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-2-edge-eg",
+   "From": "edge-ingress",
+   "To": "envoy-eg",
+   "Kind": "flow",
+   "Label": "[2] forward · HTTP",
+   "Port": "TCP 30080",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     650,
+     470
+    ],
+    [
+     830,
+     470
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    -22
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-3-eg-a-backend",
+   "From": "envoy-eg",
+   "To": "a-backend",
+   "Kind": "flow",
+   "Label": "[3] /api · HTTP",
+   "Port": "TCP 8000",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1110,
+     515
+    ],
+    [
+     1170,
+     515
+    ],
+    [
+     1170,
+     600
+    ],
+    [
+     1290,
+     600
+    ]
+   ],
+   "LabelAt": [
+    1170,
+    560
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-4-a-backend-a-db",
+   "From": "a-backend",
+   "To": "a-db",
+   "Kind": "flow",
+   "Label": "[4] query · SQL",
+   "Port": "TCP 5432",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1540,
+     590
+    ],
+    [
+     1700,
+     590
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-5-a-backend-eg-internal",
+   "From": "a-backend",
+   "To": "envoy-eg-internal",
+   "Kind": "flow",
+   "Label": "[5] GET $APP_B_URL/api · HTTP",
+   "Port": "TCP 80",
+   "AgainstFlow": true,
+   "Path": [
+    [
+     1290,
+     625
+    ],
+    [
+     1200,
+     625
+    ],
+    [
+     1200,
+     760
+    ],
+    [
+     1110,
+     760
+    ]
+   ],
+   "LabelAt": [
+    1200,
+    700
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-6-eg-internal-b-backend",
+   "From": "envoy-eg-internal",
+   "To": "b-backend",
+   "Kind": "flow",
+   "Label": "[6] /api · HTTP",
+   "Port": "TCP 8000",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1110,
+     800
+    ],
+    [
+     1230,
+     800
+    ],
+    [
+     1230,
+     860
+    ],
+    [
+     1290,
+     860
+    ]
+   ],
+   "LabelAt": [
+    1230,
+    830
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-7-b-backend-b-db",
+   "From": "b-backend",
+   "To": "b-db",
+   "Kind": "flow",
+   "Label": "[7] query · SQL",
+   "Port": "TCP 5432",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1540,
+     835
+    ],
+    [
+     1700,
+     835
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-eg-a-frontend",
+   "From": "envoy-eg",
+   "To": "a-frontend",
+   "Kind": "flow",
+   "Label": "/ SPA · HTTP",
+   "Port": "TCP 80",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1110,
+     480
+    ],
+    [
+     1290,
+     480
+    ]
+   ],
+   "LabelAt": [
+    1200,
+    480
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "x-a-frontend-a-backend",
+   "From": "a-frontend",
+   "To": "a-backend",
+   "Kind": "blocked",
+   "Label": "frontend pod to backend · denied",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1415,
+     500
+    ],
+    [
+     1415,
+     550
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    130,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "x-a-backend-b-db",
+   "From": "a-backend",
+   "To": "b-db",
+   "Kind": "blocked",
+   "Label": "cross-app DB · denied",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1500,
+     640
+    ],
+    [
+     1500,
+     705
+    ],
+    [
+     1760,
+     705
+    ],
+    [
+     1760,
+     770
+    ]
+   ],
+   "LabelAt": [
+    1640,
+    705
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "x-app-a-app-b",
+   "From": "g-app-a",
+   "To": "g-app-b",
+   "Kind": "blocked",
+   "Label": "direct pod-to-pod · denied",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2150,
+     670
+    ],
+    [
+     2150,
+     740
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    -110,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-oidc-eg-gitlab",
+   "From": "envoy-eg",
+   "To": "gitlab-oidc",
+   "Kind": "auth",
+   "Label": "OIDC code exchange + JWKS · HTTPS",
+   "Port": "TCP 443",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     845,
+     540
+    ],
+    [
+     845,
+     1590
+    ]
+   ],
+   "LabelAt": [
+    845,
+    1475
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-a-dev-repos",
+   "From": "developer",
+   "To": "gitlab-repos",
+   "Kind": "flow",
+   "Label": "[A] git push · SSH",
+   "Port": "TCP 22",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     180,
+     1730
+    ],
+    [
+     1230,
+     1730
+    ],
+    [
+     1230,
+     1660
+    ],
+    [
+     1260,
+     1660
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-b-updater-registry",
+   "From": "image-updater",
+   "To": "gitlab-registry",
+   "Kind": "async",
+   "Label": "[B] poll rc tags · HTTPS",
+   "Port": "TCP 443",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1720,
+     1270
+    ],
+    [
+     1720,
+     1590
+    ]
+   ],
+   "LabelAt": [
+    1720,
+    1470
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-c-updater-repos",
+   "From": "image-updater",
+   "To": "gitlab-repos",
+   "Kind": "async",
+   "Label": "[C] write tag · SSH",
+   "Port": "TCP 22",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1600,
+     1270
+    ],
+    [
+     1600,
+     1480
+    ],
+    [
+     1480,
+     1480
+    ],
+    [
+     1480,
+     1590
+    ]
+   ],
+   "LabelAt": [
+    1540,
+    1480
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-d-argocd-repos",
+   "From": "argocd",
+   "To": "gitlab-repos",
+   "Kind": "async",
+   "Label": "[D] pull · SSH",
+   "Port": "TCP 22",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1390,
+     1270
+    ],
+    [
+     1390,
+     1590
+    ]
+   ],
+   "LabelAt": [
+    1390,
+    1440
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-e-nodes-registry",
+   "From": "z-cluster",
+   "To": "gitlab-registry",
+   "Kind": "async",
+   "Label": "[E] image pull · HTTPS",
+   "Port": "TCP 443",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1870,
+     1420
+    ],
+    [
+     1870,
+     1590
+    ]
+   ],
+   "LabelAt": [
+    1870,
+    1475
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-f-vso-vault",
+   "From": "vso",
+   "To": "vault",
+   "Kind": "async",
+   "Label": "[F] read",
+   "Port": "TCP 8200",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2190,
+     1235
+    ],
+    [
+     2280,
+     1235
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    -24
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-g-dagster-airbyte",
+   "From": "dagster",
+   "To": "airbyte",
+   "Kind": "async",
+   "Label": "[G] trigger",
+   "Port": "TCP 8001",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2550,
+     500
+    ],
+    [
+     2660,
+     500
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    -22
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-h-airbyte-a-db",
+   "From": "airbyte",
+   "To": "a-db",
+   "Kind": "async",
+   "Label": "[H] extract replica · SQL (bi_reader)",
+   "Port": "TCP 5432",
+   "AgainstFlow": true,
+   "Path": [
+    [
+     2690,
+     520
+    ],
+    [
+     2690,
+     575
+    ],
+    [
+     1940,
+     575
+    ]
+   ],
+   "LabelAt": [
+    2100,
+    575
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-i-airbyte-warehouse",
+   "From": "airbyte",
+   "To": "bi-warehouse",
+   "Kind": "async",
+   "Label": "[I] load",
+   "Port": "TCP 5432",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2890,
+     480
+    ],
+    [
+     3010,
+     480
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    -22
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-metabase-warehouse",
+   "From": "metabase",
+   "To": "bi-warehouse",
+   "Kind": "flow",
+   "Label": "query · SQL",
+   "Port": "TCP 5432",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2890,
+     665
+    ],
+    [
+     2950,
+     665
+    ],
+    [
+     2950,
+     530
+    ],
+    [
+     3010,
+     530
+    ]
+   ],
+   "LabelAt": [
+    2950,
+    600
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-admin-boundary",
+   "From": "admin",
+   "To": "boundary",
+   "Kind": "auth",
+   "Label": "login · OIDC",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     180,
+     1610
+    ],
+    [
+     400,
+     1610
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-boundary-apiserver",
+   "From": "boundary",
+   "To": "kube-apiserver",
+   "Kind": "tunnel",
+   "Label": "brokered session · TCP",
+   "Port": "TCP 6443",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     680,
+     1630
+    ],
+    [
+     705,
+     1630
+    ],
+    [
+     705,
+     1075
+    ],
+    [
+     1100,
+     1075
+    ],
+    [
+     1100,
+     1160
+    ]
+   ],
+   "LabelAt": [
+    705,
+    1300
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-argocd-app-b",
+   "From": "argocd",
+   "To": "g-app-b",
+   "Kind": "link",
+   "Label": "applies",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1480,
+     1170
+    ],
+    [
+     1480,
+     1020
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-cnpg-apps",
+   "From": "cnpg-operator",
+   "To": "g-apps",
+   "Kind": "link",
+   "Label": "reconciles",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2360,
+     925
+    ],
+    [
+     2290,
+     925
+    ],
+    [
+     2290,
+     1000
+    ],
+    [
+     2250,
+     1000
+    ]
+   ],
+   "LabelAt": [
+    2290,
+    960
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  }
+ ],
+ "Notes": [
+  {
+   "ID": "n-302",
+   "Text": "Without a session, eg replies **302** to GitLab OIDC. Login is a separate sequence diagram.",
+   "X": 52,
+   "Y": 560,
+   "W": 216,
+   "H": 100
+  },
+  {
+   "ID": "n-spa",
+   "Text": "The SPA's fetch() runs in the **browser**: /api goes back through eg as [3], never pod to pod.",
+   "X": 52,
+   "Y": 700,
+   "W": 216,
+   "H": 110
+  },
+  {
+   "ID": "n-apply",
+   "Text": "Argo CD, VSO and CNPG act through the **kube-apiserver**: they write objects, never talk to pods.",
+   "X": 52,
+   "Y": 850,
+   "W": 216,
+   "H": 110
+  }
+ ],
+ "Cards": [
+  {
+   "ID": "card-legend",
+   "Title": "Legend",
+   "Color": "slate",
+   "Legend": true,
+   "Lines": [],
+   "X": 40,
+   "Y": 1860,
+   "W": 560,
+   "H": 380
+  },
+  {
+   "ID": "card-data-plane",
+   "Title": "Request path · data plane",
+   "Color": "cyan",
+   "Legend": false,
+   "Lines": [
+    "A signed-in user calls \u003capp-a\u003e, whose backend needs \u003capp-b\u003e.",
+    "[1] Browser sends GET https://\u003capp-a\u003e.staging.acme.example/api/v1/…. DNS wildcard points to the edge team FIP. the edge team nginx terminates TLS.",
+    "[2] the edge team forwards plain HTTP to NodePort 30080 on any worker (static Endpoints, maintained by hand).",
+    "[3] eg matches the HTTPRoute by Host, checks the GitLab id-token cookie against allowedGroups, proxies /api to \u003capp-a\u003e-backend.",
+    "[4] \u003capp-a\u003e-backend queries \u003capp-a\u003e-db.",
+    "[5] It calls http://\u003capp-b\u003e.staging.acme.example/api from APP_B_URL. hostAliases pins that name to eg-internal: no OIDC, /api only.",
+    "[6] eg-internal proxies to \u003capp-b\u003e-backend. [7] It queries \u003capp-b\u003e-db.",
+    "Cilium drops everything else: frontend to backend, \u003capp-a\u003e to \u003capp-b\u003e pod to pod, \u003capp-a\u003e to \u003capp-b\u003e-db."
+   ],
+   "X": 630,
+   "Y": 1860,
+   "W": 820,
+   "H": 380
+  },
+  {
+   "ID": "card-control-plane",
+   "Title": "Background · control plane",
+   "Color": "violet",
+   "Legend": false,
+   "Lines": [
+    "[A] A developer pushes. GitLab CI builds and pushes vX.Y.Z-rc.N images to the registry.",
+    "[B] Image Updater polls the registry for new rc tags. [C] It commits the tag to app-configs.",
+    "[D] Argo CD pulls infra + generic-app-chart + app-configs and applies each app namespace. Platform baseline values load last and win.",
+    "[E] Kubelets pull the images with a read-only pull secret synced from Vault.",
+    "[F] VSO authenticates with its ServiceAccount, reads kvv2 and writes plain K8s Secrets into app namespaces.",
+    "[G] Dagster triggers Airbyte syncs. [H] Airbyte reads each app DB replica as bi_reader. [I] It loads bi-warehouse.",
+    "Admins reach the API server and Talos API only through Boundary. No SSH, no public FIP."
+   ],
+   "X": 1480,
+   "Y": 1860,
+   "W": 900,
+   "H": 380
+  },
+  {
+   "ID": "card-gaps",
+   "Title": "Gaps between docs and code",
+   "Color": "orange",
+   "Legend": false,
+   "Lines": [
+    "!!G1!! **Storage and transport.** Docs: Cinder CSI + WAL backups to Ceph S3. Code: local-path only (node-pinned), CNPG backup off. TLS ends at the edge team. the edge team to NodePort and Vault run plain HTTP.",
+    "!!G2!! **Isolation.** Docs: staging and prod physically separated. Code: same subnet 10.20.0.0/24, security groups only. NodePorts 30000-32767 open to 0.0.0.0/0: any host on the subnet reaches eg without the edge team.",
+    "!!G3!! **Missing services.** RabbitMQ, the observability stack and the Clock are documented, not deployed. Chart rules for RabbitMQ egress and Prometheus ingress target absent namespaces.",
+    "!!G4!! **Secret scoping.** Every Vault role is bound to VSO's ServiceAccount. Per-app scoping relies on the baseline pinning vaultRole (ADR-0001), not on Vault.",
+    "!!G5!! **East-west auth.** eg-internal has no SecurityPolicy: any app can call any app's /api, the callee cannot identify the caller.",
+    "Sizing: docs say m1.medium workers, Terraform provisions m1.large. Leftover empty namespaces: my-app, app-templates."
+   ],
+   "X": 2410,
+   "Y": 1860,
+   "W": 950,
+   "H": 380
+  }
+ ],
+ "Arrows": null,
+ "Offerings": null,
+ "Matrix": null,
+ "Diff": false,
+ "Highlight": false
+}

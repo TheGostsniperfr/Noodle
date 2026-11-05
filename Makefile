@@ -12,7 +12,7 @@ REGRESSION_ICONS := -icons examples/platform-regression/icons
 
 # Read-only tools for the evaluator; write tools are refused outright. The tool flags take
 # lists, so the prompt goes on stdin, never as a trailing argument.
-EVALUATOR := claude -p --agent evaluator \
+EVALUATOR := NOODLE_EVALUATOR=1 claude -p --agent evaluator \
 	--disallowedTools "Edit Write NotebookEdit" \
 	--allowedTools "Read Glob Grep \
 	Bash(go test:*) Bash(go vet:*) \
@@ -51,6 +51,9 @@ examples: ## Lint every example, regression fixture and docs diagram (no output 
 	$(NOODLE) render examples/catalog --view catalog
 	$(NOODLE) render examples/cnp-access --view matrix
 	$(NOODLE) render examples/messaging --view broker
+	$(NOODLE) render examples/regression-72
+	$(NOODLE) render examples/regression-87
+	$(NOODLE) render examples/regression-78
 	for v in proposal reference focus; do $(NOODLE) render examples/topology-diff --view $$v $(REGRESSION_ICONS); done
 	for d in platform-overview app-runtime-view repo-map; do $(NOODLE) render examples/platform-regression/$$d $(REGRESSION_ICONS); done
 	$(NOODLE) render docs/diagrams/contract-pipeline -icons docs/diagrams/icons

@@ -1,0 +1,1198 @@
+{
+ "ID": "gitlab-repos",
+ "Type": "",
+ "Title": "Acme · GitLab repositories",
+ "Subtitle": "Where do I commit to change something, and what reads that repository?",
+ "Meta": [
+  "Scope: GitLab group acme as provisioned by platform/gitlab-provisioning (Terraform), as of 2026-09-27 · consumers from platform/infra Argo CD Applications",
+  "Out of scope: branch protections and approval rules per repo · CI pipeline internals · personal forks",
+  "v0.1 · source: examples/platform-regression/repo-map · anonymized from a real platform, kept as a regression fixture"
+ ],
+ "Width": 3000,
+ "Height": 2400,
+ "Zones": [
+  {
+   "ID": "z-teams",
+   "Kind": "region",
+   "Label": "TEAMS",
+   "Sub": "",
+   "Color": "slate",
+   "Icon": "user",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 40,
+   "Y": 220,
+   "W": 240,
+   "H": 1760
+  },
+  {
+   "ID": "z-gitlab",
+   "Kind": "region",
+   "Label": "GITLAB · acme",
+   "Sub": "git.acme.example/acme · tree managed as code by platform/gitlab-provisioning",
+   "Color": "orange",
+   "Icon": "gitlab",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 340,
+   "Y": 220,
+   "W": 1900,
+   "H": 1760
+  },
+  {
+   "ID": "g-applications",
+   "Kind": "group",
+   "Label": "APPLICATIONS",
+   "Sub": "applications/ · owner: each app team",
+   "Color": "indigo",
+   "Icon": "gitlab",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 380,
+   "Y": 290,
+   "W": 1820,
+   "H": 190
+  },
+  {
+   "ID": "g-devops",
+   "Kind": "group",
+   "Label": "DEVOPS",
+   "Sub": "devops/",
+   "Color": "emerald",
+   "Icon": "gitlab",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 380,
+   "Y": 540,
+   "W": 1820,
+   "H": 190
+  },
+  {
+   "ID": "g-bi",
+   "Kind": "group",
+   "Label": "BI",
+   "Sub": "bi/ · owner: BI team",
+   "Color": "sky",
+   "Icon": "gitlab",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 380,
+   "Y": 790,
+   "W": 1820,
+   "H": 190
+  },
+  {
+   "ID": "g-platform",
+   "Kind": "group",
+   "Label": "PLATFORM",
+   "Sub": "platform/ · owner: platform team",
+   "Color": "violet",
+   "Icon": "gitlab",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 380,
+   "Y": 1040,
+   "W": 1820,
+   "H": 700
+  },
+  {
+   "ID": "g-deploy",
+   "Kind": "group",
+   "Label": "GITOPS · DEPLOYMENT STATE",
+   "Sub": "read by Argo CD",
+   "Color": "violet",
+   "Icon": "argo",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 410,
+   "Y": 1090,
+   "W": 1420,
+   "H": 190
+  },
+  {
+   "ID": "g-prov",
+   "Kind": "group",
+   "Label": "PROVISIONING · IAC",
+   "Sub": "",
+   "Color": "amber",
+   "Icon": "openstack",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 410,
+   "Y": 1340,
+   "W": 700,
+   "H": 180
+  },
+  {
+   "ID": "g-products",
+   "Kind": "group",
+   "Label": "PLATFORM PRODUCTS",
+   "Sub": "",
+   "Color": "cyan",
+   "Icon": "k8s-deploy",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 1170,
+   "Y": 1340,
+   "W": 1000,
+   "H": 180
+  },
+  {
+   "ID": "g-docs",
+   "Kind": "group",
+   "Label": "DOCS",
+   "Sub": "",
+   "Color": "slate",
+   "Icon": "gitlab",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 410,
+   "Y": 1580,
+   "W": 370,
+   "H": 140
+  },
+  {
+   "ID": "g-tooling",
+   "Kind": "group",
+   "Label": "TOOLING",
+   "Sub": "",
+   "Color": "emerald",
+   "Icon": "gitlab",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 840,
+   "Y": 1580,
+   "W": 370,
+   "H": 140
+  },
+  {
+   "ID": "g-urbaniste",
+   "Kind": "group",
+   "Label": "URBANISTE",
+   "Sub": "urbaniste/",
+   "Color": "rose",
+   "Icon": "gitlab",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 380,
+   "Y": 1800,
+   "W": 700,
+   "H": 150
+  },
+  {
+   "ID": "g-auth",
+   "Kind": "group",
+   "Label": "_AUTH-ROLES",
+   "Sub": "identity groups, no code",
+   "Color": "rose",
+   "Icon": "gitlab",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 1140,
+   "Y": 1800,
+   "W": 1060,
+   "H": 150
+  },
+  {
+   "ID": "z-targets",
+   "Kind": "region",
+   "Label": "WHAT READS IT",
+   "Sub": "",
+   "Color": "cyan",
+   "Icon": "rack",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 2300,
+   "Y": 220,
+   "W": 660,
+   "H": 1760
+  }
+ ],
+ "Nodes": [
+  {
+   "ID": "app-team",
+   "Kind": "frontend",
+   "Shape": "actor",
+   "Icon": "user",
+   "Title": "App team",
+   "Tech": "",
+   "Desc": "booking, ticketing…",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 124,
+   "Y": 402,
+   "W": 56,
+   "H": 56
+  },
+  {
+   "ID": "devops-team",
+   "Kind": "frontend",
+   "Shape": "actor",
+   "Icon": "user",
+   "Title": "DevOps team",
+   "Tech": "",
+   "Desc": "",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 124,
+   "Y": 607,
+   "W": 56,
+   "H": 56
+  },
+  {
+   "ID": "bi-team",
+   "Kind": "frontend",
+   "Shape": "actor",
+   "Icon": "user",
+   "Title": "BI team",
+   "Tech": "",
+   "Desc": "",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 124,
+   "Y": 857,
+   "W": 56,
+   "H": 56
+  },
+  {
+   "ID": "platform-team",
+   "Kind": "frontend",
+   "Shape": "actor",
+   "Icon": "user",
+   "Title": "platform team",
+   "Tech": "",
+   "Desc": "",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 124,
+   "Y": 1122,
+   "W": 56,
+   "H": 56
+  },
+  {
+   "ID": "app-repo",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "applications/\u003capp\u003e",
+   "Tech": "[1 repo per app · 7 apps + app-sandbox]",
+   "Desc": "App code, tests, Dockerfile, .gitlab-ci.yml",
+   "Badge": "G1",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "one per application",
+   "Change": "",
+   "X": 420,
+   "Y": 360,
+   "W": 340,
+   "H": 90
+  },
+  {
+   "ID": "ci-cd-templates",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "ci-cd-templates",
+   "Tech": "[GitLab CI includes]",
+   "Desc": "Build, test, scan, push jobs",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 420,
+   "Y": 610,
+   "W": 340,
+   "H": 90
+  },
+  {
+   "ID": "app-templates",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "app-templates",
+   "Tech": "[FastAPI + Vite boilerplate]",
+   "Desc": "Starting point of every app repo",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 800,
+   "Y": 610,
+   "W": 340,
+   "H": 90
+  },
+  {
+   "ID": "cmp",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "cmp",
+   "Tech": "[developer portal]",
+   "Desc": "Cloud Management Platform UI",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1180,
+   "Y": 610,
+   "W": 340,
+   "H": 90
+  },
+  {
+   "ID": "bi-repo",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "bi/\u003ctool\u003e",
+   "Tech": "[airbyte · dagster · metabase]",
+   "Desc": "Connectors, pipelines, dashboards",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "one per BI tool",
+   "Change": "",
+   "X": 420,
+   "Y": 860,
+   "W": 340,
+   "H": 90
+  },
+  {
+   "ID": "app-configs",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "app-configs",
+   "Tech": "[apps/\u003capp\u003e/values-\u003cenv\u003e.yaml]",
+   "Desc": "Team-owned: image, env, replicas",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 440,
+   "Y": 1160,
+   "W": 310,
+   "H": 90
+  },
+  {
+   "ID": "generic-app-chart",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "generic-app-chart",
+   "Tech": "[Helm chart]",
+   "Desc": "One chart for every app",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 790,
+   "Y": 1160,
+   "W": 310,
+   "H": 90
+  },
+  {
+   "ID": "infra",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "infra",
+   "Tech": "[gitops/apps · clusters · terraform]",
+   "Desc": "Platform + per-app baseline",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1140,
+   "Y": 1160,
+   "W": 310,
+   "H": 90
+  },
+  {
+   "ID": "base-images",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "base-images",
+   "Tech": "[python-secure · nginx-secure]",
+   "Desc": "Hardened FROM images",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1490,
+   "Y": 1160,
+   "W": 310,
+   "H": 90
+  },
+  {
+   "ID": "gitlab-provisioning",
+   "Kind": "cloud",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "gitlab-provisioning",
+   "Tech": "[Terraform]",
+   "Desc": "Groups, repos, members",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 440,
+   "Y": 1400,
+   "W": 310,
+   "H": 90
+  },
+  {
+   "ID": "openstack-provisioning",
+   "Kind": "cloud",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "openstack-provisioning",
+   "Tech": "[Terraform · Talos]",
+   "Desc": "VMs, network, security groups",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 780,
+   "Y": 1400,
+   "W": 310,
+   "H": 90
+  },
+  {
+   "ID": "clock-service",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "clock-service",
+   "Tech": "[platform service]",
+   "Desc": "Simulated time",
+   "Badge": "G2",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1200,
+   "Y": 1400,
+   "W": 290,
+   "H": 90
+  },
+  {
+   "ID": "actors-simulator",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "actors-simulator",
+   "Tech": "[platform service]",
+   "Desc": "Passengers, airports, IATA",
+   "Badge": "G2",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1520,
+   "Y": 1400,
+   "W": 290,
+   "H": 90
+  },
+  {
+   "ID": "platform-sdk",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "platform-sdk",
+   "Tech": "[library]",
+   "Desc": "Broker client for apps",
+   "Badge": "G2",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1840,
+   "Y": 1400,
+   "W": 290,
+   "H": 90
+  },
+  {
+   "ID": "platform-docs",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "platform-docs",
+   "Tech": "[Markdown]",
+   "Desc": "Platform docs, these diagrams",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 440,
+   "Y": 1620,
+   "W": 310,
+   "H": 80
+  },
+  {
+   "ID": "renovate-bot",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "renovate-bot",
+   "Tech": "[scheduled pipeline]",
+   "Desc": "Dependency update MRs",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 870,
+   "Y": 1620,
+   "W": 310,
+   "H": 80
+  },
+  {
+   "ID": "architecture-docs",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "architecture-docs",
+   "Tech": "[ADRs · standards]",
+   "Desc": "Cross-team decisions",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 420,
+   "Y": 1850,
+   "W": 340,
+   "H": 80
+  },
+  {
+   "ID": "auth-roles",
+   "Kind": "security",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "auth-roles/*",
+   "Tech": "[GitLab groups · role-* · members]",
+   "Desc": "OIDC claims for Argo CD, Envoy, Grafana",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1180,
+   "Y": 1850,
+   "W": 500,
+   "H": 80
+  },
+  {
+   "ID": "registry",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "Container registry",
+   "Tech": "[registry.acme.example]",
+   "Desc": "vX.Y.Z-rc.N images per app",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2360,
+   "Y": 380,
+   "W": 540,
+   "H": 100
+  },
+  {
+   "ID": "argocd",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "argo",
+   "Title": "Argo CD + Image Updater",
+   "Tech": "[staging and prod clusters]",
+   "Desc": "Syncs cluster state from Git",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2360,
+   "Y": 1150,
+   "W": 540,
+   "H": 110
+  },
+  {
+   "ID": "gitlab-settings",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "gitlab",
+   "Title": "GitLab itself",
+   "Tech": "[groups · projects · members]",
+   "Desc": "Applied by terraform apply",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2360,
+   "Y": 1400,
+   "W": 540,
+   "H": 90
+  },
+  {
+   "ID": "openstack",
+   "Kind": "cloud",
+   "Shape": "",
+   "Icon": "openstack",
+   "Title": "OpenStack tenant",
+   "Tech": "[private cloud]",
+   "Desc": "Talos VMs, network",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2360,
+   "Y": 1620,
+   "W": 540,
+   "H": 90
+  }
+ ],
+ "Edges": [
+  {
+   "ID": "e-1-app-team-app-repo",
+   "From": "app-team",
+   "To": "app-repo",
+   "Kind": "flow",
+   "Label": "[1] git push · SSH",
+   "Port": "TCP 22",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     180,
+     430
+    ],
+    [
+     420,
+     430
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-2-app-repo-registry",
+   "From": "app-repo",
+   "To": "registry",
+   "Kind": "flow",
+   "Label": "[2] CI builds + pushes image · HTTPS",
+   "Port": "TCP 443",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     760,
+     445
+    ],
+    [
+     2360,
+     445
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-3-argocd-app-configs",
+   "From": "argocd",
+   "To": "app-configs",
+   "Kind": "async",
+   "Label": "[3] Image Updater commits the new tag · SSH",
+   "Port": "TCP 22",
+   "AgainstFlow": true,
+   "Path": [
+    [
+     2400,
+     1260
+    ],
+    [
+     2400,
+     1310
+    ],
+    [
+     605,
+     1310
+    ],
+    [
+     605,
+     1250
+    ]
+   ],
+   "LabelAt": [
+    1500,
+    1310
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-4-argocd-deploy",
+   "From": "argocd",
+   "To": "g-deploy",
+   "Kind": "async",
+   "Label": "[4] pull + render + apply · SSH",
+   "Port": "",
+   "AgainstFlow": true,
+   "Path": [
+    [
+     2360,
+     1200
+    ],
+    [
+     1830,
+     1200
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-app-team-app-configs",
+   "From": "app-team",
+   "To": "app-configs",
+   "Kind": "flow",
+   "Label": "MR on values-staging.yaml",
+   "Port": "TCP 22",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     180,
+     450
+    ],
+    [
+     300,
+     450
+    ],
+    [
+     300,
+     1225
+    ],
+    [
+     440,
+     1225
+    ]
+   ],
+   "LabelAt": [
+    300,
+    1010
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-devops-team",
+   "From": "devops-team",
+   "To": "g-devops",
+   "Kind": "flow",
+   "Label": "commit · MR",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     180,
+     635
+    ],
+    [
+     380,
+     635
+    ]
+   ],
+   "LabelAt": [
+    235,
+    635
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-bi-team",
+   "From": "bi-team",
+   "To": "g-bi",
+   "Kind": "flow",
+   "Label": "commit · MR",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     180,
+     885
+    ],
+    [
+     380,
+     885
+    ]
+   ],
+   "LabelAt": [
+    235,
+    885
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-platform-team",
+   "From": "platform-team",
+   "To": "g-platform",
+   "Kind": "flow",
+   "Label": "commit · MR",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     180,
+     1150
+    ],
+    [
+     380,
+     1150
+    ]
+   ],
+   "LabelAt": [
+    235,
+    1150
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-gitlab-prov-apply",
+   "From": "gitlab-provisioning",
+   "To": "gitlab-settings",
+   "Kind": "async",
+   "Label": "terraform apply · GitLab API",
+   "Port": "TCP 443",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     595,
+     1490
+    ],
+    [
+     595,
+     1540
+    ],
+    [
+     2330,
+     1540
+    ],
+    [
+     2330,
+     1470
+    ],
+    [
+     2360,
+     1470
+    ]
+   ],
+   "LabelAt": [
+    760,
+    1540
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-openstack-prov-apply",
+   "From": "openstack-provisioning",
+   "To": "openstack",
+   "Kind": "async",
+   "Label": "terraform apply · OpenStack API",
+   "Port": "TCP 443",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     935,
+     1490
+    ],
+    [
+     935,
+     1555
+    ],
+    [
+     2345,
+     1555
+    ],
+    [
+     2345,
+     1690
+    ],
+    [
+     2360,
+     1690
+    ]
+   ],
+   "LabelAt": [
+    1700,
+    1555
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-app-repo-ci-templates",
+   "From": "app-repo",
+   "To": "ci-cd-templates",
+   "Kind": "link",
+   "Label": "include:project",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     600,
+     450
+    ],
+    [
+     600,
+     610
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-app-repo-app-templates",
+   "From": "app-repo",
+   "To": "app-templates",
+   "Kind": "link",
+   "Label": "bootstrapped from",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     740,
+     450
+    ],
+    [
+     740,
+     510
+    ],
+    [
+     960,
+     510
+    ],
+    [
+     960,
+     610
+    ]
+   ],
+   "LabelAt": [
+    850,
+    510
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-bi-argocd",
+   "From": "g-bi",
+   "To": "argocd",
+   "Kind": "link",
+   "Label": "repoURL (bi/*)",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2200,
+     885
+    ],
+    [
+     2270,
+     885
+    ],
+    [
+     2270,
+     1120
+    ],
+    [
+     2450,
+     1120
+    ],
+    [
+     2450,
+     1150
+    ]
+   ],
+   "LabelAt": [
+    2270,
+    1000
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  }
+ ],
+ "Notes": [
+  {
+   "ID": "n-apps",
+   "Text": "Same layout in every app repo: generated from **app-templates**, CI from **ci-cd-templates**, images FROM **base-images**.",
+   "X": 860,
+   "Y": 355,
+   "W": 760,
+   "H": 70
+  },
+  {
+   "ID": "n-bi",
+   "Text": "One repo per BI tool. Its namespace, route and network policy live in **platform/infra**.",
+   "X": 860,
+   "Y": 860,
+   "W": 620,
+   "H": 70
+  }
+ ],
+ "Cards": [
+  {
+   "ID": "card-legend",
+   "Title": "Legend",
+   "Color": "slate",
+   "Legend": true,
+   "Lines": [],
+   "X": 40,
+   "Y": 2040,
+   "W": 500,
+   "H": 320
+  },
+  {
+   "ID": "card-where",
+   "Title": "I want to change… → commit in",
+   "Color": "indigo",
+   "Legend": false,
+   "Lines": [
+    "**My app's code, tests, Dockerfile, CI** → applications/\u003capp\u003e (app team).",
+    "**My app's image tag, env vars, replicas in staging** → platform/app-configs, apps/\u003capp\u003e/values-staging.yaml (app team MR). Prod values need platform approval (CODEOWNERS).",
+    "**Security settings, probes, secrets list, route, allowed groups** → platform/infra, gitops/apps/\u003capp\u003e/ (platform team). The baseline loads last and wins.",
+    "**A new secret value** → Vault, via the platform team. Never in Git.",
+    "**A CI job for everyone** → devops/ci-cd-templates. **A new app** → start from devops/app-templates.",
+    "**What the chart renders for every app** → platform/generic-app-chart. **A base image** → platform/base-images.",
+    "**BI connectors, pipelines, dashboards** → bi/\u003ctool\u003e.",
+    "**Someone's GitLab access or a new repo** → platform/gitlab-provisioning. **VMs, network, security groups** → platform/openstack-provisioning.",
+    "**Platform docs** → platform/platform-docs. **Cross-team standards, ADRs** → urbaniste/architecture-docs."
+   ],
+   "X": 560,
+   "Y": 2040,
+   "W": 1180,
+   "H": 320
+  },
+  {
+   "ID": "card-steps",
+   "Title": "From commit to cluster",
+   "Color": "cyan",
+   "Legend": false,
+   "Lines": [
+    "[1] The app team pushes to applications/\u003capp\u003e.",
+    "[2] Its pipeline (ci-cd-templates) builds and pushes a vX.Y.Z-rc.N image.",
+    "[3] Image Updater sees the new tag and commits it to app-configs.",
+    "[4] Argo CD pulls app-configs, generic-app-chart and infra, renders the app and applies it.",
+    "Stacked boxes: one repo per app or per tool, same shape."
+   ],
+   "X": 1760,
+   "Y": 2040,
+   "W": 640,
+   "H": 320
+  },
+  {
+   "ID": "card-gaps",
+   "Title": "Gaps between docs and code",
+   "Color": "orange",
+   "Legend": false,
+   "Lines": [
+    "!!G1!! **Apps.** flight-tracking has a repo but no Argo CD Application. app-sandbox exists but is not in the docs tree.",
+    "!!G2!! **Products.** clock-service, actors-simulator and platform-sdk repos exist. Nothing from them is deployed.",
+    "**Docs tree** (gitlab-structure.md) misses app-configs, bi/, urbaniste/ and the members role group."
+   ],
+   "X": 2420,
+   "Y": 2040,
+   "W": 540,
+   "H": 320
+  }
+ ],
+ "Arrows": null,
+ "Offerings": null,
+ "Matrix": null,
+ "Diff": false,
+ "Highlight": false
+}

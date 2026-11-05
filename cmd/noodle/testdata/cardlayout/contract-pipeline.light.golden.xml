@@ -1,0 +1,78 @@
+        <mxCell id="header-dot" value="" style="ellipse;fillColor=#059669;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="44" width="12" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="header-title" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;Noodle · Phase 1 · Contract pipeline&lt;/b&gt;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=24;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="64" y="30" width="2700" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="header-sub" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#1e293b&quot; style=&quot;font-size:13px&quot;&gt;How does a system directory become a diagram, and which file holds which fact?&lt;/font&gt;&lt;br&gt;Scope: noodle CLI after phase 1, per ADR-0007 and specs/001 plan.md · arrows are data handoffs in process order, not network connections&lt;br&gt;Out of scope: SVG renderer (phase 2), MCP server (2b), web viewer (3), auto-layout (6)&lt;br&gt;v0.1 · source: docs/diagrams/contract-pipeline&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#475569;" vertex="1" parent="1">
+          <mxGeometry x="64" y="74" width="2700" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="card-legend" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#64748b&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#0f172a&quot; style=&quot;font-size:13px&quot;&gt;Legend&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#e2e8f0;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="40" y="760" width="640" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-frontend" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#ecfeff;strokeColor=#0891b2;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="816" width="22" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-frontend-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;client / frontend&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="92" y="812" width="260" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-backend" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#ecfdf5;strokeColor=#059669;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="842" width="22" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-backend-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;service / routing&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="92" y="838" width="260" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-database" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#f5f3ff;strokeColor=#7c3aed;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="868" width="22" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-database-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;data / secrets&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="92" y="864" width="260" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-security" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#fff1f2;strokeColor=#e11d48;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="894" width="22" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-security-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;security / identity&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="92" y="890" width="260" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-external" value="" style="rounded=1;absoluteArcSize=1;arcSize=6;fillColor=#f1f5f9;strokeColor=#64748b;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="920" width="22" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-node-external-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;external / out of scope&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="92" y="916" width="260" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-steps" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;span style=&quot;background-color:#0f172a;color:#ffffff;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;1&lt;/span&gt; request step · &lt;span style=&quot;border:1px solid #0f172a;color:#0f172a;border-radius:3px;padding:0px 3px;font-weight:bold;&quot;&gt;A&lt;/span&gt; background step&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="60" y="950" width="300" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-port" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;TCP 80&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=6;html=1;fillColor=#059669;strokeColor=none;align=center;verticalAlign=middle;fontStyle=1;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=9;fontColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="60" y="979" width="40.4" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-port-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;listening port on the server&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="112" y="976" width="250" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-edge-flow" value="" style="edgeStyle=none;html=1;strokeColor=#64748b;strokeWidth=1.5;endArrow=blockThin;endFill=1;endSize=6;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="370" y="823" as="sourcePoint" />
+            <mxPoint x="410" y="823" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-edge-flow-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;connection, client → server&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="422" y="812" width="248" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-edge-link" value="" style="edgeStyle=none;html=1;strokeColor=#94a3b8;strokeWidth=1.2;endArrow=open;endFill=0;endSize=6;dashed=1;dashPattern=2 3;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="370" y="849" as="sourcePoint" />
+            <mxPoint x="410" y="849" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend-edge-link-text" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;object reference, not traffic&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="422" y="838" width="248" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="card-legend-notes" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;Large dashed frame: infra perimeter · small: functional group&lt;br&gt;&lt;font color=&quot;#c2410c&quot;&gt;&lt;b&gt;⚠ Gx&lt;/b&gt;&lt;/font&gt;: docs and code disagree, see &quot;Gaps&quot;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=10.5;fontColor=#475569;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1010" width="600" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="card-files" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#ea580c&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#0f172a&quot; style=&quot;font-size:13px&quot;&gt;Which file holds which fact&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;div style=&quot;line-height:1.6&quot;&gt;• &lt;b&gt;&lt;font color=&quot;#0f172a&quot;&gt;model.yaml&lt;/font&gt;&lt;/b&gt; · elements and zones, connections (flow, auth, tunnel, async, denied), references, gaps, status, multiplicity&lt;br&gt;• &lt;b&gt;&lt;font color=&quot;#0f172a&quot;&gt;views/&amp;lt;id&amp;gt;.yaml&lt;/font&gt;&lt;/b&gt; · include, steps &lt;span style=&quot;background-color:#0f172a;color:#ffffff;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;1&lt;/span&gt; and &lt;span style=&quot;border:1px solid #0f172a;color:#0f172a;border-radius:3px;padding:0px 3px;font-weight:bold;&quot;&gt;A&lt;/span&gt;, label overrides, cards, notes, participants (sequence)&lt;br&gt;• &lt;b&gt;&lt;font color=&quot;#0f172a&quot;&gt;layouts/&amp;lt;view-id&amp;gt;.yaml&lt;/font&gt;&lt;/b&gt; · canvas, positions relative to the parent zone, endpoints id.side@ratio, named lanes&lt;br&gt;• A view&amp;#39;s model is the model.yaml of its directory. Every id a view or layout uses must exist there.&lt;br&gt;• A reviewer reads model.yaml and views/; layouts/ churns without hiding facts.&lt;/div&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#e2e8f0;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="720" y="760" width="1160" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="card-steps" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#0891b2&quot;&gt;●&lt;/font&gt;&amp;nbsp;&lt;b&gt;&lt;font color=&quot;#0f172a&quot; style=&quot;font-size:13px&quot;&gt;Pipeline · one render&lt;/font&gt;&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;div style=&quot;line-height:1.6&quot;&gt;&lt;span style=&quot;background-color:#0f172a;color:#ffffff;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;1&lt;/span&gt; The loader parses the three files strictly and checks every id reference; JSON Schemas validate the same files in go test.&lt;br&gt;&lt;span style=&quot;background-color:#0f172a;color:#ffffff;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;2&lt;/span&gt; The resolver gets the model, the view and its layout.&lt;br&gt;&lt;span style=&quot;background-color:#0f172a;color:#ffffff;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;3&lt;/span&gt; It emits absolute geometry: points, labels &amp;#39;[n] verb · protocol&amp;#39;, gap badges.&lt;br&gt;&lt;span style=&quot;background-color:#0f172a;color:#ffffff;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;4&lt;/span&gt; The v0 geometry rules check it, with the same messages.&lt;br&gt;&lt;span style=&quot;background-color:#0f172a;color:#ffffff;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;5&lt;/span&gt; Only a clean diagram reaches the renderer.&lt;br&gt;&lt;span style=&quot;background-color:#0f172a;color:#ffffff;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;6&lt;/span&gt; One draw.io file per theme, &lt;span style=&quot;background-color:#0f172a;color:#ffffff;border-radius:3px;padding:0px 4px;font-weight:bold;&quot;&gt;7&lt;/span&gt; exported to PNG.&lt;/div&gt;&lt;/span&gt;" style="rounded=1;absoluteArcSize=1;arcSize=16;html=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#e2e8f0;align=left;verticalAlign=top;spacingLeft=20;spacingTop=14;spacingRight=16;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#1e293b;" vertex="1" parent="1">
+          <mxGeometry x="1920" y="760" width="1140" height="300" as="geometry" />
+        </mxCell>

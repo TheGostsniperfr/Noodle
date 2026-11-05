@@ -8,6 +8,10 @@ meta:
   - "The Keycloak login form is collapsed into one note. After the last step the user follows the nominal path of the runtime view."
   - "v0.1 · source: examples/cnp-runtime/views/oidc-login.yaml"
 
+hidden_annotations:
+  G1: "tenant isolation is not part of the login path, see the runtime view"
+  G2: "the SecurityPolicy is applied by Envoy after the login, see the runtime view"
+
 participants: [user, cf-edge, cloudflared-app, cloudflared-platform, envoy-shared-gateway, keycloak]
 
 steps:

@@ -2,7 +2,8 @@ package lint
 
 import "github.com/TheGostsniperfr/Noodle/internal/house"
 
-// checkNodeText: every line of a box fits its width, and the box is tall enough.
+// checkNodeText: every line of a box fits its width with a margin for the export font,
+// and the box is tall enough.
 func checkNodeText(l *linter) {
 	for _, n := range l.s.Nodes {
 		if n.Shape == "actor" {
@@ -19,12 +20,12 @@ func checkNodeText(l *linter) {
 		if n.Badge != "" {
 			title += " ⚠ " + n.Badge
 		}
-		if w := house.TextWidth(title, house.TitleFontSize); w > avail {
-			l.errf(n.ID, "title overflows: %.0fpx text in %.0fpx", w, avail)
+		if w := house.ExportTextWidth(title, house.TitleFontSize); !house.FitsWithMargin(w, avail, house.TitleFontSize) {
+			l.errf(n.ID, "title overflows: %.0fpx text + %.0fpx margin in %.0fpx", w, house.TextMargin(avail, house.TitleFontSize), avail)
 		}
 		for _, line := range n.Lines() {
-			if w := house.TextWidth(house.PlainText(line), house.SubFontSize); w > avail {
-				l.errf(n.ID, "%q overflows: %.0fpx text in %.0fpx", line, w, avail)
+			if w := house.ExportTextWidth(house.PlainText(line), house.SubFontSize); !house.FitsWithMargin(w, avail, house.SubFontSize) {
+				l.errf(n.ID, "%q overflows: %.0fpx text + %.0fpx margin in %.0fpx", line, w, house.TextMargin(avail, house.SubFontSize), avail)
 			}
 		}
 		need := 10 + house.TitleFontSize*house.LineHeightEm + float64(len(n.Lines()))*house.SubFontSize*house.LineHeightEm + 10

@@ -1,0 +1,37 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: landscape
+title: "agent-playbook · Skill layers · What builds the skills an agent reads"
+subtitle: "Three layers, applied in order by one resolver, rendered into plain files that are reviewed as a diff."
+meta:
+  - "Scope: skills and harness. Out of scope: per-tool install (Nix, install.sh)."
+  - "v0.1 · source: docs/architecture/system"
+bands:
+  - id: build
+    title: Build
+    sub: base, then org, then project; the render is the truth
+    color: emerald
+    flow: true
+    sections:
+      - {title: "1 · Personal base", items: [base]}
+      - {title: "2 · Org layer", items: [org]}
+      - {title: "3 · Project layer", items: [project]}
+      - {title: Resolve, items: [resolver]}
+      - {title: Render, items: [rendered]}
+  - id: run
+    title: Run
+    sub: what uses the rendered skills
+    color: violet
+    sections:
+      - {title: Agents, items: [agent]}
+      - {title: Checks, items: [review, guards]}
+  - id: state
+    title: State
+    sub: where a fresh chat resumes
+    color: sky
+    sections:
+      - {title: Live state, items: [ops]}
+      - {title: Owner queue, items: [stack]}
+      - {title: Code, items: [github]}
+side:
+  - {title: Upkeep, color: orange, items: [automations]}

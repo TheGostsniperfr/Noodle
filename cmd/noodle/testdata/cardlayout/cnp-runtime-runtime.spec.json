@@ -1,0 +1,1061 @@
+{
+ "ID": "runtime",
+ "Type": "",
+ "Title": "CNP · Runtime · Request path \u0026 tenant isolation",
+ "Subtitle": "How a user request reaches a tenant app, where it is authenticated, and what keeps tenants apart.",
+ "Meta": [
+  "Scope: on-prem K3s cluster · main as of 2026-09-26 · derived from code (infra-templates, K3s, CMP templates)",
+  "Out of scope: AWS/GCP clusters · observability · deployment pipeline · admin SSH access",
+  "v0.4 · source: architecture/specs/runtime-request-path.yaml"
+ ],
+ "Width": 2340,
+ "Height": 1800,
+ "Zones": [
+  {
+   "ID": "z-internet",
+   "Kind": "region",
+   "Label": "INTERNET",
+   "Sub": "",
+   "Color": "slate",
+   "Icon": "globe",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 40,
+   "Y": 200,
+   "W": 220,
+   "H": 760
+  },
+  {
+   "ID": "z-cloudflare",
+   "Kind": "region",
+   "Label": "CLOUDFLARE",
+   "Sub": "SaaS",
+   "Color": "orange",
+   "Icon": "cloudflare",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 320,
+   "Y": 200,
+   "W": 320,
+   "H": 760
+  },
+  {
+   "ID": "z-cluster",
+   "Kind": "region",
+   "Label": "K3S CLUSTER · ON-PREM",
+   "Sub": "OpenStack pae · Cilium 1.20",
+   "Color": "cyan",
+   "Icon": "rack",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 720,
+   "Y": 200,
+   "W": 1580,
+   "H": 1080
+  },
+  {
+   "ID": "g-connectivity",
+   "Kind": "group",
+   "Label": "CONNECTIVITY",
+   "Sub": "ns cloudflared",
+   "Color": "amber",
+   "Icon": "cloudflare",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 760,
+   "Y": 260,
+   "W": 280,
+   "H": 170
+  },
+  {
+   "ID": "g-gateway",
+   "Kind": "group",
+   "Label": "GATEWAY API",
+   "Sub": "Envoy Gateway",
+   "Color": "emerald",
+   "Icon": "envoy-gateway",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 1120,
+   "Y": 260,
+   "W": 400,
+   "H": 320
+  },
+  {
+   "ID": "g-identity",
+   "Kind": "group",
+   "Label": "IDENTITY",
+   "Sub": "ns keycloak",
+   "Color": "rose",
+   "Icon": "keycloak",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 1600,
+   "Y": 360,
+   "W": 320,
+   "H": 220
+  },
+  {
+   "ID": "g-secrets",
+   "Kind": "group",
+   "Label": "SECRETS",
+   "Sub": "ns vault · vso",
+   "Color": "violet",
+   "Icon": "vault",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 2000,
+   "Y": 260,
+   "W": 280,
+   "H": 320
+  },
+  {
+   "ID": "g-tenant-a",
+   "Kind": "group",
+   "Label": "TENANT \u003cproject\u003e-\u003capp\u003e",
+   "Sub": "1 namespace / app",
+   "Color": "indigo",
+   "Icon": "k8s-ns",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 760,
+   "Y": 660,
+   "W": 1520,
+   "H": 420
+  },
+  {
+   "ID": "g-tenant-b",
+   "Kind": "group",
+   "Label": "OTHER TENANT",
+   "Sub": "",
+   "Color": "slate",
+   "Icon": "k8s-ns",
+   "Status": "",
+   "Target": "",
+   "Change": "",
+   "X": 760,
+   "Y": 1150,
+   "W": 1520,
+   "H": 110
+  }
+ ],
+ "Nodes": [
+  {
+   "ID": "user",
+   "Kind": "frontend",
+   "Shape": "actor",
+   "Icon": "user",
+   "Title": "User",
+   "Tech": "",
+   "Desc": "web browser",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 100,
+   "Y": 452,
+   "W": 56,
+   "H": 56
+  },
+  {
+   "ID": "cf-edge",
+   "Kind": "cloud",
+   "Shape": "",
+   "Icon": "cloudflare",
+   "Title": "Cloudflare Edge",
+   "Tech": "[SaaS reverse proxy]",
+   "Desc": "TLS ends here, routes to tunnels",
+   "Badge": "G3",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 350,
+   "Y": 420,
+   "W": 260,
+   "H": 120
+  },
+  {
+   "ID": "cloudflared-platform",
+   "Kind": "cloud",
+   "Shape": "",
+   "Icon": "cloudflare",
+   "Title": "cloudflared",
+   "Tech": "[Deployment · ns cloudflared]",
+   "Desc": "Platform tunnel connector",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 790,
+   "Y": 320,
+   "W": 240,
+   "H": 80
+  },
+  {
+   "ID": "client-traffic-policy",
+   "Kind": "security",
+   "Shape": "",
+   "Icon": "k8s-crd",
+   "Title": "ClientTrafficPolicy",
+   "Tech": "[Envoy Gateway CRD]",
+   "Desc": "Trusts 1 proxy hop (XFF)",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1160,
+   "Y": 310,
+   "W": 320,
+   "H": 72
+  },
+  {
+   "ID": "envoy-shared-gateway",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "envoy",
+   "Title": "Envoy proxy",
+   "Tech": "[Gateway API · shared-gateway]",
+   "Desc": "Routes *.3istor.com, runs OIDC",
+   "Badge": "G4 G6",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1160,
+   "Y": 420,
+   "W": 320,
+   "H": 120
+  },
+  {
+   "ID": "keycloak",
+   "Kind": "security",
+   "Shape": "",
+   "Icon": "keycloak",
+   "Title": "Keycloak",
+   "Tech": "[OIDC IdP · realm 3istor]",
+   "Desc": "Login + token endpoint",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1640,
+   "Y": 420,
+   "W": 250,
+   "H": 100
+  },
+  {
+   "ID": "vso",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "vault",
+   "Title": "Vault Secrets Operator",
+   "Tech": "[K8s operator]",
+   "Desc": "Syncs Vault → Secrets",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2030,
+   "Y": 310,
+   "W": 220,
+   "H": 80
+  },
+  {
+   "ID": "vault",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "vault",
+   "Title": "Vault",
+   "Tech": "[KV v2 · tls_disable]",
+   "Desc": "kvv2/projects/\u003cp\u003e/\u003ca\u003e",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 2030,
+   "Y": 460,
+   "W": 220,
+   "H": 80
+  },
+  {
+   "ID": "cloudflared-app",
+   "Kind": "cloud",
+   "Shape": "",
+   "Icon": "cloudflare",
+   "Title": "cloudflared",
+   "Tech": "[Deployment · per release]",
+   "Desc": "App tunnel connector",
+   "Badge": "G5",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 790,
+   "Y": 740,
+   "W": 230,
+   "H": 80
+  },
+  {
+   "ID": "httproute",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-crd",
+   "Title": "HTTPRoute",
+   "Tech": "[Gateway API route]",
+   "Desc": "\u003capp\u003e-\u003cproject\u003e.3istor.com",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1160,
+   "Y": 740,
+   "W": 240,
+   "H": 80
+  },
+  {
+   "ID": "app-service",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-svc",
+   "Title": "Service",
+   "Tech": "[ClusterIP]",
+   "Desc": "Stable VIP for the app",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1480,
+   "Y": 740,
+   "W": 220,
+   "H": 80
+  },
+  {
+   "ID": "app-pods",
+   "Kind": "backend",
+   "Shape": "",
+   "Icon": "k8s-deploy",
+   "Title": "App pods",
+   "Tech": "[Deployment · generic chart]",
+   "Desc": "Tenant workload",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1800,
+   "Y": 740,
+   "W": 240,
+   "H": 80
+  },
+  {
+   "ID": "security-policy",
+   "Kind": "security",
+   "Shape": "",
+   "Icon": "k8s-crd",
+   "Title": "SecurityPolicy",
+   "Tech": "[Envoy Gateway CRD]",
+   "Desc": "OIDC login, no authz rule",
+   "Badge": "G2",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1160,
+   "Y": 920,
+   "W": 240,
+   "H": 90
+  },
+  {
+   "ID": "app-secret",
+   "Kind": "database",
+   "Shape": "",
+   "Icon": "k8s-secret",
+   "Title": "Secret",
+   "Tech": "[Secret \u003capp\u003e-secrets]",
+   "Desc": "Written by VSO",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1480,
+   "Y": 920,
+   "W": 220,
+   "H": 80
+  },
+  {
+   "ID": "cnpg",
+   "Kind": "database",
+   "Shape": "cylinder",
+   "Icon": "cnpg",
+   "Title": "CloudNativePG",
+   "Tech": "[PostgreSQL cluster]",
+   "Desc": "1 instance · no backup",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1800,
+   "Y": 920,
+   "W": 240,
+   "H": 100
+  },
+  {
+   "ID": "tenant-b-pods",
+   "Kind": "external",
+   "Shape": "",
+   "Icon": "k8s-pod",
+   "Title": "Other tenant pods",
+   "Tech": "[any other project]",
+   "Desc": "Must stay unreachable",
+   "Badge": "",
+   "Status": "",
+   "Target": "",
+   "Multiplicity": "",
+   "Change": "",
+   "X": 1160,
+   "Y": 1180,
+   "W": 300,
+   "H": 64
+  }
+ ],
+ "Edges": [
+  {
+   "ID": "e-1-browser-edge",
+   "From": "user",
+   "To": "cf-edge",
+   "Kind": "flow",
+   "Label": "[1] GET app · HTTPS",
+   "Port": "TCP 443",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     156,
+     480
+    ],
+    [
+     350,
+     480
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-2-tunnel-app",
+   "From": "cloudflared-app",
+   "To": "cf-edge",
+   "Kind": "tunnel",
+   "Label": "[2] relayed via tunnel ◀\u003cbr\u003eopened outbound · QUIC",
+   "Port": "UDP 7844",
+   "AgainstFlow": true,
+   "Path": [
+    [
+     790,
+     780
+    ],
+    [
+     680,
+     780
+    ],
+    [
+     680,
+     530
+    ],
+    [
+     610,
+     530
+    ]
+   ],
+   "LabelAt": [
+    680,
+    655
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-3-connector-envoy",
+   "From": "cloudflared-app",
+   "To": "envoy-shared-gateway",
+   "Kind": "flow",
+   "Label": "[3] forward · HTTP",
+   "Port": "TCP 80",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1020,
+     780
+    ],
+    [
+     1100,
+     780
+    ],
+    [
+     1100,
+     525
+    ],
+    [
+     1160,
+     525
+    ]
+   ],
+   "LabelAt": [
+    1100,
+    650
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-4-envoy-service",
+   "From": "envoy-shared-gateway",
+   "To": "app-service",
+   "Kind": "flow",
+   "Label": "[4] proxy · HTTP",
+   "Port": "TCP 8000",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1440,
+     540
+    ],
+    [
+     1440,
+     700
+    ],
+    [
+     1590,
+     700
+    ],
+    [
+     1590,
+     740
+    ]
+   ],
+   "LabelAt": [
+    1515,
+    700
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-5-service-pods",
+   "From": "app-service",
+   "To": "app-pods",
+   "Kind": "flow",
+   "Label": "[5] DNAT",
+   "Port": "TCP 8080",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1700,
+     790
+    ],
+    [
+     1800,
+     790
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-6-pods-db",
+   "From": "app-pods",
+   "To": "cnpg",
+   "Kind": "flow",
+   "Label": "[6] query · SQL",
+   "Port": "TCP 5432",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1920,
+     820
+    ],
+    [
+     1920,
+     920
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-oidc-platform-tunnel",
+   "From": "cloudflared-platform",
+   "To": "cf-edge",
+   "Kind": "tunnel",
+   "Label": "platform tunnel\u003cbr\u003eopened outbound · QUIC",
+   "Port": "UDP 7844",
+   "AgainstFlow": true,
+   "Path": [
+    [
+     790,
+     360
+    ],
+    [
+     700,
+     360
+    ],
+    [
+     700,
+     440
+    ],
+    [
+     610,
+     440
+    ]
+   ],
+   "LabelAt": [
+    700,
+    400
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-oidc-platform-envoy",
+   "From": "cloudflared-platform",
+   "To": "envoy-shared-gateway",
+   "Kind": "auth",
+   "Label": "auth.3istor.com · HTTP",
+   "Port": "TCP 80",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1030,
+     360
+    ],
+    [
+     1100,
+     360
+    ],
+    [
+     1100,
+     472
+    ],
+    [
+     1160,
+     472
+    ]
+   ],
+   "LabelAt": [
+    1100,
+    405
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-oidc-envoy-keycloak",
+   "From": "envoy-shared-gateway",
+   "To": "keycloak",
+   "Kind": "auth",
+   "Label": "OIDC · HTTP",
+   "Port": "TCP 80",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1480,
+     480
+    ],
+    [
+     1640,
+     480
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-oidc-token-hairpin",
+   "From": "envoy-shared-gateway",
+   "To": "cf-edge",
+   "Kind": "auth",
+   "Label": "OIDC token call · HTTPS · !!⚠ G6!!",
+   "Port": "TCP 443",
+   "AgainstFlow": true,
+   "Path": [
+    [
+     1160,
+     495
+    ],
+    [
+     610,
+     495
+    ]
+   ],
+   "LabelAt": [
+    900,
+    495
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-a-vso-vault",
+   "From": "vso",
+   "To": "vault",
+   "Kind": "async",
+   "Label": "[A] read · HTTP",
+   "Port": "TCP 8200",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2140,
+     390
+    ],
+    [
+     2140,
+     460
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "e-b-vso-secret",
+   "From": "vso",
+   "To": "app-secret",
+   "Kind": "async",
+   "Label": "[B] write Secret · K8s API",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     2250,
+     350
+    ],
+    [
+     2265,
+     350
+    ],
+    [
+     2265,
+     880
+    ],
+    [
+     1590,
+     880
+    ],
+    [
+     1590,
+     920
+    ]
+   ],
+   "LabelAt": [
+    2150,
+    880
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "x-cross-tenant",
+   "From": "g-tenant-a",
+   "To": "g-tenant-b",
+   "Kind": "blocked",
+   "Label": "cross-tenant traffic: no Cilium policy in code · !!⚠ G1!!",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     840,
+     1080
+    ],
+    [
+     840,
+     1150
+    ]
+   ],
+   "LabelAt": [
+    840,
+    1115
+   ],
+   "LabelOffset": [
+    178,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-ctp-gateway",
+   "From": "client-traffic-policy",
+   "To": "envoy-shared-gateway",
+   "Kind": "link",
+   "Label": "targetRef",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1320,
+     382
+    ],
+    [
+     1320,
+     420
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-route-gateway",
+   "From": "httproute",
+   "To": "envoy-shared-gateway",
+   "Kind": "link",
+   "Label": "parentRef",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1280,
+     740
+    ],
+    [
+     1280,
+     540
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-policy-route",
+   "From": "security-policy",
+   "To": "httproute",
+   "Kind": "link",
+   "Label": "targetRef",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1280,
+     920
+    ],
+    [
+     1280,
+     820
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-policy-secret",
+   "From": "security-policy",
+   "To": "app-secret",
+   "Kind": "link",
+   "Label": "clientSecret",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1400,
+     960
+    ],
+    [
+     1480,
+     960
+    ]
+   ],
+   "LabelAt": null,
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  },
+  {
+   "ID": "r-pods-secret",
+   "From": "app-pods",
+   "To": "app-secret",
+   "Kind": "link",
+   "Label": "envFrom",
+   "Port": "",
+   "AgainstFlow": false,
+   "Path": [
+    [
+     1800,
+     812
+    ],
+    [
+     1760,
+     812
+    ],
+    [
+     1760,
+     960
+    ],
+    [
+     1700,
+     960
+    ]
+   ],
+   "LabelAt": [
+    1730,
+    960
+   ],
+   "LabelOffset": [
+    0,
+    0
+   ],
+   "Change": ""
+  }
+ ],
+ "Notes": [
+  {
+   "ID": "n-302",
+   "Text": "Without a session, Envoy replies **302** to auth.3istor.com at [3]. The login that follows is in the OIDC sequence diagram.",
+   "X": 52,
+   "Y": 590,
+   "W": 196,
+   "H": 90
+  }
+ ],
+ "Cards": [
+  {
+   "ID": "card-legend",
+   "Title": "Legend",
+   "Color": "slate",
+   "Legend": true,
+   "Lines": null,
+   "X": 40,
+   "Y": 1340,
+   "W": 540,
+   "H": 420
+  },
+  {
+   "ID": "card-data-plane",
+   "Title": "Request path · data plane",
+   "Color": "cyan",
+   "Legend": false,
+   "Lines": [
+    "Nominal path of a user who already has a session.",
+    "[1] Browser sends GET https://\u003capp\u003e-\u003cproject\u003e.3istor.com. Cloudflare terminates TLS.",
+    "[2] The edge relays the request back through the app tunnel, which cloudflared opened outbound at startup. No inbound port on-prem.",
+    "[3] cloudflared forwards it to Envoy over plain HTTP. Envoy matches the HTTPRoute and checks the OIDC session cookie.",
+    "[4] Envoy proxies to the Service.",
+    "[5] Cilium DNATs the Service VIP to an app pod.",
+    "[6] The app queries its CloudNativePG cluster.",
+    "Pink connections carry the OIDC login. Their order is in the OIDC sequence diagram."
+   ],
+   "X": 610,
+   "Y": 1340,
+   "W": 620,
+   "H": 420
+  },
+  {
+   "ID": "card-control-plane",
+   "Title": "Background · control plane",
+   "Color": "violet",
+   "Legend": false,
+   "Lines": [
+    "[A] VSO logs in with a namespace-bound role and reads kvv2.",
+    "[B] VSO writes the K8s Secret through the API server.",
+    "Both cloudflared connectors open their tunnels outbound at startup.",
+    "Dotted lines are object references (parentRef, targetRef, envFrom, clientSecret), not traffic."
+   ],
+   "X": 1260,
+   "Y": 1340,
+   "W": 460,
+   "H": 420
+  },
+  {
+   "ID": "card-gaps",
+   "Title": "Gaps between docs and code",
+   "Color": "orange",
+   "Legend": false,
+   "Lines": [
+    "!!G1!! **Network isolation.** Docs describe a default-deny CCNP per project. None in code: Cilium runs without tenant policy.",
+    "!!G2!! **Authorization.** No groups-claim check: any account in realm 3istor opens any SSO app.",
+    "!!G3!! **Transport.** TLS ends at Cloudflare. In-cluster hops are plain HTTP, Vault included (tls_disable).",
+    "!!G4!! **Coupling.** Tunnels target Envoy's hashed Service (ac1e5388). Blocks AWS/GCP. Covered by D-05.",
+    "!!G5!! **Tunnels.** One per app, cloudflared on :latest. D-06 moves to one per project.",
+    "!!G6!! **Token call.** The template expects a cluster-local path to auth.3istor.com. None found in code: likely hairpins via Cloudflare. To verify."
+   ],
+   "X": 1750,
+   "Y": 1340,
+   "W": 550,
+   "H": 420
+  }
+ ],
+ "Arrows": null,
+ "Offerings": null,
+ "Matrix": null,
+ "Diff": false,
+ "Highlight": false
+}

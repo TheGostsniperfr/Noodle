@@ -1,0 +1,189 @@
+{
+ "ID": "synthetic-highlight",
+ "Title": "All legend kinds",
+ "Subtitle": "every row of the legend",
+ "Meta": [
+  "a meta line with **bold** and !!warn!!",
+  "second line"
+ ],
+ "Width": 1600,
+ "Height": 900,
+ "Zones": [
+  {
+   "ID": "z",
+   "Kind": "region",
+   "Label": "zone",
+   "Status": "planned"
+  }
+ ],
+ "Nodes": [
+  {
+   "ID": "n-frontend",
+   "Kind": "frontend",
+   "Title": "frontend",
+   "X": 40,
+   "Y": 300,
+   "W": 100,
+   "H": 60,
+   "Status": "planned",
+   "Multiplicity": "",
+   "Shape": ""
+  },
+  {
+   "ID": "n-backend",
+   "Kind": "backend",
+   "Title": "backend",
+   "X": 50,
+   "Y": 300,
+   "W": 100,
+   "H": 60,
+   "Status": "deprecated",
+   "Multiplicity": "",
+   "Shape": ""
+  },
+  {
+   "ID": "n-database",
+   "Kind": "database",
+   "Title": "database",
+   "X": 60,
+   "Y": 300,
+   "W": 100,
+   "H": 60,
+   "Status": "",
+   "Multiplicity": "3 replicas",
+   "Shape": ""
+  },
+  {
+   "ID": "n-cloud",
+   "Kind": "cloud",
+   "Title": "cloud",
+   "X": 70,
+   "Y": 300,
+   "W": 100,
+   "H": 60,
+   "Status": "",
+   "Multiplicity": "per tenant",
+   "Shape": ""
+  },
+  {
+   "ID": "n-security",
+   "Kind": "security",
+   "Title": "security",
+   "X": 80,
+   "Y": 300,
+   "W": 100,
+   "H": 60,
+   "Status": "",
+   "Multiplicity": "",
+   "Shape": ""
+  },
+  {
+   "ID": "n-bus",
+   "Kind": "bus",
+   "Title": "bus",
+   "X": 90,
+   "Y": 300,
+   "W": 100,
+   "H": 60,
+   "Status": "",
+   "Multiplicity": "",
+   "Shape": "pipe"
+  },
+  {
+   "ID": "n-external",
+   "Kind": "external",
+   "Title": "external",
+   "X": 100,
+   "Y": 300,
+   "W": 100,
+   "H": 60,
+   "Status": "",
+   "Multiplicity": "",
+   "Shape": ""
+  },
+  {
+   "ID": "n-tool",
+   "Kind": "tool",
+   "Title": "tool",
+   "X": 110,
+   "Y": 300,
+   "W": 100,
+   "H": 60,
+   "Status": "",
+   "Multiplicity": "",
+   "Shape": ""
+  }
+ ],
+ "Edges": [
+  {
+   "ID": "e-flow",
+   "Kind": "flow",
+   "From": "n-frontend",
+   "To": "n-backend"
+  },
+  {
+   "ID": "e-auth",
+   "Kind": "auth",
+   "From": "n-frontend",
+   "To": "n-backend"
+  },
+  {
+   "ID": "e-tunnel",
+   "Kind": "tunnel",
+   "From": "n-frontend",
+   "To": "n-backend"
+  },
+  {
+   "ID": "e-async",
+   "Kind": "async",
+   "From": "n-frontend",
+   "To": "n-backend"
+  },
+  {
+   "ID": "e-route",
+   "Kind": "route",
+   "From": "n-frontend",
+   "To": "n-backend"
+  },
+  {
+   "ID": "e-blocked",
+   "Kind": "blocked",
+   "From": "n-frontend",
+   "To": "n-backend"
+  },
+  {
+   "ID": "e-link",
+   "Kind": "link",
+   "From": "n-frontend",
+   "To": "n-backend"
+  }
+ ],
+ "Cards": [
+  {
+   "ID": "card-legend",
+   "Title": "Legend & <keys>",
+   "Color": "slate",
+   "Legend": true,
+   "X": 40,
+   "Y": 400,
+   "W": 640,
+   "H": 420
+  },
+  {
+   "ID": "card-gaps",
+   "Title": "Gaps",
+   "Color": "rose",
+   "Lines": [
+    "!!⚠ G1!! first gap",
+    "[1] a step line",
+    "plain & escaped <line>",
+    "**bold** item"
+   ],
+   "X": 720,
+   "Y": 400,
+   "W": 420,
+   "H": 200
+  }
+ ],
+ "Highlight": true
+}

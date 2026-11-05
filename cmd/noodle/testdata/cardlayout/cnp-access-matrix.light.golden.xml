@@ -1,0 +1,9 @@
+        <mxCell id="header-dot" value="" style="ellipse;fillColor=#059669;strokeColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="44" width="12" height="12" as="geometry" />
+        </mxCell>
+        <mxCell id="header-title" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;b&gt;CNP · Access matrix · what the segregation plan changes&lt;/b&gt;&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=middle;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=24;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="64" y="30" width="2006" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="header-sub" value="&lt;span style=&quot;font-variant-ligatures:none&quot;&gt;&lt;font color=&quot;#1e293b&quot; style=&quot;font-size:13px&quot;&gt;One row per identity, one column per resource by access plane. A cell shows the level after the plan, and what the plan changed to get there.&lt;/font&gt;&lt;br&gt;Read a row: everything an identity can do. Read a column: who can touch a resource. A workload column touched by another project&amp;#39;s identity is a leak.&lt;br&gt;Source: cnp-docs architecture/cnp. Not verified: the policy of the CMP&amp;#39;s Vault token (drawn as the root token, the worst case) and the scope of its Cloudflare token (G15, G16). Plan phases: P1 root accounts, P2 CMP rights, P3 tenant isolation, P4 cloud accounts.&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontFamily=JetBrains Mono,Noto Sans Mono,DejaVu Sans Mono,monospace;fontSize=11;fontColor=#475569;" vertex="1" parent="1">
+          <mxGeometry x="64" y="74" width="2006" height="80" as="geometry" />
+        </mxCell>

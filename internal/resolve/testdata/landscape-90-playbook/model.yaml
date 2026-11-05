@@ -1,0 +1,25 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+
+# The agent-playbook system: who works, where the state lives, how skills are built.
+
+elements:
+  - {id: owner, kind: external, icon: user, shape: actor, title: "Owner", desc: "Decides; validates chantiers"}
+  - {id: agent, kind: backend, icon: python, title: "Agents", tech: "[Claude Code · Codex · OpenCode]", desc: "Propose, spec, build, review, merge approved work"}
+  - {id: stack, kind: frontend, icon: react, title: "Review stack", tech: "[artifact + db]", desc: "Queue of chantiers and decisions"}
+  - {id: github, kind: external, icon: globe, title: "GitHub", tech: "[repos · PRs · issues]", desc: "Code, PRs, CI with deterministic guards"}
+  - {id: ops, kind: database, shape: cylinder, icon: rack, title: "Ops repo", tech: "[private · STATE.md]", desc: "Live project state for a fresh chat"}
+  - {id: base, kind: tool, icon: python, title: "Personal base", tech: "[agent-playbook/skills]", desc: "Generic skills, runbook"}
+  - {id: org, kind: tool, icon: python, title: "Org layer", tech: "[harness repo overlay]", desc: "Org rules, stack skills, hooks"}
+  - {id: project, kind: tool, icon: python, title: "Project layer", tech: "[.agents/overlay.yaml]", desc: "Repo pins and patches"}
+  - {id: resolver, kind: tool, icon: python, title: "agentskills", tech: "[resolver]", desc: "Applies layers, lockfile, preview"}
+  - {id: rendered, kind: tool, icon: docker, title: "Rendered skills", tech: "[.claude · .agents · .opencode]", desc: "Exactly what agents read"}
+  - {id: guards, kind: security, icon: sonarqube, title: "Deterministic guards", tech: "[static + dynamic analysis]", desc: "PHPStan, ESLint, ArchUnit, Semgrep, gitleaks..."}
+  - {id: review, kind: security, icon: kyverno, title: "End-of-task review", tech: "[finders + verifiers]", desc: "Independent in-session review"}
+  - {id: automations, kind: tool, icon: renovate, title: "Automations", tech: "[weekly · monthly]", desc: "Skipped when nothing changed"}
+
+connections:
+  - {id: c-agent-stack, from: agent, to: stack, protocol: db, verb: write card, kind: flow}
+  - {id: c-owner-stack, from: owner, to: stack, protocol: HTTPS, verb: answer, kind: flow}
+  - {id: c-agent-github, from: agent, to: github, protocol: git · REST, verb: push · open PR, kind: flow}
+  - {id: c-agent-ops, from: agent, to: ops, protocol: git, verb: write state, kind: flow}

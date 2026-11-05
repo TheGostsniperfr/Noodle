@@ -1,0 +1,15 @@
+apiVersion: noodle/v1alpha1
+kind: Model
+
+# Regression fixture for issue #78: a connection whose label is emptied still carries
+# its annotation badge, and the badge must not render a leading separator.
+
+elements:
+  - {id: client, kind: frontend, title: "Client", tech: "[Browser]"}
+  - {id: api, kind: backend, title: "API", tech: "[Go]", ports: [{name: http, protocol: TCP, port: 80}]}
+
+connections:
+  - {id: c1, from: client, to: api, port: http, protocol: HTTP, verb: GET, kind: flow}
+
+annotations:
+  - {id: G1, severity: medium, title: "Plain HTTP", targets: [c1]}

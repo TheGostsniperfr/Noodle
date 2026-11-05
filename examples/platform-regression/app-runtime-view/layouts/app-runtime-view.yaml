@@ -1,6 +1,6 @@
 apiVersion: noodle/v1alpha1
 kind: Layout
-canvas: {width: 2840, height: 1820}
+canvas: {width: 2880, height: 1820}
 elements:
   z-callers: {x: 40, y: 220, w: 280, h: 640}
   z-cluster: {x: 380, y: 220, w: 1920, h: 1110}
@@ -14,7 +14,7 @@ elements:
   envoy-eg: {x: 30, y: 90, w: 280, h: 110}
   envoy-eg-internal: {x: 30, y: 270, w: 280, h: 110}
   app-frontend: {x: 40, y: 60, w: 260, h: 90}
-  app-backend: {x: 40, y: 210, w: 260, h: 130}
+  app-backend: {x: 40, y: 210, w: 270, h: 130}
   app-db: {x: 460, y: 180, w: 240, h: 130}
   app-secrets: {x: 420, y: 400, w: 240, h: 90}
   app-migration: {x: 40, y: 550, w: 260, h: 80}
@@ -46,8 +46,8 @@ edges:
 notes:
   n-302: {x: 52, y: 700, w: 266, h: 110}
 cards:
-  card-contract: {x: 1580, y: 1390, w: 620, h: 390}
-  card-control-plane: {x: 1100, y: 1390, w: 460, h: 390}
-  card-data-plane: {x: 560, y: 1390, w: 520, h: 390}
-  card-gaps: {x: 2220, y: 1390, w: 580, h: 390}
-  card-legend: {x: 40, y: 1390, w: 500, h: 390}
+  card-contract: {x: 1620, y: 1390, w: 620, h: 390}
+  card-control-plane: {x: 1140, y: 1390, w: 460, h: 390}
+  card-data-plane: {x: 600, y: 1390, w: 520, h: 390}
+  card-gaps: {x: 2260, y: 1390, w: 580, h: 390}
+  card-legend: {x: 40, y: 1390, w: 540, h: 390}

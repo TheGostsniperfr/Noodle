@@ -73,6 +73,18 @@
       },
       "description": "Label overrides by connection or reference id; by element id in landscape views."
     },
+    "hidden_annotations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "Annotation id to the reason this view does not draw it (ADR-0026). Required for an annotation none of whose targets the view draws; an error for one it draws."
+    },
+    "hide_annotations": {
+      "type": "boolean",
+      "description": "Draw no annotation badge on this view's elements and connections (ADR-0026)."
+    },
     "participants": {
       "type": "array",
       "items": {

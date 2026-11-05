@@ -26,6 +26,32 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-11-05 · Spec 008 convergence
+
+- LNT-01, 02, 03, 04, 06, 08 pass. T14: #90 reproduced from agent-playbook's real view on
+  c2cf233 and does not clip (drawio, PNG and SVG exports); fixture added, no resolver
+  change. T15: LNT-05 contract aligned with ADR-0011 step numbers. LNT-05 and 07 pass:
+  spec 008 done, all eight features graded by the evaluator.
+
+### 2026-11-05 · Lint robustness, convergence (spec 008)
+
+- T13: the zone title obstacle includes the icon offset of a wrapped sub, so it equals the drawn block for icon zones.
+- T12: LNT-05 sequence tests assert the thresholds' labels after the step number, with a real empty-text message over a bare connection.
+- T11: LNT-01 #1 holds exactly: the 420 px legend now has one finding, the `link` row; step and port rows use the free room to the card edge. Notes and every drawn card row are covered by tests.
+- T10: LNT-04 shared-port test now asserts 0 findings; two ports on the same point are reported.
+
+### 2026-11-04 · Lint robustness (spec 008)
+
+- T01: `house.Header` and `house.CardLayout` own the header, card and legend geometry; `render.go` draws from them, byte-equal on the frozen specs of `cmd/noodle/testdata/cardlayout`. Every example's `.drawio` is now committed and `TestExamples_DrawioCurrent` keeps it current.
+- T02: `card_text.go` measures every card row, legend row and note against the cell the renderer gives it, and card height. Four example legends were too narrow (cnp-runtime, platform-overview, app-runtime-view, repo-map): widened, neighbours shifted. Flips of LNT-01, B-07, B-26 wait for the evaluator.
+- T03: `header_overlap.go` reports a zone, node, card or note over the header block as drawn (`house.HeaderBox`). No example needed a fix. Flips of LNT-02 and B-25 wait for the evaluator.
+- T04: `ports.go` compares the distinct badges of a node pairwise, 2 px inflated; `testdata/ports-73.yaml` is the report's repro. No example needed a fix. LNT-04 flip waits for the evaluator.
+- T05: empty label plus badges renders the badges alone; views gain `hide_annotations` and `hidden_annotations` (schema, model, ADR-0026), and `model.Check` fails an annotation no view target draws. `examples/regression-78` is the fixture; oidc-login acknowledges G1 and G2. LNT-05 flip waits for the evaluator.
+- T06: `canvas_bounds.go` reports a zone, node, card or note past any canvas edge. The #90 landscape does not overrun the canvas at this commit (fixture `landscape-90` reaches the width cap and stays inside), so the resolver is unchanged; see the report. LNT-07 flip waits for the evaluator.
+- T07: node text is measured at `house.ExportCharWidthEm` (0.602) plus `house.FitsWithMargin`, in the lint, `resolve.boxWidth` and the landscape tile width. Fixture `examples/regression-72`. cnp-runtime, platform-overview and app-runtime-view boxes widened (nodes shifted to keep their edges); sequence boxes and landscape tiles grow by themselves. LNT-03 flip waits for the evaluator.
+- T08: a zone sub that does not fit the title line inside the zone wraps under the label in a column of at most 240 px; `house.ZoneTitleBox` covers exactly those lines and the renderer draws them. Fixture `examples/regression-87` (rejected by the lint on main, so its before image comes from main's renderer with the lint off). No other example changed. LNT-06, B-20 flips wait for the evaluator.
+- T09: every example whose drawing changed commits its `.drawio` and re-exported PNGs, with a before image from main's renderer in `specs/008-lint-robustness/visual/`. The fixes themselves landed with the rule that needed each (T02 legends, T05 oidc-login, T07 boxes). LNT-08 flip waits for the evaluator.
+
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 
 - Backlog: 15 issues created (#93 to #107), #16 and #18 rewritten, #95 and #96 sub-issues
@@ -41,7 +67,18 @@ decisions go in ADRs, acceptance in `features.json`.
   criteria matched any mention of an id, an unfilled template verdict passed the gate, a
   misspelled BASE skipped the history rules, an Evaluator look-alike was accepted.
   One finding was wrong (set -e already stops a failed locate) and is recorded as such.
-- Next: PR for spec 007 (closes #108), then the pilot: #79 `noodle drift` as spec 008.
+- PR #109 opened for spec 007 (closes #108).
+- ADR-0025: the backlog is worked in thematic batches and waves, all in full mode, on
+  `plan/wave-1`. Wave 1 specs being written in parallel worktrees: 008 lint robustness,
+  009 discovery 6a completion (takes over spec 003's open tasks and #79), 010 project and
+  distribution. Questionnaire answered; specs 008 to 010 agreed (ADR-0026 to ADR-0030).
+- Stopped on the usage limit. Spec 010 (worktree agent-ab81ef575d825ffd7): implemented
+  except T07; PRJ-01, 03, 04, 07, 08 PASS (evidence committed, not flipped yet), PRJ-05
+  NEEDS_WORK (SECURITY private channel check) and PRJ-06 NEEDS_WORK (VISION terms in
+  lower case). Spec 009 (agent-a555890757e8a7270): wave 1 T01 to T08 done; its 10
+  evaluations were stopped mid-run, rerun them. Spec 008 (agent-ad00c897fbfc7dbf9): the
+  Sonnet implementer was stopped mid-run, check its last commit before resuming.
+  Note: drop Co-Authored-By from commits (Brian's git rule wins over the harness).
 
 ### 2026-10-25 · Multi-line node desc
 

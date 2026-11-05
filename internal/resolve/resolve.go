@@ -135,9 +135,26 @@ func (r *resolver) absolute(id string) (diagram.Rect, error) {
 	return rect, nil
 }
 
-// badges maps each annotated element or edge to its annotation ids, in model order.
+// joinBadges appends the annotation badges to a label. An empty label is replaced by
+// the badges, with no separator before them (ADR-0026).
+func joinBadges(label string, gaps []string) string {
+	if len(gaps) == 0 {
+		return label
+	}
+	badge := "!!⚠ " + strings.Join(gaps, " ") + "!!"
+	if label == "" {
+		return badge
+	}
+	return label + " · " + badge
+}
+
+// badges maps each annotated element or edge to its annotation ids, in model order. A
+// view that hides annotations has none.
 func (r *resolver) badges() map[string][]string {
 	out := map[string][]string{}
+	if r.v != nil && r.v.HideAnnotations {
+		return out
+	}
 	for _, a := range r.s.Model.Annotations {
 		for _, t := range a.Targets {
 			out[t] = append(out[t], a.ID)
@@ -204,9 +221,7 @@ func (r *resolver) edges(shown map[string]bool, badges map[string][]string, diff
 		if step, ok := steps[id]; ok {
 			label = strings.TrimSpace("[" + step + "] " + label)
 		}
-		if gaps := badges[id]; len(gaps) > 0 {
-			label += " · !!⚠ " + strings.Join(gaps, " ") + "!!"
-		}
+		label = joinBadges(label, badges[id])
 		e := diagram.Edge{
 			ID: id, From: from, To: to, Kind: kind, Label: label, Port: port,
 			AgainstFlow: route.AgainstFlow, Path: path, LabelOffset: diagram.Point(route.LabelOffset), Change: ch,

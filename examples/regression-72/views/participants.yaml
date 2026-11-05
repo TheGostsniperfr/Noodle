@@ -1,0 +1,11 @@
+apiVersion: noodle/v1alpha1
+kind: View
+type: sequence
+title: "Regression 72 · Participant labels on one line"
+subtitle: "Both participants carry a title and a tech line that must stay on one line each."
+meta:
+  - "v0.1 · source: examples/regression-72"
+participants: [velocity, website]
+steps:
+  - {id: req, from: velocity, to: website, over: c-forward, text: "GET /"}
+  - {reply: req, text: "200"}
