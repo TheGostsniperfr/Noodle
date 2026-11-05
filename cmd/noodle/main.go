@@ -97,15 +97,14 @@ func lintAndRender(spec *diagram.Spec, out string, th *house.Theme, icons *iconS
 	if errors > 0 {
 		return fmt.Errorf("%d lint finding(s)", errors)
 	}
-	if out == "" {
-		return nil
-	}
 	if slide {
 		spec.ForSlide(slideMargin)
 	}
+	// Rendered even without -o: the check must fail on what the write would fail on,
+	// such as an unknown icon (#74).
 	r := &renderer{spec: spec, th: th, icons: icons, cache: map[string]string{}, ports: house.PortBadges(spec)}
 	xml, err := r.render()
-	if err != nil {
+	if err != nil || out == "" {
 		return err
 	}
 	return os.WriteFile(out, []byte(xml), 0o644)
