@@ -6,12 +6,12 @@ before the contracts it depends on are frozen.
 | Phase | Level | Deliverable | Done when |
 |---|---|---|---|
 | **0** ✅ | · | Repository, vision, architecture, ADRs, v0 generator and skill migrated from the CNP experiment; Claude Code plugin + marketplace, Nix package | `/plugin install noodle@noodle` works on a fresh machine |
-| **1** | L0 | Contracts `v1alpha1`: model, view, layout as separate files, with JSON Schemas; lint rules moved into `internal/lint`; CNP runtime example migrated | one model, two views (nominal path, OIDC), lint green |
-| **1b** | L0 | Landscape (tech stack) and catalog (service catalogue) views, `planned` status and target rendered in the core (spec 002, agreed 2026-09-28 before phase 1 closes) | a platform renders its tech stack and service catalogue from its model, planned items hatched with their target |
+| **1** ✅ | L0 | Contracts `v1alpha1`: model, view, layout as separate files, with JSON Schemas; lint rules moved into `internal/lint`; CNP runtime example migrated | one model, two views (nominal path, OIDC), lint green |
+| **1b** ✅ | L0 | Landscape (tech stack) and catalog (service catalogue) views, `planned` status and target rendered in the core (spec 002, agreed 2026-09-28 before phase 1 closes) | a platform renders its tech stack and service catalogue from its model, planned items hatched with their target |
 | **6a** | L4 | Slice of phase 6 pulled forward (ADR-0016, spec 003): `Fragment` contract, adapter interface, Kubernetes adapter from manifests or `kubectl get -o yaml`, merge and drift report, token benchmark | the PAE platform diagram is built from a discovered fragment, cheaper than an agent reading the manifests, with no loss of connections |
-| **6b** | L0 | Access grants in the model and an access matrix view, current, target or diff (ADR-0019, ADR-0020, spec 004), built alongside 6a | the CNP segregation plan's access matrix renders from its model |
-| **1c** | L0 | Messaging primitives (ADR-0023, spec 006): `shape: pipe` for queues and `routes` for what a broker forwards, asked by the first broker diagram | a RabbitMQ topology shows where messages wait and which key brings them there |
-| **5a** | L3 | Slice of phase 5 pulled forward (ADR-0021, spec 005): connection status and `state: diff` on topology views, added and removed framed over the dimmed rest | a platform proposal renders as a diff of the reference diagram |
+| **6b** ✅ | L0 | Access grants in the model and an access matrix view, current, target or diff (ADR-0019, ADR-0020, spec 004), built alongside 6a | the CNP segregation plan's access matrix renders from its model |
+| **1c** ✅ | L0 | Messaging primitives (ADR-0023, spec 006): `shape: pipe` for queues and `routes` for what a broker forwards, asked by the first broker diagram | a RabbitMQ topology shows where messages wait and which key brings them there |
+| **5a** ✅ | L3 | Slice of phase 5 pulled forward (ADR-0021, spec 005): connection status and `state: diff` on topology views, added and removed framed over the dimmed rest | a platform proposal renders as a diff of the reference diagram |
 | **2** | L0 | Own SVG renderer from the same geometry; animated flow dashes via CSS, which also work when the SVG is shown as an image | the example renders to SVG without draw.io and animates in a README |
 | **2b** | L6 | Read-only MCP server over the model: list elements, find a path, explain a connection, validate | an agent answers "how does a request reach app X?" from the model alone |
 | **3** | L1 | Web viewer: scenario selector, focus and dim, tags as overlays, search, element docs, export of the current view | the example is explorable in a browser and exports what is on screen |
@@ -40,7 +40,10 @@ Since 2026-11-04 the backlog is worked in thematic batches, a wave at a time, ev
 in full mode (ADR-0025). Wave 1: lint robustness (spec 008), discovery 6a completion
 (spec 009), project and distribution (spec 010). The table of batches is in ADR-0025.
 
-## Next up: phase 1
+## Next up: phase 2
 
-Spec: [`specs/001-model-view-layout-split/spec.md`](../specs/001-model-view-layout-split/spec.md).
-Acceptance: features `P1-*` in [`features.json`](features.json).
+Phases 1, 1b, 6b, 1c and 5a are done: every feature of theirs passes in
+[`features.json`](features.json). Phase 6a closes with spec 009 (#113). Phase 2 has no
+spec yet: start one from [`specs/_template/`](../specs/_template/). Open issues it would
+answer: #82 (native SVG/PNG export), #91 (rendering without draw.io), #71 (PNG scale).
+

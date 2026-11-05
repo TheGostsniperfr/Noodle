@@ -179,6 +179,7 @@
     {"id": "B-24", "description": "Lint reports a denied connection without enforced_by as intent only (ADR-0010), so gaps like CNP G1 come from the tool instead of a hand-written card", "verify": "the CNP example yields one finding for x-cross-tenant and none once enforced_by names an existing policy element", "passes": false},
     {"id": "B-25", "description": "Lint reports zones, nodes and cards that overlap the title, subtitle and meta header", "verify": "a system whose top zone starts at y 40 under a three-line meta fails the lint", "passes": false},
     {"id": "B-26", "description": "Lint reports a card whose generated or listed lines are taller than the card, the legend included", "verify": "a legend card 120 px high listing six kinds fails the lint", "passes": false},
+    {"id": "B-27", "description": "A status inherited from a zone hatches the children but draws its pill once, on the zone, not on every child", "verify": "a planned zone with five children renders one planned pill", "passes": false},
     {"id": "B-28", "description": "An empty label override leaves a numbered edge with its step badge alone, documented in the skill", "verify": "go test ./internal/resolve/... resolves an empty override on a step to [1] and on a plain edge to an empty label", "passes": true}
   ]
 }
