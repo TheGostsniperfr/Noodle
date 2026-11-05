@@ -35,6 +35,8 @@ house: NodeFootprint, ZoneTitleBox, PortBadges, + HeaderBox, CardLayout (new)
 - **Canvas bounds** (FR-009): new rule `canvas_bounds.go`; `resolve/landscape.go`
   computes the band width from the canvas minus the side column instead of capping the
   natural width first.
+  Implementation note (T14): no change to `resolve/landscape.go` was needed; it already
+  places the side column from the canvas width, and #90 does not reproduce on c2cf233.
 
 ## Packages
 

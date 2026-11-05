@@ -57,3 +57,15 @@ Tasks the evaluator found missing, appended here; never edit the waves above.
 - [x] **T13** LNT-06: for a zone with an icon the wrapped sub is drawn after the icon, so
   `ZoneTitleBox` adds the icon offset to the widest line; tests for the box and for an edge
   beside and through the sub of an icon zone (FR-008).
+
+- [x] **T14** LNT-07: #90 reproduced from the real view of agent-playbook PR #5 (commit
+  e119552c18, side column restored) on c2cf233: the side column sits inside the page in
+  the `.drawio` (right edge 2140 of 2180), in the PNG export of #90 (`-s 2 --border 20`,
+  4422 px) and in the SVG export (2241 px). The resolver places it from the canvas width by
+  construction, so no resolver change is made; the cause of the reported clipping was not
+  in noodle's geometry. Fixture `landscape-90-playbook` and
+  `TestLandscape_SideColumnFits_Issue90View` keep that view inside the canvas, and the
+  canvas-bounds lint (T06) catches any element past it from now on (FR-009).
+- [x] **T15** LNT-05 #1 and #5: the contract names the test that exists and states the
+  sequence label after its `[1] ` step number (ADR-0011 numbers every message).
+

@@ -26,6 +26,12 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-11-05 · Spec 008 convergence
+
+- LNT-01, 02, 03, 04, 06, 08 pass. T14: #90 reproduced from agent-playbook's real view on
+  c2cf233 and does not clip (drawio, PNG and SVG exports); fixture added, no resolver
+  change. T15: LNT-05 contract aligned with ADR-0011 step numbers. Re-evaluating LNT-05, 07.
+
 ### 2026-11-05 · Lint robustness, convergence (spec 008)
 
 - T13: the zone title obstacle includes the icon offset of a wrapped sub, so it equals the drawn block for icon zones.
