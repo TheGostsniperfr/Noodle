@@ -71,10 +71,11 @@ func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
 			return nil, err
 		}
 		status, target := s.Status(e.ID)
+		onParent := pillOnParent(s, e, shown, status, target)
 		if e.IsZone() {
 			out.Zones = append(out.Zones, diagram.Zone{
 				ID: e.ID, Kind: e.Kind, Label: e.Title, Sub: e.Sub, Color: e.Color, Icon: e.Icon,
-				Status: status, Target: target, Change: highlightChange(out.Highlight, lit[e.ID], diffChange(out.Diff, status)),
+				Status: status, Target: target, PillOnParent: onParent, Change: highlightChange(out.Highlight, lit[e.ID], diffChange(out.Diff, status)),
 				X: box.X, Y: box.Y, W: box.W, H: box.H,
 			})
 			continue
@@ -82,7 +83,7 @@ func Topology(s *model.System, viewID string) (*diagram.Spec, error) {
 		out.Nodes = append(out.Nodes, diagram.Node{
 			ID: e.ID, Kind: e.Kind, Shape: e.Shape, Icon: e.Icon, Title: e.Title, Tech: e.Tech,
 			Desc: e.Desc, Badge: strings.Join(badges[e.ID], " "),
-			Status: status, Target: target, Multiplicity: e.Multiplicity, Change: highlightChange(out.Highlight, lit[e.ID], diffChange(out.Diff, status)),
+			Status: status, Target: target, PillOnParent: onParent, Multiplicity: e.Multiplicity, Change: highlightChange(out.Highlight, lit[e.ID], diffChange(out.Diff, status)),
 			X: box.X, Y: box.Y, W: box.W, H: box.H,
 		})
 	}
@@ -273,4 +274,26 @@ func joinNonEmpty(sep string, parts ...string) string {
 		}
 	}
 	return strings.Join(kept, sep)
+}
+
+// pillOnParent tells whether the nearest shown enclosing zone carries the same status
+// and target as e: its pill then speaks for e, and drawing one on every child repeats
+// it (B-27). A child whose zone is not in the view keeps its own pill.
+func pillOnParent(s *model.System, e model.Element, shown map[string]bool, status, target string) bool {
+	if status == "" {
+		return false
+	}
+	byID := make(map[string]model.Element, len(s.Model.Elements))
+	for _, el := range s.Model.Elements {
+		byID[el.ID] = el
+	}
+	for seen, id := map[string]bool{e.ID: true}, e.Parent; id != "" && !seen[id]; id = byID[id].Parent {
+		seen[id] = true
+		if !shown[id] {
+			continue
+		}
+		ps, pt := s.Status(id)
+		return ps == status && pt == target
+	}
+	return false
 }

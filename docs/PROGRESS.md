@@ -25,6 +25,10 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-11-05 · Inherited status pill (B-27)
+
+- B-27: a node or zone whose nearest shown zone has the same status and target draws no pill of its own; the zone's pill says it once. Diff pills unchanged. Before/after in `docs/evidence/visual/`.
+
 ### 2026-11-05 · Roadmap catch-up
 
 - Spec 002 T03 ticked (dockair-docs !20, merged in September); phases 1, 1b, 6b, 1c and 5a marked done, all their features passing; next up phase 2. B-27 added (inherited status pill drawn on every child). Replaces the stale PR #14.

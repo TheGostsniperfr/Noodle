@@ -263,7 +263,7 @@ func NodeFootprint(n diagram.Node) diagram.Rect {
 // like a tag clipped on the box.
 func NodePillRect(n diagram.Node) (diagram.Rect, bool) {
 	text := BoxPillText(n.Status, n.Target, n.Change)
-	if text == "" {
+	if text == "" || (n.PillOnParent && n.Change == "") {
 		return diagram.Rect{}, false
 	}
 	w := PortWidth(text)
@@ -273,7 +273,7 @@ func NodePillRect(n diagram.Node) (diagram.Rect, bool) {
 // ZonePillRect sits on the zone's title row, after the title.
 func ZonePillRect(z diagram.Zone) (diagram.Rect, bool) {
 	text := BoxPillText(z.Status, z.Target, z.Change)
-	if text == "" {
+	if text == "" || (z.PillOnParent && z.Change == "") {
 		return diagram.Rect{}, false
 	}
 	t := ZoneTitleRow(z)
