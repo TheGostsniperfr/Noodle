@@ -1,6 +1,6 @@
 # Spec 008 · Lint robustness: what passes the lint is what the reader sees
 
-- Status: **Clarified**
+- Status: **Done**
 - Mode: **full**
 - Phase: lint2, batch A of wave 1, pulled forward by ADR-0025 (C11)
 - Issue: #22, #36, #44, #45, #72, #73, #78, #86, #87, #90 · Backlog: B-07, B-20, B-25, B-26,

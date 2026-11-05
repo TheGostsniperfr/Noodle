@@ -30,7 +30,8 @@ decisions go in ADRs, acceptance in `features.json`.
 
 - LNT-01, 02, 03, 04, 06, 08 pass. T14: #90 reproduced from agent-playbook's real view on
   c2cf233 and does not clip (drawio, PNG and SVG exports); fixture added, no resolver
-  change. T15: LNT-05 contract aligned with ADR-0011 step numbers. Re-evaluating LNT-05, 07.
+  change. T15: LNT-05 contract aligned with ADR-0011 step numbers. LNT-05 and 07 pass:
+  spec 008 done, all eight features graded by the evaluator.
 
 ### 2026-11-05 · Lint robustness, convergence (spec 008)
 
