@@ -6,3 +6,4 @@ result
 
 # Worktrees of parallel agents (ADR-0025)
 .claude/worktrees/
+/RELEASE_NOTES.md

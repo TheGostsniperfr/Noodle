@@ -1,6 +1,7 @@
 ---
 name: noodle-diagram
 description: Create or update an architecture diagram with noodle, in the house style (Tailwind dark/light palettes, official logos, port badges, lint-enforced readability, draw.io + PNG output). Use when asked for an architecture, flow, deployment or security diagram of a system, or when a change to a system should be reflected in an existing diagram.
+license: Apache-2.0
 ---
 
 # Architecture diagrams with noodle
@@ -8,9 +9,8 @@ description: Create or update an architecture diagram with noodle, in the house 
 Diagrams are generated, not drawn. The source of truth is a system directory: one
 `model.yaml` (what exists), one file per view in `views/` (what a diagram shows) and, for
 topology views, one layout in `layouts/` (where it is drawn). The format is in
-[reference.md](reference.md): read it before writing one. The `noodle` command, on PATH
-while this plugin is enabled, turns a view into a `.drawio` file and refuses to emit it
-while the lint finds a collision. Hand edits in draw.io are for throwaway variants only;
+[reference.md](reference.md): read it before writing one. The `noodle` command, on PATH,
+turns a view into a `.drawio` file and refuses to emit it while the lint finds a collision. Hand edits in draw.io are for throwaway variants only;
 a canonical change goes through the files so the palette, the IDs and the PR diff stay
 consistent. A project still on the old single-file format converts each file once with
 `noodle migrate <old>.yaml <system-dir>`, which refuses to write a system that would draw
@@ -19,7 +19,7 @@ anything different.
 ## Workflow
 
 1. **Facts first, in a subagent.** Hand the question and the code paths to the
-   `noodle:fact-finder` agent. It reads the code that implements what the diagram shows
+   `fact-finder` subagent. It reads the code that implements what the diagram shows
    (Helm templates, Terraform, K8s manifests), not only `docs/`, and returns one YAML
    inventory with a source on every fact. Work from that inventory: reading the raw
    files yourself fills this session with YAML that every later turn pays for again.
@@ -37,6 +37,7 @@ anything different.
    ```bash
    S=architecture/<system>; V=<view-id>
    noodle render $S -view $V -icons .noodle/icons       # check and lint only; fix every finding
+   # no output means check and lint passed, not that the render works: icons resolve only with -o
    B=architecture/diagrams/$V
    for t in dark light; do
      noodle render $S -view $V -icons .noodle/icons -theme $t -o $B.$t.drawio
@@ -44,12 +45,22 @@ anything different.
    done
    ```
    `-slide` renders the drawing only, cropped to its content, for a slide deck.
+   Headless draw.io crops and stretches a PNG wider than about 4000 px, so `-s 2` is wrong
+   for a wide canvas (#71): use `-s` equal to `min(2, 3900 / (canvas width + 40))`, which is
+   1.6 for a 2400 px canvas.
    `drawio` must be installed for PNG and SVG exports. If it is missing, deliver the
    `.drawio` files and say so.
 5. **Look at the PNG.** The lint catches geometry, not taste. Expect two or three rounds.
 6. For docs, export the editable SVG:
    `drawio -x -f svg --embed-diagram -o $B.$t.drawio.svg $B.$t.drawio`.
    The PNG is the one to paste in chats.
+
+## In Claude Code
+
+The plugin puts `noodle` on PATH while it is enabled, and ships three subagents under
+the `noodle:` prefix. Start the facts step with the Agent tool and the subagent type
+`noodle:fact-finder`. After rendering, `noodle:diagram-reviewer` reviews the PNG and
+its YAML as a tech lead would, and `noodle:icon-curator` fetches a missing logo.
 
 ## Semantics
 

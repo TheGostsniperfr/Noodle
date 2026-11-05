@@ -1,11 +1,13 @@
 # Noodle 🍜
 
-Take the spaghetti out of a large architecture and keep it clear.
+Architecture as code, checked against the real infrastructure.
 
 Noodle turns an architecture described as code into readable, presentation-grade
-diagrams, and aims further: interactive views, guided tours, visual PR diffs, discovery
-from real clusters, live overlays, and a model AI agents can query.
-See [the vision](docs/VISION.md).
+diagrams that are designed to stay in sync with the systems they describe: discovery
+drafts the model from real manifests, and a lint refuses a diagram a person cannot read.
+It aims further: interactive views, guided tours, visual PR diffs, live overlays, and a
+model AI agents can query. See [the vision](docs/VISION.md), which relates this to
+architecture as code and living documentation.
 
 ![CNP runtime example](examples/cnp-runtime/runtime.dark.png)
 
@@ -20,7 +22,11 @@ Kubernetes manifests ([roadmap](docs/ROADMAP.md)).
 
 ## Install
 
-### As a Claude Code plugin (skill + `noodle` command)
+noodle is one binary, `noodle`, plus a skill and three subagents that teach an AI agent to
+use it. Claude Code gets both from a plugin. OpenCode and Codex get the binary, then
+`noodle setup` writes the skill and the agents where they look.
+
+### Claude Code
 
 ```
 /plugin marketplace add TheGostsniperfr/Noodle
@@ -29,8 +35,9 @@ Kubernetes manifests ([roadmap](docs/ROADMAP.md)).
 
 Then enable auto-update once, under **Marketplaces** in `/plugin`, to follow `main`.
 The plugin puts `noodle` on the PATH. On first use it builds itself from the plugin's
-sources with Go, or with Nix; a `noodle` already on the PATH wins. PNG and SVG exports
-also need [draw.io desktop](https://www.drawio.com/) (`drawio`).
+sources with Go or with Nix, or downloads a release binary when neither is installed;
+a `noodle` already on the PATH wins. PNG and SVG exports also need
+[draw.io desktop](https://www.drawio.com/) (`drawio`).
 
 To offer it to everyone working in a repository, run once there and commit the result:
 
@@ -38,7 +45,32 @@ To offer it to everyone working in a repository, run once there and commit the r
 claude plugin marketplace add TheGostsniperfr/Noodle --scope project
 ```
 
-### With Nix
+### OpenCode
+
+Install the `noodle` binary (see Nix below, or take an archive from the
+[releases](https://github.com/TheGostsniperfr/Noodle/releases)), then in your repository:
+
+```bash
+noodle setup opencode -project
+```
+
+This writes the `noodle-diagram` skill to `.agents/skills/` and the subagents to
+`.opencode/agents/`. Use `-user` instead to install for every project, under
+`~/.agents/skills/` and `~/.config/opencode/agents/`. Rerunning it changes nothing, and it
+never overwrites a file it did not write.
+
+### Codex
+
+Install the `noodle` binary as above, then in your repository:
+
+```bash
+noodle setup codex -project
+```
+
+This writes the skill to `.agents/skills/` and one TOML file per subagent to
+`.codex/agents/`. `-user` writes under `~/.agents/skills/` and `~/.codex/agents/`.
+
+### Nix
 
 ```nix
 inputs.noodle.url = "github:TheGostsniperfr/Noodle";
@@ -65,6 +97,7 @@ The format is in [the skill reference](skills/noodle-diagram/reference.md).
 
 | System | Shows |
 |---|---|
+| [`tutorial`](examples/tutorial) | the system of the tutorial: a user, an API and a database in two zones |
 | [`cnp-runtime`](examples/cnp-runtime) | one model, two views: the runtime topology and the OIDC login sequence |
 | [`sequence-basics`](examples/sequence-basics) | every sequence step kind: messages, a relay against a tunnel, a note, replies |
 | [`landscape`](examples/landscape) | a tech stack: bands, a side column, a pipeline, planned items with a target |
@@ -76,6 +109,7 @@ The format is in [the skill reference](skills/noodle-diagram/reference.md).
 
 ## Docs
 
+- [User guide](docs/guide/tutorial.md): a tutorial from a first system to a PNG, how-to pages, an explanation of model, view, layout and fragment, and the [CLI reference](docs/guide/cli.md)
 - [Vision](docs/VISION.md): the problem, principles and capability levels L0 to L6
 - [Architecture](docs/ARCHITECTURE.md): modules, contracts, interfaces, storage and security
 - [Progress](docs/PROGRESS.md): where the work stands and where the next session starts
@@ -85,6 +119,15 @@ The format is in [the skill reference](skills/noodle-diagram/reference.md).
 - [Decisions](docs/adr/README.md): ADRs
 - [Inspirations](docs/INSPIRATIONS.md): IcePanel, Ilograph, LikeC4 and others, and what we borrow
 - [Diagram skill](skills/noodle-diagram/SKILL.md): the conventions an AI agent follows to write diagrams
+
+## Contributing
+
+- [Contributing](CONTRIBUTING.md): the workflow, the checks and how a pull request is read
+- [Security policy](SECURITY.md): report a vulnerability privately; an architecture map is sensitive
+- [Code of conduct](CODE_OF_CONDUCT.md): Contributor Covenant 2.1
+
+Noodle is licensed under Apache-2.0 (see [LICENSE](LICENSE) and [NOTICE](NOTICE)); the logos
+in `assets/icons/` stay trademarks of their owners ([attribution](assets/icons/ATTRIBUTION.md)).
 
 ## Development
 

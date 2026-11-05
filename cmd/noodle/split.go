@@ -12,15 +12,30 @@ import (
 	"github.com/TheGostsniperfr/Noodle/internal/resolve"
 )
 
+type renderFlags struct {
+	set                     *flag.FlagSet
+	view, out, icons, theme *string
+	slide                   *bool
+}
+
+func newRenderFlags() renderFlags {
+	fs := flag.NewFlagSet("render", flag.ContinueOnError)
+	return renderFlags{
+		set:   fs,
+		view:  fs.String("view", "", "view id, the file stem in views/ (optional when the system has one view)"),
+		out:   fs.String("o", "", "output .drawio path (lint only when empty)"),
+		icons: fs.String("icons", "", "comma-separated directories of extra <name>.svg icons"),
+		theme: fs.String("theme", "dark", "dark or light"),
+		slide: fs.Bool("slide", false, "drawing only, cropped to its content: no header, cards or notes"),
+	}
+}
+
 // renderCommand is "noodle render DIR [-view ID]": a system directory in the v1alpha1
 // format (ADR-0007). Flags may come before or after DIR.
 func renderCommand(args []string) error {
-	fs := flag.NewFlagSet("render", flag.ContinueOnError)
-	viewID := fs.String("view", "", "view id, the file stem in views/ (optional when the system has one view)")
-	out := fs.String("o", "", "output .drawio path (lint only when empty)")
-	icons := fs.String("icons", "", "comma-separated directories of extra <name>.svg icons")
-	themeName := fs.String("theme", "dark", "dark or light")
-	slide := fs.Bool("slide", false, "drawing only, cropped to its content: no header, cards or notes")
+	opts := newRenderFlags()
+	fs := opts.set
+	viewID, out, icons, themeName, slide := opts.view, opts.out, opts.icons, opts.theme, opts.slide
 	var dirs []string
 	for len(args) > 0 {
 		if err := fs.Parse(args); err != nil {

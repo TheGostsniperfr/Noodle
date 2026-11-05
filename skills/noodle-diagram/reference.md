@@ -188,6 +188,55 @@ resources: [{title: Control plane, color: indigo, items: [keycloak, vault-sys]}]
 labels: {vault-sys: "Vault<br>config"}
 ```
 
+## Discovery
+
+`noodle discover k8s [PATH…|-]` reads Kubernetes manifests (or `kubectl get -o yaml`
+output) and writes a fragment: elements, connections and references with the file and line
+of each, and an `unresolved` list of what it could not decide. It never edits `model.yaml`.
+Fragments go in `<system>/discovered/k8s-<source>.yaml`, are regenerated, and are not
+committed. Rerunning on the same input gives the same bytes.
+
+- **Namespace.** Objects that name none get `default`, as with `kubectl apply`. Pass
+  `-namespace NS` for a different one. Ids read `k8s:<namespace>/<kind>/<name>`.
+- **Kustomize and Helm first.** The adapter reads rendered manifests, not templates or
+  overlays: `helm template release chart/ | noodle discover k8s -`, or `kustomize build
+  overlays/prod | noodle discover k8s -`. A directory holding `Chart.yaml` or
+  `kustomization.yaml` is skipped and listed in `unresolved` as `unrendered`, not guessed at.
+- **`matches:` syntax.** A curated element lists the discovered ids it stands for:
+  `matches: [k8s:prod/deployment/api, k8s:prod/service/api]`. An id belongs to at most one
+  element; `noodle render` rejects a duplicate. Merging the fields of a match and the drift
+  report (`noodle drift`) are not shipped yet.
+- **What is discovered:** workloads, services, ingresses, gateways and their routes, and
+  the references between them (a selector, a mounted secret, a route's `parentRef`).
+- **What is not discovered:** traffic that no manifest states (a pod calling another by a
+  hostname held in an application's own config), anything decided at runtime, the names
+  and zones that make a diagram readable, and secret values, which are never read. An
+  object of a kind noodle does not know, such as a CRD, is counted in `unresolved` as an
+  unknown kind, because it often stands for a real component.
+- **PNG export width (#71).** A discovered platform often makes a wide canvas. Headless
+  draw.io crops and stretches a PNG wider than about 4000 px, so export with
+  `drawio -x -f png -s <scale>` where scale is `min(2, 3900 / (canvas width + 40))`.
+  The `.drawio` file and the SVG are not affected.
+- **Empty labels keep annotation badges.** `labels: {c1: ""}` hides the text of an edge but
+  not the badge of an annotation that targets it (#78): the edge still draws `⚠ G1`, and
+  the lint measures it.
+- **`include` with `zone/**` pulls in edges.** `include: [z-cluster/**]` shows the zone and
+  everything in it, and every connection that touches an included element appears too.
+  Each one needs an entry in the layout, so a large zone means many edges to route.
+- **Icons resolve only at render.** `noodle render DIR -view V` with no `-o` checks and
+  lints but does not look for icons. An unknown icon fails only when you pass `-o` (#74),
+  so a clean lint does not mean the render will work. Run `noodle -list-icons`.
+- **Landscape items show `tech:` as their second line**, not `desc:`. Fill `tech:` on the
+  element, for example `tech: "[CloudNativePG]"`.
+- **Planned namespaces.** For a namespace that does not exist yet, set `status: planned` on
+  its zone and a `target:` (the phase or date) on the zone and on the children that need a
+  different one. A zone's status applies to everything inside it.
+- **When the `fact-finder` agent is not available** (a host without subagents, or a
+  session that cannot start one), run `noodle discover` yourself on the manifests and read
+  the fragment, then open only the files an `unresolved` entry points to. Write the
+  inventory the agent would have returned: one fact per line, each with its source, marking
+  what you inferred. Do not read whole charts into the session.
+
 ## Layout (topology views)
 
 ```yaml

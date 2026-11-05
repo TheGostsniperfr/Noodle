@@ -409,6 +409,8 @@ func TestRun_ExitsWithFindingsThroughTheCLI(t *testing.T) {
 			"specs/001-demo/tasks.md: FR-002 is named by no task"},
 		{"commands finding", map[string]string{"docs/COMMANDS.md": "| `make init` | a |\n"},
 			"docs/COMMANDS.md: no row for make check"},
+		{"broken skill", map[string]string{"skills/demo/SKILL.md": "---\nname: demo\ndescription: \"\"\n---\n\n# Demo\n"},
+			"skills/demo/SKILL.md: description-empty: description is missing or empty"},
 		{"stale ADR index", map[string]string{"docs/adr/0002-second.md": newADR},
 			"docs/adr/README.md: index is stale: run make adr-index"},
 	}

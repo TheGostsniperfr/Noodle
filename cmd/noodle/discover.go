@@ -19,20 +19,36 @@ import (
 
 const discoverUsage = "usage: noodle discover ADAPTER [PATH…|-] [-o fragment.yaml|DIR/] [-namespace NS] [-argocd-app FILE] [-kustomize DIR [-enable-helm]] [-ref REF] [-observed-at RFC3339]"
 
+type discoverFlags struct {
+	set                                                 *flag.FlagSet
+	out, ref, namespace, argocdApp, kustomize, observed *string
+	enableHelm                                          *bool
+}
+
+func newDiscoverFlags() discoverFlags {
+	fs := flag.NewFlagSet("discover", flag.ContinueOnError)
+	return discoverFlags{
+		set:        fs,
+		out:        fs.String("o", "", "output fragment path, usually <system>/discovered/<adapter>-<source>.yaml; an existing directory or a path ending in / gets that file name (stdout when empty)"),
+		ref:        fs.String("ref", "", "version of the source, e.g. a Git commit"),
+		namespace:  fs.String("namespace", "", "namespace of objects that name none, as kubectl apply -n (default: default)"),
+		argocdApp:  fs.String("argocd-app", "", "Argo CD Application file whose spec.destination.namespace is the default namespace (k8s)"),
+		kustomize:  fs.String("kustomize", "", "directory rendered with `kustomize build`, read-only (k8s)"),
+		enableHelm: fs.Bool("enable-helm", false, "pass --enable-helm to kustomize build"),
+		observed:   fs.String("observed-at", "", "observation time, RFC 3339 (now when empty)"),
+	}
+}
+
 // adapters lists every adapter noodle ships.
 func adapters() (*adapter.Registry, error) { return adapter.NewRegistry(k8s.Adapter{}) }
 
 // discoverCommand is "noodle discover ADAPTER [PATH…|-]": no path or - reads stdin.
 // Flags may come before or after the arguments.
 func discoverCommand(ctx context.Context, reg *adapter.Registry, args []string, stdin io.Reader, stdout, stderr io.Writer) error {
-	fs := flag.NewFlagSet("discover", flag.ContinueOnError)
-	out := fs.String("o", "", "output fragment path, usually <system>/discovered/<adapter>-<source>.yaml; an existing directory or a path ending in / gets that file name (stdout when empty)")
-	ref := fs.String("ref", "", "version of the source, e.g. a Git commit")
-	namespace := fs.String("namespace", "", "namespace of objects that name none, as kubectl apply -n (default: default)")
-	argocdApp := fs.String("argocd-app", "", "Argo CD Application file whose spec.destination.namespace is the default namespace (k8s)")
-	kustomize := fs.String("kustomize", "", "directory rendered with `kustomize build`, read-only (k8s)")
-	enableHelm := fs.Bool("enable-helm", false, "pass --enable-helm to kustomize build")
-	observed := fs.String("observed-at", "", "observation time, RFC 3339 (now when empty)")
+	opts := newDiscoverFlags()
+	fs := opts.set
+	out, ref, namespace, observed := opts.out, opts.ref, opts.namespace, opts.observed
+	argocdApp, kustomize, enableHelm := opts.argocdApp, opts.kustomize, opts.enableHelm
 	var pos []string
 	for len(args) > 0 {
 		if err := fs.Parse(args); err != nil {

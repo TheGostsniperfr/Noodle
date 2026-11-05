@@ -65,6 +65,29 @@ decisions go in ADRs, acceptance in `features.json`.
 - Convergence T18: `takes-list-whole` asserts the whole merged element (DSC-06 NEEDS_WORK #1).
 - Convergence T19: the property test counts only fields set on both sides with different values, excluding ID, Kind and Matches, so its guard can fail (DSC-06 #4).
 - Convergence T20: `keeps-sources` asserts through `Lookup("api")` (`Node.Sources`). DSC-06 ready for a new `make evaluate`.
+### 2026-11-05 · Spec 010 convergence (PRJ-06)
+
+- Evaluator NEEDS_WORK on PRJ-06: tasks T16 to T18 below.
+- T16: VISION names architecture as code and living documentation in lowercase.
+- T17: tutorial view drops its legend card (the generated Gx line was false for a view with no gaps); PNG re-rendered and looked at.
+- T18: test keeps the YAML blocks of tutorial.md equal to examples/tutorial.
+
+### 2026-11-04 · Spec 010 implementation (project and distribution)
+
+- T01: Apache-2.0 `LICENSE`, `NOTICE`, and `license` in plugin.json, flake.nix and SKILL.md.
+- T02: icon attribution page (45 rows, source and license) and `go test ./assets/` that fails per missing row, URL or license.
+- T04: skill wording: Claude Code-only names moved under an `In Claude Code` section; the facts step names the `fact-finder` subagent.
+- T03: `speccheck skills` (run by `all`) checks every SKILL.md against the Agent Skills rules; rules live in `internal/skillrules` so `noodle setup` tests can reuse them.
+- T05: CONTRIBUTING, SECURITY, CODE_OF_CONDUCT (Contributor Covenant 2.1), idea and bug issue templates, README links.
+- T06: `noodle version` prints `main.version`; the flake sets it from the flake revision.
+- T08: Codex subagents page reread (required keys name, description, developer_instructions; sandbox_mode is ignored in agent files), recorded in plan.md; `content.go` embeds `skills` and `agents`; the wrapper hash covers them.
+- T09: `noodle setup opencode|codex -project|-user` writes the skill to `.agents/skills/` and one agent file per host, idempotent, golden-file tests.
+- T10: setup marker line on every written file (replaced on rerun, foreign files kept and exit 1); README install section per host: Claude Code, OpenCode, Codex, Nix.
+- T11: user guide in `docs/guide/` (tutorial on `examples/tutorial`, four how-tos, explanation); `noodle help [-markdown]`, `make cli-doc`, `cli.md` and the test that keeps it current.
+- T12: README positioning (architecture as code, "designed to stay in sync" until P6a-05), VISION "Where it sits", and the Discovery section of the skill reference (#88); goldens refreshed for the skill text.
+- T13: goreleaser config (4 platforms, checksums), release workflow on `v*` tags, git-cliff config, `make changelog` and `make release-snapshot` (evaluator allowlist, recorded in ADR-0024), plugin `version` 0.1.0, first CHANGELOG.md. No tag pushed.
+- T14: `bin/noodle` downloads the release of the plugin's version when no noodle, Go or Nix is found, verifies SHA-256 against the release checksums, refuses a mismatch; Go test with stub curl, uname, go, nix.
+- T15: process skills `issue-writer`, `release-notes`, `contrib-check` in `.agents/skills/`, symlinked from `.claude/skills/`, checked by `make spec-check`.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 

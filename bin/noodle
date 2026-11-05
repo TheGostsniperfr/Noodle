@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # Plugin entry point. Claude Code puts bin/ on PATH while the plugin is enabled.
 # Resolution order: a noodle installed elsewhere on PATH (e.g. by Nix), a binary
-# already built for this exact source, a build with Go, a build with Nix.
+# already built for this exact source, a build with Go, a build with Nix, and last a
+# release binary downloaded for the plugin's version and checked against the release's
+# SHA-256 checksums.
 set -euo pipefail
 
 self="$(readlink -f "${BASH_SOURCE[0]}")"
 root="$(dirname "$(dirname "$self")")"
+repository="TheGostsniperfr/Noodle"
 
 while IFS= read -r candidate; do
   if [[ "$(readlink -f "$candidate")" != "$self" ]]; then
@@ -13,9 +16,49 @@ while IFS= read -r candidate; do
   fi
 done < <(type -ap noodle)
 
+if command -v sha256sum >/dev/null; then sha256=(sha256sum); else sha256=(shasum -a 256); fi
+
 cache="${CLAUDE_PLUGIN_DATA:-${XDG_CACHE_HOME:-$HOME/.cache}/noodle}"
-source_hash="$(cd "$root" && find cmd internal assets vendor go.mod go.sum -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -c1-16)"
+source_hash="$(cd "$root" && find cmd internal assets skills agents content.go vendor go.mod go.sum -type f -print0 | sort -z | xargs -0 "${sha256[@]}" | "${sha256[@]}" | cut -c1-16)"
 binary="$cache/noodle-$source_hash"
+
+download_release() {
+  local version os arch archive base work expected actual
+  version="$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$root/.claude-plugin/plugin.json" | head -n 1)"
+  if [[ -z "$version" ]]; then
+    echo "noodle: .claude-plugin/plugin.json has no version, cannot pick a release to download." >&2
+    return 127
+  fi
+  case "$(uname -s)" in
+    Linux) os=linux ;;
+    Darwin) os=darwin ;;
+    *) echo "noodle: no release binary for $(uname -s)." >&2; return 127 ;;
+  esac
+  case "$(uname -m)" in
+    x86_64 | amd64) arch=amd64 ;;
+    aarch64 | arm64) arch=arm64 ;;
+    *) echo "noodle: no release binary for $(uname -m)." >&2; return 127 ;;
+  esac
+  archive="noodle_${version}_${os}_${arch}.tar.gz"
+  base="https://github.com/$repository/releases/download/v$version"
+  binary="$cache/noodle-$version-${os}_${arch}"
+  [[ -x "$binary" ]] && return 0
+
+  echo "noodle: no Go or Nix found, downloading release v$version for ${os}_${arch}" >&2
+  mkdir -p "$cache"
+  work="$(mktemp -d "$cache/download.XXXXXX")"
+  curl -fsSL -o "$work/$archive" "$base/$archive" || { rm -rf "$work"; return 1; }
+  curl -fsSL -o "$work/checksums.txt" "$base/noodle_${version}_checksums.txt" || { rm -rf "$work"; return 1; }
+  expected="$(awk -v name="$archive" '$2 == name { print $1 }' "$work/checksums.txt")"
+  actual="$("${sha256[@]}" "$work/$archive" | cut -d ' ' -f 1)"
+  if [[ -z "$expected" || "$expected" != "$actual" ]]; then
+    echo "noodle: checksum mismatch for $archive (expected ${expected:-none}, got $actual): refusing to run it." >&2
+    rm -rf "$work"
+    return 1
+  fi
+  tar -xzf "$work/$archive" -C "$work" noodle && chmod +x "$work/noodle" && mv "$work/noodle" "$binary" || { rm -rf "$work"; return 1; }
+  rm -rf "$work"
+}
 
 if [[ ! -x "$binary" ]]; then
   mkdir -p "$cache"
@@ -28,8 +71,7 @@ if [[ ! -x "$binary" ]]; then
     out="$(nix --extra-experimental-features 'nix-command flakes' build --no-link --print-out-paths "path:$root#default")"
     ln -sf "$out/bin/noodle" "$binary"
   else
-    echo "noodle: no binary found. Install Go or Nix, or put a noodle binary on PATH." >&2
-    exit 127
+    download_release || exit $?
   fi
 fi
 
