@@ -26,6 +26,10 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-11-05 · Spec 011 draft
+
+- Spec 011 (own SVG and PNG renderer, phase 2) drafted, five questions open for Brian.
+
 ### 2026-11-05 · Spec 008 convergence
 
 - LNT-01, 02, 03, 04, 06, 08 pass. T14: #90 reproduced from agent-playbook's real view on
