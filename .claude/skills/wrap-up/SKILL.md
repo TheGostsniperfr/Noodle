@@ -8,10 +8,10 @@ description: End-of-session handoff for the noodle repository. Use when Brian sa
 The next session starts with no memory of this one. Leave the repository so that
 `scripts/session-context.sh` and `docs/PROGRESS.md` are enough to resume.
 
-1. Run `./scripts/init.sh`. If something is red, fix it or record it as the first item of
+1. Run `make init`. If something is red, fix it or record it as the first item of
    "Start here".
 2. `docs/features.json`: flip `passes` to `true` only for features whose `verify` step
-   you ran in this session. Add new entries for work discovered; never edit or delete
+   you ran in this session and whose `evidence/<id>.md` says PASS (`make evaluate`). Add new entries for work discovered; never edit or delete
    existing ones.
 3. `docs/PROGRESS.md`:
    - **Start here**: the exact next action, specific enough to act on without rereading

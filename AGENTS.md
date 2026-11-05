@@ -6,17 +6,25 @@ Every session starts without memory of the previous one. The repository carries 
 and hooks in `.claude/settings.json` keep it current.
 
 **Start.** The `SessionStart` hook injects "Start here", the next features and the git state.
-Run `./scripts/init.sh` and fix anything red before new work.
+Run `make init` and fix anything red before new work. Every command is a `make` target,
+listed with when to use it in [`docs/COMMANDS.md`](docs/COMMANDS.md).
 
-**Work, one feature at a time.** New work on a phase starts from a spec:
-`specs/NNN-name/spec.md` (what and why), then `plan.md`, then `tasks.md`. Ask before choices
-the spec leaves open, and record the answer in an ADR.
+**Work, one feature at a time, through [`docs/PROCESS.md`](docs/PROCESS.md)** (ADR-0024).
+New work starts from a spec made from `specs/_template/`: `spec.md` in full or quick mode,
+then `plan.md`, `tasks.md` and, in full mode, `contract.md`. Requirements are EARS with a
+scenario; decisions are ADRs from `docs/adr/_template.md`; invariants are cited from
+[`docs/CONSTITUTION.md`](docs/CONSTITUTION.md). Ask before choices the spec leaves open
+(five questions at most per pass), and record the answer in an ADR. `make spec-check`
+tells you what is missing.
 
-**After each verified feature, not only at the end:**
-1. flip its `passes` to `true` in `docs/features.json`, only if you ran its `verify` step;
-   never edit or delete an entry, `scripts/check-features.sh` and CI reject it;
-2. add a line under today's entry in `docs/PROGRESS.md`;
-3. commit with a conventional message.
+**After each feature, not only at the end:**
+1. commit the work, then `make evaluate FEATURE=<id>` (full mode) or write
+   `evidence/<id>.md` yourself (quick mode); on NEEDS_WORK, add the findings as
+   Convergence tasks and fix them;
+2. flip its `passes` to `true` in `docs/features.json` only once the evidence says PASS;
+   never edit or delete an entry: `make features`, a hook and CI reject it;
+3. add a line under today's entry in `docs/PROGRESS.md`;
+4. commit with a conventional message.
 
 The `Stop` hook blocks ending a turn when files changed but `docs/PROGRESS.md` did not.
 A one-line "in progress" note satisfies it.
@@ -42,6 +50,7 @@ The main session model is Brian's choice (`/model`). Subagents pin theirs.
 | Implementing tasks from a `tasks.md` that is already clear | Sonnet |
 | Collecting a diagram's facts from code (skill step 1) | `noodle:fact-finder` agent (Sonnet) |
 | Reviewing a rendered diagram as a tech lead | `noodle:diagram-reviewer` agent (Opus) |
+| Grading a feature, reviewing a contract | `evaluator` agent (Opus, read-only), through `make evaluate` and `make review-contract` |
 | Mechanical work: fetching and recolouring logos, variants | `noodle:icon-curator` agent (Haiku) |
 
 ## Read first
@@ -74,10 +83,8 @@ Dependencies are vendored: run `go mod vendor` after touching `go.mod`.
 ## Check before handing back
 
 ```bash
-go vet ./... && go test ./...
-go run ./cmd/noodle render examples/cnp-runtime --view runtime
-go run ./cmd/noodle render examples/cnp-runtime --view oidc-login
-claude plugin validate .
+make check     # vet, tests, every example, the features gate, spec-check
+make plugin    # after touching .claude-plugin/, skills/ or agents/
 ```
 
 For diagram work, render the PNG and look at it. The lint catches geometry, not taste.

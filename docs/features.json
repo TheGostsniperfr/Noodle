@@ -88,6 +88,18 @@
         {"id": "P1c-03", "description": "Pipe and route render in both themes, explained in the legend, pipe text linted against its open end; existing examples unchanged", "verify": "go test ./internal/lint/... flags a pipe title that a box would fit, and every example renders byte-identical to main", "passes": true},
         {"id": "P1c-04", "description": "examples/messaging renders dark and light in init.sh and CI", "verify": "./scripts/init.sh renders examples/messaging", "passes": true}
       ]
+    },
+    {
+      "id": "dev",
+      "title": "Engineering process: traceable specs, evaluated features, one make entry point",
+      "spec": "specs/007-engineering-process/spec.md",
+      "features": [
+        {"id": "DEV-01", "description": "Every developer command is a documented make target listed in docs/COMMANDS.md; CI and hooks call make", "verify": "go test ./tools/speccheck/ -run Commands passes, grep finds no scripts/ call in .github/workflows, and make init exits 0", "passes": true, "covers": ["FR-001", "FR-007"]},
+        {"id": "DEV-02", "description": "make spec-check traces full-mode specs: EARS requirements with scenarios, named by tasks, covered by features, graded in a contract; cited ADRs and invariants exist", "verify": "go test ./tools/speccheck/ -run Spec has a failing and a passing case per rule, and make spec-check exits 0", "passes": true, "covers": ["FR-002", "FR-003"]},
+        {"id": "DEV-03", "description": "ADRs with frontmatter are checked for status, date, deciders, two options and a Confirmation; the ADR index is generated", "verify": "go test ./tools/speccheck/ -run ADR passes, and make adr-index leaves docs/adr/README.md unchanged", "passes": true, "covers": ["FR-004"]},
+        {"id": "DEV-04", "description": "make features rejects a new pass without PASS evidence, requires the evaluator for full-mode specs, and keeps the history rules", "verify": "go test ./tools/speccheck/ -run Features covers missing evidence, PASS evidence, self evidence in full and quick mode, and the three history rules", "passes": true, "covers": ["FR-005", "FR-008"]},
+        {"id": "DEV-05", "description": "make evaluate runs the read-only evaluator in a fresh process and writes the evidence file; make review-contract reviews a contract", "verify": "make evaluate FEATURE=DEV-04 writes specs/007-engineering-process/evidence/DEV-04.md with a Verdict line", "passes": true, "covers": ["FR-006"]}
+      ]
     }
   ],
   "backlog": [

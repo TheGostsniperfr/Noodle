@@ -16,14 +16,12 @@ jobs:
         with:
           go-version-file: go.mod
       - name: vet and test
-        run: go vet ./... && go test ./...
-      - name: lint reference example
-        run: go run ./cmd/noodle render examples/cnp-runtime --view runtime && go run ./cmd/noodle render examples/cnp-runtime --view oidc-login && go run ./cmd/noodle render examples/sequence-basics && go run ./cmd/noodle render examples/landscape --view stack && go run ./cmd/noodle render examples/catalog --view catalog && go run ./cmd/noodle render examples/cnp-access --view matrix && go run ./cmd/noodle render examples/messaging --view broker && for v in proposal reference focus; do go run ./cmd/noodle render examples/topology-diff --view $v -icons examples/platform-regression/icons; done
-      - name: lint regression fixtures
-        run: for d in platform-overview app-runtime-view repo-map; do go run ./cmd/noodle render examples/platform-regression/$d -icons examples/platform-regression/icons; done
-      - name: lint docs diagrams
-        run: go run ./cmd/noodle render docs/diagrams/contract-pipeline -icons docs/diagrams/icons
-      - name: features.json keeps its history
-        run: ./scripts/check-features.sh "${{ github.event.pull_request.base.sha || github.event.before }}"
+        run: make vet test
+      - name: lint examples, regression fixtures and docs diagrams
+        run: make examples
+      - name: features.json keeps its history and every new pass has evidence
+        run: make features BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+      - name: specs, ADRs and the command reference are consistent
+        run: make spec-check
       - name: vendor directory matches go.mod
-        run: go mod vendor && git diff --exit-code -- vendor
+        run: make vendor-check
