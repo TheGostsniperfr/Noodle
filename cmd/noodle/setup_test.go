@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"flag"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -17,7 +16,6 @@ import (
 	"github.com/TheGostsniperfr/Noodle/internal/skillrules"
 )
 
-var updateGolden = flag.Bool("update", false, "rewrite the golden files of noodle setup")
 
 var (
 	agentNames   = []string{"diagram-reviewer", "fact-finder", "icon-curator"}
@@ -79,7 +77,7 @@ func treeFiles(t *testing.T, root string) map[string]string {
 func assertMatchesGolden(t *testing.T, hostName, written string) {
 	t.Helper()
 	golden := filepath.Join("testdata", "setup", hostName)
-	if *updateGolden {
+	if *update {
 		require.NoError(t, os.RemoveAll(golden))
 		for rel, content := range treeFiles(t, written) {
 			target := filepath.Join(golden, filepath.FromSlash(rel))
