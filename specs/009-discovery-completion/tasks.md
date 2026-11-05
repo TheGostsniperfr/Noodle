@@ -90,7 +90,7 @@ After T09's `Decision: stop`. Order: T21, T22, then T23.
 
 - [x] **T21** `secret-endpoint` entries (FR-017), out of the gate by revision 1, with the
   DSC-09 #1 and #3 subtests `secret-endpoint-*`. Flip **P6a-09**.
-- [ ] **T22** `noodle digest DIR` and `examples/discovery-k8s/digest.txt`, checked by
+- [x] **T22** `noodle digest DIR` and `examples/discovery-k8s/digest.txt`, checked by
   `make examples` (FR-024). Flip **DSC-13** after the size bound of T23.
 - [ ] **T23** Second checkpoint: digest of the PAE fragments with both token estimates,
   arms A and C by `docs/benchmarks/run-arm.sh`, recorded in

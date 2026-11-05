@@ -8,6 +8,7 @@ usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|light] [-icons 
        noodle migrate SPEC.yaml DIR   (a v0 single file to a v1alpha1 system)
        noodle discover ADAPTER [PATH…|-] [-o fragment.yaml]
        noodle drift DIR   (the curated model against DIR/discovered)
+       noodle digest DIR  (a compact view of the fragments in DIR, for agents)
        noodle setup opencode|codex (-project [DIR] | -user)
        noodle version
        noodle help [-markdown]

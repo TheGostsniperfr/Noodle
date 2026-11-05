@@ -44,8 +44,10 @@ done
 mkdir -p "$out"
 out="$(cd "$out" && pwd)"
 go build -C "$root" -o "$rendered/noodle" ./cmd/noodle
-for target in "$rendered"/*/*/; do
-  ns="$(basename "$(dirname "$target")")"
+# From inside the rendered tree, so every src is a short relative path.
+cd "$rendered"
+for target in */*/; do
+  ns="$(dirname "$target")"
   name="$(basename "$target")"
-  "$rendered/noodle" discover k8s "$target" -namespace "$ns" -o "$out/k8s-$ns-$name.yaml" -observed-at 2026-09-29T00:00:00Z
+  ./noodle discover k8s "${target%/}" -namespace "$ns" -o "$out/k8s-$ns-$name.yaml" -observed-at 2026-09-29T00:00:00Z
 done

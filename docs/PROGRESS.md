@@ -27,6 +27,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-11-05 · Discovery checkpoint (spec 009 T09)
 
+- T22: `noodle digest DIR`: Services folded into their workload, routes resolved to it (across fragments too), ExternalSecret paths, open entries, `src` on every line; stderr prints both token estimates. PAE: ~35.0k tokens of fragments, ~6.4k of digest (18 %). `make examples` diffs `examples/discovery-k8s/digest.txt`. DSC-13 flip waits for T23.
 - T27: credential words drop a key only as its last segment (`OAUTH_TOKEN_URL` kept).
 - T24-T26: P6a-09 convergence, real Secret values in every leak fixture, one entry per Secret id across namespaces, plan table.
 - T21: `secret-endpoint` entries from `secretKeyRef` keys and `envFrom` Secrets (keys from the Secret or its ExternalSecrets, never values), one per Secret and key set; credential words win (`SMTP_SERVER_PASSWORD` is skipped). Schema enum gains the kind ADR-0018 named. P6a-09 passes (evaluator, after T24-T26).
