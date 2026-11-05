@@ -9,15 +9,15 @@ import (
 
 var addressWords = []string{"HOST", "URL", "URI", "ENDPOINT", "DSN", "JDBC", "ADDR", "SERVER"}
 
-// credentialWords win over addressWords: SMTP_SERVER_PASSWORD names a credential.
-var credentialWords = []string{"PASSWORD", "PASSWD", "TOKEN", "SECRET"}
+// credentialWords as the last segment of a key win over addressWords:
+// SMTP_SERVER_PASSWORD names a credential, OAUTH_TOKEN_URL an address.
+var credentialWords = []string{"PASSWORD", "PASSWD", "PASS", "TOKEN", "SECRET", "KEY"}
 
 func isAddressKey(key string) bool {
 	k := strings.ToUpper(key)
-	for _, w := range credentialWords {
-		if strings.Contains(k, w) {
-			return false
-		}
+	last := k[strings.LastIndexAny(k, "_-.")+1:]
+	if slices.Contains(credentialWords, last) {
+		return false
 	}
 	for _, w := range addressWords {
 		if strings.Contains(k, w) {

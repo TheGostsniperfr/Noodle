@@ -112,6 +112,15 @@ spec:
               valueFrom:
                 secretKeyRef: {name: db, key: SMTP_SERVER_PASSWORD}
 `) + dbSecret("prod", encoded), []model.Unresolved{}},
+		{"secret-endpoint-credential-suffix", prodWorkload("api", `          env:
+            - name: A
+              valueFrom:
+                secretKeyRef: {name: oauth, key: OAUTH_TOKEN_URL}
+            - name: B
+              valueFrom:
+                secretKeyRef: {name: oauth, key: OAUTH_SERVER_KEY}
+`), []model.Unresolved{{Kind: "secret-endpoint", Value: "oauth/OAUTH_TOKEN_URL", Hint: "secret-manager",
+			About: []string{"k8s:prod/deployment/api"}, Src: model.Src{Line: 13}}}},
 		{"secret-endpoint-namespaces", prodWorkload("api", envFromDB) + dbSecret("prod", encoded) +
 			strings.Replace(prodWorkload("api", dbURLFromSecret), "namespace: prod", "namespace: staging", 1),
 			[]model.Unresolved{

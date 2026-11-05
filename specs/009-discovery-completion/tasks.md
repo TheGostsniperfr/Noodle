@@ -80,6 +80,9 @@ Tasks the evaluator found missing, appended here; never edit the waves above.
   on the Secret id, value unchanged), subtest `secret-endpoint-namespaces`.
 - [x] **T26** P6a-09: plan 009's file table lists the `secret-endpoint` enum value of
   `fragment.schema.json` (ADR-0018).
+- [x] **T27** P6a-09 finding: a credential word drops a key only as its last segment, so
+  `OAUTH_TOKEN_URL` is an address and `OAUTH_SERVER_KEY` is not; subtest
+  `secret-endpoint-credential-suffix`.
 
 ## Wave 2b · Revision 1 (ADR-0031)
 

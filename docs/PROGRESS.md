@@ -27,6 +27,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-11-05 · Discovery checkpoint (spec 009 T09)
 
+- T27: credential words drop a key only as its last segment (`OAUTH_TOKEN_URL` kept).
 - T24-T26: P6a-09 convergence, real Secret values in every leak fixture, one entry per Secret id across namespaces, plan table.
 - T21: `secret-endpoint` entries from `secretKeyRef` keys and `envFrom` Secrets (keys from the Secret or its ExternalSecrets, never values), one per Secret and key set; credential words win (`SMTP_SERVER_PASSWORD` is skipped). Schema enum gains the kind ADR-0018 named. P6a-09 passes (evaluator, after T24-T26).
 - Revision 1 of spec 009 and ADR-0031, agreed with Brian: `noodle digest` for agents, `secret-endpoint` out of the gate, then a second checkpoint (wave 2b, T21 to T23, DSC-13 and DSC-14).
