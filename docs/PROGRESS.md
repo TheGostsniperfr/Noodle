@@ -7,14 +7,13 @@ decisions go in ADRs, acceptance in `features.json`.
 ## Start here
 
 1. `make init`: fix anything red before new work. Commands: `docs/COMMANDS.md`; process: `docs/PROCESS.md`.
-2. Read the current spec: [`specs/003-static-discovery/spec.md`](../specs/003-static-discovery/spec.md)
-   and ADR-0017, ADR-0018. Backlog: the [project board](https://github.com/users/TheGostsniperfr/projects/5), issue #42.
-3. Next action: spec 003 T05 (secrets and references, Argo CD Applications), then T06,
-   T12 and the T14 checkpoint before anything else ([`tasks.md`](../specs/003-static-discovery/tasks.md)).
-   Phase 1 still has spec 002 T03 (issue #43, in `dockair-docs`).
-   Measure on real repos with `make discover-eval`.
-4. Spec 007 (process, #108) is done on `feat/spec-process`; PR pending. Then pilot the
-   process on #79 (`noodle drift`, P6a-05) as spec 008, full mode.
+2. Current spec: [`specs/009-discovery-completion`](../specs/009-discovery-completion/tasks.md),
+   T09 checkpoint said **stop** (`docs/benchmarks/discovery-checkpoint.md`): wave 3 is
+   closed until the spec gets its `## Revision` (FR-015), a direction choice for Brian. Backlog: the [project board](https://github.com/users/TheGostsniperfr/projects/5), issue #42.
+3. Open for Brian: DSC-03's `unrendered` hint is still a short code (the fragment schema
+   restricts `hint`); PRJ-02 of spec 010; PRs #14, #60, #89; branch `feat/access-views`
+   (PR #53 closed unmerged); CodeQL alert 5 to dismiss as a false positive.
+4. Phase 1 still has spec 002 T03 (issue #43, in `dockair-docs`).
 
 ## Open threads outside this repo
 
@@ -25,6 +24,10 @@ decisions go in ADRs, acceptance in `features.json`.
 | `~/.dotfiles` | noodle plugin installed declaratively (commit `9bf7e57`) | pushed. `nixos-rebuild switch` still to run. |
 
 ## Log
+
+### 2026-11-05 · Discovery checkpoint (spec 009 T09)
+
+- T09: checkpoint on PAE platform-overview, arm A $4.34 24/25, arm C $4.76 25/25: Decision: stop (ADR-0029, C at 110 % of A). C finds the edge A leaves unresolved but re-reads the repos for what fragments lack (credential-implied addresses, app config). Wave 3 stays closed (FR-015); the spec revision is Brian's call. Ground truth, scripts and filtered transcripts in `docs/benchmarks/`.
 
 ### 2026-11-05 · Spec 008 convergence
 

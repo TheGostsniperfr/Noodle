@@ -36,7 +36,7 @@ follow-ups for its features.
 
 ## Wave 2 · Checkpoint
 
-- [ ] **T09** Arms A and C on PAE `platform-overview`, cost from `tools/tokencost`, recall
+- [x] **T09** Arms A and C on PAE `platform-overview`, cost from `tools/tokencost`, recall
   against the 25 in-cluster edges, decision recorded in `docs/PROGRESS.md` and
   `docs/benchmarks/discovery-checkpoint.md` (FR-014). Spec 003 T14. Needs T02, T03, T05.
   Flip **DSC-08**, then **P6a-08**.
