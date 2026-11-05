@@ -28,6 +28,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-11-05 · Discovery checkpoint (spec 009 T09)
 
+- DSC-15 passes (evaluator); per-edge scoring of all six runs in `platform-overview-edges.md`; roadmap marks 6a closed.
 - T29: checkpoint 3 on PAE platform-overview, arm A $3.89 23/25, arm C $4.91 25/25: Decision: stop, final (C at 126 %). Phase 6a closes without its exit criterion; discovery serves drift, check and query, FR-022 and FR-023 dropped (ADR-0031). Summary of the three rounds in `docs/benchmarks/discovery-checkpoint-3.md`.
 - Revision 2 and ADR-0032 (agreed with Brian): a third and last checkpoint, C told what discovery never sees instead of "complete" (T29, DSC-15).
 - T28: DSC-13 and DSC-14 pass (evaluator); their findings fixed.

@@ -37,3 +37,36 @@ same direction; port and protocol are not required.
 | 23 | e-g-certmanager-route53 | cert-manager | AWS Route 53 |
 | 24 | e-h-certmanager-letsencrypt | cert-manager | Let's Encrypt |
 | 25 | e-i-externaldns-route53 | external-dns | AWS Route 53 |
+
+## Scoring per run
+
+One row per edge, matched by hand on each arm's `checkpoint*-<arm>.facts.yaml`.
+
+| # | Id | 1 A | 1 C | 2 A | 2 C | 3 A | 3 C |
+|---|---|---|---|---|---|---|---|
+| 1 | e-3-envoy-api | found | found | found | found | found | found |
+| 2 | e-4-api-keycloak | missed | found | found | found | found | found |
+| 3 | e-5-api-pg | found | found | found | found | found | found |
+| 4 | e-api-s3 | found | found | found | found | found | found |
+| 5 | e-api-smtp | found | found | found | found | found | found |
+| 6 | e-api-discord | found | found | found | found | found | found |
+| 7 | e-envoy-front | found | found | found | found | found | found |
+| 8 | e-envoy-keycloak | found | found | found | found | found | found |
+| 9 | e-keycloak-pg | found | found | found | found | found | found |
+| 10 | e-gatus-pg | found | found | found | found | found | found |
+| 11 | e-envoy-pp-front | found | found | found | found | found | found |
+| 12 | e-envoy-pp-api | found | found | found | found | found | found |
+| 13 | e-pp-api-keycloak | found | found | found | found | found | found |
+| 14 | e-pp-api-pg | found | found | found | found | found | found |
+| 15 | e-pp-keycloak-pg | found | found | found | found | found | found |
+| 16 | e-pp-gatus-pg | found | found | found | found | found | found |
+| 17 | e-grafana-prometheus | found | found | found | missed | missed | found |
+| 18 | e-prometheus-alertmanager | found | found | found | missed | missed | found |
+| 19 | e-oidc-envoy-gitlab | found | found | found | found | found | found |
+| 20 | e-d-argocd-repos | found | found | found | found | found | found |
+| 21 | e-e-nodes-dockerhub | found | found | found | missed | found | found |
+| 22 | e-f-eso-onepassword | found | found | found | found | found | found |
+| 23 | e-g-certmanager-route53 | found | found | found | found | found | found |
+| 24 | e-h-certmanager-letsencrypt | found | found | found | found | found | found |
+| 25 | e-i-externaldns-route53 | found | found | found | found | found | found |
+| | **Total** | 24 | 25 | 25 | 22 | 23 | 25 |
