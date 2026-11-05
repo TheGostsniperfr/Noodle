@@ -41,7 +41,39 @@ func TestCardLayout_LegendCard_HoldsOnlyTheKindsTheSpecUses(t *testing.T) {
 		ids = append(ids, r.ID)
 	}
 	assert.Equal(t, []string{"", "legend-node-backend", "legend-node-bus", "legend-pipe", "legend-steps", "legend-port",
-		"legend-edge-link", "legend-stack-1", "legend-notes"}, ids)
+		"legend-edge-link", "legend-stack-1"}, ids)
+}
+
+func TestCardLayout_LegendNotes_ExplainOnlyWhatIsDrawn(t *testing.T) {
+	t.Parallel()
+	zone := []diagram.Zone{{ID: "z"}}
+	tests := []struct {
+		name string
+		spec diagram.Spec
+		want []string
+	}{
+		{"nothing-to-explain", diagram.Spec{Nodes: []diagram.Node{{ID: "a", Kind: "backend"}}}, nil},
+		{"zones-only", diagram.Spec{Zones: zone}, []string{LegendNoteZones}},
+		{"node-gap-only", diagram.Spec{Nodes: []diagram.Node{{ID: "a", Kind: "backend", Badge: "G1"}}}, []string{LegendNoteGaps}},
+		{"edge-gap-and-zones", diagram.Spec{Zones: zone, Edges: []diagram.Edge{{ID: "e", Kind: "flow", Label: "GET · !!⚠ G2!!"}}},
+			[]string{LegendNoteZones, LegendNoteGaps}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			card := diagram.Card{ID: "legend", Legend: true, W: 600, H: 300}
+
+			l := CardLayout(&tt.spec, card)
+
+			var got []string
+			for _, r := range l.Rows {
+				if r.Kind == RowLegendNotes {
+					got = r.Plain
+				}
+			}
+			assert.Equal(t, tt.want, got)
+		})
+	}
 }
 
 func TestCardRow_Widest_IsTheLineWhenTheCellDoesNotWrap_AndTheWordWhenItDoes(t *testing.T) {

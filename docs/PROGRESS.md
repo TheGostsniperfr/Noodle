@@ -26,6 +26,10 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-11-05 · Legend notes when drawn (#57)
+
+- The legend's two notes are kept only when the diagram draws a zone or a gap badge; broker, topology-diff (3) and contract-pipeline lose the gaps line. Replaces PR #60, rebuilt on the spec 008 card layout.
+
 ### 2026-11-05 · Spec 008 convergence
 
 - LNT-01, 02, 03, 04, 06, 08 pass. T14: #90 reproduced from agent-playbook's real view on
