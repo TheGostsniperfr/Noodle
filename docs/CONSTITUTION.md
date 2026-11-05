@@ -10,7 +10,7 @@ invariant needs an ADR, like any other decision (C10).
 | **C01** | **Model first.** What exists is described once, in the model. Views and layouts reference it and never redefine it. | Vision 1, ADR-0002 |
 | **C02** | **An arrow is a connection**, from the side that opens it to the side that listens, the listening port on the server. References are configuration, never traffic. Responses are notes. | Vision 5, ADR-0003 |
 | **C03** | **Topology and sequence are separate views**; a topology has one step per connection. | ADR-0004, ADR-0011 |
-| **C04** | **Readable by construction.** A diagram that fails the lint is not emitted. A lint rule is never relaxed to make a diagram pass: the diagram is fixed. | Vision 4, ADR-0006 |
+| **C04** | **Readable by construction.** A diagram that fails the lint is not emitted as a deliverable: `-draft` draws it with its findings and exits 1 (ADR-0036). A lint rule is never relaxed to make a diagram pass: the diagram is fixed. | Vision 4, ADR-0006, ADR-0036 |
 | **C05** | **Git is the source of truth.** Model, views and layouts are reviewed in PRs; rendered artifacts are generated, never edited by hand. | Vision 6, ADR-0005 |
 | **C06** | **Contracts are the boundary.** A module depends on schemas, never on another module's internals. A contract change needs an ADR and a schema version bump. | Vision 7, ADR-0007 |
 | **C07** | **Truth comes from code and infrastructure; humans curate.** Adapters write fragments and never edit the curated model. The gap between the two is reported, not hidden. | Vision 3, ADR-0015 |
