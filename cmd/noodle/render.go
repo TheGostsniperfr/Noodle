@@ -689,7 +689,14 @@ func (r *renderer) legend(layout house.Layout) {
 			}
 			text(html.EscapeString(row.Text))
 		case house.RowLegendNotes:
-			notes := fmt.Sprintf(`Large dashed frame: infra perimeter · small: functional group<br><font color="%s"><b>⚠ Gx</b></font>: docs and code disagree, see "Gaps"`, r.th.Warn)
+			lines := make([]string, len(row.Plain))
+			for i, l := range row.Plain {
+				lines[i] = html.EscapeString(l)
+				if l == house.LegendNoteGaps {
+					lines[i] = fmt.Sprintf(`<font color="%s"><b>⚠ Gx</b></font>: docs and code disagree, see "Gaps"`, r.th.Warn)
+				}
+			}
+			notes := strings.Join(lines, "<br>")
 			r.vertex(row.ID, "1", notes, style("text", "html=1", "align=left", "verticalAlign=top", "whiteSpace=wrap", font(house.LegendTextSize, r.th.Muted)), row.Rect.X, row.Rect.Y, row.Rect.W, row.Rect.H)
 		}
 	}

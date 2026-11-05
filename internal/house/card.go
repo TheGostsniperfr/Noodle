@@ -206,12 +206,13 @@ func legendRows(l *Layout, s *diagram.Spec, c diagram.Card) {
 	}
 	y = statusRows(l, s, x, y, half-72)
 	extendFreeRows(l, c)
-	l.Rows = append(l.Rows, CardRow{
-		Kind: RowLegendNotes, ID: c.ID + "-notes",
-		Plain:    []string{"Large dashed frame: infra perimeter · small: functional group", "⚠ Gx: docs and code disagree, see \"Gaps\""},
-		Rect:     diagram.Rect{X: c.X + 20, Y: c.Y + c.H - LegendNotesBelow, W: c.W - 40, H: LegendNotesH},
-		FontSize: LegendTextSize, LineH: LegendTextSize * LineHeightEm, Wraps: true,
-	})
+	if notes := legendNotes(s); len(notes) > 0 {
+		l.Rows = append(l.Rows, CardRow{
+			Kind: RowLegendNotes, ID: c.ID + "-notes", Plain: notes,
+			Rect:     diagram.Rect{X: c.X + 20, Y: c.Y + c.H - LegendNotesBelow, W: c.W - 40, H: LegendNotesH},
+			FontSize: LegendTextSize, LineH: LegendTextSize * LineHeightEm, Wraps: true,
+		})
+	}
 	l.Needed = math.Max(leftBottom, y) - c.Y + LegendNotesBelow
 }
 
@@ -298,4 +299,36 @@ func extendFreeRows(l *Layout, c diagram.Card) {
 			l.Rows[i].Avail = right - r.Rect.X
 		}
 	}
+}
+
+// Legend notes, each kept only when the diagram draws what it explains: a legend line
+// for something absent sends the reader looking for it (#57).
+const (
+	LegendNoteZones = "Large dashed frame: infra perimeter · small: functional group"
+	LegendNoteGaps  = "⚠ Gx: docs and code disagree, see \"Gaps\""
+)
+
+func legendNotes(s *diagram.Spec) []string {
+	var notes []string
+	if len(s.Zones) > 0 {
+		notes = append(notes, LegendNoteZones)
+	}
+	if hasGapBadge(s) {
+		notes = append(notes, LegendNoteGaps)
+	}
+	return notes
+}
+
+func hasGapBadge(s *diagram.Spec) bool {
+	for _, n := range s.Nodes {
+		if n.Badge != "" {
+			return true
+		}
+	}
+	for _, e := range s.Edges {
+		if strings.Contains(e.Label, "!!⚠") {
+			return true
+		}
+	}
+	return false
 }
