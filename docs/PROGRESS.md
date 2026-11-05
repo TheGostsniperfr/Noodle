@@ -29,6 +29,10 @@ decisions go in ADRs, acceptance in `features.json`.
 ### 2026-11-05 · Spec 011 draft
 
 - Spec 011 (own SVG and PNG renderer, phase 2) drafted, five questions open for Brian.
+- Brian took the recommended answer for all five. ADR-0033 (one scene, three writers),
+  ADR-0034 (JetBrains Mono NL embedded), ADR-0035 (PNG in the binary), ADR-0036 (noodle's
+  images are the reference, `-draft`, C04 amended); plan, tasks, P2-01 to P2-08. Contract
+  agreed after three review rounds (cap), round 3 applied as follow-ups.
 
 ### 2026-11-05 · Spec 008 convergence
 

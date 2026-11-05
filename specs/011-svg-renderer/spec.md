@@ -1,11 +1,12 @@
 # Spec 011 · Own SVG and PNG renderer
 
-- Status: **Draft**
+- Status: **Clarified** (answers of 2026-11-05 in Clarifications)
 - Mode: **full**
 - Phase: 2, the current phase once 6a closes (#113, #114). Every export depends today on
   draw.io desktop, and three field reports hit that limit (C11).
 - Issue: #82 · Backlog: B-09, B-23, B-29 (#71), B-40 (#91)
-- Decisions it builds on: ADR-0006 (house style), ADR-0011, ADR-0021, ADR-0022
+- Decisions it builds on: ADR-0001, ADR-0006 (house style), ADR-0011, ADR-0021, ADR-0022,
+  ADR-0026, ADR-0033, ADR-0034, ADR-0035, ADR-0036
 - Invariants it touches: C04, C05, C06, C13
 
 ## Why
@@ -51,28 +52,34 @@ exits non-zero.
   *Scenario:* WHEN `examples/cnp-runtime -view runtime -o x.svg` is rendered THEN `x.svg`
   parses as XML, holds no `href` to a file or URL, and every node, zone, edge and card
   of the resolved diagram has an element with its id.
-- **FR-002** WHEN `-o` ends in `.png`, THE SYSTEM SHALL rasterize that SVG at the scale
-  given by `-scale` (default 2), whatever the canvas width.
-  *Scenario:* WHEN a 3725 px wide view is rendered at `-scale 2` THEN the PNG is
-  7450 px wide plus the border, and its right-most column is drawn.
+- **FR-002** WHEN `-o` ends in `.png`, THE SYSTEM SHALL rasterize the scene the SVG is
+  written from, in the binary, at the scale given by `-scale` (default 2), whatever the
+  canvas width.
+  *Scenario:* WHEN a 3725 px wide view is rendered at `-scale 2` THEN the PNG is exactly
+  7450 px wide, and its right-most column is drawn.
 - **FR-003** THE SYSTEM SHALL draw every view type the draw.io writer draws: topology,
   sequence, landscape, catalog, access matrix, and the diff and highlight states.
   *Scenario:* WHEN every example of `make examples` is rendered to SVG THEN each one
   succeeds and matches its committed golden SVG.
-- **FR-004** THE SYSTEM SHALL measure text in the lint with the metrics of the embedded
-  font, the one the SVG and PNG draw with.
+- **FR-004** THE SYSTEM SHALL measure text in the lint with the advances of the embedded
+  font, the one the SVG and PNG draw with, and SHALL report any rune the font lacks.
+  WHEN the render writes a `.drawio`, THE SYSTEM SHALL measure no rune narrower than
+  `ExportCharWidthEm`, since draw.io draws with system fonts.
   *Scenario:* WHEN a node title is one character too wide for its box at the embedded
-  font's advance THEN the lint reports it; one character shorter, it does not.
+  font's advance THEN the lint reports it; one character shorter, it does not. WHEN a
+  label holds U+4E2D THEN the lint reports `glyph-coverage` naming the element.
 - **FR-005** WHERE `-animate` is set, THE SYSTEM SHALL animate the dashes of traffic
   connections in the SVG with CSS only, from the opening side to the listening side,
   and SHALL leave references, denied and removed connections still.
   *Scenario:* WHEN `examples/cnp-runtime` is rendered with `-animate` THEN each traffic
   edge has the animation class, and no reference edge has it.
-- **FR-006** WHERE `-draft` is set, THE SYSTEM SHALL write the image even when the lint
-  fails, draw each finding as a red marker with its rule id at the place it names, and
-  exit with status 1.
+- **FR-006** WHERE `-draft` is set, THE SYSTEM SHALL write the SVG or PNG even when the
+  lint fails, draw each finding as a red marker with its rule id at the place it names
+  and a `DRAFT` banner, exit with status 1, and refuse a `.drawio` output (ADR-0036).
   *Scenario:* WHEN a view with one overlapping label is rendered with `-draft -o x.svg`
-  THEN `x.svg` is written, holds one marker with the rule id, and the exit status is 1.
+  THEN `x.svg` is written, holds one marker with the rule id and the banner, and the
+  exit status is 1. WHEN it is rendered with `-draft -o x.drawio` THEN nothing is
+  written and the exit status is 2.
 - **FR-007** WHEN `-o` ends in `.drawio`, THE SYSTEM SHALL write the same file as before
   this spec.
   *Scenario:* WHEN every example is rendered to `.drawio` THEN each file is byte-equal
@@ -98,15 +105,15 @@ exits non-zero.
 
 ## Clarifications
 
-Five questions for Brian, recommended option first.
+Brian answered on 2026-11-05: the recommended option for all five.
 
-| # | Question | Options | Answer | ADR |
-|---|---|---|---|---|
-| 1 | How do the draw.io and SVG writers share the geometry? | a) one list of drawing primitives (rect, text, path, image, pill) built from `house`, written by two backends, so they cannot drift; b) a separate SVG writer next to `render.go`, which mirrors it; c) SVG only, and the draw.io writer frozen | | |
-| 2 | Which font does the image use, and how does it get into the file? | a) JetBrains Mono (OFL), the house font, embedded as a subset `@font-face` in each SVG (tens of KB); b) system fonts by name, as today, smaller files but different on every machine; c) text converted to paths, exact but not selectable and much larger | | |
-| 3 | How is the PNG made? | a) in the binary: the primitives of 1a drawn straight to pixels with `golang.org/x/image` (vector rasterizer and OpenType, one new vendored module), so `noodle` alone suffices (#91); b) `resvg` as an external tool, called the way `kustomize` is (ADR-0027), sharper but one more install; c) both: Go by default, `resvg` when it is on the PATH | | |
-| 4 | Which view types does the first release draw? | a) all of them (FR-003), in waves: topology, then sequence and landscape, then catalog and matrix; b) topology only, the rest on draw.io until a later spec | | |
-| 5 | What becomes the default output and the reference for review (C13)? | a) SVG and PNG from noodle; examples commit `.svg` and `.png`, `.drawio` stays for editing; b) keep draw.io's PNG as the reference until the SVG has been compared on every example | | |
+| # | Question | Answer | ADR |
+|---|---|---|---|
+| 1 | How do the draw.io and SVG writers share the geometry? | a) one scene built from `house`, written by the draw.io, SVG and PNG backends; edges stay connectors in `.drawio` | ADR-0033 |
+| 2 | Which font does the image use, and how does it get into the file? | a) JetBrains Mono, in its NL cut (no ligatures), Regular and Bold, embedded as a subset in each SVG; the lint measures with its advances | ADR-0034 |
+| 3 | How is the PNG made? | a) in the binary with `golang.org/x/image`, no external tool | ADR-0035 |
+| 4 | Which view types does the first release draw? | a) all of them, in three waves: topology; sequence and landscape; catalog and access matrix | ADR-0036 |
+| 5 | What becomes the default output and the reference for review (C13)? | a) the SVG and PNG noodle draws; `.drawio` stays committed for hand edits; C04 amended for `-draft` | ADR-0036 |
 
 ## Success criteria
 

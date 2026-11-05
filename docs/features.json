@@ -150,6 +150,21 @@
         {"id": "PRJ-07", "description": "noodle version, tagged releases for four platforms with checksums and a changelog, and a verified download fallback in bin/noodle", "verify": "go test ./cmd/noodle/ -run 'Version|Wrapper' passes and a snapshot build yields four archives and a checksums file", "passes": true, "covers": ["FR-012", "FR-013", "FR-014"]},
         {"id": "PRJ-08", "description": "Process skills issue-writer, release-notes and contrib-check, checked like every skill", "verify": "make spec-check exits 0 with the three skills present", "passes": true, "covers": ["FR-015"]}
       ]
+    },
+    {
+      "id": "2",
+      "title": "Own SVG and PNG renderer from the same geometry",
+      "spec": "specs/011-svg-renderer/spec.md",
+      "features": [
+        {"id": "P2-01", "description": "Topology views render to a standalone SVG with the same geometry as the draw.io output", "verify": "go test ./cmd/noodle/ ./internal/render/svg/ renders every topology example to SVG with no external reference, every element at the rectangle of the committed .drawio, byte-identical twice", "passes": false, "covers": ["FR-001"]},
+        {"id": "P2-02", "description": "PNG rasterized in the binary at any width, with no external tool", "verify": "go test ./internal/render/png/ renders the 3725 px case at -scale 2 whole, every curated icon, in under 1 s, with no cgo or os/exec", "passes": false, "covers": ["FR-002"]},
+        {"id": "P2-03", "description": "Every view type renders to SVG and PNG, and the examples' reference images are noodle's", "verify": "go test ./cmd/noodle/ -run 'TestSVG_AllViewTypes|TestExamples_ImagesCurrent' passes and make examples needs no draw.io", "passes": false, "covers": ["FR-003"]},
+        {"id": "P2-04", "description": "The lint measures text with the embedded font and reports runes it lacks", "verify": "go test ./internal/lint/ ./internal/house/ ./cmd/noodle/ covers the font advance on both sides of the threshold, the ExportCharWidthEm floor and glyph-coverage on U+4E2D", "passes": false, "covers": ["FR-004"]},
+        {"id": "P2-05", "description": "-animate moves traffic dashes from the opening side to the listening side, with CSS only", "verify": "go test ./internal/render/svg/ -run TestSVG_Animate animates exactly the traffic edges of cnp-runtime, from their source, with no script", "passes": false, "covers": ["FR-005"]},
+        {"id": "P2-06", "description": "-draft draws a failing view with its findings and exits 1, and refuses .drawio", "verify": "go test ./cmd/noodle/ -run TestRender_Draft writes one marker and the banner with exit 1, and refuses .drawio with exit 2", "passes": false, "covers": ["FR-006"]},
+        {"id": "P2-07", "description": "The draw.io output is unchanged, written from the scene", "verify": "go test ./cmd/noodle/ -run TestExamples_DrawioCurrent passes and no file of cmd/noodle writes mxCell", "passes": false, "covers": ["FR-007"]},
+        {"id": "P2-08", "description": "Skill, README and guide export without draw.io", "verify": "grep -rn 'drawio -x' skills/ docs/guide/ README.md prints nothing and docs/diagrams images are current", "passes": false, "covers": ["FR-008"]}
+      ]
     }
   ],
   "backlog": [
