@@ -12,7 +12,7 @@ fails when the two differ. Process: [`PROCESS.md`](PROCESS.md).
 | `make check` | at the end of every task, before a commit | none | a test, an example, the features gate or spec-check failed; the first error names the file |
 | `make vet` | after a Go change, fast | none | `go vet` finding |
 | `make test` | after a Go change | none | a failing test |
-| `make examples` | after a change to model, lint or render | none | an example no longer lints: fix the change, never the rule (C04) |
+| `make examples` | after a change to model, lint, render or discovery | none | an example no longer lints, or discovery no longer reproduces `examples/discovery-k8s`'s golden fragment: fix the change, never the rule (C04) |
 | `make render` | to look at a diagram | `SYS=<dir>` `VIEW=<id>` `OUT=<file.drawio>` `THEME=dark\|light` `ICONS=<dirs>` `SLIDE=1` | the view fails its lint; without `OUT` nothing is written |
 | `make help` | to list targets | none | never fails |
 | `make next` | to see what to make pass next | none | never fails |

@@ -25,12 +25,16 @@ touching `go.mod`.
   selector and target port.
 - [ ] **T05** Secrets and references: envFrom, secretKeyRef, volumes, ExternalSecret,
   SecretStore providers, Argo CD Applications. No secret value in the output.
+  → spec 009 T02
 - [ ] **T06** Env and ConfigMap DNS references to known Services, marked inferred.
+  → spec 009 T03
 - [ ] **T07** NetworkPolicy: allowed pairs, `denied` and `enforced_by` on connections a
   policy blocks.
+  → spec 009 T10
 - [ ] **T08** `examples/discovery-k8s` with its golden fragment; `init.sh` and CI rerun
   discovery and diff against it. Manifests and the same objects wrapped as a
   `kubectl get -o yaml` List give the same fragment. Flip **P6a-03**, **P6a-04**.
+  → spec 009 T06
 
 ## C2 · Checkpoint and blind spots (P6a-08, P6a-09, P6a-10), ADR-0018
 
@@ -40,26 +44,34 @@ Order: T05, T06, T12, **T14**; then T15, T16 and T07 only if T14 passes.
   alone (arm A) and agent given the fragment by hand (arm C), one run each; cost from
   T12, recall against the 25 in-cluster edges. Go only if C costs clearly less and finds
   as many edges; record the result and the decision in PROGRESS. Flip **P6a-08**.
+  → spec 009 T09
 - [ ] **T15** `secret-endpoint`: workloads reading address-like Secret keys (env,
   envFrom, ExternalSecret targets), one entry per Secret, values never read. Flip
   **P6a-09**.
+  → spec 009 T11
 - [ ] **T16** Operator rules with one fixture each: CloudNativePG `Cluster`, Prometheus
   to Alertmanager, cert-manager issuers, external-dns provider. Flip **P6a-10**.
+  → spec 009 T12
 
 ## D · Merge and drift (P6a-05)
 
 - [ ] **T09** `internal/graph`: merge per ADR-0015, lookup, neighbours. `internal/access`
   (spec 004) has its own traversal until then; reuse or replace it here (ADR-0020).
+  → spec 009 T07
 - [ ] **T10** `Drift` and `noodle drift <system>`: unmatched, gone, planned-and-absent,
   unmodelled connections. Expected report in the example. Flip **P6a-05**.
+  → spec 009 T08
 
 ## E · Skill and benchmark (P6a-06, P6a-07)
 
 - [ ] **T11** Skill step 1 runs discovery first; `fact-finder` gets only what is left;
   `matches` documented in `reference.md`. The skill treats the fragment as a floor and
   names the edge families discovery never sees (ADR-0018). Flip **P6a-06**.
+  → spec 009 T16
 - [ ] **T12** `tools/tokencost`: transcript reader in Go (port of the scratch script
   used for the baseline). Test on a trimmed transcript fixture. Needed by T14, so done
   right after T06.
+  → spec 009 T05
 - [ ] **T13** Benchmark on PAE: arms A, B, C, two runs each; cost and accuracy against
   the validated platform-overview spec; results in Notion and in the PR. Flip **P6a-07**.
+  → spec 009 T17

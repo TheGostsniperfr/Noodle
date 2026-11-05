@@ -25,7 +25,16 @@ func edgeID(prefix, from, to, port string) string {
 	return "k8s:" + prefix + "/" + hex.EncodeToString(sum[:5])
 }
 
-func (g *graph) connect(from, to, port, protocol string, src model.Src) {
+func (g *graph) connect(from, to, port, protocol string, o *object, src model.Src) {
+	g.add(from, to, port, protocol, false, o, src)
+}
+
+// infer is connect for a connection found by a heuristic rather than declared.
+func (g *graph) infer(from, to, port string, o *object, src model.Src) {
+	g.add(from, to, port, "", true, o, src)
+}
+
+func (g *graph) add(from, to, port, protocol string, inferred bool, o *object, src model.Src) {
 	cid := edgeID("c", from, to, port)
 	if g.seen == nil {
 		g.seen = map[string]bool{}
@@ -35,10 +44,10 @@ func (g *graph) connect(from, to, port, protocol string, src model.Src) {
 	}
 	g.seen[cid] = true
 	g.conns = append(g.conns, model.DiscoveredConnection{Connection: model.Connection{
-		ID: cid, From: from, To: to, Port: port, Protocol: protocol, Kind: "flow"}, Src: src})
+		ID: cid, From: from, To: to, Port: port, Protocol: protocol, Kind: "flow"}, Inferred: inferred, Src: src, Object: o.identity()})
 }
 
-func (g *graph) refer(from, to, kind string, src model.Src) {
+func (g *graph) refer(from, to, kind string, o *object, src model.Src) {
 	rid := edgeID("r", from, to, kind)
 	if g.seen == nil {
 		g.seen = map[string]bool{}
@@ -47,7 +56,7 @@ func (g *graph) refer(from, to, kind string, src model.Src) {
 		return
 	}
 	g.seen[rid] = true
-	g.refs = append(g.refs, model.DiscoveredReference{Reference: model.Reference{ID: rid, From: from, To: to, Kind: kind}, Src: src})
+	g.refs = append(g.refs, model.DiscoveredReference{Reference: model.Reference{ID: rid, From: from, To: to, Kind: kind}, Src: src, Object: o.identity()})
 }
 
 // selectsPods connects each Service to the workloads its selector matches, once per
@@ -67,10 +76,10 @@ func selectsPods(idx *index, g *graph, u *unresolvedSet) {
 			matched = true
 			for _, p := range slice(svc.Body, "spec", "ports") {
 				pm, _ := p.(map[string]any)
-				g.connect(svc.id(), w.id(), targetPortName(pm, w), "", svc.Src)
+				g.connect(svc.id(), w.id(), targetPortName(pm, w), "", svc, svc.Src)
 			}
 			if len(slice(svc.Body, "spec", "ports")) == 0 {
-				g.connect(svc.id(), w.id(), "", "", svc.Src)
+				g.connect(svc.id(), w.id(), "", "", svc, svc.Src)
 			}
 		}
 		if !matched {

@@ -20,17 +20,19 @@ const slideMargin = 24.0
 const usage = `usage: noodle render DIR [-view ID] [-o out.drawio] [-theme dark|light] [-icons DIR[,DIR]] [-slide]
        noodle migrate SPEC.yaml DIR   (a v0 single file to a v1alpha1 system)
        noodle discover ADAPTER [PATH…|-] [-o fragment.yaml]
+       noodle drift DIR   (the curated model against DIR/discovered)
        noodle -list-icons [-icons DIR[,DIR]]`
 
 func main() {
 	if len(os.Args) > 1 {
-		commands := map[string]func([]string) error{"render": renderCommand, "migrate": migrateCommand, "discover": func(args []string) error {
-			reg, err := adapters()
-			if err != nil {
-				return err
-			}
-			return discoverCommand(context.Background(), reg, args, os.Stdin, os.Stdout, os.Stderr)
-		}}
+		commands := map[string]func([]string) error{"render": renderCommand, "migrate": migrateCommand,
+			"drift": func(args []string) error { return driftCommand(args, os.Stdout) }, "discover": func(args []string) error {
+				reg, err := adapters()
+				if err != nil {
+					return err
+				}
+				return discoverCommand(context.Background(), reg, args, os.Stdin, os.Stdout, os.Stderr)
+			}}
 		if cmd, ok := commands[os.Args[1]]; ok {
 			if err := cmd(os.Args[2:]); err != nil {
 				fmt.Fprintln(os.Stderr, err)

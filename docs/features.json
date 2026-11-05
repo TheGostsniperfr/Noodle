@@ -42,12 +42,13 @@
     {
       "id": "6a",
       "title": "Static discovery from Kubernetes",
+      "spec": "specs/009-discovery-completion/spec.md",
       "features": [
         {"id": "P6a-01", "description": "Fragment contract with provenance and src, matches on model elements", "verify": "go test ./internal/model/... validates fragment and model schemas and rejects malformed or duplicate matches", "passes": true},
         {"id": "P6a-02", "description": "Adapter interface and registry behind noodle discover", "verify": "go test ./internal/adapter/... runs a test adapter end to end through the registry", "passes": true},
-        {"id": "P6a-03", "description": "k8s adapter derives elements, connections and references from manifests", "verify": "noodle discover k8s examples/discovery-k8s/manifests equals the golden fragment, twice in a row", "passes": false},
-        {"id": "P6a-04", "description": "Manifests and kubectl get -o yaml output give the same fragment", "verify": "go test ./internal/adapter/k8s/... compares both inputs of the example", "passes": false},
-        {"id": "P6a-05", "description": "Merge and drift report against the curated model", "verify": "noodle drift examples/discovery-k8s equals the expected report", "passes": false},
+        {"id": "P6a-03", "description": "k8s adapter derives elements, connections and references from manifests", "verify": "noodle discover k8s examples/discovery-k8s/manifests equals the golden fragment, twice in a row", "passes": true},
+        {"id": "P6a-04", "description": "Manifests and kubectl get -o yaml output give the same fragment", "verify": "go test ./internal/adapter/k8s/... compares both inputs of the example", "passes": true},
+        {"id": "P6a-05", "description": "Merge and drift report against the curated model", "verify": "noodle drift examples/discovery-k8s equals the expected report", "passes": true},
         {"id": "P6a-06", "description": "Skill runs discovery first and fact-finder only for what is left", "verify": "a diagram of examples/discovery-k8s built with the skill reads no manifest file directly", "passes": false},
         {"id": "P6a-07", "description": "Token benchmark of three discovery arms on the same diagram", "verify": "Notion page Benchmark · Token cost of a diagram lists cost and connection recall for arms A, B and C", "passes": false},
         {"id": "P6a-08", "description": "Checkpoint: the fragment run costs clearly less than the agent alone and finds as many edges", "verify": "PROGRESS records cost and recall of arms A and C on PAE platform-overview and the go or stop decision", "passes": false},
@@ -114,6 +115,25 @@
         {"id": "LNT-06", "description": "A long zone sub no longer widens the title obstacle past the text drawn", "verify": "go test ./internal/lint/... ./internal/house/... leaves a lane 20 px right of a zone title with a 90-character sub free, and the obstacle equals the drawn text", "passes": true, "covers": ["FR-008"]},
         {"id": "LNT-07", "description": "Lint reports anything drawn past the canvas, and a landscape side column fits the canvas", "verify": "go test ./internal/lint/... ./internal/resolve/... fails a node past the canvas width, and resolves the #90 landscape with its side column inside the canvas and the lint green", "passes": true, "covers": ["FR-009"]},
         {"id": "LNT-08", "description": "Every example, regression fixture and docs diagram is lint-green under the new rules, fixed by changing diagrams only", "verify": "make examples exits 0 and the diff of internal/lint against origin/main removes or loosens no rule; the PR carries before/after PNGs of every changed example", "passes": true, "covers": ["FR-010"]}
+      ]
+    },
+    {
+      "id": "6a2",
+      "title": "Discovery, phase 6a completion: references, addresses, merge, drift, checkpoint",
+      "spec": "specs/009-discovery-completion/spec.md",
+      "features": [
+        {"id": "DSC-01", "description": "The k8s adapter emits configuration references (env-from, secret-key, config-key, mounts), ExternalSecret and store chains to providers, and Argo CD syncs, never a Secret value", "verify": "go test ./internal/adapter/k8s/ -run 'TestReferences' passes, with one fixture per reference kind and a test that no fragment line holds a Secret value", "passes": true, "covers": ["FR-001", "FR-002"]},
+        {"id": "DSC-02", "description": "Addresses in ConfigMaps, env and CR specs become inferred connections to known Services, and public URL hosts to the Gateway that serves them", "verify": "go test ./internal/adapter/k8s/ -run 'TestAddresses' passes, including an address to an unknown host that yields no connection", "passes": true, "covers": ["FR-003", "FR-004"]},
+        {"id": "DSC-03", "description": "Discovery warns on objects without namespace, takes it from -argocd-app, renders -kustomize directories read-only and fails naming the tool when kustomize is missing, and writes relative src paths", "verify": "go test ./internal/adapter/k8s/ ./cmd/noodle/ -run 'TestNamespace|TestKustomize|TestSrcPaths' passes", "passes": true, "covers": ["FR-005", "FR-006", "FR-007"]},
+        {"id": "DSC-04", "description": "Every discovered item built from an API object carries its optional object identity, additive in v1alpha1", "verify": "go test ./internal/model/ ./internal/adapter/k8s/ -run 'TestIdentity' passes, and existing golden fragments are unchanged", "passes": true, "covers": ["FR-008"]},
+        {"id": "DSC-05", "description": "examples/discovery-k8s ships with a golden fragment that discovery reproduces from manifests and from a kubectl List, checked by make examples", "verify": "go test ./cmd/noodle/ -run 'TestDiscoverExample' passes, and make examples diffs the rerun against the golden file", "passes": true, "covers": ["FR-009"]},
+        {"id": "DSC-06", "description": "internal/graph merges fragments into the curated model per ADR-0015 and keeps the sources of every matched item", "verify": "go test ./internal/graph/ -run 'TestMerge' passes, including a curated field never overridden", "passes": true, "covers": ["FR-010"]},
+        {"id": "DSC-07", "description": "noodle drift reports unmatched, gone, planned-and-absent and unmodelled connections, resolving references across fragments", "verify": "go test ./internal/graph/ ./cmd/noodle/ -run 'TestDrift|TestCrossFragment' passes, and the example's report equals examples/discovery-k8s/drift.txt", "passes": true, "covers": ["FR-011", "FR-012"]},
+        {"id": "DSC-08", "description": "tools/tokencost reads transcripts, and the ADR-0018 checkpoint on PAE is recorded with cost, recall and a decision", "verify": "go test ./tools/tokencost/ passes, and docs/benchmarks/discovery-checkpoint.md lists arms A and C with cost, recall out of 25 and one Decision line", "passes": false, "covers": ["FR-013", "FR-014"]},
+        {"id": "DSC-09", "description": "After a recorded go, NetworkPolicy denials, secret-endpoint entries and operator rules are discovered, each with a fixture", "verify": "go test ./internal/adapter/k8s/ -run 'TestNetworkPolicy|TestSecretEndpoint|TestOperatorRules' passes, and their first commit comes after the checkpoint's Decision: go", "passes": false, "covers": ["FR-015", "FR-016", "FR-017", "FR-018"]},
+        {"id": "DSC-10", "description": "A committed discovery rules file maps unknown kinds to elements and references, and owner, selects, runs-as, bound-by, scales and issues references are emitted", "verify": "go test ./internal/adapter/k8s/ -run 'TestRules|TestReferenceKinds' passes", "passes": false, "covers": ["FR-019", "FR-020"]},
+        {"id": "DSC-11", "description": "noodle query answers neighbours and paths from the merged graph with sources", "verify": "go test ./cmd/noodle/ ./internal/graph/ -run 'TestQuery' passes on examples/discovery-k8s", "passes": false, "covers": ["FR-021"]},
+        {"id": "DSC-12", "description": "The skill runs discovery first, and the three-arm token benchmark is committed and published", "verify": "skills/noodle-diagram/SKILL.md step 1 runs noodle discover, and docs/benchmarks/discovery-tokens.md has six runs with arm C recall at least arm A", "passes": false, "covers": ["FR-022", "FR-023"]}
       ]
     }
   ],

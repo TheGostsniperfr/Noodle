@@ -23,6 +23,7 @@ type object struct {
 	APIVersion, Kind, Namespace, Name string
 	Labels, Annotations               map[string]string
 	Body                              map[string]any
+	Node                              *yaml.Node
 	Src                               model.Src
 }
 
@@ -32,6 +33,8 @@ type input struct {
 	stats      adapter.Stats
 	seen       map[string]bool
 	namespace  string
+	// noLines is set while reading rendered output, whose lines point at no file.
+	noLines bool
 }
 
 // Skip reasons, as counted in Stats.
@@ -52,6 +55,13 @@ var generatedKinds = set("ControllerRevision", "Endpoints", "EndpointSlice", "Ev
 
 func read(ctx context.Context, src adapter.Source) (*input, error) {
 	in := &input{stats: adapter.Stats{Skipped: map[string]int{}}, seen: map[string]bool{}, namespace: or(src.Namespace, "default")}
+	var rendered []byte
+	if src.Kustomize != "" {
+		var err error
+		if rendered, err = kustomizeBuild(ctx, src.Kustomize, src.EnableHelm); err != nil {
+			return in, err
+		}
+	}
 	if src.Reader != nil {
 		raw, err := io.ReadAll(src.Reader)
 		if err != nil {
@@ -63,6 +73,11 @@ func read(ctx context.Context, src adapter.Source) (*input, error) {
 		if err := in.walk(ctx, p); err != nil {
 			return in, err
 		}
+	}
+	if src.Kustomize != "" {
+		in.noLines = true
+		defer func() { in.noLines = false }()
+		return in, in.decode(adapter.RelativePath(src.Kustomize)+"/kustomization.yaml", rendered)
 	}
 	return in, nil
 }
@@ -81,8 +96,8 @@ func (in *input) walk(ctx context.Context, root string) error {
 			}
 			if tool, marker := unrenderedDir(path); tool != "" {
 				in.unrendered = append(in.unrendered, model.Unresolved{
-					Kind: "unrendered", Value: filepath.ToSlash(path), Hint: tool,
-					Src: model.Src{File: filepath.ToSlash(marker), Line: 1}})
+					Kind: "unrendered", Value: adapter.RelativePath(path), Hint: tool,
+					Src: model.Src{File: adapter.RelativePath(marker), Line: 1}})
 				return filepath.SkipDir
 			}
 			return nil
@@ -95,7 +110,7 @@ func (in *input) walk(ctx context.Context, root string) error {
 		if err != nil {
 			return fmt.Errorf("read %s: %w", path, err)
 		}
-		return in.decode(filepath.ToSlash(path), raw)
+		return in.decode(adapter.RelativePath(path), raw)
 	})
 }
 
@@ -171,11 +186,15 @@ func (in *input) add(file string, n *yaml.Node, lines lineIndex, end int) error 
 		return nil
 	}
 	in.stats.Objects++
+	line := n.Line
+	if in.noLines {
+		line = 0
+	}
 	o := &object{
 		APIVersion: str(body, "apiVersion"), Kind: kind,
 		Namespace: str(body, "metadata", "namespace"), Name: str(body, "metadata", "name"),
 		Labels: strMap(body, "metadata", "labels"), Annotations: strMap(body, "metadata", "annotations"),
-		Body: body, Src: model.Src{File: file, Line: n.Line},
+		Body: body, Node: n, Src: model.Src{File: file, Line: line},
 	}
 	switch {
 	case kind == "CustomResourceDefinition":
@@ -188,8 +207,13 @@ func (in *input) add(file string, n *yaml.Node, lines lineIndex, end int) error 
 	case offPathHook(o.Annotations["helm.sh/hook"]):
 		in.stats.Skipped[skipHelmHook]++
 	default:
-		if o.Namespace == "" && !clusterScoped[kind] {
+		switch {
+		case clusterScoped[kind]:
+		case o.Namespace == "":
+			in.stats.NoNamespace++
 			o.Namespace = in.namespace
+		default:
+			in.stats.Namespaced++
 		}
 		// The first definition wins, in path order, so reruns agree.
 		if key := o.APIVersion + " " + o.id(); in.seen[key] {

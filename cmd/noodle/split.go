@@ -43,15 +43,9 @@ func renderCommand(args []string) error {
 	if err != nil {
 		return err
 	}
-	s, err := model.LoadSystem(dirs[0])
+	s, _, err := loadSystem(dirs[0])
 	if err != nil {
 		return err
-	}
-	if findings := model.Check(s); len(findings) > 0 {
-		for _, f := range findings {
-			fmt.Fprintf(os.Stderr, "check: %s\n", f)
-		}
-		return fmt.Errorf("%d check finding(s) in %s", len(findings), dirs[0])
 	}
 	id := *viewID
 	if id == "" {

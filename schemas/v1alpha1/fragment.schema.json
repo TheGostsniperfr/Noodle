@@ -49,6 +49,18 @@
       "oneOf": [{"required": ["file"]}, {"required": ["object"]}],
       "dependentRequired": {"line": ["file"]}
     },
+    "object": {
+      "type": "object",
+      "required": ["apiVersion", "kind", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "apiVersion": {"type": "string", "minLength": 1},
+        "kind": {"type": "string", "minLength": 1},
+        "namespace": {"type": "string", "minLength": 1, "description": "Absent for a cluster-scoped object."},
+        "name": {"type": "string", "minLength": 1}
+      },
+      "description": "The API object behind the item (ADR-0028). Absent on an item synthesized without one."
+    },
     "element": {
       "type": "object",
       "required": ["id", "kind", "src"],
@@ -64,7 +76,8 @@
         "ports": {"type": "array", "items": {"$ref": "#/$defs/port"}},
         "tags": {"type": "array", "items": {"type": "string"}},
         "multiplicity": {"type": "string", "minLength": 1},
-        "src": {"$ref": "#/$defs/src"}
+        "src": {"$ref": "#/$defs/src"},
+        "object": {"$ref": "#/$defs/object"}
       }
     },
     "connection": {
@@ -82,7 +95,8 @@
         "denied": {"type": "boolean"},
         "enforced_by": {"type": "array", "items": {"$ref": "#/$defs/id"}, "minItems": 1},
         "inferred": {"type": "boolean", "description": "Found by a heuristic, e.g. a Service DNS name in an env value."},
-        "src": {"$ref": "#/$defs/src"}
+        "src": {"$ref": "#/$defs/src"},
+        "object": {"$ref": "#/$defs/object"}
       },
       "dependentSchemas": {"enforced_by": {"required": ["denied"], "properties": {"denied": {"const": true}}}}
     },
@@ -108,7 +122,8 @@
         "from": {"$ref": "#/$defs/id"},
         "to": {"$ref": "#/$defs/id"},
         "kind": {"type": "string"},
-        "src": {"$ref": "#/$defs/src"}
+        "src": {"$ref": "#/$defs/src"},
+        "object": {"$ref": "#/$defs/object"}
       }
     }
   }

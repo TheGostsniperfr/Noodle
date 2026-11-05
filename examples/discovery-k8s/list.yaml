@@ -1,0 +1,158 @@
+apiVersion: v1
+kind: List
+items:
+  - apiVersion: gateway.networking.k8s.io/v1
+    kind: Gateway
+    metadata: {name: shared, namespace: prod}
+    spec:
+      gatewayClassName: envoy
+      listeners:
+        - {name: http, port: 80, protocol: HTTP}
+        - {name: https, port: 443, protocol: HTTPS}
+  # ---
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata: {name: web, namespace: prod}
+    spec:
+      selector: {matchLabels: {app: web}}
+      template:
+        metadata: {labels: {app: web}}
+        spec:
+          containers:
+            - name: web
+              image: ghcr.io/acme/web:2.3.0
+              ports: [{name: http, containerPort: 8080}]
+              env:
+                - name: PUBLIC_URL
+                  value: https://web.example.com/
+                - name: DB_HOST
+                  value: postgres.data.svc:5432
+  # ---
+  - apiVersion: v1
+    kind: Service
+    metadata: {name: web, namespace: prod}
+    spec:
+      selector: {app: web}
+      ports: [{name: http, port: 80, targetPort: http}]
+  # ---
+  - apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata: {name: web, namespace: prod}
+    spec:
+      parentRefs: [{name: shared}]
+      hostnames: [web.example.com]
+      rules:
+        - backendRefs: [{name: web, port: 80}]
+  # ---
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata: {name: api, namespace: prod}
+    spec:
+      selector: {matchLabels: {app: api}}
+      template:
+        metadata: {labels: {app: api}}
+        spec:
+          containers:
+            - name: api
+              image: ghcr.io/acme/api:1.4.2
+              ports: [{name: http, containerPort: 8080}]
+              env:
+                - name: DB_HOST
+                  value: postgres.data.svc:5432
+                - name: DB_URL
+                  valueFrom:
+                    secretKeyRef: {name: db, key: DB_URL}
+  # ---
+  - apiVersion: v1
+    kind: Service
+    metadata: {name: api, namespace: prod}
+    spec:
+      selector: {app: api}
+      ports: [{name: http, port: 80, targetPort: http}]
+  # ---
+  - apiVersion: gateway.networking.k8s.io/v1
+    kind: HTTPRoute
+    metadata: {name: api, namespace: prod}
+    spec:
+      parentRefs: [{name: shared}]
+      hostnames: [api.example.com]
+      rules:
+        - backendRefs: [{name: api, port: 80}]
+  # ---
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata: {name: worker, namespace: prod}
+    spec:
+      selector: {matchLabels: {app: worker}}
+      template:
+        metadata: {labels: {app: worker}}
+        spec:
+          containers:
+            - name: worker
+              image: ghcr.io/acme/worker:1.4.2
+              env:
+                - name: DB_URL
+                  valueFrom:
+                    secretKeyRef: {name: db, key: DB_URL}
+  # ---
+  - apiVersion: v1
+    kind: Secret
+    metadata: {name: db, namespace: prod}
+    type: Opaque
+    data:
+      DB_URL: cGxhY2Vob2xkZXI=
+      PASSWORD: cGxhY2Vob2xkZXI=
+  # ---
+  - apiVersion: external-secrets.io/v1beta1
+    kind: SecretStore
+    metadata: {name: onepassword, namespace: prod}
+    spec:
+      provider:
+        onepassword: {connectHost: "http://onepassword-connect:8080", vaults: {platform: 1}}
+  # ---
+  - apiVersion: external-secrets.io/v1beta1
+    kind: ExternalSecret
+    metadata: {name: db, namespace: prod}
+    spec:
+      secretStoreRef: {name: onepassword, kind: SecretStore}
+      target: {name: db}
+  # ---
+  - apiVersion: apps/v1
+    kind: StatefulSet
+    metadata: {name: postgres, namespace: data}
+    spec:
+      serviceName: postgres
+      selector: {matchLabels: {app: postgres}}
+      template:
+        metadata: {labels: {app: postgres}}
+        spec:
+          containers:
+            - name: postgres
+              image: postgres:16
+              ports: [{name: pg, containerPort: 5432}]
+  # ---
+  - apiVersion: v1
+    kind: Service
+    metadata: {name: postgres, namespace: data}
+    spec:
+      selector: {app: postgres}
+      ports: [{name: pg, port: 5432, targetPort: pg}]
+  # ---
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata: {name: default-deny, namespace: data}
+    spec:
+      podSelector: {}
+      policyTypes: [Ingress]
+  # ---
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata: {name: allow-api, namespace: data}
+    spec:
+      podSelector: {matchLabels: {app: postgres}}
+      policyTypes: [Ingress]
+      ingress:
+        - from:
+            - namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: prod}}
+              podSelector: {matchLabels: {app: api}}
+          ports: [{port: 5432}]
