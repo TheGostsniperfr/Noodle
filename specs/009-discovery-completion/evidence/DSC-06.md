@@ -1,21 +1,19 @@
-Le test `TestMerge/takes-list-whole` vérifie seulement deux champs avec `Equal` au lieu de l'élément fusionné entier. Le critère #1 n'est donc pas atteint et le verdict est NEEDS_WORK. Les autres critères passent. Comme `docs/CONSTITUTION.md` (C15) l'impose, le fichier de preuve ci-dessous est rédigé en anglais.
-
 # Evidence · DSC-06
 
 - Feature: DSC-06
-- Verdict: **NEEDS_WORK**
+- Verdict: **PASS**
 - Evaluator: evaluator (claude-opus-5-5)
-- Commit: aa5e7af
-- Date: 2026-11-04
+- Commit: 53ab054
+- Date: 2026-11-05
 
 ## Criteria
 
 | # | Criterion | Result | Evidence |
 |---|---|---|---|
-| 1 | ADR-0015 merge rules: subtests `fills-empty-field`, `keeps-curated-field`, `maps-connection-to-curated-ids`, `takes-list-whole`, each asserting with `Equal` the merged element or connection | FAIL | `go test -count=1 ./internal/graph/ -run TestMerge -v` gives `ok`, and all four subtests are `--- PASS`. Three of them assert `Equal` on the whole merged element or connection list. `takes-list-whole` (internal/graph/merge_test.go:51-62) does not. It asserts `Equal` only on `g.Model.Elements[0].Ports` and `.Tags`, never on the merged element. The threshold is not met. |
-| 2 | Sources survive the merge (`keeps-sources`) | PASS | `--- PASS: TestMerge/keeps-sources`. The test asserts `Equal` on `g.Sources["api"]`: two `graph.Source` with `src` (manifests/api.yaml:5 and :24) and `object` (Deployment, then Service). The unmatched id `k8s:prod/gone` is left out. `Lookup` returns these on `Node.Sources`. |
-| 3 | Commands load the merged graph | PASS | `go test -count=1 ./cmd/noodle/ -run TestLoad_MergesFragments -v` gives `--- PASS: TestLoad_MergesFragments/fills_the_ports_the_curated_element_leaves_empty`. On `examples/discovery-k8s`, `api` (model.yaml:6, no ports) gets `{http TCP 8080}`. `loadSystem` is used by `drift.go:20` and `split.go:46`, the render path. |
-| 4 | Curated fields never overridden, `MaxCount` ≥ 500, scalar and list set, at least one field set by both | PASS | `--- PASS: TestMerge_Property_NeverOverridesACuratedField (0.04s)` with `quick.Config{MaxCount: 500}`. The generator forces `Tech` and `Ports` to be non-empty. It compares every non-zero curated field by reflection, and it asserts `setByBoth > 0`. |
+| 1 | ADR-0015 merge rules: subtests `fills-empty-field`, `keeps-curated-field`, `maps-connection-to-curated-ids` and `takes-list-whole`, each asserting with `Equal` the merged element or connection | PASS | `go test -count=1 ./internal/graph/ -run TestMerge -v` gives `ok`, and all four subtests show `--- PASS`. Each one asserts `Equal` on `g.Model.Elements` or `g.Model.Connections` as a whole: merge_test.go:37, :49, :112 and :62. `takes-list-whole` now compares the whole element, with `Tech`, `Ports`, `Tags` and `Matches` (T18, 9705637). This closes the previous finding. |
+| 2 | Sources survive the merge (`keeps-sources`) | PASS | `--- PASS: TestMerge/keeps-sources`. merge_test.go:77-82 reads `g.Lookup("api")` and asserts `Equal` on `node.Sources`. That gives two `graph.Source`: `src` manifests/api.yaml:5 with object Deployment, and :24 with object Service. The unmatched `k8s:prod/gone` is left out. |
+| 3 | Commands load the merged graph | PASS | `go test -count=1 ./cmd/noodle/ -run TestLoad_MergesFragments -v` gives `--- PASS: .../fills_the_ports_the_curated_element_leaves_empty`. `loadSystem("../../examples/discovery-k8s")` returns `api` with `{http TCP 8080}`. The curated `api` has no ports (model.yaml line 6), and the curated `Tech: "[Deployment]"` is kept. |
+| 4 | Curated fields are never overridden, for any input | PASS | `--- PASS: TestMerge_Property_NeverOverridesACuratedField (0.05s)`. The test uses `quick.Config{MaxCount: 500}`. The generator forces a non-empty `Tech` (scalar) and `Ports` (list) on every curated element (merge_test.go:164-169). Reflection compares every non-zero curated field after the merge. `setByBoth` counts only fields other than ID, Kind and Matches that are set on both sides with different values (:200-203), so `assert.Positive` can now fail (T19). |
 
 ## Verify step
 
@@ -28,31 +26,28 @@ Le test `TestMerge/takes-list-whole` vérifie seulement deux champs avec `Equal`
         --- PASS: TestMerge/maps-connection-to-curated-ids (0.00s)
         --- PASS: TestMerge/keeps-the-port-the-curated-end-has (0.00s)
         --- PASS: TestMerge/does-not-depend-on-the-order-of-fragments (0.00s)
-    --- PASS: TestMerge_Property_NeverOverridesACuratedField (0.04s)
-    ok  	github.com/TheGostsniperfr/Noodle/internal/graph	0.049s
+    --- PASS: TestMerge_Property_NeverOverridesACuratedField (0.05s)
+    ok  	github.com/TheGostsniperfr/Noodle/internal/graph	0.060s
 
     $ go test -count=1 ./cmd/noodle/ -run TestLoad_MergesFragments -v
-    --- PASS: TestLoad_MergesFragments (0.00s)
-    ok  	github.com/TheGostsniperfr/Noodle/cmd/noodle	0.009s
+    --- PASS: TestLoad_MergesFragments (0.01s)
+        --- PASS: TestLoad_MergesFragments/fills_the_ports_the_curated_element_leaves_empty (0.00s)
+        --- PASS: TestLoad_MergesFragments/keeps_the_ports_the_curated_element_sets (0.00s)
+    ok  	github.com/TheGostsniperfr/Noodle/cmd/noodle	0.017s
 
     $ gofmt -l internal/graph cmd/noodle; go vet ./internal/graph/ ./cmd/noodle/
-    (no output) vet-ok
+    (no gofmt output) vet-ok
 
     $ make features
     go run ./tools/speccheck features -base HEAD   (no violation)
 
 ## Findings
 
-- **Criterion #1 fails (takes-list-whole).** internal/graph/merge_test.go:51-62 asserts `Equal` on `Ports` and `Tags` only. The contract asks for `Equal` on the merged element. The contract preamble says this is so extra or wrong fields fail the test.
-  - The gap is real. In this fixture, `fill` also copies `Tech` (`Deployment · api:1`) from the first matched element, the one without ports. The test does not check that, and it would not catch a regression in any other field.
-  - **Fix:** replace the two field asserts with one `assert.Equal(t, []model.Element{{ID: "api", Kind: "backend", Tech: …, Ports: …, Tags: []string{"edge"}, Matches: …}}, g.Model.Elements)`.
-  - Add this as a Convergence task in tasks.md.
-- **Minor, breaks no criterion.** At internal/graph/merge_test.go:192-194, the "set by both sides" counter always counts `Kind` (n=1). The curated `Kind` is always `backend` and the discovered one always `database`, so `assert.Positive(setByBoth)` can never fail. The no-override check is unaffected because `Tech` and `Ports` are compared, but the guard is vacuous. **Fix:** count only fields other than `ID` and `Kind`, or require that `Tech` or `Ports` was set by both.
-- **Minor, breaks no criterion.** `keeps-sources` asserts the sources through `g.Sources["api"]`, not on the merged element. FR-010 says "on the merged element". `Lookup` exposes them through `Node.Sources`, so the behaviour is there. Asserting through `g.Lookup("api")` would test it the way commands read it.
-- **Reversion check.**
-  - `fills-empty-field` and `TestLoad_MergesFragments` would fail if `fill` were removed.
-  - `keeps-curated-field` and the property test would fail if `fill` overwrote set fields.
-  - `maps-connection-to-curated-ids` would fail if `mapConnections` were removed.
-  - `keeps-sources` would fail if `Sources` were not recorded.
-  - Each of these tests catches the removal of the behaviour it covers.
-- **Scope and constitution.** The diff for this feature (53fd95b) touches `internal/graph`, `cmd/noodle/load.go` and `split.go`, which plan 009 lists. `features.json` has no edited entries (`make features` is clean). No lint rule changed.
+- **Reversion check.** I read the tests against graph.go:64-182. Each one would catch the loss of the behaviour it covers:
+  - `fills-empty-field` and `TestLoad_MergesFragments` would fail without `fill` (graph.go:99).
+  - `keeps-curated-field` and the property test would fail if `fillString` or the list guards overwrote a set field.
+  - `takes-list-whole` would fail if ports were merged item by item, because it would get 443 appended.
+  - `maps-connection-to-curated-ids` would fail without `mapConnections`.
+  - `keeps-sources` would fail if `g.Sources` were not recorded, or if `Lookup` did not expose it.
+- **Minor, breaks no criterion.** cmd/noodle/load_test.go:37 checks the loader's sources only with `NotEmpty`. FR-010's scenario says the sources "include the Service's file and line". The unit subtest `keeps-sources` proves that, but the end-to-end path through the example does not check it. One `assert.Contains` on the Service `src` would close the gap.
+- **Scope and constitution.** The three convergence commits (9705637, 05acb9c and 53ab054) touch only `internal/graph/merge_test.go`, `tasks.md` and `PROGRESS.md`. The feature code (53fd95b) stays inside `internal/graph` and `cmd/noodle`, as plan 009 lists. In `features.json`, the only changes since the last evaluation are `passes` flips of other features, and DSC-06 is still `false`. No lint rule was relaxed (C04, C12).
