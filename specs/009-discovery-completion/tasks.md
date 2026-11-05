@@ -71,5 +71,5 @@ Tasks the evaluator found missing, appended here; never edit the waves above.
   element slice, `Tech` included.
 - [x] **T19** DSC-06 #4: the "set by both sides" counter of the property test counts only
   fields that can differ, so `assert.Positive` can fail.
-- [ ] **T20** DSC-06 #2: `TestMerge/keeps-sources` asserts through `Lookup("api")`
+- [x] **T20** DSC-06 #2: `TestMerge/keeps-sources` asserts through `Lookup("api")`
   (`Node.Sources`), the way commands read it.

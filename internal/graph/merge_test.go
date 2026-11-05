@@ -74,10 +74,12 @@ func TestMerge(t *testing.T) {
 
 		g := graph.Merge(m, fragment("k8s-a", []model.DiscoveredElement{dep, svc}))
 
+		node, ok := g.Lookup("api")
+		assert.True(t, ok)
 		assert.Equal(t, []graph.Source{
 			{ID: "k8s:prod/deployment/api", Src: model.Src{File: "manifests/api.yaml", Line: 5}, Object: dep.Object},
 			{ID: "k8s:prod/service/api", Src: model.Src{File: "manifests/api.yaml", Line: 24}, Object: svc.Object},
-		}, g.Sources["api"])
+		}, node.Sources)
 	})
 
 	t.Run("maps-connection-to-curated-ids", func(t *testing.T) {

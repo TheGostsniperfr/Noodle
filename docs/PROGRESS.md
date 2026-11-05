@@ -64,6 +64,7 @@ decisions go in ADRs, acceptance in `features.json`.
 - T04 follow-up: the `unrendered` hint stays `kustomize`; `noodle discover` prints `<DIR>: kustomization found, rerun: noodle discover k8s -kustomize <DIR> (needs kustomize: nix shell nixpkgs#kustomize)` on stderr (subtest `hint-without-flag`, per the coordinator decision in ffa8c40).
 - Convergence T18: `takes-list-whole` asserts the whole merged element (DSC-06 NEEDS_WORK #1).
 - Convergence T19: the property test counts only fields set on both sides with different values, excluding ID, Kind and Matches, so its guard can fail (DSC-06 #4).
+- Convergence T20: `keeps-sources` asserts through `Lookup("api")` (`Node.Sources`). DSC-06 ready for a new `make evaluate`.
 
 ### 2026-11-04 · Engineering process (spec 007, ADR-0024)
 
