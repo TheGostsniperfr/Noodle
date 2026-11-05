@@ -1,25 +1,27 @@
+J'ai relancé toutes les commandes et regardé les PNG. J'imprime maintenant le fichier de preuve (en anglais, conformément à C15).
+
 # Evidence · LNT-05
 
 - Feature: LNT-05
 - Verdict: **NEEDS_WORK**
 - Evaluator: evaluator (claude-opus-5-5)
-- Commit: e29f1e4
+- Commit: b1f5466
 - Date: 2026-11-05
 
 ## Criteria
 
 | # | Criterion | Result | Evidence |
 |---|---|---|---|
-| 1 | An empty label keeps the badges alone | FAIL | `go test ./internal/resolve/ -run 'TestResolve_AnnotationLabel' -v`: all 5 subtests `--- PASS`. `empty_label` asserts `!!⚠ G1!!` and `label` asserts `HTTPS · !!⚠ G1!!`, both as the contract says. `sequence_empty_label` does not test what the threshold names. The threshold says "a sequence message with `""` and G1 gives exactly `!!⚠ G1!!`". The test uses step `over: c2`, which has no protocol and no `text`, targeted by G3. It asserts `[1] !!⚠ G3!!` (annotations_test.go:91). The asserted value is not the threshold's value, and the `""` input is not exercised. |
-| 2 | An undrawn annotation is an error | PASS | `go test ./internal/model/ -run 'TestCheck_UndrawnAnnotation' -v`: `--- PASS: .../undrawn`, with an exact `assert.Equal` on `{views/v.yaml, G1, "annotation targets nothing drawn in this view (c9): draw a target or list it in hidden_annotations with a reason"}` |
-| 3 | Acknowledged, or one target drawn, passes | PASS | same run: `--- PASS: .../acknowledged` and `--- PASS: .../one_drawn_one_not`, both expecting `nil` |
-| 3b | "Drawn" agrees with the resolver | PASS | same run: `--- PASS: .../include_glob` (`include: [grp/**]`, G1 on `kid`, `nil`) and `--- PASS: .../sequence_view` (exact `undrawn` list, `File: views/v.yaml`) |
-| 3c | `hide_annotations` does not skip the check | PASS | same run: `--- PASS: .../hide_annotations_still_checks` (exact `undrawn` list) and `--- PASS: .../hide_annotations_drawn` (`nil`) |
-| 4 | A bad acknowledgement is an error | PASS | same run: `--- PASS` for `empty_reason`, `unknown_id` and `drawn_id`. Each gives exactly one finding, with the contract's message. `unknown_id` lists `{G1: why, G7: x}`, not `{G7: "x"}`. With the contract's input, the undrawn G1 would add a second finding, so the test's input is a sound reading. |
-| 5 | `hide_annotations` drops the badges | FAIL | `go test ./internal/resolve/ -run 'TestResolve_HideAnnotations' -v`: all subtests `--- PASS`. `edge_empty`, `edge_label` and `node_badge` match the threshold. The `sequence` subtest asserts `[1] HTTPS` (annotations_test.go:144), but the threshold is "exactly `HTTPS`". |
-| 6 | The rendered label has no leading separator | PASS | `make examples` → `exit 0`, worktree still clean. `ls` lists `view.drawio`, `view.light.png`, `view.dark.png` and `regression-78-view-before.png`. The drawio cell value is `⚠ G1` alone. `TestExamples_DrawioCurrent/examples/regression-78/view.drawio` passes. Read `view.light.png`: the edge Client→API shows `⚠ G1` with nothing before it. The before image shows `· ⚠ G1`. |
-| 7 | The lint measures the badge-only text | PASS | `go test ./internal/lint/ -run 'TestLint_AnnotationOnlyLabel' -v`: 3 subtests `--- PASS`. The box is 32 px wide against 50 px, with the same centre. `one_px_in` gives `[{e, label overlaps node m}]` and `one_px_outside` gives `nil`. |
-| 8 | The view contract carries both fields | FAIL | The command as written in the contract, `jq -c '.properties.hidden_annotations \| {type, additionalProperties}, .properties.hide_annotations.type' ...`, prints `{"type":"object","additionalProperties":{"type":"string","minLength":1}}` and then **`null`**, not `"boolean"`. The jq pipe binds looser than the comma, so the second path is evaluated on `hidden_annotations`. The schema itself is right: with parentheses the command prints `"boolean"`. The threshold is still not met by the command the contract specifies. |
+| 1 | An empty label keeps the badges alone | FAIL | `go test ./internal/resolve/ -run 'TestResolve_AnnotationLabel' -v`. Subtests `empty_label` (`!!⚠ G1!!`) and `label` (`HTTPS · !!⚠ G1!!`) show `--- PASS` and assert the threshold values. The row also names the subtest `sequence_empty_label`, and that subtest is not in the output. The case now lives in a separate top-level test, `TestResolve_AnnotationLabel_SequenceMessageWithAnEmptyText`. The contract's preamble says an output that lacks a subtest the row names fails the row. The threshold also says the sequence message "gives exactly `!!⚠ G1!!`". The resolved label is `[1] !!⚠ G1!!` (`internal/resolve/sequence.go:95`). The test strips `[1] ` before it asserts (`annotations_test.go:102`). The contract was never amended to describe that. |
+| 2 | An undrawn annotation is an error | PASS | `go test ./internal/model/ -run 'TestCheck_UndrawnAnnotation' -v` shows `--- PASS: .../undrawn`. The test uses `assert.Equal` on `[{views/v.yaml, G1, "annotation targets nothing drawn in this view (c9): draw a target or list it in hidden_annotations with a reason"}]`. |
+| 3 | Acknowledged, or one target drawn, passes | PASS | Same run: `--- PASS` for `acknowledged` and `one_drawn_one_not`. Both expect `nil`. |
+| 3b | "Drawn" agrees with the resolver | PASS | Same run: `--- PASS` for `include_glob` (`include: [grp/**]`, G1 on `kid`, `nil`). `--- PASS` for `sequence_view`, which expects exactly the `undrawn` list with `File: views/v.yaml`. |
+| 3c | `hide_annotations` does not skip the check | PASS | Same run: `--- PASS` for `hide_annotations_still_checks`, which expects exactly the `undrawn` list. `--- PASS` for `hide_annotations_drawn`, which expects `nil`. |
+| 4 | A bad acknowledgement is an error | PASS | Same run: `--- PASS` for `empty_reason`, `unknown_id` and `drawn_id`. Each asserts one finding with the contract's message. `unknown_id` uses `{G1: why, G7: x}` so that the undrawn G1 adds no second finding. That is a sound reading of the threshold. |
+| 5 | `hide_annotations` drops the badges | FAIL | `go test ./internal/resolve/ -run 'TestResolve_HideAnnotations' -v`. All five subtests show `--- PASS`. `edge_empty`, `edge_label` and `node_badge` match the threshold. The threshold for `sequence` is "gives exactly `HTTPS`". The resolved label is `[1] HTTPS`. The test asserts `HTTPS` only after removing the prefix (`annotations_test.go:176-178`). The contract still states the unprefixed value. |
+| 6 | The rendered label has no leading separator | PASS | `make examples` exits with code 0, and the worktree is still clean afterwards. `ls` lists `view.drawio`, `view.light.png`, `view.dark.png` and `regression-78-view-before.png`. `TestExamples_DrawioCurrent/examples/regression-78/view.drawio` shows `--- PASS`. I read `view.light.png`: the Client→API edge shows `⚠ G1` with nothing before it. The before image shows `· ⚠ G1`. |
+| 7 | The lint measures the badge-only text | PASS | `go test ./internal/lint/ -run 'TestLint_AnnotationOnlyLabel' -v`. Three subtests show `--- PASS`: the 32 px box against 50 px, `one_px_in` and `one_px_outside`. |
+| 8 | The view contract carries both fields | PASS | `jq -c '(.properties.hidden_annotations \| {type, additionalProperties}), .properties.hide_annotations.type' schemas/v1alpha1/view.schema.json` prints `{"type":"object","additionalProperties":{"type":"string","minLength":1}}` and then `"boolean"`. |
 
 ## Verify step
 
@@ -27,20 +29,36 @@
     ok  	github.com/TheGostsniperfr/Noodle/internal/resolve
     ok  	github.com/TheGostsniperfr/Noodle/internal/model
     $ go test ./internal/resolve/ -run 'TestResolve_AnnotationLabel|TestResolve_HideAnnotations' -v
-    --- PASS: TestResolve_AnnotationLabel (5/5 subtests PASS)
-    --- PASS: TestResolve_HideAnnotations (5/5 subtests PASS)
+    --- PASS: TestResolve_AnnotationLabel_SequenceMessageWithAnEmptyText
+    --- PASS: TestResolve_AnnotationLabel   (empty_label, label, sequence_label, sequence_text)
+    --- PASS: TestResolve_HideAnnotations   (edge_empty, edge_label, node_badge, sequence, sequence_participant_badge)
     $ go test ./internal/model/ -run 'TestCheck_UndrawnAnnotation' -v
-    --- PASS: TestCheck_UndrawnAnnotation (13/13 subtests PASS)
-    $ jq -c '.properties.hidden_annotations | {type, additionalProperties}, .properties.hide_annotations.type' schemas/v1alpha1/view.schema.json
-    {"type":"object","additionalProperties":{"type":"string","minLength":1}}
-    null
+    --- PASS: TestCheck_UndrawnAnnotation   (13/13 subtests)
+    $ make examples
+    exit=0
 
-The verify step of `docs/features.json` holds in substance. An empty label resolves to the badge alone. An undrawn G1 fails the check, and so does each bad `hidden_annotations` entry. An acknowledged G1 passes. No badge is drawn under `hide_annotations`.
+The `features.json` verify step holds in substance:
+- An empty label resolves to the badge alone.
+- An undrawn G1 fails the check, and so does each bad `hidden_annotations` entry.
+- An acknowledged G1 passes.
+- No badge is drawn under `hide_annotations`.
+
+The failures are in contract rows #1 and #5. Their tests and thresholds still disagree, as the previous evaluation reported.
 
 ## Findings
 
-- `specs/008-lint-robustness/contract.md` LNT-05 #1 and #5, against `internal/resolve/annotations_test.go:91` and `:144`. Sequence message labels always carry the step prefix `[n] ` (`internal/resolve/sequence.go:95`), so "exactly `!!⚠ G1!!`" and "exactly `HTTPS`" cannot hold for a sequence message. The tests assert `[1] !!⚠ G3!!` and `[1] HTTPS`. `sequence_empty_label` also uses G3 on a connection with no protocol, not "`""` and G1". A sequence step cannot carry `""` at all: an empty `text` falls back to verb·protocol. The fix is to amend the two thresholds to the prefixed values and to an input a sequence view can express, recorded with Brian per PROCESS.md. The other way is to have the test match the contract. Either way, the test and the contract must agree.
-- `specs/008-lint-robustness/contract.md` LNT-05 #8: the "Verified by" command prints `null` for its second line because of jq precedence. Fix it to `jq -c '(.properties.hidden_annotations | {type, additionalProperties}), .properties.hide_annotations.type' ...`, which prints the expected two lines on this commit. The code needs no change.
-- Tests would catch a revert. `empty_label` fails if the ` · ` join comes back. `undrawn` and `hide_annotations_still_checks` fail without `checkAnnotations`. `empty_reason`, `unknown_id` and `drawn_id` fail without the acknowledgement checks. `edge_empty`, `node_badge` and `sequence_participant_badge` fail if `badges()` ignores `HideAnnotations`. No empty test found.
-- Scope and constitution: the diff of T05 (bdfcf86) stays in `internal/model`, `internal/resolve`, `internal/lint` tests, the view schema, the skill reference, the regression-78 fixture and its Makefile line. It also adds `hidden_annotations` to `examples/cnp-runtime/views/oidc-login.yaml`, which the new check requires, with a reason for each id. ADR-0026:53 records the schema fields as optional additive alpha fields (C06). No lint rule is relaxed and no `features.json` entry is edited (C04, C12).
-- Minor, breaks no criterion: `System.Drawn` (`internal/model/check.go:705`) marks a topology edge as drawn when both ends are included. This is a second definition of "drawn" next to the resolver's own edge selection. It agrees for the cases tested (`include_glob`), but nothing pins the two together for background or route edges.
+- `specs/008-lint-robustness/contract.md` LNT-05 #1 and `internal/resolve/annotations_test.go:136`. Row #1 names the subtest `sequence_empty_label`, but the sequence empty-text case is the top-level test `TestResolve_AnnotationLabel_SequenceMessageWithAnEmptyText`. Fix it one of two ways:
+  - make the case a subtest `sequence_empty_label` of `TestResolve_AnnotationLabel`;
+  - or amend row #1 to name the test that exists.
+- `contract.md` LNT-05 #1 and #5, against `internal/resolve/sequence.go:95`. Both thresholds say a sequence message gives "exactly" `!!⚠ G1!!` or `HTTPS`, but every sequence label carries `[n] ` (ADR-0011). T12 chose to assert on the label after the step number, which is defensible, and the test checks that the prefix is there (`annotations_test.go:103`). The contract was not amended to match, although row #8 was amended in 87ba0ac. Fix: amend #1 and #5 to "the label after its `[1] ` step number is exactly …", and record the amendment in the contract header as #8 was.
+- Tests would catch a revert:
+  - `empty_label` and `TestResolve_AnnotationLabel_SequenceMessageWithAnEmptyText` fail if the leading ` · ` comes back.
+  - `undrawn`, `sequence_view` and `hide_annotations_still_checks` fail without the undrawn check.
+  - `empty_reason`, `unknown_id` and `drawn_id` fail without the acknowledgement checks.
+  - `edge_empty`, `node_badge`, `sequence` and `sequence_participant_badge` fail if `badges()` ignores `HideAnnotations`.
+  - No test asserts nothing.
+- Scope and constitution:
+  - Since the last evaluation (e29f1e4), the LNT-05 changes are the tests in `annotations_test.go` and the jq fix in `contract.md`. The other `internal/` changes belong to LNT-01, LNT-04 and LNT-06.
+  - `docs/features.json` only gains entries; no entry is reworded (C12).
+  - No lint rule is relaxed (C04).
+- Minor, breaks no criterion: `model.System.Drawn` is still a second definition of "drawn", separate from the resolver's edge selection. `include_glob` and `sequence_view_drawn_message` pin it for those cases only.
