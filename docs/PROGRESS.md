@@ -29,6 +29,7 @@ decisions go in ADRs, acceptance in `features.json`.
 ### 2026-11-05 · Icons in the check (#74)
 
 - B-32: `render` without `-o` now runs the renderer and discards it, so an unknown icon fails the check with the write's hint. Built-in logos come on `feat/builtin-platform-icons`.
+- #74 icons: prometheus, grafana, postgresql, nginx, github (dark/light), gitlab, laravel, metallb, longhorn, cert-manager, helm (dark/light), minio built in, from CNCF artwork and simple-icons (rows in ATTRIBUTION.md); checked on a sheet in both themes. The `howto-diff` command now runs as written on `examples/topology-diff`.
 
 ### 2026-11-05 · Spec 008 convergence
 
