@@ -106,7 +106,7 @@
       "additionalProperties": false,
       "properties": {
         "about": {"type": "array", "items": {"$ref": "#/$defs/id"}, "minItems": 1},
-        "kind": {"enum": ["env-url", "unknown-kind", "unmatched-selector", "missing-backend", "unknown-provider", "unrendered"]},
+        "kind": {"enum": ["env-url", "unknown-kind", "unmatched-selector", "missing-backend", "unknown-provider", "unrendered", "secret-endpoint"]},
         "value": {"type": "string"},
         "hint": {"type": "string", "pattern": "^[a-z0-9-]+$", "description": "A short code, not prose (ADR-0017)."},
         "count": {"type": "integer", "minimum": 2},

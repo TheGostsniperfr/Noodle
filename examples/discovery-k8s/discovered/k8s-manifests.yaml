@@ -34,3 +34,5 @@ references:
   - {id: 'k8s:r/d201ccb37c', from: 'k8s:prod/externalsecret/db', to: 'k8s:prod/secret/db', kind: target, src: {file: examples/discovery-k8s/manifests/platform.yaml, line: 118}, object: {apiVersion: external-secrets.io/v1beta1, kind: ExternalSecret, namespace: prod, name: db}}
   - {id: 'k8s:r/da3ec92534', from: 'k8s:prod/secretstore/onepassword', to: 'k8s:_external/onepassword', kind: provider, src: {file: examples/discovery-k8s/manifests/platform.yaml, line: 111}, object: {apiVersion: external-secrets.io/v1beta1, kind: SecretStore, namespace: prod, name: onepassword}}
   - {id: 'k8s:r/fc2aba50d5', from: 'k8s:prod/httproute/api', to: 'k8s:prod/gateway/shared', kind: parentRef, src: {file: examples/discovery-k8s/manifests/platform.yaml, line: 73}, object: {apiVersion: gateway.networking.k8s.io/v1, kind: HTTPRoute, namespace: prod, name: api}}
+unresolved:
+  - {about: ['k8s:prod/deployment/api', 'k8s:prod/deployment/worker'], kind: secret-endpoint, value: db/DB_URL, hint: secret-manager, src: {file: examples/discovery-k8s/manifests/platform.yaml, line: 64}}
