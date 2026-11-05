@@ -148,6 +148,25 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 | 5 | The benchmark rows and means | `grep -cE '^[\|] [ABC] [\|] [12] [\|] \$[0-9.]+ [\|] [0-9]+/[0-9]+ [\|] [0-9]+m[0-9]+s [\|] docs/benchmarks/transcripts/[^ ]+\.jsonl [\|]$' docs/benchmarks/discovery-tokens.md`; `ls` of each transcript; `grep -c '"type":"tool_result"' docs/benchmarks/transcripts/*.jsonl` | `6`; each exists; `0` for every file; the file states the mean recall of A and C, C ≥ A |
 | 6 | The Notion publication | `grep -cE '(notion\.(so\|site)\|app\.notion\.com)/[^ ]+.*20[0-9]{2}-[0-9]{2}-[0-9]{2}' docs/benchmarks/discovery-tokens.md`; `grep -c 'Checked on Notion by Brian' docs/PROGRESS.md` | ≥ `1`; ≥ `1` |
 
+## DSC-13 · Digest for the agent (revision 1)
+
+| # | Criterion | Verified by | Threshold |
+|---|---|---|---|
+| 1 | The digest of the example is golden | `go test ./cmd/noodle/ -run TestDigest -v`; `go run ./cmd/noodle digest examples/discovery-k8s/discovered \| diff - examples/discovery-k8s/digest.txt` | exit 0 with subtests `folds-service`, `resolves-route`, `keeps-externalsecret-path`, `drops-config-refs`, `keeps-unresolved`, each asserting with `Equal` the full output of a fixture; empty diff |
+| 2 | Config references are left out | `grep -cE 'configmap/' examples/discovery-k8s/digest.txt`; `grep -E 'secret/' examples/discovery-k8s/digest.txt \| grep -vcE 'externalsecret\|secret-endpoint'` | `0`; `0` |
+| 3 | Every line has a source | `grep -vcE '^(#.*)?$\|src [^ ]+:[0-9]+' examples/discovery-k8s/digest.txt` | `0` |
+| 4 | Size bound on PAE (FR-025) | `grep -E '^Tokens: fragments ~[0-9.]+k, digest ~[0-9.]+k' docs/benchmarks/discovery-checkpoint-2.md` | one line, digest ≤ 25 % of fragments |
+
+## DSC-14 · Second checkpoint (revision 1)
+
+| # | Criterion | Verified by | Threshold |
+|---|---|---|---|
+| 1 | The rows and transcripts | `grep -cE '^[\|] [AC] [\|] \$[0-9]+\.[0-9]{2} [\|] [0-9]+/25 [\|] docs/benchmarks/transcripts/checkpoint2-[AC]\.jsonl [\|]$' docs/benchmarks/discovery-checkpoint-2.md`; `ls` of each path | `2`; each exists |
+| 2 | Transcripts hold no tool results, prompt snapshot or account records | `grep -cE '"type": *"tool_result"\|"toolUseResult"\|prompt_snapshot\|credential_org\|session-owner' docs/benchmarks/transcripts/checkpoint2-*.jsonl` | `0` for every file |
+| 3 | Arm C got the digest, not the fragments | `grep '"type":"tool_use"' docs/benchmarks/transcripts/checkpoint2-C.jsonl \| grep -c 'discovered/'` | `0` |
+| 4 | The decision follows ADR-0029 | `cat docs/benchmarks/discovery-checkpoint-2.md` | cites ADR-0029 and ADR-0031, exactly one line `Decision: go` or `Decision: stop`, `go` exactly when C's cost ≤ 70 % of A's and C's edges ≥ A's |
+| 5 | PROGRESS records it | `grep -cE 'checkpoint 2.*platform-overview.*A.*\$[0-9.]+.*[0-9]+/25.*C.*\$[0-9.]+.*[0-9]+/25.*(go\|stop)' docs/PROGRESS.md` | `1` |
+
 ## Immutable features carried by this spec
 
 Phase `6a` points at this spec, so `make evaluate FEATURE=P6a-0N` reads this contract and
@@ -181,3 +200,4 @@ from that commit on, they replace the criterion they name.
 | DSC-11 | #2 | plan 009 decides whether `path` crosses `denied` connections (proposed: it skips them), and subtest `path-denied` asserts it |
 | DSC-04 | scope | done: `schemas/v1alpha1/` is in plan 009's table |
 | DSC-03 | #4 | `grep -rcE '(^\|[ {,-])file: *"?/' examples/discovery-k8s/discovered/` = `0` for every file. Applied in T04. |
+| DSC-09 | #4 | revision 1 (ADR-0031): the anchor is `git log --format=%h -S'Decision: go' --reverse -- docs/benchmarks/discovery-checkpoint-2.md \| head -1`; `secretendpoint.go`, its test and the `secret-endpoint` / `SecretEndpoint` patterns leave the content and file checks; on `Decision: stop` in that file, `grep -c '^### Revision 2' specs/009-discovery-completion/spec.md` ≥ `1` |

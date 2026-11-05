@@ -8,8 +8,8 @@ decisions go in ADRs, acceptance in `features.json`.
 
 1. `make init`: fix anything red before new work. Commands: `docs/COMMANDS.md`; process: `docs/PROCESS.md`.
 2. Current spec: [`specs/009-discovery-completion`](../specs/009-discovery-completion/tasks.md),
-   T09 checkpoint said **stop** (`docs/benchmarks/discovery-checkpoint.md`): wave 3 is
-   closed until the spec gets its `## Revision` (FR-015), a direction choice for Brian. Backlog: the [project board](https://github.com/users/TheGostsniperfr/projects/5), issue #42.
+   T09 checkpoint said **stop**; revision 1 (ADR-0031) opens wave 2b: T21 `secret-endpoint`,
+   T22 `noodle digest`, T23 second checkpoint. Wave 3 waits for its `Decision: go`. Backlog: the [project board](https://github.com/users/TheGostsniperfr/projects/5), issue #42.
 3. Open for Brian: DSC-03's `unrendered` hint is still a short code (the fragment schema
    restricts `hint`); PRJ-02 of spec 010; PRs #14, #60, #89; branch `feat/access-views`
    (PR #53 closed unmerged); CodeQL alert 5 to dismiss as a false positive.
@@ -27,6 +27,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-11-05 · Discovery checkpoint (spec 009 T09)
 
+- Revision 1 of spec 009 and ADR-0031, agreed with Brian: `noodle digest` for agents, `secret-endpoint` out of the gate, then a second checkpoint (wave 2b, T21 to T23, DSC-13 and DSC-14).
 - T09: DSC-08 passes (evaluator). P6a-08 left false: its verify step holds, but its description claims C is cheaper, which the run refutes. Checkpoint on PAE platform-overview, arm A $4.34 24/25, arm C $4.76 25/25: Decision: stop (ADR-0029, C at 110 % of A). C finds the edge A leaves unresolved but re-reads the repos for what fragments lack (credential-implied addresses, app config). Wave 3 stays closed (FR-015); the spec revision is Brian's call. Ground truth, scripts and filtered transcripts in `docs/benchmarks/`.
 
 ### 2026-11-05 · Spec 008 convergence

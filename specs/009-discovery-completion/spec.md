@@ -1,12 +1,12 @@
 # Spec 009 · Discovery, phase 6a completion
 
-- Status: **Clarified** (answers of 2026-11-04 in Clarifications)
+- Status: **Revised** (answers of 2026-11-04 in Clarifications; revision 1 of 2026-11-05 after the checkpoint said stop)
 - Mode: **full**
 - Phase: 6a, the current phase (ADR-0016), batch B of wave 1 (ADR-0025). Takes over the
   open tasks T05 to T16 of spec 003, which stays as written (C10).
 - Issue: #42 · Batch items: #75, #76, #79, #80, #81, #16, #25
 - Decisions it builds on: ADR-0003, ADR-0005, ADR-0010, ADR-0015, ADR-0016, ADR-0017,
-  ADR-0018, ADR-0024, ADR-0025, ADR-0027, ADR-0028, ADR-0029
+  ADR-0018, ADR-0024, ADR-0025, ADR-0027, ADR-0028, ADR-0029, ADR-0031
 - Invariants it touches: C02, C06, C07, C08, C09, C12
 
 ## Why
@@ -244,6 +244,43 @@ to jump from a node back to the YAML document that defines it.
 | 3 | `object` and field paths (FR-008) change the Fragment contract (C06). | a) additive optional fields in `v1alpha1`, with an ADR, no version bump; b) wait for the `v1alpha2` bump of #104; c) `object` now, field paths and git origins later | c: `object` now, optional and additive in `v1alpha1`; field paths and origins out of scope, with #16 (2026-11-04) | ADR-0028 |
 | 4 | Where do discovery rules (#80) and remembered resolutions (ADR-0017) live? `discovered/` is regenerated and uncommitted (ADR-0015). | a) one committed `<system>/discovery.yaml` holding both; b) `discovered/rules.yaml` as the issue says, committed by exception; c) two committed files, `rules.yaml` and `resolutions.yaml` | a (2026-11-04) | none yet: the file format gets an ADR in T13 |
 | 5 | #25 asks for a `ref` field and a sources card on the diagram. | a) this spec keeps every `src` through the merge (FR-010); the card moves to batch F; b) the card is built here too; c) drop the card, `noodle query` is enough | a (2026-11-04) | none: scope only |
+
+## Revision
+
+### Revision 1 · 2026-11-05, after `Decision: stop` (ADR-0031)
+
+The checkpoint of T09 said stop. Arm C cost 110 % of arm A, with 25/25 edges to A's 24/25
+([`discovery-checkpoint.md`](../../docs/benchmarks/discovery-checkpoint.md)). C read
+about 38k tokens of fragments and still re-read the repositories for the external
+addresses that only Secret keys and application config hold. This revision changes what
+the agent receives, then measures again. Wave 1 and the merge ship as they are.
+
+- FR-015 now gates FR-016, FR-018, FR-019 and FR-020 on `Decision: go` in
+  `docs/benchmarks/discovery-checkpoint-2.md`. FR-017 leaves the gate and lands in wave 2b.
+- FR-022 and FR-023 stand only if the second checkpoint says `go`. After a second
+  `stop` they are dropped, and discovery serves `drift`, `check` and `query` only.
+
+#### Wave 2b · Digest and second checkpoint
+
+- **FR-024** WHEN `noodle digest DIR` reads the fragments of a directory, THE SYSTEM
+  SHALL print one plain-text line per component, traffic connection and `unresolved`
+  entry. It SHALL fold a Service into the workload it selects, resolve routes to the
+  workload behind them, keep the ExternalSecret path to its provider, leave out
+  configuration references to ConfigMaps, Secrets and volumes, and keep a `src` on every
+  line (ADR-0031).
+  *Scenario:* WHEN `noodle digest examples/discovery-k8s/discovered` runs THEN its output
+  equals `examples/discovery-k8s/digest.txt`, which names no ConfigMap and no Secret
+  except in an ExternalSecret path or a `secret-endpoint` line.
+- **FR-025** WHEN the digest of the T09 PAE fragments is printed, THE SYSTEM SHALL keep
+  it at most 25 % of the fragments' estimated tokens, as `noodle discover` estimates them.
+  *Scenario:* WHEN `docs/benchmarks/discovery-checkpoint-2.md` reports both estimates
+  THEN the digest's is at most a quarter of the fragments'.
+- **FR-026** WHEN FR-017, FR-024 and FR-025 are done, THE SYSTEM SHALL run the checkpoint
+  again on the T09 snapshot, with arm A run again and arm C given the digest. It SHALL
+  record cost, edges out of 25 and one `Decision: go` or `Decision: stop` line, following
+  ADR-0029's rule, in `docs/benchmarks/discovery-checkpoint-2.md` and `docs/PROGRESS.md`.
+  *Scenario:* WHEN both arms have run THEN the file lists rows A and C and the decision
+  that their numbers give.
 
 ## Success criteria
 
