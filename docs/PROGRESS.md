@@ -11,7 +11,6 @@ decisions go in ADRs, acceptance in `features.json`.
    and ADR-0017, ADR-0018. Backlog: the [project board](https://github.com/users/TheGostsniperfr/projects/5), issue #42.
 3. Next action: spec 003 T05 (secrets and references, Argo CD Applications), then T06,
    T12 and the T14 checkpoint before anything else ([`tasks.md`](../specs/003-static-discovery/tasks.md)).
-   Phase 1 still has spec 002 T03 (issue #43, in `dockair-docs`).
    Measure on real repos with `make discover-eval`.
 4. Spec 007 (process, #108) is done on `feat/spec-process`; PR pending. Then pilot the
    process on #79 (`noodle drift`, P6a-05) as spec 008, full mode.
@@ -25,6 +24,10 @@ decisions go in ADRs, acceptance in `features.json`.
 | `~/.dotfiles` | noodle plugin installed declaratively (commit `9bf7e57`) | pushed. `nixos-rebuild switch` still to run. |
 
 ## Log
+
+### 2026-11-05 · Roadmap catch-up
+
+- Spec 002 T03 ticked (dockair-docs !20, merged in September); phases 1, 1b, 6b, 1c and 5a marked done, all their features passing; next up phase 2. B-27 added (inherited status pill drawn on every child). Replaces the stale PR #14.
 
 ### 2026-11-05 · Spec 008 convergence
 
