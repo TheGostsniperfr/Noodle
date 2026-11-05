@@ -1,12 +1,12 @@
 # Spec 009 · Discovery, phase 6a completion
 
-- Status: **Revised** (answers of 2026-11-04 in Clarifications; revision 1 of 2026-11-05 after the checkpoint said stop)
+- Status: **Revised** (answers of 2026-11-04 in Clarifications; revision 1 of 2026-11-05 after the checkpoint said stop, revision 2 the same day after the second)
 - Mode: **full**
 - Phase: 6a, the current phase (ADR-0016), batch B of wave 1 (ADR-0025). Takes over the
   open tasks T05 to T16 of spec 003, which stays as written (C10).
 - Issue: #42 · Batch items: #75, #76, #79, #80, #81, #16, #25
 - Decisions it builds on: ADR-0003, ADR-0005, ADR-0010, ADR-0015, ADR-0016, ADR-0017,
-  ADR-0018, ADR-0024, ADR-0025, ADR-0027, ADR-0028, ADR-0029, ADR-0031
+  ADR-0018, ADR-0024, ADR-0025, ADR-0027, ADR-0028, ADR-0029, ADR-0031, ADR-0032
 - Invariants it touches: C02, C06, C07, C08, C09, C12
 
 ## Why
@@ -281,6 +281,24 @@ the agent receives, then measures again. Wave 1 and the merge ship as they are.
   ADR-0029's rule, in `docs/benchmarks/discovery-checkpoint-2.md` and `docs/PROGRESS.md`.
   *Scenario:* WHEN both arms have run THEN the file lists rows A and C and the decision
   that their numbers give.
+
+### Revision 2 · 2026-11-05, after the second `Decision: stop` (ADR-0032)
+
+The second checkpoint passed on cost (C at 63 % of A) and failed on recall (22/25 against
+25/25). The three missing edges are operator- or chart-value-implied, and C's paragraph
+claimed the digest was complete. One last round runs with that claim replaced by the list
+of what discovery never sees.
+
+- FR-015 now gates FR-016, FR-018, FR-019 and FR-020 on `Decision: go` in
+  `docs/benchmarks/discovery-checkpoint-3.md`. On `go`, FR-018 comes first.
+- On `stop`, FR-022 and FR-023 are dropped and phase 6a closes without its exit criterion
+  (ADR-0031).
+- **FR-027** WHEN FR-026 has recorded `stop`, THE SYSTEM SHALL run the checkpoint a third
+  and last time as in FR-026, with C's paragraph `checkpoint-prompt-c3.md` (ADR-0032), and
+  record rows A and C and the decision in `docs/benchmarks/discovery-checkpoint-3.md` and
+  `docs/PROGRESS.md`.
+  *Scenario:* WHEN both arms have run THEN the file lists rows A and C and the decision
+  that their numbers give under ADR-0029.
 
 ## Success criteria
 

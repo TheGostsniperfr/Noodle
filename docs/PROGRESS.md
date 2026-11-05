@@ -27,6 +27,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-11-05 · Discovery checkpoint (spec 009 T09)
 
+- Revision 2 and ADR-0032 (agreed with Brian): a third and last checkpoint, C told what discovery never sees instead of "complete" (T29, DSC-15). Running.
 - T28: DSC-13 and DSC-14 pass (evaluator); their findings fixed.
 - T23: checkpoint 2 on PAE platform-overview, arm A $4.82 25/25, arm C $3.04 22/25 with the digest: Decision: stop (cost 63 %, recall lower). C misses Grafana → Prometheus, Prometheus → Alertmanager and image pulls, operator edges the digest lacks, and the C prompt claimed the digest complete. Next step after a second stop (ADR-0031) is Brian's call.
 - T22: `noodle digest DIR`: Services folded into their workload, routes resolved to it (across fragments too), ExternalSecret paths, open entries, `src` on every line; stderr prints both token estimates. PAE: ~35.0k tokens of fragments, ~6.4k of digest (18 %). `make examples` diffs `examples/discovery-k8s/digest.txt`. DSC-13 passes.

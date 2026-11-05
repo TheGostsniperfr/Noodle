@@ -167,6 +167,16 @@ curated element. Committed transcripts hold no `tool_result` record (plan 009).
 | 4 | The decision follows ADR-0029 | `cat docs/benchmarks/discovery-checkpoint-2.md` | cites ADR-0029 and ADR-0031, exactly one line `Decision: go` or `Decision: stop`, `go` exactly when C's cost ≤ 70 % of A's and C's edges ≥ A's |
 | 5 | PROGRESS records it | `grep -cE 'checkpoint 2.*platform-overview.*A.*\$[0-9.]+.*[0-9]+/25.*C.*\$[0-9.]+.*[0-9]+/25.*(go\|stop)' docs/PROGRESS.md` | `1` |
 
+## DSC-15 · Third and last checkpoint (revision 2)
+
+| # | Criterion | Verified by | Threshold |
+|---|---|---|---|
+| 1 | The rows and transcripts | `grep -cE '^[\|] [AC] [\|] \$[0-9]+\.[0-9]{2} [\|] [0-9]+/25 [\|] docs/benchmarks/transcripts/checkpoint3-[AC]\.jsonl [\|]$' docs/benchmarks/discovery-checkpoint-3.md`; `ls` of each path | `2`; each exists |
+| 2 | Transcripts hold no tool results, prompt snapshot or account records | `grep -cE '"type": *"tool_result"\|"toolUseResult"\|prompt_snapshot\|credential_org\|session-owner' docs/benchmarks/transcripts/checkpoint3-*.jsonl` | `0` for every file |
+| 3 | C got the digest and the honest paragraph | `grep '"type":"tool_use"' docs/benchmarks/transcripts/checkpoint3-C.jsonl \| grep -c 'discovered/'`; `grep -c 'never sees' docs/benchmarks/checkpoint-prompt-c3.md`; `grep -c 'complete' docs/benchmarks/checkpoint-prompt-c3.md` | `0`; `1`; `0` |
+| 4 | The decision follows ADR-0029 | `cat docs/benchmarks/discovery-checkpoint-3.md` | cites ADR-0029 and ADR-0032, exactly one line `Decision: go` or `Decision: stop`, `go` exactly when C's cost ≤ 70 % of A's and C's edges ≥ A's |
+| 5 | PROGRESS records it | `grep -cE 'checkpoint 3.*platform-overview.*A.*\$[0-9.]+.*[0-9]+/25.*C.*\$[0-9.]+.*[0-9]+/25.*(go\|stop)' docs/PROGRESS.md` | `1` |
+
 ## Immutable features carried by this spec
 
 Phase `6a` points at this spec, so `make evaluate FEATURE=P6a-0N` reads this contract and
@@ -201,3 +211,4 @@ from that commit on, they replace the criterion they name.
 | DSC-04 | scope | done: `schemas/v1alpha1/` is in plan 009's table |
 | DSC-03 | #4 | `grep -rcE '(^\|[ {,-])file: *"?/' examples/discovery-k8s/discovered/` = `0` for every file. Applied in T04. |
 | DSC-09 | #4 | revision 1 (ADR-0031): the anchor is `git log --format=%h -S'Decision: go' --reverse -- docs/benchmarks/discovery-checkpoint-2.md \| head -1`; `secretendpoint.go`, its test and the `secret-endpoint` / `SecretEndpoint` patterns leave the content and file checks; on `Decision: stop` in that file, `grep -c '^### Revision 2' specs/009-discovery-completion/spec.md` ≥ `1` |
+| DSC-09 | #4 | revision 2 (ADR-0032): the anchor file is `docs/benchmarks/discovery-checkpoint-3.md`; on `Decision: stop` there, `grep -c '^### Revision 3' specs/009-discovery-completion/spec.md` ≥ `1` is replaced by `grep -c 'phase 6a closes' specs/009-discovery-completion/spec.md` ≥ `1` |

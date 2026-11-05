@@ -3,7 +3,8 @@
 # process and copies its transcript with every tool result removed (C09).
 #   docs/benchmarks/run-arm.sh A|C SNAPSHOT FRAGMENTS_DIR WORKDIR [ROUND]
 # SNAPSHOT holds the repositories. In round 1 arm C also gets FRAGMENTS_DIR as
-# discovered/; in round 2 (ADR-0031) it gets their `noodle digest` as digest.txt.
+# discovered/; from round 2 (ADR-0031) it gets their `noodle digest` as digest.txt,
+# with the paragraph checkpoint-prompt-c<ROUND>.md (round 3: ADR-0032).
 set -euo pipefail
 
 [[ $# -eq 4 || $# -eq 5 ]] || { echo "usage: $0 A|C SNAPSHOT FRAGMENTS_DIR WORKDIR [ROUND]" >&2; exit 2; }
@@ -22,7 +23,7 @@ if [[ "$arm" == C && "$round" == 1 ]]; then
   prompt="$prompt"$'\n\n'"$(cat "$here/checkpoint-prompt-c.md")"
 elif [[ "$arm" == C ]]; then
   go run -C "$here/../.." ./cmd/noodle digest "$fragments" >"$work/digest.txt"
-  prompt="$prompt"$'\n\n'"$(cat "$here/checkpoint-prompt-c2.md")"
+  prompt="$prompt"$'\n\n'"$(cat "$here/checkpoint-prompt-c$round.md")"
 fi
 
 session="$(uuidgen)"
