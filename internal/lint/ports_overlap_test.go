@@ -19,7 +19,7 @@ import (
 
 // twoBadges is node b with two edges from a landing on its top border, the second
 // gap px to the right of the first badge's right edge.
-func twoBadges(t *testing.T, gap float64, samePort bool) diagram.Spec {
+func twoBadges(t *testing.T, gap float64) diagram.Spec {
 	t.Helper()
 	text := "TCP 443"
 	x2 := 400 + house.PortWidth(text) + gap
@@ -32,10 +32,6 @@ func twoBadges(t *testing.T, gap float64, samePort bool) diagram.Spec {
 			{ID: "e1", From: "a", To: "b", Kind: "flow", Port: text, Path: []diagram.Point{{400, 120}, {400, 200}}},
 			{ID: "e2", From: "a", To: "b", Kind: "flow", Port: text, Path: []diagram.Point{{x2, 120}, {x2, 200}}},
 		},
-	}
-	if samePort {
-		s.Edges[1].Path = []diagram.Point{{400, 120}, {400, 200}}
-		s.Edges[1].ID = "e2"
 	}
 	return s
 }
@@ -58,7 +54,7 @@ func TestLint_PortsOverlap(t *testing.T) {
 	})
 	t.Run("3px_apart", func(t *testing.T) {
 		t.Parallel()
-		spec := twoBadges(t, 3, false)
+		spec := twoBadges(t, 3)
 
 		findings := lint.Lint(&spec)
 
@@ -66,7 +62,7 @@ func TestLint_PortsOverlap(t *testing.T) {
 	})
 	t.Run("4px_apart", func(t *testing.T) {
 		t.Parallel()
-		spec := twoBadges(t, 4, false)
+		spec := twoBadges(t, 4)
 
 		findings := lint.Lint(&spec)
 
@@ -74,11 +70,37 @@ func TestLint_PortsOverlap(t *testing.T) {
 	})
 	t.Run("shared_port", func(t *testing.T) {
 		t.Parallel()
-		spec := twoBadges(t, 0, true)
+		spec := diagram.Spec{ID: "t", Width: 900, Height: 400,
+			Nodes: []diagram.Node{
+				{ID: "a", Kind: "backend", Title: "A", X: 300, Y: 40, W: 200, H: 80},
+				{ID: "c", Kind: "backend", Title: "C", X: 650, Y: 40, W: 100, H: 80},
+				{ID: "b", Kind: "backend", Title: "B", X: 300, Y: 220, W: 300, H: 80},
+			},
+			Edges: []diagram.Edge{
+				{ID: "e1", From: "a", To: "b", Kind: "flow", Port: "TCP 443", Path: []diagram.Point{{400, 120}, {400, 220}}},
+				{ID: "e2", From: "c", To: "b", Kind: "flow", Port: "TCP 443", Path: []diagram.Point{{700, 120}, {700, 212}, {400, 212}, {400, 220}}},
+			}}
 
 		findings := lint.Lint(&spec)
 
-		assert.Equal(t, []lint.Finding{{Where: "e1", Msg: "runs on top of e2 (vertical, x≈400)"}}, findings)
+		assert.Empty(t, findings)
+	})
+	t.Run("two_ports_on_one_point", func(t *testing.T) {
+		t.Parallel()
+		spec := diagram.Spec{ID: "t", Width: 900, Height: 400,
+			Nodes: []diagram.Node{
+				{ID: "a", Kind: "backend", Title: "A", X: 300, Y: 40, W: 200, H: 80},
+				{ID: "c", Kind: "backend", Title: "C", X: 650, Y: 40, W: 100, H: 80},
+				{ID: "b", Kind: "backend", Title: "B", X: 300, Y: 220, W: 300, H: 80},
+			},
+			Edges: []diagram.Edge{
+				{ID: "e1", From: "a", To: "b", Kind: "flow", Port: "TCP 443", Path: []diagram.Point{{400, 120}, {400, 220}}},
+				{ID: "e2", From: "c", To: "b", Kind: "flow", Port: "TCP 8443", Path: []diagram.Point{{700, 120}, {700, 212}, {400, 212}, {400, 220}}},
+			}}
+
+		findings := lint.Lint(&spec)
+
+		assert.Equal(t, []lint.Finding{{Where: "e2", Msg: `port "TCP 8443" lands on the same point of b as "TCP 443" of e1`}}, findings)
 	})
 }
 

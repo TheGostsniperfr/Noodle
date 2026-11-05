@@ -39,3 +39,7 @@ Clarifications 1 to 5 of the spec are answered (2026-11-04).
 ## Convergence
 
 Tasks the evaluator found missing, appended here; never edit the waves above.
+
+- [x] **T10** LNT-04 #3: a shared port is tested with two connections that meet only on the
+  final point (no collinear finding), asserting 0 findings; two different ports on one point
+  now yield a finding instead of one badge silently dropping the other (FR-005).

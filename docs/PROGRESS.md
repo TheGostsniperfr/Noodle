@@ -26,6 +26,10 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ## Log
 
+### 2026-11-05 · Lint robustness, convergence (spec 008)
+
+- T10: LNT-04 shared-port test now asserts 0 findings; two ports on the same point are reported.
+
 ### 2026-11-04 · Lint robustness (spec 008)
 
 - T01: `house.Header` and `house.CardLayout` own the header, card and legend geometry; `render.go` draws from them, byte-equal on the frozen specs of `cmd/noodle/testdata/cardlayout`. Every example's `.drawio` is now committed and `TestExamples_DrawioCurrent` keeps it current.
