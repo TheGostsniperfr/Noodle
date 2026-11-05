@@ -153,6 +153,8 @@ type Zone struct {
 	// Status and Target follow ADR-0008 and ADR-0014; a zone's apply to its children.
 	Status string `yaml:"status"`
 	Target string `yaml:"target"`
+	// PillOnParent: as for Node, an enclosing zone's pill already says it (B-27).
+	PillOnParent bool `yaml:"-"`
 	// Change is Added, Removed or Unchanged in a diff view, empty otherwise.
 	Change string  `yaml:"-"`
 	X      float64 `yaml:"x"`
@@ -176,6 +178,9 @@ type Node struct {
 	// Status and Target are already inherited from enclosing zones.
 	Status string `yaml:"status"`
 	Target string `yaml:"target"`
+	// PillOnParent is set when a shown enclosing zone has the same status and target,
+	// so its pill already says it once for all its children (B-27).
+	PillOnParent bool `yaml:"-"`
 	// Multiplicity says what the box stands for many of (ADR-0008); it draws the box
 	// as a stack. Not part of the v0 file format.
 	Multiplicity string `yaml:"-"`
