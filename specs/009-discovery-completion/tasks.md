@@ -73,6 +73,13 @@ Tasks the evaluator found missing, appended here; never edit the waves above.
   fields that can differ, so `assert.Positive` can fail.
 - [x] **T20** DSC-06 #2: `TestMerge/keeps-sources` asserts through `Lookup("api")`
   (`Node.Sources`), the way commands read it.
+- [x] **T24** P6a-09: the `-env`, `-externalsecret` and `-ignores-password` fixtures hold a
+  Secret `db` with values, so the leak check can fail; `-externalsecret` also asserts its
+  template value is absent.
+- [x] **T25** P6a-09: same-name Secrets of two namespaces stay two entries (merge keyed
+  on the Secret id, value unchanged), subtest `secret-endpoint-namespaces`.
+- [x] **T26** P6a-09: plan 009's file table lists the `secret-endpoint` enum value of
+  `fragment.schema.json` (ADR-0018).
 
 ## Wave 2b · Revision 1 (ADR-0031)
 

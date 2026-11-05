@@ -14,10 +14,15 @@ type unresolvedSet struct {
 }
 
 func (u *unresolvedSet) add(kind, value, hint, about string, src model.Src) {
+	u.addKeyed(kind+" "+value, kind, value, hint, about, src)
+}
+
+// addKeyed merges on key instead of kind and value, for entries whose value repeats
+// across distinct objects, such as a Secret name in two namespaces.
+func (u *unresolvedSet) addKeyed(key, kind, value, hint, about string, src model.Src) {
 	if u.byKey == nil {
 		u.byKey = map[string]*model.Unresolved{}
 	}
-	key := kind + " " + value
 	e, ok := u.byKey[key]
 	if !ok {
 		e = &model.Unresolved{Kind: kind, Value: value, Hint: hint, Src: src}

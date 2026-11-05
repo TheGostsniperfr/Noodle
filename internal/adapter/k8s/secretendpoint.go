@@ -74,7 +74,7 @@ func secretEndpoints(idx *index, uses []configUse, u *unresolvedSet) {
 		keys := sortedKeys(f.keys)
 		value := f.name + "/" + strings.Join(keys, ",")
 		for _, r := range f.readers {
-			u.add("secret-endpoint", value, "secret-manager", r, f.first.workload.srcAt(f.first.line))
+			u.addKeyed("secret-endpoint "+target, "secret-endpoint", value, "secret-manager", r, f.first.workload.srcAt(f.first.line))
 		}
 	}
 }

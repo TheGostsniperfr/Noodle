@@ -27,6 +27,7 @@ decisions go in ADRs, acceptance in `features.json`.
 
 ### 2026-11-05 · Discovery checkpoint (spec 009 T09)
 
+- T24-T26: P6a-09 convergence, real Secret values in every leak fixture, one entry per Secret id across namespaces, plan table.
 - T21: `secret-endpoint` entries from `secretKeyRef` keys and `envFrom` Secrets (keys from the Secret or its ExternalSecrets, never values), one per Secret and key set; credential words win (`SMTP_SERVER_PASSWORD` is skipped). Schema enum gains the kind ADR-0018 named. P6a-09 flip waits for the evaluator.
 - Revision 1 of spec 009 and ADR-0031, agreed with Brian: `noodle digest` for agents, `secret-endpoint` out of the gate, then a second checkpoint (wave 2b, T21 to T23, DSC-13 and DSC-14).
 - T09: DSC-08 passes (evaluator). P6a-08 left false: its verify step holds, but its description claims C is cheaper, which the run refutes. Checkpoint on PAE platform-overview, arm A $4.34 24/25, arm C $4.76 25/25: Decision: stop (ADR-0029, C at 110 % of A). C finds the edge A leaves unresolved but re-reads the repos for what fragments lack (credential-implied addresses, app config). Wave 3 stays closed (FR-015); the spec revision is Brian's call. Ground truth, scripts and filtered transcripts in `docs/benchmarks/`.

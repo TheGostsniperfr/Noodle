@@ -30,7 +30,7 @@ kubectl   ─┘     rules: refs, addresses, operators,   ├─ graph.Merge(mod
 | Path | Change |
 |---|---|
 | `internal/model` | discovered items gain an optional `object` (ADR-0028) |
-| `schemas/v1alpha1/` | `fragment.schema.json`: optional `object` (ADR-0028) |
+| `schemas/v1alpha1/` | `fragment.schema.json`: optional `object` (ADR-0028), `secret-endpoint` in the `unresolved` kinds (ADR-0018) |
 | `flake.nix` | `kustomize` in the dev shell (ADR-0027) |
 | `internal/adapter/k8s` | one rule per file: `refs.go` (FR-001), `refkinds.go` (FR-020), `externalsecrets.go` and `argocd.go` (FR-002), `addresses.go` (FR-003, FR-004), `namespace.go` (FR-005), `kustomize.go` (FR-006), `netpol.go` (FR-016), `secretendpoint.go` (FR-017), `operators.go` (FR-018), `rules.go` (FR-019); `src` paths relative (FR-007) |
 | `internal/graph` | new: `Merge`, `Lookup`, `Neighbours`, `Path`, `Drift`; cross-fragment index (FR-012) |
