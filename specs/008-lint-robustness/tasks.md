@@ -48,3 +48,8 @@ Tasks the evaluator found missing, appended here; never edit the waves above.
   the step and port rows get the room up to the card's inner edge when no right-column row
   shares their height (`CardRow.Room`). The shrink-probe test sets `H` before use, covers
   notes, and a render test checks every title and listed line is drawn (FR-001).
+
+- [x] **T12** LNT-05 #1 and #5: the sequence cases assert the thresholds' values (`!!⚠ G1!!`,
+  `HTTPS · !!⚠ G1!!`, `HTTPS`) on the label after its step number, with a message whose text is
+  `""` over a connection that has no verb or protocol (FR-006, FR-012). A sequence numbers every
+  message (ADR-0011), so the label itself keeps its `[1] ` prefix.
