@@ -98,12 +98,9 @@ func renderSequenceView(s *model.System, id, out string, th *house.Theme, icons 
 	if len(findings) > 0 {
 		return fmt.Errorf("%d lint finding(s)", len(findings))
 	}
-	if out == "" {
-		return nil
-	}
 	r := &renderer{th: th, icons: icons, cache: map[string]string{}}
 	xml, err := r.renderSequence(seq)
-	if err != nil {
+	if err != nil || out == "" {
 		return err
 	}
 	return os.WriteFile(out, []byte(xml), 0o644)
