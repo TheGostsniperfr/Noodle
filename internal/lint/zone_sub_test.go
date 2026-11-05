@@ -14,9 +14,9 @@ func TestLint_ZoneSub(t *testing.T) {
 	t.Parallel()
 	sub := strings.TrimSuffix(strings.Repeat("abcdefghi ", 9), " ")[:89] + "."
 	// e9 leaves a node above the zone and enters one inside it, straight down at x.
-	spec := func(x, nodeX, nodeW float64) diagram.Spec {
+	spec := func(x, nodeX, nodeW float64, icon string) diagram.Spec {
 		return diagram.Spec{ID: "t", Width: 1000, Height: 600,
-			Zones: []diagram.Zone{{ID: "platform", Kind: "region", Label: "Platform", Sub: sub, Color: "sky", X: 100, Y: 100, W: 600, H: 300}},
+			Zones: []diagram.Zone{{ID: "platform", Kind: "region", Label: "Platform", Icon: icon, Sub: sub, Color: "sky", X: 100, Y: 100, W: 600, H: 300}},
 			Nodes: []diagram.Node{
 				{ID: "s", Kind: "backend", Title: "S", X: nodeX, Y: 5, W: nodeW, H: 35},
 				{ID: "t", Kind: "backend", Title: "T", X: nodeX, Y: 200, W: nodeW, H: 60},
@@ -29,8 +29,11 @@ func TestLint_ZoneSub(t *testing.T) {
 		spec     diagram.Spec
 		expected []lint.Finding
 	}{
-		{"lane_free", spec(366, 306, 120), nil},
-		{"through_title", spec(150, 100, 100),
+		{"lane_free", spec(366, 306, 120, ""), nil},
+		{"icon_zone_lane_beside_the_sub", spec(386, 326, 120, "k8s-svc"), nil},
+		{"icon_zone_lane_through_the_sub", spec(366, 306, 120, "k8s-svc"),
+			[]lint.Finding{{Where: "e9", Msg: "segment 0 crosses title of zone platform"}}},
+		{"through_title", spec(150, 100, 100, ""),
 			[]lint.Finding{{Where: "e9", Msg: "segment 0 crosses title of zone platform"}}},
 	}
 	for _, tt := range tests {

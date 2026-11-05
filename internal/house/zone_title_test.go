@@ -59,3 +59,12 @@ func TestZoneSubLines_WrapAtTheColumnWidth(t *testing.T) {
 		assert.LessOrEqual(t, house.TextWidth(l, house.SubFontSize), house.ZoneSubColumn)
 	}
 }
+
+func TestZoneTitleBox_WrappedSubStartsAfterTheIcon(t *testing.T) {
+	t.Parallel()
+	zone := diagram.Zone{ID: "platform", Label: "Platform", Icon: "k8s-svc", Sub: zoneSub, X: 100, Y: 100, W: 600, H: 300}
+
+	got := house.ZoneTitleBox(zone)
+
+	assert.Equal(t, diagram.Rect{X: 112, Y: 104, W: 260, H: 61.5}, got)
+}

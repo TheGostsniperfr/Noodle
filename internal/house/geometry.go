@@ -201,8 +201,12 @@ func ZoneTitleRow(z diagram.Zone) diagram.Rect {
 func ZoneTitleBox(z diagram.Zone) diagram.Rect {
 	row := ZoneTitleRow(z)
 	lines := ZoneSubLines(z)
+	indent := 0.0
+	if z.Icon != "" {
+		indent = ZoneIconSize + 8
+	}
 	for _, l := range lines {
-		row.W = math.Max(row.W, TextWidth(l, SubFontSize))
+		row.W = math.Max(row.W, indent+TextWidth(l, SubFontSize))
 	}
 	row.H += float64(len(lines)) * SubFontSize * LineHeightEm
 	return row

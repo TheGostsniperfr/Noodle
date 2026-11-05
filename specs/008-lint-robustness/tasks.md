@@ -53,3 +53,7 @@ Tasks the evaluator found missing, appended here; never edit the waves above.
   `HTTPS · !!⚠ G1!!`, `HTTPS`) on the label after its step number, with a message whose text is
   `""` over a connection that has no verb or protocol (FR-006, FR-012). A sequence numbers every
   message (ADR-0011), so the label itself keeps its `[1] ` prefix.
+
+- [x] **T13** LNT-06: for a zone with an icon the wrapped sub is drawn after the icon, so
+  `ZoneTitleBox` adds the icon offset to the widest line; tests for the box and for an edge
+  beside and through the sub of an icon zone (FR-008).
